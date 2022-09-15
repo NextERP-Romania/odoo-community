@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="product_product_view_form_inherit_kit" model="ir.ui.view">
+        <field name="name">product.product.view.form.inherit.kit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view" />
+        <field name="arch" type="xml">
+            <div name="options" position="inside">
+                <div>
+                    <field name="is_kit_component" />
+                    <label for="is_kit_component" />
+                </div>
+            </div>
+            <xpath expr="//notebook" position='inside'>
+                <page string="Kit Products">
+                    <group string="Kit Products">
+                        <field name="kit_product_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="product_id" invisible="1" />
+                                <field name="component_product_id" />
+                                <field name="product_qty" />
+                                <field name="product_uom_id" />
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="product_product_kit_view_tree" model="ir.ui.view">
+        <field name="name">product.product.kit.view.tree</field>
+        <field name="model">product.product.kit</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="categ_id" />
+                <field name="product_id" />
+                <field name="component_product_id" />
+                <field name="product_qty" />
+                <field name="product_uom_id" />
+            </tree>
+        </field>
+    </record>
+    <record id="product_product_kit_view_form" model="ir.ui.view">
+        <field name="name">product.product.kit.view.form</field>
+        <field name="model">product.product.kit</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <label for="product_id" />
+                    <h1>
+                        <field name="product_id" />
+                    </h1>
+                    <label for="categ_id" />
+                    <h1>
+                        <field name="categ_id" />
+                    </h1>
+                    <div>
+                        <group colspan="2">
+                            <field name="component_product_id" />
+                        </group>
+                        <group colspan="1">
+                            <field name="product_qty" />
+                        </group>
+                        <group colspan="1">
+                            <field name="product_uom_id" />
+                        </group>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="product_product_kit_view_pivot" model="ir.ui.view">
+        <field name="name">product.product.kit.view.pivot</field>
+        <field name="model">product.product.kit</field>
+        <field name="arch" type="xml">
+            <pivot string="Product Kits">
+                <field name="categ_id" type="row" />
+                <field name="product_id" type="row" />
+                <field name="component_product_id" type="col" />
+                <field name="product_qty" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="product_product_kit_view_search" model="ir.ui.view">
+        <field name="name">product.product.kit.view.search</field>
+        <field name="model">product.product.kit</field>
+        <field name="arch" type="xml">
+            <search string="Product Kits">
+                <field name="categ_id" />
+                <field name="product_id" />
+                <field name="component_product_id" />
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Category"
+                        name="category"
+                        context="{'group_by':'categ_id'}"
+                    />
+                    <filter
+                        string="Product"
+                        name="product"
+                        context="{'group_by':'product_id'}"
+                    />
+                    <filter
+                        string="Component"
+                        name="component"
+                        context="{'group_by':'component_product_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="product_kit_action" model="ir.actions.act_window">
+        <field name="name">Product Kits</field>
+        <field name="res_model">product.product.kit</field>
+        <field name="view_mode">pivot,tree,form</field>
+        <field
+            name="search_view_id"
+            ref="nexterp_product_kit.product_product_kit_view_search"
+        />
+    </record>
+    <menuitem
+        id="product_product_kit_menu"
+        name="Product Kits"
+        groups="sales_team.group_sale_manager"
+        parent="sale.product_menu_catalog"
+        action="product_kit_action"
+        sequence="3"
+    />
+
+</odoo>
