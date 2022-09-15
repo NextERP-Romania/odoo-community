@@ -17,5 +17,7 @@ class SaleOrderLine(models.Model):
             for kit_line in self.kit_line_ids:
                 if kit_line.product_id.service_tracking == "task_in_project":
                     if not kit_line.task_id and kit_line.sale_line_id:
-                        kit_line._timesheet_create_task(project)
+                        kit_line.with_context(parent_task=res)._timesheet_create_task(
+                            project
+                        )
         return res
