@@ -22,6 +22,7 @@ class SaleOrderLine(models.Model):
 
     def generate_sale_order_line_kit(self):
         for order_line in self:
+            input_line_vals = []
             if order_line.kit_line_ids:
                 order_line.kit_line_ids = [(6, 0, [])]
             if order_line.product_id.kit_product_ids:
