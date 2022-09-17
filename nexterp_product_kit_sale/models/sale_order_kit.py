@@ -33,10 +33,11 @@ class SaleOrderLineKit(models.Model):
         quantity = line.product_uom._compute_quantity(
             line.product_uom_qty, line.product_id.uom_id
         )
+        quantity = quantity * kit_line.product_qty
         product = kit_line.component_product_id.with_context(
             lang=lang,
             partner=order.partner_id,
-            quantity=quantity * kit_line.product_qty,
+            quantity=quantity,
             date=order.date_order,
             pricelist=order.pricelist_id.id,
             uom=kit_line.product_uom_id.id,
@@ -92,17 +93,22 @@ class SaleOrderLineKit(models.Model):
         ):
             sale_lines = self.mapped("sale_line_id")
             sale_lines = sale_lines.with_context(change_from_soline=True)
-            domain = [("sale_line_id", "in", sale_lines.ids)]
-            detail_lines = self.env["sale.order.line.kit"].read_group(
-                domain, ["sale_line_id", "price_subtotal"], ["sale_line_id"]
-            )
-            sale_data = {
-                data["sale_line_id"][0]: data["price_subtotal"] for data in detail_lines
-            }
             for line in sale_lines:
-                line.price_unit = sale_data.get(line.id, 0) / line.product_uom_qty
+                line.price_unit = self.get_sale_kit_price(line, line.kit_line_ids)
             # TODO - Check why we have line swithout sale_line_id, could be from onchanges
             # that's why we remove them here
-            not_linked = self.search([("sale_line_id", "=", False)])
-            not_linked.sudo().unlink()
+        not_linked = self.search([("sale_line_id", "=", False)])
+        not_linked.sudo().unlink()
         return res
+
+    @api.model
+    def get_sale_kit_price(self, sale_line, sale_kit_lines):
+        domain = [("id", "in", sale_kit_lines.ids)]
+        detail_lines = self.env["sale.order.line.kit"].read_group(
+            domain, ["sale_line_id", "price_subtotal"], ["sale_line_id"]
+        )
+        sale_data = {
+            data["sale_line_id"][0]: data["price_subtotal"] for data in detail_lines
+        }
+        price_unit = sale_data.get(sale_line.id, 0) / sale_line.product_uom_qty
+        return price_unit

@@ -31,6 +31,9 @@ class SaleOrderLine(models.Model):
                     (0, 0, kit_line_vals) for kit_line_vals in kit_lines_list
                 ]
             order_line.kit_line_ids = input_line_vals
+            order_line.price_unit = self.env["sale.order.line.kit"].get_sale_kit_price(
+                order_line, order_line.kit_line_ids
+            )
 
     def _prepare_sale_kit_lines(self):
         self.ensure_one()
@@ -58,7 +61,8 @@ class SaleOrderLine(models.Model):
             and self._name == "sale.order.line"
             and not self.env.context.get("change_from_soline")
         ):
-            self.with_context(change_from_soline=True).generate_sale_order_line_kit()
+            self = self.with_context(change_from_soline=True)
+            self.generate_sale_order_line_kit()
         return res
 
     @api.model_create_multi
@@ -67,5 +71,6 @@ class SaleOrderLine(models.Model):
         if self._name == "sale.order.line" and not self.env.context.get(
             "change_from_soline"
         ):
-            res.with_context(change_from_soline=True).generate_sale_order_line_kit()
+            res = self.with_context(change_from_soline=True)
+            res.generate_sale_order_line_kit()
         return res
