@@ -2,7 +2,7 @@
 # License OPL-1.0 or later
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class SaleOrder(models.Model):
@@ -11,6 +11,14 @@ class SaleOrder(models.Model):
     kit_line_ids = fields.One2many(
         "sale.order.line.kit", "order_id", "Kit Sale Lines", copy=False
     )
+
+    def write(self, vals):
+        res = super().write(vals)
+        if not self.env.context.get("change_from_soline") and "order_line" in vals:
+            for order in self:
+                order_lines = order.order_line.with_context(change_from_soline=True)
+                order_lines.generate_sale_order_line_kit()
+        return res
 
 
 class SaleOrderLine(models.Model):
@@ -44,33 +52,3 @@ class SaleOrderLine(models.Model):
             )
             vals_list.append(res)
         return vals_list
-
-    def get_to_generate_fields(self):
-        return ["product_id", "product_uom_qty", "product_uom", "discount"]
-
-    def write(self, vals):
-        res = super().write(vals)
-        dependable_fields = self.get_to_generate_fields()
-        should_regenerate = False
-        for key in list(vals):
-            if key in dependable_fields:
-                should_regenerate = True
-                break
-        if (
-            should_regenerate
-            and self._name == "sale.order.line"
-            and not self.env.context.get("change_from_soline")
-        ):
-            self = self.with_context(change_from_soline=True)
-            self.generate_sale_order_line_kit()
-        return res
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        res = super().create(vals_list)
-        if self._name == "sale.order.line" and not self.env.context.get(
-            "change_from_soline"
-        ):
-            res = self.with_context(change_from_soline=True)
-            res.generate_sale_order_line_kit()
-        return res
