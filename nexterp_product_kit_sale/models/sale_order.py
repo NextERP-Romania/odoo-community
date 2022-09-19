@@ -2,7 +2,7 @@
 # License OPL-1.0 or later
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class SaleOrder(models.Model):
@@ -15,9 +15,18 @@ class SaleOrder(models.Model):
     def write(self, vals):
         res = super().write(vals)
         if not self.env.context.get("change_from_soline") and "order_line" in vals:
-            for order in self:
+            for order in self.filtered(lambda o: o.state in ("draft", "sent")):
                 order_lines = order.order_line.with_context(change_from_soline=True)
                 order_lines.generate_sale_order_line_kit()
+        return res
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        for record in res:
+            if record.order_line and not self.env.context.get("change_from_soline"):
+                lines = record.order_line.with_context(change_from_soline=True)
+                lines.generate_sale_order_line_kit()
         return res
 
 
