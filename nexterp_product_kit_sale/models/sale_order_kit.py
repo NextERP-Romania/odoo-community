@@ -95,7 +95,7 @@ class SaleOrderLineKit(models.Model):
             sale_lines = sale_lines.with_context(change_from_soline=True)
             for line in sale_lines:
                 line.price_unit = self.get_sale_kit_price(line, line.kit_line_ids)
-            # TODO - Check why we have line swithout sale_line_id, could be from onchanges
+            # TODO - Check why we have lines without sale_line_id, could be from onchanges
             # that's why we remove them here
         not_linked = self.search([("sale_line_id", "=", False)])
         not_linked.sudo().unlink()
@@ -112,3 +112,8 @@ class SaleOrderLineKit(models.Model):
         }
         price_unit = sale_data.get(sale_line.id, 0) / sale_line.product_uom_qty
         return price_unit
+
+    def _check_line_unlink(self):
+        if self._name == "sale.order.line.kit":
+            return
+        return super()._check_line_unlink()
