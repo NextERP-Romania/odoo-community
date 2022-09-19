@@ -49,12 +49,11 @@ class ProductPircelist(models.Model):
                             # Ignored - incompatible UoM in context, use default product UoM
                             pass
                     quantity = qty_in_product_uom * kit_line.product_qty
-
                     kit_price = self._compute_price_rule(
                         [(kit_line.component_product_id, quantity, partner)],
                         date,
                         uom_id,
-                    )[kit_line.component_product_id.id][0]
-                    new_price += kit_price
+                    )[kit_line.component_product_id.id]
+                    new_price += kit_price[0] * quantity
                 res[product.id] = (new_price, False)
         return res
