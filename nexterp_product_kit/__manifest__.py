@@ -4,7 +4,7 @@
 
 {
     "name": "NextERP - Product Kit",
-    "version": "14.0.1.0.1",
+    "version": "15.0.1.0.1",
     "depends": ["product"],
     "description": """Product Kits""",
     "author": "NextERP Romania",

@@ -4,7 +4,7 @@
 
 {
     "name": "NextERP - Product Kit Sale",
-    "version": "14.0.1.0.1",
+    "version": "15.0.1.0.1",
     "depends": ["nexterp_product_kit", "sale"],
     "description": """Product Kits Sale""",
     "author": "NextERP Romania",

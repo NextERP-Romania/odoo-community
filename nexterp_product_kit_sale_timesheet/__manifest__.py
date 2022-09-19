@@ -4,7 +4,7 @@
 
 {
     "name": "NextERP - Product Kit Sale Timesheet",
-    "version": "14.0.1.0.1",
+    "version": "15.0.1.0.1",
     "depends": ["sale_project", "nexterp_product_kit_sale"],
     "description": """Product Kits Sale Timesheet""",
     "data": [],

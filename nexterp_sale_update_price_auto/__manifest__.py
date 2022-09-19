@@ -4,7 +4,7 @@
 
 {
     "name": "NextERP - Sale Update Prices Auto",
-    "version": "14.0.1.0.1",
+    "version": "15.0.1.0.1",
     "depends": ["sale_management"],
     "description": """NextERP - Sale Update Prices Auto""",
     "author": "NextERP Romania",
