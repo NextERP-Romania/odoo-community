@@ -4,12 +4,13 @@
 
 {
     "name": "NextERP - Product Kit Sale",
+    "summary": "NextERP - Product Kit Sale",
     "version": "15.0.1.0.1",
+    "category": "Sales",
     "depends": ["nexterp_product_kit", "sale"],
-    "description": """Product Kits Sale""",
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
-    "support": "contact@nexterp.ro",
+    "support": "odoo_apps@nexterp.ro",
     "data": [
         # views
         "views/sale_order_views.xml",
@@ -20,5 +21,6 @@
     "auto_install": False,
     "development_status": "Mature",
     "maintainers": ["feketemihai"],
+    "images": ["static/description/apps_icon.png"],
     "license": "OPL-1",
 }
