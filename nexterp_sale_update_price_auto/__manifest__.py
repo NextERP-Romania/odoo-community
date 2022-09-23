@@ -4,12 +4,12 @@
 
 {
     "name": "NextERP - Sale Update Prices Auto",
+    "summary": "NextERP - Sale Update Prices Auto",
     "version": "14.0.1.0.1",
     "depends": ["sale_management"],
-    "description": """NextERP - Sale Update Prices Auto""",
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
-    "support": "contact@nexterp.ro",
+    "support": "odoo_apps@nexterp.ro",
     "data": [
         # views
         "views/res_config_settings_views.xml",
@@ -18,5 +18,6 @@
     "auto_install": False,
     "development_status": "Mature",
     "maintainers": ["feketemihai"],
+    "images": ["static/description/apps_icon.png"],
     "license": "OPL-1",
 }

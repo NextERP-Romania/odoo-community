@@ -4,16 +4,17 @@
 
 {
     "name": "NextERP - Product Kit Sale Timesheet",
+    "summary": "NextERP - Product Kit Sale Timesheet",
     "version": "14.0.1.0.1",
+    "category": "Sales",
     "depends": ["sale_project", "nexterp_product_kit_sale"],
-    "description": """Product Kits Sale Timesheet""",
-    "data": [],
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
-    "support": "contact@nexterp.ro",
+    "support": "odoo_apps@nexterp.ro",
     "installable": True,
     "auto_install": False,
     "development_status": "Mature",
     "maintainers": ["feketemihai"],
+    "images": ["static/description/apps_icon.png"],
     "license": "OPL-1",
 }

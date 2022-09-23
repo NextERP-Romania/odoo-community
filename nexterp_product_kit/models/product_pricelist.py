@@ -1,9 +1,12 @@
 # Copyright (C) 2022 NextERP Romania SRL
 # License OPL-1.0 or later
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
+import logging
 
 from odoo import models
 from odoo.exceptions import UserError
+
+_loger = logging.getLogger(__name__)
 
 
 class ProductPircelist(models.Model):
@@ -45,9 +48,9 @@ class ProductPircelist(models.Model):
                                 .browse([self._context["uom"]])
                                 ._compute_quantity(qty, product.uom_id)
                             )
-                        except UserError:
+                        except UserError as e:
                             # Ignored - incompatible UoM in context, use default product UoM
-                            pass
+                            _loger.warning(e)
                     quantity = qty_in_product_uom * kit_line.product_qty
                     kit_price = self._compute_price_rule(
                         [(kit_line.component_product_id, quantity, partner)],
