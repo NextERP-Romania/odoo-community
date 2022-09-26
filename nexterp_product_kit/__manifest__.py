@@ -7,7 +7,7 @@
     "summary": """NextERP - Product Kit""",
     "version": "15.0.1.0.1",
     "category": "Sales",
-    "depends": ["product"],
+    "depends": ["product", "sale"],
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
     "support": "odoo_apps@nexterp.ro",
