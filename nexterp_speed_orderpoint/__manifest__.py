@@ -6,7 +6,7 @@
     "name": "NextERP - Orderpoint SpeedUp",
     "summary": "NextERP - Orderpoint SpeedUp",
     "version": "14.0.1.0.0",
-    "depends": ["purchase"],
+    "depends": ["purchase_stock", "nexterp_speed_product_supplierinfo"],
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
     "support": "odoo_apps@nexterp.ro",
