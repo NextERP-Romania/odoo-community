@@ -5,7 +5,6 @@
 from odoo import fields, models
 
 
-
 class PickingType(models.Model):
     _inherit = "stock.picking.type"
 
