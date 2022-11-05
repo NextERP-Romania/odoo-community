@@ -19,4 +19,4 @@ addon | version | maintainers | summary
 
 ----
 
-NextERP Romania, or the [NextERP Romania](https://nexterp.ro/), is a compamny developing and integrating Odoo applications.
+NextERP Romania, or the [NextERP Romania](https://nexterp.ro/), is a company developing and integrating Odoo applications.
