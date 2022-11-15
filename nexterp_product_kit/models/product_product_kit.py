@@ -20,7 +20,7 @@ class ProductKit(models.Model):
         "product.product", string="Component Product", required=True, index=True
     )
     product_qty = fields.Float(
-        "Quantity", default=1.0, digits="Product Unit of Measure", required=True
+        "Quantity", default=1.0, required=True
     )
     product_price = fields.Float(compute="_compute_product_price", store=True)
     product_uom_id = fields.Many2one(
