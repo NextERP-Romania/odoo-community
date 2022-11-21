@@ -110,7 +110,10 @@ class SaleOrderLineKit(models.Model):
         sale_data = {
             data["sale_line_id"][0]: data["price_subtotal"] for data in detail_lines
         }
-        price_unit = sale_data.get(sale_line.id, 0) / sale_line.product_uom_qty
+        if sale_line.product_uom_qty:
+            price_unit = sale_data.get(sale_line.id, 0) / sale_line.product_uom_qty
+        else:
+            price_unit = 0
         return price_unit
 
     def _check_line_unlink(self):
