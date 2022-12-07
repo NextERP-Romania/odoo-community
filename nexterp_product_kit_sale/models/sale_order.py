@@ -37,6 +37,11 @@ class SaleOrderLine(models.Model):
         "sale.order.line.kit", "sale_line_id", "Kit Sale Lines", copy=False
     )
 
+    def unlink(self):
+        if self.kit_line_ids:
+            self.kit_line_ids.unlink()
+        return super(SaleOrderLine, self).unlink()
+
     def generate_sale_order_line_kit(self):
         for order_line in self:
             input_line_vals = []
@@ -48,9 +53,10 @@ class SaleOrderLine(models.Model):
                     (0, 0, kit_line_vals) for kit_line_vals in kit_lines_list
                 ]
             order_line.kit_line_ids = input_line_vals
-            order_line.price_unit = self.env["sale.order.line.kit"].get_sale_kit_price(
-                order_line, order_line.kit_line_ids
-            )
+            if not self.env.context.get("change_from_soline"):
+                order_line.price_unit = self.env["sale.order.line.kit"].get_sale_kit_price(
+                    order_line, order_line.kit_line_ids
+                )
 
     def _prepare_sale_kit_lines(self):
         self.ensure_one()
