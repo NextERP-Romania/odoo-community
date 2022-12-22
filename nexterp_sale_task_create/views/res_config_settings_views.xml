@@ -6,20 +6,23 @@
         <field name="priority" eval="40" />
         <field name="inherit_id" ref="sale.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//div[@id='pricelist_configuration']" position="after">
+            <xpath
+                expr="//div[@name='quotation_order_setting_container']"
+                position="inside"
+            >
                 <div
-                    id="sale_auto_update_price_company"
+                    id="sale_create_taks_auto_company"
                     class="col-12 col-lg-6 o_setting_box"
-                    title="Auto Update Sale Prices."
+                    title="Auto Create Sale Tasks."
                 >
-                    <div id="sale_auto_update_price">
+                    <div id="sale_create_taks_auto">
                         <div class="o_setting_left_pane">
-                            <field name="sale_auto_update_price" />
+                            <field name="sale_create_taks_auto" />
                         </div>
                         <div class="o_setting_right_pane">
-                            <label for="sale_auto_update_price" />
+                            <label for="sale_create_taks_auto" />
                             <div class="text-muted">
-                                Update prices automatically if needed.
+                                Auto Create Sale Tasks.
                             </div>
                         </div>
                     </div>
