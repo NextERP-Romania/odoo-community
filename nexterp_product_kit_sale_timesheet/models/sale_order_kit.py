@@ -12,6 +12,12 @@ class SaleOrderLineKit(models.Model):
         res = super()._timesheet_create_task_prepare_values(project)
         if self.sale_line_id:
             res["sale_line_id"] = self.sale_line_id.id
+            sale_line_name = self.sale_line_id.product_id.name
+            res["name"] = "%s: %s - %s" % (
+                self.order_id.name or "",
+                sale_line_name,
+                self.product_id.name,
+            )
         if self.env.context.get("parent_task"):
             res["parent_id"] = self.env.context.get("parent_task").id
         return res
