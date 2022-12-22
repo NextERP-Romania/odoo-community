@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <button name="action_draft" position="after">
+                <button
+                    name="action_generate_tasks"
+                    id="actioaction_generate_tasksn_confirm"
+                    string="Generate Tasks"
+                    class="btn-primary"
+                    type="object"
+                    attrs="{'invisible': [('sale_create_taks_auto', '=', False)]}"
+                />
+            </button>
+            <field name="payment_term_id" position="after">
+                <field name="sale_create_taks_auto" />
+            </field>
+        </field>
+    </record>
+</odoo>
