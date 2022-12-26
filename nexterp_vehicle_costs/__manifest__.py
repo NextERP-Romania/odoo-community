@@ -15,7 +15,7 @@
         "views/invoice_view.xml",
         "views/product_view.xml",
     ],
-    "author": "NextERP Romania SRL",
+    "author": "NextERP Romania",
     "website": "https://nexterp.ro",
     "support": "odooapps@nexterp.ro",
     "installable": True,
