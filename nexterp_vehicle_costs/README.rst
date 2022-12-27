@@ -10,11 +10,14 @@ NextERP - Vehicle Cost Management
 .. |badge1| image:: https://img.shields.io/badge/maturity-Mature-brightgreen.png
     :target: https://odoo-community.org/page/development-status
     :alt: Mature
-.. |badge2| image:: https://img.shields.io/badge/github-NextERP-Romania%2Fodoo--community-lightgray.png?logo=github
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
+    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
+    :alt: License: AGPL-3
+.. |badge3| image:: https://img.shields.io/badge/github-NextERP-Romania%2Fodoo--community-lightgray.png?logo=github
     :target: https://github.com/NextERP-Romania/odoo-community/tree/14.0/nexterp_vehicle_costs
     :alt: NextERP-Romania/odoo-community
 
-|badge1| |badge2| 
+|badge1| |badge2| |badge3| 
 
 This module allows to create vehicle costs directly from account moves or stock moves.
 
