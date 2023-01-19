@@ -11,6 +11,8 @@
     "website": "https://nexterp.ro",
     "depends": ["stock_exception"],
     "license": "OPL-1",
-    "data": [],
+    "data": [
+        "views/stock_view.xml",
+    ],
     "installable": True,
 }

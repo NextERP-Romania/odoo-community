@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <odoo>
 
-    <record id="purchase_exception_view_order_form" model="ir.ui.view">
-        <field name="name">nexterp_purchase_exception.view_order_form_nexterp</field>
-        <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_form" />
+    <record id="stock_exception_view_picking_form" model="ir.ui.view">
+        <field name="name">nexterp_stock_exception.view_picking_form_nexterp</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='order_line']/tree" position="before">
+            <xpath expr="//field[@name='move_ids_without_package']/tree" position="before">
                 <div
                     class="alert alert-danger"
                     role="alert"
@@ -20,12 +20,12 @@
                     <field name="exceptions_summary" />
                 </div>
             </xpath>
-            <xpath expr="//field[@name='order_line']/tree//field[@name='price_subtotal']" position="after">
+            <xpath expr="//field[@name='move_ids_without_package']/tree//field[@name='quantity_done']" position="after">
                 <field name="exception_ids" invisible="1"/>
                 <field name="ignore_exception" invisible="1"/>
             </xpath>
 
-            <xpath expr="//field[@name='order_line']/tree" position="attributes">
+            <xpath expr="//field[@name='move_ids_without_package']/tree" position="attributes">
                 <attribute
                     name="decoration-danger"
                 >not ignore_exception and exception_ids</attribute>
@@ -33,3 +33,4 @@
         </field>
     </record>
 </odoo>
+
