@@ -1,5 +1,5 @@
 # Copyright (C) 2022 NextERP Romania SRL
-# License OPL-1.0 or later
+# License AGPL-3.0 or later
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 
 {
@@ -10,7 +10,7 @@
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
     "depends": ["purchase_exception"],
-    "license": "OPL-1",
+    "license": "AGPL-3",
     "data": [
         "views/purchase_view.xml",
     ],
