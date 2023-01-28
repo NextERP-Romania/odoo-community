@@ -54,9 +54,9 @@ class SaleOrderLine(models.Model):
                 ]
             order_line.kit_line_ids = input_line_vals
             if not self.env.context.get("change_from_soline"):
-                order_line.price_unit = self.env["sale.order.line.kit"].get_sale_kit_price(
-                    order_line, order_line.kit_line_ids
-                )
+                order_line.price_unit = self.env[
+                    "sale.order.line.kit"
+                ].get_sale_kit_price(order_line, order_line.kit_line_ids)
 
     def _prepare_sale_kit_lines(self):
         self.ensure_one()

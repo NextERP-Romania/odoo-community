@@ -20,9 +20,12 @@
                     <field name="exceptions_summary" />
                 </div>
             </xpath>
-            <xpath expr="//field[@name='order_line']/tree//field[@name='price_subtotal']" position="after">
-                <field name="exception_ids" invisible="1"/>
-                <field name="ignore_exception" invisible="1"/>
+            <xpath
+                expr="//field[@name='order_line']/tree//field[@name='price_subtotal']"
+                position="after"
+            >
+                <field name="exception_ids" invisible="1" />
+                <field name="ignore_exception" invisible="1" />
             </xpath>
 
             <xpath expr="//field[@name='order_line']/tree" position="attributes">

@@ -3,8 +3,8 @@
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 
 {
-    "name": "Nexterp Purchase Exception",
-    "summary": "Custom exceptions on purchase order",
+    "name": "NextERP - Purchase Exception",
+    "summary": "Custom exceptions on purchase order line",
     "version": "14.0.1.0.0",
     "category": "Generic Modules/Purchase",
     "author": "NextERP Romania",
