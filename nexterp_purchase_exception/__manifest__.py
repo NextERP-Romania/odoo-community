@@ -15,4 +15,5 @@
         "views/purchase_view.xml",
     ],
     "installable": True,
+    "maintainers": ["feketemihai"],
 }

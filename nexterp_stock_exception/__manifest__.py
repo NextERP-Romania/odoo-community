@@ -15,4 +15,5 @@
         "views/stock_view.xml",
     ],
     "installable": True,
+    "maintainers": ["feketemihai"],
 }
