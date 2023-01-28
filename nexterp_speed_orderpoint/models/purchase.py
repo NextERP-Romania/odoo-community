@@ -17,4 +17,3 @@ class PurchaseOrderLine(models.Model):
     product_uom = fields.Many2one(index=True)
     product_id = fields.Many2one(index=True)
     state = fields.Selection(index=True)
-    picking_type_id = fields.Many2one(index=True)
