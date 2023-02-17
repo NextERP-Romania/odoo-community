@@ -11,11 +11,11 @@ class StockPicking(models.Model):
 
 
     @api.model
-    def create(self, vals_list):
-        res =  super().create(vals_list)
+    def create(self, vals):
         assign_number = self.env.company.stock_assign_number_in_process
         if assign_number and self.env.company.draft_picking_sequence_id:
-            res.name = f"{self.env.company.draft_picking_sequence_id.next_by_id()}"
+            vals['name'] = f"{self.env.company.draft_picking_sequence_id.next_by_id()}"        
+        res =  super().create(vals)
         
         return res
 
@@ -41,14 +41,3 @@ class StockPicking(models.Model):
             ):
                 picking.name = picking.picking_type_id.sequence_id.next_by_id()
         return super()._action_done()
-
-    def _create_backorder(self):
-        backorders = super()._create_backorder()
-        for picking in backorders:
-            if (
-                picking.name == "/"
-                and picking.company_id.stock_assign_number_in_process
-                and picking.company_id.draft_picking_sequence_id
-            ):
-                picking.name = f"{self.env.company.draft_picking_sequence_id.next_by_id()}"
-        return backorders
