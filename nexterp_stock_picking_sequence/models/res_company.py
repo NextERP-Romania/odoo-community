@@ -11,3 +11,7 @@ class ResCompany(models.Model):
     stock_assign_number_in_process = fields.Boolean(
         string="Assign Picking Number in Action Done"
     )
+
+    draft_picking_sequence_id = fields.Many2one(
+        'ir.sequence', string='Draft Picking Sequence'
+    )

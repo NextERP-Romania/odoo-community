@@ -12,3 +12,8 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.stock_assign_number_in_process",
         readonly=False,
     )
+
+    draft_picking_sequence_id = fields.Many2one(
+        related='company_id.draft_picking_sequence_id', 
+        readonly=False
+    )

@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Stock Picking Sequence",
     "summary": """NextERP - Stock Picking Sequence""",
-    "version": "14.0.1.0.1",
+    "version": "14.0.1.0.2",
     "category": "Stock",
     "depends": ["stock"],
     "author": "NextERP Romania",
@@ -14,6 +14,7 @@
     "data": [
         # views
         "views/res_config_settings_views.xml",
+        "data/data.xml"
     ],
     "installable": True,
     "auto_install": False,
