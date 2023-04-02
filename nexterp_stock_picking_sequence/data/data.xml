@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="sequence_draft_picking" model="ir.sequence">
+            <field name="name">Draft Picking Sequence</field>
+            <field name="code">draft.picking</field>
+            <field name="prefix">Draft-</field>
+            <field name="padding">0</field>
+            <field name="number_next">1</field>
+            <field name="implementation">standard</field>
+        </record>
+    </data>
+</odoo>

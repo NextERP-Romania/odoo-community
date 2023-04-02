@@ -8,9 +8,9 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@id='pricelist_configuration']" position="after">
                 <div
-                    id="sales_invoice_force_company_currency"
+                    id="sale_auto_update_price_company"
                     class="col-12 col-lg-6 o_setting_box"
-                    title="Company Country Invoicing Policy."
+                    title="Auto Update Sale Prices."
                 >
                     <div id="sale_auto_update_price">
                         <div class="o_setting_left_pane">
