@@ -5,9 +5,9 @@
          <field name="model">account.invoice.report</field>
          <field name="inherit_id" ref="account.view_account_invoice_report_pivot" />
          <field name="arch" type="xml">
-             <pivot string="Invoices Analysis" disable_linking="True" sample="1">
+             <field name="price_subtotal" position="before">
                  <field name="quantity" type="measure" />
-             </pivot>
+             </field>
          </field>
     </record>
 </odoo>
