@@ -1,6 +1,6 @@
 # Copyright (C) 2022 NextERP Romania SRL
 # License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/15.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
 
 from odoo import api, fields, models
 from odoo.tools.misc import get_lang
@@ -54,11 +54,11 @@ class SaleOrderLineKit(models.Model):
         )
         if line.id or line._origin.id:
             vals.update({"sale_line_id": line.id or line._origin.id})
-        vals.update(
-            name=self.with_context(
-                lang=lang
-            ).get_sale_order_line_multiline_description_sale(product)
-        )
+        # vals.update(
+        #     name=self.with_context(
+        #         lang=lang
+        #     )._get_sale_order_line_multiline_description_sale(product)
+        # )
 
         if order.pricelist_id and order.partner_id:
             vals["price_unit"] = product._get_tax_included_unit_price(
@@ -67,7 +67,9 @@ class SaleOrderLineKit(models.Model):
                 order.date_order,
                 "sale",
                 fiscal_position=order.fiscal_position_id,
-                product_price_unit=line._get_display_price(product),
+                product_price_unit=line.with_company(
+                    line.company_id
+                )._get_display_price(),
                 product_currency=order.currency_id,
             )
         taxes = line.tax_id.compute_all(

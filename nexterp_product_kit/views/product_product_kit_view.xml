@@ -13,17 +13,20 @@
             </div>
             <xpath expr="//notebook" position='inside'>
                 <page string="Kit Products">
-                    <group string="Kit Products">
-                        <field name="kit_product_ids" nolabel="1">
-                            <tree editable="bottom">
-                                <field name="product_id" invisible="1" />
-                                <field name="component_product_id" />
-                                <field name="product_qty" />
-                                <field name="product_price" />
-                                <field name="product_uom_id" />
-                            </tree>
-                        </field>
-                    </group>
+                    <field
+                        name="kit_product_ids"
+                        widget="one2many"
+                        mode="tree"
+                        nolabel="1"
+                    >
+                        <tree editable="bottom">
+                            <field name="product_id" invisible="1" />
+                            <field name="component_product_id" />
+                            <field name="product_qty" />
+                            <field name="product_price" />
+                            <field name="product_uom_id" />
+                        </tree>
+                    </field>
                 </page>
             </xpath>
         </field>

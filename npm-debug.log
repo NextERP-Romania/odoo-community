@@ -2873,7 +2873,7 @@
 2805 silly idealTree:prePrune   ├── brace-expansion@1.1.11
 2805 silly idealTree:prePrune   ├── builtins@1.0.3
 2805 silly idealTree:prePrune   ├── byte-size@7.0.1
-2805 silly idealTree:prePrune   ├── cacache@15.0.6
+2805 silly idealTree:prePrune   ├── cacache@16.0.6
 2805 silly idealTree:prePrune   ├── caseless@0.12.0
 2805 silly idealTree:prePrune   ├── chalk@4.1.1
 2805 silly idealTree:prePrune   ├── chownr@2.0.0
@@ -3130,7 +3130,7 @@
 2808 silly idealTree   ├── brace-expansion@1.1.11
 2808 silly idealTree   ├── builtins@1.0.3
 2808 silly idealTree   ├── byte-size@7.0.1
-2808 silly idealTree   ├── cacache@15.0.6
+2808 silly idealTree   ├── cacache@16.0.6
 2808 silly idealTree   ├── caseless@0.12.0
 2808 silly idealTree   ├── chalk@4.1.1
 2808 silly idealTree   ├── chownr@2.0.0
@@ -3582,7 +3582,7 @@
 3044 silly diffTrees add normalize-package-data@3.0.2
 3045 silly diffTrees add read-package-json@3.0.1
 3046 silly diffTrees add init-package-json@2.0.3
-3047 silly diffTrees add cacache@15.0.6
+3047 silly diffTrees add cacache@16.0.6
 3048 silly diffTrees add make-fetch-happen@8.0.14
 3049 silly diffTrees add npm-registry-fetch@10.1.1
 3050 silly diffTrees add npm-profile@5.0.3
@@ -4773,11 +4773,11 @@
 4235 silly decomposeActions install init-package-json@2.0.3
 4236 silly decomposeActions postinstall init-package-json@2.0.3
 4237 silly decomposeActions finalize init-package-json@2.0.3
-4238 silly decomposeActions preinstall cacache@15.0.6
-4239 silly decomposeActions build cacache@15.0.6
-4240 silly decomposeActions install cacache@15.0.6
-4241 silly decomposeActions postinstall cacache@15.0.6
-4242 silly decomposeActions finalize cacache@15.0.6
+4238 silly decomposeActions preinstall cacache@16.0.6
+4239 silly decomposeActions build cacache@16.0.6
+4240 silly decomposeActions install cacache@16.0.6
+4241 silly decomposeActions postinstall cacache@16.0.6
+4242 silly decomposeActions finalize cacache@16.0.6
 4243 silly decomposeActions preinstall make-fetch-happen@8.0.14
 4244 silly decomposeActions build make-fetch-happen@8.0.14
 4245 silly decomposeActions install make-fetch-happen@8.0.14
@@ -8104,8 +8104,8 @@
 7566 info lifecycle read-package-json@3.0.1~preinstall: read-package-json@3.0.1
 7567 silly preinstall init-package-json@2.0.3 /usr/local/lib/node_modules/.staging/init-package-json-f725743d
 7568 info lifecycle init-package-json@2.0.3~preinstall: init-package-json@2.0.3
-7569 silly preinstall cacache@15.0.6 /usr/local/lib/node_modules/.staging/cacache-3c1e5d95
-7570 info lifecycle cacache@15.0.6~preinstall: cacache@15.0.6
+7569 silly preinstall cacache@16.0.6 /usr/local/lib/node_modules/.staging/cacache-3c1e5d95
+7570 info lifecycle cacache@16.0.6~preinstall: cacache@16.0.6
 7571 silly preinstall make-fetch-happen@8.0.14 /usr/local/lib/node_modules/.staging/make-fetch-happen-51f6c520
 7572 info lifecycle make-fetch-happen@8.0.14~preinstall: make-fetch-happen@8.0.14
 7573 silly preinstall npm-registry-fetch@10.1.1 /usr/local/lib/node_modules/.staging/npm-registry-fetch-26f20d26
@@ -8367,7 +8367,7 @@
 7829 silly lifecycle normalize-package-data@3.0.2~preinstall: no script for preinstall, continuing
 7830 silly lifecycle read-package-json@3.0.1~preinstall: no script for preinstall, continuing
 7831 silly lifecycle init-package-json@2.0.3~preinstall: no script for preinstall, continuing
-7832 silly lifecycle cacache@15.0.6~preinstall: no script for preinstall, continuing
+7832 silly lifecycle cacache@16.0.6~preinstall: no script for preinstall, continuing
 7833 silly lifecycle make-fetch-happen@8.0.14~preinstall: no script for preinstall, continuing
 7834 silly lifecycle npm-registry-fetch@10.1.1~preinstall: no script for preinstall, continuing
 7835 silly lifecycle npm-profile@5.0.3~preinstall: no script for preinstall, continuing
