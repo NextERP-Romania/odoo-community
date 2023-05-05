@@ -454,9 +454,10 @@
                         </kanban>
 
                     </field>
-                    <group name="note_group" col="6">
+                    <group name="note_group" col="6" class="mt-2 mt-md-0">
                         <group colspan="4">
                             <field
+                                colspan="2"
                                 name="note"
                                 nolabel="1"
                                 placeholder="Terms and conditions..."
