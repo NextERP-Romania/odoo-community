@@ -39,3 +39,34 @@ class ProductProduct(models.Model):
                     price += line_price * line.product_qty
                 prices[product.id] = price
         return prices
+
+    @api.depends(
+        "list_price",
+        "price_extra",
+        "kit_product_ids.product_qty",
+        "kit_product_ids.product_price",
+    )
+    def _compute_product_lst_price(self):
+        res = super()._compute_product_lst_price()
+        to_uom = None
+        if "uom" in self._context:
+            to_uom = self.env["uom.uom"].browse(self._context["uom"])
+        kits = self.filtered(lambda l: l.kit_product_ids)
+        if kits:
+            for product in kits:
+                price = 0
+                for line in product.kit_product_ids:
+                    if self.env.context.get('pricelist'):
+                        pricelist = self.env['product.pricelist'].browse(self.env.context['pricelist'])
+                        line_price = line.component_product_id.price_compute(
+                            'lst_price', line.component_product_id.uom_id, pricelist.currency_id, self.env.company, fields.Date.today()
+                        )[line.component_product_id.id]
+                        price += line_price * line.product_qty
+                    else:
+                        price += line.product_price
+                if to_uom:
+                    list_price = product.uom_id._compute_price(price, to_uom)
+                else:
+                    list_price = price
+                product.lst_price = list_price + product.price_extra
+        return res
