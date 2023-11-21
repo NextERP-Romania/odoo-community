@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_account_move_line_filter" model="ir.ui.view">
+        <field name="name">account.move.line.search</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_account_move_line_filter" />
+        <field name="arch" type="xml">
+            <filter name="groupby_date" position="after">
+                <filter
+                    string="Taxes"
+                    name="groupby_tax_names"
+                    domain="[]"
+                    context="{'group_by': 'tax_names'}"
+                />
+            </filter>
+        </field>
+    </record>
+
+    <record id="view_move_line_tree" model="ir.ui.view">
+        <field name="name">account.move.line.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree" />
+        <field name="arch" type="xml">
+            <field name="tax_ids" position="after">
+                <field
+                    name="tax_names"
+                    width="0.5"
+                    optional="hide"
+                    string="Tax Names"
+                />
+            </field>
+        </field>
+    </record>
+    <record id="view_move_line_tree_grouped" model="ir.ui.view">
+        <field name="name">account.move.line.tree.grouped</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree_grouped" />
+        <field name="arch" type="xml">
+            <field name="tax_ids" position="after">
+                <field
+                    name="tax_names"
+                    width="0.5"
+                    optional="hide"
+                    string="Tax Names"
+                />
+            </field>
+        </field>
+    </record>
+
+</odoo>
