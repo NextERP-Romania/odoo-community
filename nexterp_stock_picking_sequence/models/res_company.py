@@ -13,5 +13,5 @@ class ResCompany(models.Model):
     )
 
     draft_picking_sequence_id = fields.Many2one(
-        'ir.sequence', string='Draft Picking Sequence'
+        "ir.sequence", string="Draft Picking Sequence"
     )

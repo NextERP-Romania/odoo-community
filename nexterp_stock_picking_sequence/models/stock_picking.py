@@ -3,20 +3,19 @@
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 
 
-from odoo import api, fields, models
+from odoo import api, models
 
 
 class StockPicking(models.Model):
     _inherit = "stock.picking"
 
-
     @api.model
     def create(self, vals):
         assign_number = self.env.company.stock_assign_number_in_process
         if assign_number and self.env.company.draft_picking_sequence_id:
-            vals['name'] = f"{self.env.company.draft_picking_sequence_id.next_by_id()}"        
-        res =  super().create(vals)
-        
+            vals["name"] = f"{self.env.company.draft_picking_sequence_id.next_by_id()}"
+        res = super().create(vals)
+
         return res
 
     def _action_done(self):
@@ -30,14 +29,17 @@ class StockPicking(models.Model):
         self._check_company()
         for picking in self:
             draft_sequence_prefix = (
-                picking.company_id.draft_picking_sequence_id 
+                picking.company_id.draft_picking_sequence_id
                 and picking.company_id.draft_picking_sequence_id.prefix
             ) or ""
             if (
                 picking.picking_type_id.sequence_id
                 and picking.company_id.stock_assign_number_in_process
                 and picking.company_id.draft_picking_sequence_id
-                and (picking.name.startswith(draft_sequence_prefix) or picking.name == "/")
+                and (
+                    picking.name.startswith(draft_sequence_prefix)
+                    or picking.name == "/"
+                )
             ):
                 picking.name = picking.picking_type_id.sequence_id.next_by_id()
         return super()._action_done()
