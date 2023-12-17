@@ -14,6 +14,5 @@ class ResConfigSettings(models.TransientModel):
     )
 
     draft_picking_sequence_id = fields.Many2one(
-        related='company_id.draft_picking_sequence_id', 
-        readonly=False
+        related="company_id.draft_picking_sequence_id", readonly=False
     )

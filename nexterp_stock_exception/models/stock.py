@@ -46,7 +46,7 @@ class StockMove(models.Model):
         )
 
     def _detect_exceptions(self, rule):
-        res = self.env['stock.picking']
+        res = self.env["stock.picking"]
         for rec in self:
             move_picking = super(StockMove, rec)._detect_exceptions(rule)
             if move_picking:

@@ -36,7 +36,7 @@ class PurchaseOrderLine(models.Model):
         )
 
     def _detect_exceptions(self, rule):
-        res = self.env['purchase.order']
+        res = self.env["purchase.order"]
         for rec in self:
             move_picking = super(PurchaseOrderLine, rec)._detect_exceptions(rule)
             if move_picking:
