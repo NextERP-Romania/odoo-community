@@ -23,6 +23,8 @@ class SaleOrder(models.Model):
                 if not line.task_id:
                     line.sudo().with_company(
                         order.company_id
+                    ).with_context(
+                        create_tasks=True
                     )._timesheet_service_generation()
 
 
@@ -30,9 +32,12 @@ class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     def _timesheet_service_generation(self):
-        so_line_create_tasks = self.filtered(
-            lambda sol: sol.order_id.sale_create_taks_auto
-        )
+        if self.env.context.get("create_tasks"):
+            so_line_create_tasks = self
+        else:
+            so_line_create_tasks = self.filtered(
+                lambda sol: sol.order_id.sale_create_taks_auto
+            )
         return super(
             SaleOrderLine, so_line_create_tasks
         )._timesheet_service_generation()
