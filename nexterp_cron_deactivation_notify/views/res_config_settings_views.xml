@@ -6,11 +6,17 @@
         <field name="inherit_id" ref="mail.res_config_settings_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//div[@id='emails']" position='inside'>
-                <div class="col-12 col-lg-6 o_setting_box" id="archived_cron_notify_users_ids">
-                    <div class="o_setting_left_pane"/>
+                <div
+                    class="col-12 col-lg-6 o_setting_box"
+                    id="archived_cron_notify_users_ids"
+                >
+                    <div class="o_setting_left_pane" />
                     <div class="o_setting_right_pane">
-                        <label for="archived_cron_notify_users_ids"/>
-                        <field name="archived_cron_notify_users_ids" widget="many2many_tags"/>
+                        <label for="archived_cron_notify_users_ids" />
+                        <field
+                            name="archived_cron_notify_users_ids"
+                            widget="many2many_tags"
+                        />
                         <div class="text-muted">
                             Add users to notify when a cron action is archived.
                         </div>

@@ -9,7 +9,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
     archived_cron_notify_users_ids = fields.Many2many(
-        string='Users to Notify',
+        string="Users to Notify",
         related="company_id.archived_cron_notify_users_ids",
         readonly=False,
     )
