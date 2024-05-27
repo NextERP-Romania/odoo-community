@@ -1,0 +1,100 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_account_invoice_debt_recovery
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-23 07:50+0000\n"
+"PO-Revision-Date: 2024-05-23 10:54+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_debt_recovery.res_config_settings_view_form
+msgid ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" aria-label=\"Values set here are company-specific.\" "
+"groups=\"base.group_multi_company\" role=\"img\"/>"
+msgstr ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Valoare setată este "
+"specifică pe companie.\" aria-label=\"Valoare setată este specifică pe "
+"companie.\" groups=\"base.group_multi_company\" role=\"img\"/>"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_debt_recovery.view_move_debt_recovery_form
+msgid "Add an debt recovery note..."
+msgstr "Adăugați o notă de recuperare a datoriilor..."
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_debt_recovery.res_config_settings_view_form
+msgid "Allow Debt Recovery Invoice."
+msgstr "Permite factura de recuperare a datoriilor."
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_res_company__account_allow_debt_recovery_invoice
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_res_config_settings__account_allow_debt_recovery_invoice
+msgid "Allow Debt Recovery on Invoice"
+msgstr "Permite recuperarea datoriilor pe factură"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model:ir.model,name:nexterp_account_invoice_debt_recovery.model_res_company
+msgid "Companies"
+msgstr "Companii"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model:ir.model,name:nexterp_account_invoice_debt_recovery.model_res_config_settings
+msgid "Config Settings"
+msgstr "Setări de configurare"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_bank_statement_line__debt_recovery
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_move__debt_recovery
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_payment__debt_recovery
+#: model:ir.model.fields.selection,name:nexterp_account_invoice_debt_recovery.selection__account_move__payment_state__debt_recovery
+#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_debt_recovery.view_move_debt_recovery_form
+msgid "Debt Recovery"
+msgstr "Recuperarea datoriilor"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_bank_statement_line__debt_recovery_done
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_move__debt_recovery_done
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_payment__debt_recovery_done
+msgid "Debt Recovery Done"
+msgstr "Recuperarea datoriilor gata"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_debt_recovery.view_move_debt_recovery_form
+msgid "Debt Recovery Notes"
+msgstr "Note de recuperare a datoriilor"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_bank_statement_line__debt_recovery_text
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_move__debt_recovery_text
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_payment__debt_recovery_text
+msgid "Debt Recovery Text"
+msgstr "Text de recuperare a datoriilor"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model:ir.model,name:nexterp_account_invoice_debt_recovery.model_account_move
+msgid "Journal Entry"
+msgstr "Notă contabilă"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_debt_recovery.view_move_debt_recovery_form
+msgid "Mark as Debt Recovery"
+msgstr "Marcați ca Recuperare datorii"
+
+#. module: nexterp_account_invoice_debt_recovery
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_bank_statement_line__payment_state
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_move__payment_state
+#: model:ir.model.fields,field_description:nexterp_account_invoice_debt_recovery.field_account_payment__payment_state
+msgid "Payment Status"
+msgstr "Stare plată"

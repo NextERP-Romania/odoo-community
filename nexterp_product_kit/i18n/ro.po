@@ -1,0 +1,134 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_product_kit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-23 07:55+0000\n"
+"PO-Revision-Date: 2024-05-23 10:59+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. module: nexterp_product_kit
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Category"
+msgstr "Categorie"
+
+#. module: nexterp_product_kit
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Component"
+msgstr "Componentă"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__component_product_id
+msgid "Component Product"
+msgstr "Produs component"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__create_uid
+msgid "Created by"
+msgstr "Creat de"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__create_date
+msgid "Created on"
+msgstr "Creat in"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,help:nexterp_product_kit.field_product_product_kit__product_uom_id
+msgid "Default unit of measure used for all stock operations."
+msgstr "Unitate de măsură implicită utilizată pentru toate operațiunile de stoc."
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: nexterp_product_kit
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Group By"
+msgstr "Grupează după"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__id
+msgid "ID"
+msgstr "ID"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product__is_kit_component
+msgid "Is Kit Component"
+msgstr "Este Componenta Kitului"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product__kit_product_ids
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_view_form_inherit_kit
+msgid "Kit Products"
+msgstr "Kit produse"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit____last_update
+msgid "Last Modified on"
+msgstr "Ultima modificare la"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__write_uid
+msgid "Last Updated by"
+msgstr "Ultima actualizare de către"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__write_date
+msgid "Last Updated on"
+msgstr "Ultima actualizare pe"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_id
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Product"
+msgstr "Produs"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__categ_id
+msgid "Product Category"
+msgstr "Categorie produs"
+
+#. module: nexterp_product_kit
+#: model:ir.actions.act_window,name:nexterp_product_kit.product_kit_action
+#: model:ir.model,name:nexterp_product_kit.model_product_product_kit
+#: model:ir.ui.menu,name:nexterp_product_kit.product_product_kit_menu
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_pivot
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Product Kits"
+msgstr "Truse de produse"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_price
+msgid "Product Price"
+msgstr "Prețul produsului"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_template_id
+msgid "Product Template"
+msgstr "Șablon produs"
+
+#. module: nexterp_product_kit
+#: model:ir.model,name:nexterp_product_kit.model_product_product
+msgid "Product Variant"
+msgstr "Variantă produs"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_qty
+msgid "Quantity"
+msgstr "Cantitate"
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_uom_id
+msgid "Unit of Measure"
+msgstr "Unitate de măsură"

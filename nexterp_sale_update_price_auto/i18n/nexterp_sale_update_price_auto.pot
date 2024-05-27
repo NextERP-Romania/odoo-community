@@ -1,0 +1,54 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_sale_update_price_auto
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-23 09:15+0000\n"
+"PO-Revision-Date: 2024-05-23 09:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nexterp_sale_update_price_auto
+#: model_terms:ir.ui.view,arch_db:nexterp_sale_update_price_auto.res_config_settings_view_form
+msgid "Auto Update Sale Prices."
+msgstr ""
+
+#. module: nexterp_sale_update_price_auto
+#: model:ir.model.fields,field_description:nexterp_sale_update_price_auto.field_res_company__sale_auto_update_price
+#: model:ir.model.fields,field_description:nexterp_sale_update_price_auto.field_res_config_settings__sale_auto_update_price
+msgid "Auto Update Sales Prices"
+msgstr ""
+
+#. module: nexterp_sale_update_price_auto
+#: model:ir.model,name:nexterp_sale_update_price_auto.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: nexterp_sale_update_price_auto
+#: model:ir.model,name:nexterp_sale_update_price_auto.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: nexterp_sale_update_price_auto
+#. odoo-python
+#: code:addons/nexterp_sale_update_price_auto/models/sale.py:0
+#, python-format
+msgid "Product prices have been recomputed according to pricelist <b>%s<b> "
+msgstr ""
+
+#. module: nexterp_sale_update_price_auto
+#: model:ir.model,name:nexterp_sale_update_price_auto.model_sale_order
+msgid "Sales Order"
+msgstr ""
+
+#. module: nexterp_sale_update_price_auto
+#: model_terms:ir.ui.view,arch_db:nexterp_sale_update_price_auto.res_config_settings_view_form
+msgid "Update prices automatically if needed."
+msgstr ""
