@@ -4,6 +4,15 @@
 
 from odoo import models
 
+class SaleOrder(models.Model):
+    _inherit = "sale.order"
+
+    def _compute_tasks_ids(self):
+        for order in self:
+            for line in order.kit_line_ids:
+                if line.task_id and not line.task_id.sale_line_id:
+                    line.task_id.sale_line_id = line.sale_line_id
+        return super(SaleOrder, order)._compute_tasks_ids()
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
