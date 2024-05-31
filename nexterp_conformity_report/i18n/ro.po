@@ -1,0 +1,190 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_conformity_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-31 07:58+0000\n"
+"PO-Revision-Date: 2024-05-31 07:58+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nexterp_conformity_report
+#: model:ir.actions.report,print_report_name:nexterp_conformity_report.action_conformity_report
+msgid "'Conformity_Report - %s' % (object.name)"
+msgstr "'Certificat_Conformitate- %s' % (object.name)"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid ", from"
+msgstr ", cu Sediul"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid ""
+"<br/>\n"
+"                            <span>Date: </span>"
+msgstr ""
+"<br/>\n"
+"                            <span>Data: </span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid ""
+"<br/>\n"
+"                            <span>Order number: </span>"
+msgstr ""
+"<br/>\n"
+"                            <span>Numar comanda: </span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<span class=\"text-center\">Certificate of Conformity</span>"
+msgstr "<span class=\"text-center\">Declaratie de Conformitate</span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid ""
+"<span> The shipment was made in our presence <br/> on ............ hour "
+".......... </span>"
+msgstr ""
+"<span> Livrarea a fost efectuată în prezența noastră <br/> la ora ............"
+".......... </span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<span>Agent: </span>"
+msgstr ""
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<span>Code Supplier:</span>"
+msgstr "<span>Nr. Furnizor:</span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<span>Customer:</span>"
+msgstr "<span>Client:</span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<span>Name of the delegate:</span>"
+msgstr "<span>Numele delegatului:</span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<span>Sale Order: </span>"
+msgstr "<span>Comanda: </span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<span>Series / Number: </span>"
+msgstr "<span>Serie /Număr: </span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<span>Shipping information:</span>"
+msgstr "<span>Date privind expedierea:</span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid ""
+"<span>Signature ..................... Signature for receive "
+"......................</span>"
+msgstr ""
+"<span>Semnătura ..................... Semnătura pentru primire"
+"......................</span>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<strong>Code</strong>"
+msgstr "<strong> Codul Produsului</strong>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<strong>Lot No.</strong>"
+msgstr "<strong>Lot nr.</strong>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<strong>Minimum shelf life</strong>"
+msgstr "<strong>Termen minim de valabilitate</strong>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<strong>No.</strong>"
+msgstr "<strong>Nr.</strong>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<strong>Products Name</strong>"
+msgstr "<strong>Denumirea Produsului</strong>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<strong>Quantity</strong>"
+msgstr "<strong>Cantitatea</strong>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<strong>Trade Register: </strong>"
+msgstr "<strong>Registrul Comerțului: </strong>"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "<strong>U.M.</strong>"
+msgstr ""
+
+#. module: nexterp_conformity_report
+#: model:ir.actions.report,name:nexterp_conformity_report.action_conformity_report
+msgid "Conformity Report"
+msgstr "Certificat de Conformitate"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "ID:"
+msgstr "Numar CI:"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "Means transport:"
+msgstr "Mijloc de transport:"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "Notice:"
+msgstr "Mentiune:"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "Tax ID"
+msgstr "Cod fiscal"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid ""
+"do not endanger life or health and are in accordance with the sanitary-"
+"veterinary legislation for food safety in force"
+msgstr ""
+"nu pun in pericol viata sau sanatatea si sunt in conformitate cu legislatia "
+"sanitar-veterinara pentru siguranta alimentelor in vigoare."
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid "on"
+msgstr "din data"
+
+#. module: nexterp_conformity_report
+#: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
+msgid ""
+"we declare and guarantee on our own responsibility that the products "
+"delivered with the notice"
+msgstr ""
+"declaram si garantam pe proprie raspundere ca produsele livrate cu avizul "
+"nr."
