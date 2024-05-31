@@ -11,7 +11,7 @@ NextERP - Purchase Invoice Accounting Date
     :target: https://odoo-community.org/page/development-status
     :alt: Mature
 .. |badge2| image:: https://img.shields.io/badge/github-NextERP-Romania%2Fodoo--community-lightgray.png?logo=github
-    :target: https://github.com/NextERP-Romania/odoo-community/tree/16.0/nexterp_account_date_in_invoices
+    :target: https://github.com/NextERP-Romania/odoo-community/tree/14.0/nexterp_account_date_in_invoices
     :alt: NextERP-Romania/odoo-community
 
 |badge1| |badge2| 
@@ -40,7 +40,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/NextERP-Romania/odoo-community/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed
-`feedback <https://github.com/NextERP-Romania/odoo-community/issues/new?body=module:%20nexterp_account_date_in_invoices%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/NextERP-Romania/odoo-community/issues/new?body=module:%20nexterp_account_date_in_invoices%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -70,6 +70,6 @@ Current maintainer:
 
 |maintainer-feketemihai| 
 
-This module is part of the `NextERP-Romania/odoo-community <https://github.com/NextERP-Romania/odoo-community/tree/16.0/nexterp_account_date_in_invoices>`_ project on GitHub.
+This module is part of the `NextERP-Romania/odoo-community <https://github.com/NextERP-Romania/odoo-community/tree/14.0/nexterp_account_date_in_invoices>`_ project on GitHub.
 
 You are welcome to contribute.
