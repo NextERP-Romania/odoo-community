@@ -20,7 +20,7 @@
                         <strong
                         >There are exceptions on this line blocking the confirmation of this quotation:</strong>
                     </p>
-                    <field name="exceptions_summary" />
+                    <field name="exceptions_summary"  string="Exception Summary"/>
                 </div>
             </xpath>
             <xpath
