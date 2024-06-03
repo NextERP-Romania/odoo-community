@@ -23,7 +23,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_exceptions_summary(self):
         for rec in self:
             if rec.exception_ids and not rec.ignore_exception:
-                rec.exceptions_summary = rec.exceptions_summary = rec._get_exception_summary()
+                rec.exceptions_summary = rec._get_exception_summary()
             else:
                 rec.exceptions_summary = False
     
