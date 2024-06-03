@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="stock_report_delivery_lot_move_lines_cc">
+        <td>
+            <span t-esc="nr" />
+        </td>
+        <td class="text-center">
+            <span t-field="move_line.product_id" />
+
+            <t t-if="not description and description != ''">
+                <t
+                    t-set="description"
+                    t-value="move_line.move_id.description_picking"
+                />
+            </t>
+            <p t-if="description !='' and description != move_line.product_id.name">
+                <span t-esc="description" />
+            </p>
+        </td>
+        <t t-set="prod_code" t-value="move_line.product_id.default_code" />
+        <t t-if="'customer_ids' in move_line.product_id._fields">
+            <t t-foreach="move_line.product_id.customer_ids" t-as="customer">
+                <t t-if="customer.name == o.partner_id">
+                    <t t-set="prod_code" t-value="customer.product_code" />
+                </t>
+                <t t-if="not prod_code">
+                    <t
+                        t-if=" o.partner_id.parent_id and customer.name == o.partner_id.parent_id"
+                    >
+                        <t t-set="prod_code" t-value="customer.product_code" />
+                    </t>
+                </t>
+            </t>
+        </t>
+        <td name="td_prod_code" class="text-center">
+            <span t-esc="prod_code" />
+        </td>
+        <td name="td_move_line_lot" class="text-center">
+            <span t-esc="move_line.lot_id.name or ''" />
+        </td>
+        <td class="text-center">
+            <span t-field="move_line.product_uom_id" />
+        </td>
+        <td class="text-center" name="move_line_lot_qty_done">
+            <span t-field="move_line.qty_done" />
+        </td>
+        <td class="text-center">
+            <span t-esc="move_line.lot_id.expiration_date or ''" />
+        </td>
+    </template>
+
+    <template id="report_conformity_report">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context(lang=lang)" />
+            <div class="row">
+                <t t-set="address">
+                    <h6>
+                        <span>Customer:</span>
+                    </h6>
+                    <address
+                        class="mb-0"
+                        t-field="o.partner_id"
+                        t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
+                    />
+                    <div t-if="o.partner_id.vat" id="partner_vat">
+                        <t
+                            t-if="o.company_id.account_fiscal_country_id.vat_label"
+                            t-esc="o.company_id.account_fiscal_country_id.vat_label"
+                            id="inv_tax_id_label"
+                        />
+                        <t t-else="">Tax ID</t>: <span t-field="o.partner_id.vat" />
+                    </div>
+                    <div t-if="o.partner_id.nrc" id="partner_nrc">
+                        <strong>Trade Register: </strong><span
+                            t-field="o.partner_id.nrc"
+                        />
+                    </div>
+                </t>
+            </div>
+            <div class="mt-5">
+                <div class="page">
+                    <t t-set="client_command" t-value="o.sale_id.name" />
+                    <t t-if="o.sale_id.client_order_ref">
+                        <t
+                            t-set="client_command"
+                            t-value="o.sale_id.client_order_ref"
+                        />
+                    </t>
+                    <div class="text-center">
+                        <h2>
+                            <span class="text-center">Certificate of Conformity</span>
+                        </h2>
+                        <h5>
+                            <span>Series / Number: </span><span t-field="o.name" />
+                            <br />
+                            <span>Date: </span><span
+                                t-esc="o.date"
+                                t-options='{"widget": "date"}'
+                            />
+                            <br />
+                            <span>Order number: </span><span t-esc="client_command" />
+                        </h5>
+                    </div>
+
+                </div>
+                <table
+                    class="table table-sm o_main_table table-borderless"
+                    t-if="o.move_line_ids and o.state=='done'"
+                    name="stock_move_line_table"
+                >
+                    <t t-set="has_serial_number" t-value="False" />
+                    <t
+                        t-set="has_serial_number"
+                        t-value="o.move_line_ids.mapped('lot_id')"
+                        groups="stock.group_lot_on_delivery_slip"
+                    />
+                    <thead>
+                        <tr
+                            t-att-style="'border-bottom: 1px solid black;border-top: 2px solid black; margin-top:10px; %s;' % (o.env.user.company_id.secondary_color or 'black')"
+                        >
+                            <th name="th_sm_cod" class="text-center"><strong
+                                >No.</strong></th>
+                            <th name="th_sml_product" class="text-center"><strong
+                                >Products Name</strong></th>
+                            <th name="th_sm_uom" class="text-center"><strong
+                                >Code</strong></th>
+                            <th name="th_sm_quantity" class="text-center"><strong
+                                >Lot No.</strong></th>
+                            <th name="th_sm_quantity" class="text-center"><strong
+                                >U.M.</strong></th>
+                            <th name="th_sm_quantity" class="text-center"><strong
+                                >Quantity</strong></th>
+                            <th name="th_sm_quantity" class="text-center"><strong
+                                >Minimum shelf life</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="nr" t-value="1" />
+                        <tr
+                            t-foreach="o.move_line_ids"
+                            t-as="move_line"
+                            style="border-bottom: 1px solid black"
+                        >
+                            <t
+                                t-call="nexterp_conformity_report.stock_report_delivery_lot_move_lines_cc"
+                            />
+                            <t t-set="nr" t-value="nr + 1" />
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <p> Notice: <span
+                            t-esc="o.company_id.partner_id.name"
+                        />, from <span t-esc="o.company_id.partner_id.city" />, <span
+                            t-esc="o.company_id.partner_id.street"
+                        />
+                        we declare and guarantee on our own responsibility that the products delivered with the notice
+                        <span t-esc="o.name" /> on <span
+                            t-esc="o.date"
+                            t-options='{"widget": "date"}'
+                        />
+                        do not endanger life or health and are in accordance with the sanitary-veterinary legislation for food safety in force</p>
+                </div>
+                <div
+                    class="align-items-center mt16"
+                    style="margin:15px;margin-left:0;max-width:100%;"
+                >
+                    <div class="row">
+                        <div class="col-6">
+                            <table name="agent">
+                                <tr>
+                                    <td><span>Agent: </span></td>
+                                </tr>
+                                <tr>
+                                    <td><span>Code Supplier:</span> </td>
+                                </tr>
+                                <tr>
+                                    <td><span>Sale Order: </span> <span
+                                            t-esc="client_command"
+                                        /></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="offset-col-6 col-6">
+                            <table name="delegat">
+                                <tr style="border-bottom: 1px solid">
+                                    <td><span>Shipping information:</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span>Name of the delegate:</span><span
+                                            t-esc="o.l10n_ro_delegate_id.name"
+                                        /></td>
+                                </tr>
+                                <tr>
+                                    <td>ID:</td>
+                                </tr>
+                                <tr>
+                                    <td>Means transport: <span
+                                            t-esc="o.l10n_ro_mean_transp"
+                                        /></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span> The shipment was made in our presence <br
+                                            /> on ............ hour .......... </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span
+                                        >Signature ..................... Signature for receive ......................</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="reports_conformity_report">
+        <t t-call="web.html_container">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.company_id.partner_id.lang" />
+                    <t
+                        t-call="nexterp_conformity_report.report_conformity_report"
+                        t-lang="lang"
+                    />
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_conformity_report" model="ir.actions.report">
+            <field name="name">Conformity Report</field>
+            <field name="model">stock.picking</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking" />
+            <field name="report_type">qweb-pdf</field>
+            <field
+            name="report_name"
+        >nexterp_conformity_report.reports_conformity_report</field>
+            <field
+            name="report_file"
+        >nexterp_conformity_report.reports_conformity_report</field>
+            <field
+            name="print_report_name"
+        >'Conformity_Report - %s' % (object.name)</field>
+            <field name="binding_type">report</field>
+    </record>
+
+</odoo>

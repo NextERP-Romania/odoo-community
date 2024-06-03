@@ -19,9 +19,7 @@ class ProductKit(models.Model):
     component_product_id = fields.Many2one(
         "product.product", string="Component Product", required=True, index=True
     )
-    product_qty = fields.Float(
-        "Quantity", default=1.0, required=True
-    )
+    product_qty = fields.Float("Quantity", default=1.0, required=True)
     product_price = fields.Float(compute="_compute_product_price", store=True)
     product_uom_id = fields.Many2one(
         related="component_product_id.uom_id", index=True, store=True

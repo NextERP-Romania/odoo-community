@@ -174,7 +174,7 @@
                             <field name="state" invisible="1" />
                             <field name="company_id" invisible="1" />
                         </form>
-                        <tree string="Sales Order Lines" editable="bottom">
+                        <tree editable="bottom">
                             <control>
                                 <create
                                     name="add_product_control"

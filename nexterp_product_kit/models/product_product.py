@@ -56,10 +56,16 @@ class ProductProduct(models.Model):
             for product in kits:
                 price = 0
                 for line in product.kit_product_ids:
-                    if self.env.context.get('pricelist'):
-                        pricelist = self.env['product.pricelist'].browse(self.env.context['pricelist'])
+                    if self.env.context.get("pricelist"):
+                        pricelist = self.env["product.pricelist"].browse(
+                            self.env.context["pricelist"]
+                        )
                         line_price = line.component_product_id.price_compute(
-                            'lst_price', line.component_product_id.uom_id, pricelist.currency_id, self.env.company, fields.Date.today()
+                            "lst_price",
+                            line.component_product_id.uom_id,
+                            pricelist.currency_id,
+                            self.env.company,
+                            fields.Date.today(),
                         )[line.component_product_id.id]
                         price += line_price * line.product_qty
                     else:
