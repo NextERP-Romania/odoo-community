@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Analytic Default Rules by Journal",
     "summary": """NextERP - Analytic Default Rules by Journal""",
-    "version": "14.0.1.0.1",
+    "version": "14.0.1.0.2",
     "category": "Invoicing",
     "depends": ["account"],
     "data": [
