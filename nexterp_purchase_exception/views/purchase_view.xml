@@ -6,20 +6,6 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='order_line']/tree" position="before">
-                <div
-                    class="alert alert-danger"
-                    role="alert"
-                    style="margin-bottom:0px;"
-                    attrs="{'invisible': [('exceptions_summary', '=', False)]}"
-                >
-                    <p>
-                        <strong
-                        >There are exceptions on this line blocking the confirmation of this quotation:</strong>
-                    </p>
-                    <field name="exceptions_summary" string="Exception Summary"/>
-                </div>
-            </xpath>
             <xpath
                 expr="//field[@name='order_line']/tree//field[@name='price_subtotal']"
                 position="after"
