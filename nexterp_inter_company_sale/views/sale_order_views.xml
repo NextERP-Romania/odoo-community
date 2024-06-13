@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_sales_order_filter_inter_company" model="ir.ui.view">
+        <field name="name">view_sales_order_filter_inter_company</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter" />
+        <field name="arch" type="xml">
+            <filter name="activities_upcoming_all" position="after">
+                <separator />
+                <filter
+                    name="inter_company"
+                    string="Inter Company"
+                    domain="[('is_inter_company','=', 1)]"
+                />
+                <filter
+                    name="no_inter_company"
+                    string="Without Inter Company"
+                    domain="[('is_inter_company','=', 0)]"
+                />
+                <separator />
+            </filter>
+        </field>
+    </record>
+
+
+</odoo>

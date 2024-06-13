@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="sale_report_inter_company" model="ir.ui.view">
+        <field name="name">sale_report_inter_company</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.view_order_product_search" />
+        <field name="arch" type="xml">
+            <filter name="filter_order_date" position="after">
+                <filter
+                    name="inter_company"
+                    string="Inter Company"
+                    domain="[('is_inter_company','=', 1)]"
+                />
+                <filter
+                    name="no_inter_company"
+                    string="Without Inter Company"
+                    domain="[('is_inter_company','=', 0)]"
+                />
+                <separator />
+            </filter>
+        </field>
+    </record>
+
+</odoo>
