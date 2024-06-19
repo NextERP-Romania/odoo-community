@@ -1,0 +1,38 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_purchase_exception
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-23 09:12+0000\n"
+"PO-Revision-Date: 2024-05-23 09:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nexterp_purchase_exception
+#: model_terms:ir.ui.view,arch_db:nexterp_purchase_exception.purchase_exception_view_order_form
+msgid ""
+"<strong>There are exceptions on this line blocking the confirmation of this "
+"quotation:</strong>"
+msgstr ""
+
+#. module: nexterp_purchase_exception
+#: model:ir.model.fields,field_description:nexterp_purchase_exception.field_purchase_order_line__exception_ids
+msgid "Exceptions"
+msgstr ""
+
+#. module: nexterp_purchase_exception
+#: model:ir.model.fields,field_description:nexterp_purchase_exception.field_purchase_order_line__exceptions_summary
+msgid "Exceptions Summary"
+msgstr ""
+
+#. module: nexterp_purchase_exception
+#: model:ir.model,name:nexterp_purchase_exception.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr ""

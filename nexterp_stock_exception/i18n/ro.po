@@ -1,0 +1,58 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_stock_exception
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-23 09:17+0000\n"
+"PO-Revision-Date: 2024-05-23 12:22+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. module: nexterp_stock_exception
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_exception.stock_exception_view_picking_form
+msgid ""
+"<strong>There are exceptions on this line blocking the confirmation of this "
+"quotation:</strong>"
+msgstr ""
+"Există excepții pe această linie care blochează confirmarea acestei cotații"
+
+#. module: nexterp_stock_exception
+#: model:ir.model.fields,field_description:nexterp_stock_exception.field_stock_move__exception_ids
+#: model:ir.model.fields,field_description:nexterp_stock_exception.field_stock_picking__exception_ids
+msgid "Exceptions"
+msgstr "Excepții"
+
+#. module: nexterp_stock_exception
+#: model:ir.model.fields,field_description:nexterp_stock_exception.field_stock_move__exceptions_summary
+#: model:ir.model.fields,field_description:nexterp_stock_exception.field_stock_picking__exceptions_summary
+msgid "Exceptions Summary"
+msgstr "Rezumatul excepțiilor"
+
+#. module: nexterp_stock_exception
+#: model:ir.model.fields,field_description:nexterp_stock_exception.field_stock_picking__ignore_exception
+msgid "Ignore Exceptions"
+msgstr "Ignorați excepțiile"
+
+#. module: nexterp_stock_exception
+#: model:ir.model.fields,field_description:nexterp_stock_exception.field_stock_picking__main_exception_id
+msgid "Main Exception"
+msgstr "Principala excepție"
+
+#. module: nexterp_stock_exception
+#: model:ir.model,name:nexterp_stock_exception.model_stock_move
+msgid "Stock Move"
+msgstr "Mișcare stoc"
+
+#. module: nexterp_stock_exception
+#: model:ir.model,name:nexterp_stock_exception.model_stock_picking
+msgid "Transfer"
+msgstr "Transfer"

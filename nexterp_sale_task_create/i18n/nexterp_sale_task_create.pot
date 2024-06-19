@@ -1,0 +1,53 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_sale_task_create
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-23 09:14+0000\n"
+"PO-Revision-Date: 2024-05-23 09:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nexterp_sale_task_create
+#: model:ir.model.fields,field_description:nexterp_sale_task_create.field_res_company__sale_create_taks_auto
+#: model:ir.model.fields,field_description:nexterp_sale_task_create.field_res_config_settings__sale_create_taks_auto
+#: model:ir.model.fields,field_description:nexterp_sale_task_create.field_sale_order__sale_create_taks_auto
+msgid "Auto Create Sale Tasks"
+msgstr ""
+
+#. module: nexterp_sale_task_create
+#: model_terms:ir.ui.view,arch_db:nexterp_sale_task_create.res_config_settings_view_form
+msgid "Auto Create Sale Tasks."
+msgstr ""
+
+#. module: nexterp_sale_task_create
+#: model:ir.model,name:nexterp_sale_task_create.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: nexterp_sale_task_create
+#: model:ir.model,name:nexterp_sale_task_create.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: nexterp_sale_task_create
+#: model_terms:ir.ui.view,arch_db:nexterp_sale_task_create.view_order_form
+msgid "Generate Tasks"
+msgstr ""
+
+#. module: nexterp_sale_task_create
+#: model:ir.model,name:nexterp_sale_task_create.model_sale_order
+msgid "Sales Order"
+msgstr ""
+
+#. module: nexterp_sale_task_create
+#: model:ir.model,name:nexterp_sale_task_create.model_sale_order_line
+msgid "Sales Order Line"
+msgstr ""
