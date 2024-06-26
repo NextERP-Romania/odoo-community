@@ -21,9 +21,6 @@ class AccountMoveLine(models.Model):
         """
         if not column_exists(self.env.cr, "account_move", "is_inter_company"):
             create_column(self.env.cr, "account_move", "is_inter_company", "boolean")
-            company_partners = self.env["res.company"].search([]).mapped("partner_id")
-            company_partners.mapped("id")
-            company_partners.mapped("vat")
             self.env.cr.execute(
                 """
                 UPDATE account_move_line aml
