@@ -19,17 +19,12 @@ class SaleOrder(models.Model):
             create_column(self.env.cr, "sale_order", "is_inter_company", "boolean")
             company_partners = self.env["res.company"].search([]).mapped("partner_id")
             company_partners_ids = company_partners.mapped("id")
-            company_partners_vats = company_partners.mapped("vat")
-            if company_partners_vats == [False]:
-                company_partners_vats = [""]
             self.env.cr.execute(
                 """
                 WITH so_link AS (
                     SELECT
                         so.id AS id,
                         com_partner.id as partner_id,
-                        com_partner.vat as partner_vat,
-                        company_partner.vat AS company_partner_vat,
                         company_partner.id AS company_partner_id
                     FROM sale_order so
                         LEFT JOIN res_partner com_partner
@@ -43,16 +38,13 @@ class SaleOrder(models.Model):
                 UPDATE sale_order so
                 SET is_inter_company =
                     CASE
-                        WHEN so_link.partner_id = ANY(COALESCE(%s, ARRAY[0]))
+                        WHEN so_link.partner_id = ANY(ARRAY%s)
                             AND so_link.partner_id <> so_link.company_partner_id
-                                THEN TRUE
-                        WHEN so_link.partner_vat = ANY(COALESCE(%s, ARRAY['']))
-                            AND so_link.partner_vat <> so_link.company_partner_vat
                                 THEN TRUE
                         ELSE FALSE
                     END
                 FROM so_link
-                WHERE so.id = so_link.id;""",
-                (company_partners_ids, company_partners_vats),
+                WHERE so.id = so_link.id;"""
+                % company_partners_ids
             )  # noqa
         return super()._auto_init()
