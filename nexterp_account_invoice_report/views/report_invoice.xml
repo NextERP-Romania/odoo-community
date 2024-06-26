@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+        <xpath expr="//thead/tr" position="inside">
+            <!-- Print invoice line tax value - Table Column -->
+            <t t-if="o.company_id.print_invoice_tax_value">
+                <th name="th_tax_value" class="text-end"><span>Tax Value</span></th>
+            </t>
+
+            <!-- Print invoice line total value - Table Column -->
+            <t t-if="o.company_id.print_invoice_total_value">
+                <th name="th_price_total" class="text-end"><span>Total</span></th>
+            </t>
+        </xpath>
+
+        <xpath expr="//tbody/t/tr/t[1]" position="inside">
+            <!-- Print invoice line tax value - Table Cell -->
+            <t t-if="o.company_id.print_invoice_tax_value">
+                <t t-set='sign' t-value="-1 if o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund'] else 1"/>
+                <td name="td_tax_value" class="text-end">
+                    <span
+                        t-esc="sign * (line.price_total-line.price_subtotal)"
+                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </t>
+
+            <!-- Print invoice line total value - Table Cell -->
+            <t t-if="o.company_id.print_invoice_total_value">
+                <t t-set='sign' t-value="-1 if o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund'] else 1"/>
+                <td name="td_price_total" class="text-end">
+                    <span
+                        t-esc="sign * line.price_total"
+                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </t>
+        </xpath>
+
+        <xpath expr="//tbody[@class='invoice_tbody']//td[@class='text-end o_price_total']" position="replace">
+            <!-- Replace product amount total value - with refund sign -->
+            <t t-set='sign' t-value="-1 if o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund'] else 1"/>
+            <td class="text-end o_price_total">
+                <span class="text-nowrap"
+                    t-esc="sign * line.price_subtotal"
+                    groups="account.group_show_line_subtotals_tax_excluded"
+                    t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                <span class="text-nowrap"
+                    t-esc="sign * line.price_total"
+                    groups="account.group_show_line_subtotals_tax_included"
+                    t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+            </td>
+
+        </xpath>
+
+        <xpath expr="//span[@t-field='line.quantity']" position="replace">
+            <!-- Replace product quantity total - with refund sign -->
+            <t t-set='sign' t-value="-1 if o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund'] else 1"/>
+            <span t-esc="sign * line.quantity"/>
+        </xpath>
+
+    </template>
+</odoo>
