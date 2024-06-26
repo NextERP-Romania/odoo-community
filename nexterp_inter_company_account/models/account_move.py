@@ -44,9 +44,11 @@ class AccountMove(models.Model):
                 SET is_inter_company =
                     CASE
                         WHEN am_link.partner_id = ANY(COALESCE(%s, ARRAY[0]))
-                            AND am_link.partner_id <> am_link.company_partner_id THEN TRUE
+                            AND am_link.partner_id <> am_link.company_partner_id
+                                THEN TRUE
                         WHEN am_link.partner_vat = ANY(COALESCE(%s, ARRAY['']))
-                            AND am_link.partner_vat <> am_link.company_partner_vat THEN TRUE
+                            AND am_link.partner_vat <> am_link.company_partner_vat
+                                THEN TRUE
                         ELSE FALSE
                     END
                 FROM am_link
