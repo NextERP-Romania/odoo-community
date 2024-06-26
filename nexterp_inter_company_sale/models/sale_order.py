@@ -32,20 +32,27 @@ class SaleOrder(models.Model):
                         company_partner.vat AS company_partner_vat,
                         company_partner.id AS company_partner_id
                     FROM sale_order so
-                        LEFT JOIN res_partner com_partner ON com_partner.id = so.partner_id # noqa
-                        LEFT JOIN res_company company ON company.id = so.company_id
-                        LEFT JOIN res_partner company_partner ON company_partner.id = company.partner_id # noqa
+                        LEFT JOIN res_partner com_partner
+                            ON com_partner.id = so.partner_id
+                        LEFT JOIN res_company company
+                            ON company.id = so.company_id
+                        LEFT JOIN res_partner company_partner
+                            ON company_partner.id = company.partner_id
                     GROUP BY so.id, com_partner.id, company_partner.id
                 )
                 UPDATE sale_order so
                 SET is_inter_company =
                     CASE
-                        WHEN so_link.partner_id = ANY(COALESCE(%s, ARRAY[0])) AND so_link.partner_id <> so_link.company_partner_id THEN TRUE # noqa
-                        WHEN so_link.partner_vat = ANY(COALESCE(%s, ARRAY[''])) AND so_link.partner_vat <> so_link.company_partner_vat THEN TRUE # noqa
+                        WHEN so_link.partner_id = ANY(COALESCE(%s, ARRAY[0]))
+                            AND so_link.partner_id <> so_link.company_partner_id
+                                THEN TRUE
+                        WHEN so_link.partner_vat = ANY(COALESCE(%s, ARRAY['']))
+                            AND so_link.partner_vat <> so_link.company_partner_vat
+                                THEN TRUE
                         ELSE FALSE
                     END
                 FROM so_link
                 WHERE so.id = so_link.id;""",
                 (company_partners_ids, company_partners_vats),
-            )
+            )  # noqa
         return super()._auto_init()
