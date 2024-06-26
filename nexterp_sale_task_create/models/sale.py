@@ -21,9 +21,7 @@ class SaleOrder(models.Model):
         for order in self:
             for line in order.order_line:
                 if not line.task_id:
-                    line.sudo().with_company(
-                        order.company_id
-                    ).with_context(
+                    line.sudo().with_company(order.company_id).with_context(
                         create_tasks=True
                     )._timesheet_service_generation()
 
