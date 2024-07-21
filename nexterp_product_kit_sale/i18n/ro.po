@@ -20,35 +20,27 @@ msgstr ""
 #. module: nexterp_product_kit_sale
 #: model:ir.model.fields,help:nexterp_product_kit_sale.field_sale_order_line_kit__product_type
 msgid ""
-"A storable product is a product for which you manage stock. The Inventory "
-"app has to be installed.\n"
+"A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
 "A consumable product is a product for which stock is not managed.\n"
 "A service is a non-material product you provide."
 msgstr ""
-"Un produs stocabil este un produs pentru care gestionați stocul. Aplicația "
-"Inventory trebuie instalată.\n"
+"Un produs stocabil este un produs pentru care gestionați stocul. Aplicația Inventory trebuie instalată.\n"
 "Un produs consumabil este un produs pentru care stocul nu este gestionat.\n"
 "Un serviciu este un produs nematerial pe care îl oferiți."
 
 #. module: nexterp_product_kit_sale
 #: model:ir.model.fields,help:nexterp_product_kit_sale.field_sale_order_line_kit__qty_delivered_method
 msgid ""
-"According to product configuration, the delivered quantity can be "
-"automatically computed by mechanism :\n"
+"According to product configuration, the delivered quantity can be automatically computed by mechanism :\n"
 "  - Manual: the quantity is set manually on the line\n"
-"  - Analytic From expenses: the quantity is the quantity sum from posted "
-"expenses\n"
-"  - Timesheet: the quantity is the sum of hours recorded on tasks linked "
-"to this sale line\n"
+"  - Analytic From expenses: the quantity is the quantity sum from posted expenses\n"
+"  - Timesheet: the quantity is the sum of hours recorded on tasks linked to this sale line\n"
 "  - Stock Moves: the quantity comes from confirmed pickings\n"
 msgstr ""
-"În funcție de configurația produsului, cantitatea livrată poate fi "
-"calculată automat prin mecanism:\n"
+"În funcție de configurația produsului, cantitatea livrată poate fi calculată automat prin mecanism:\n"
 "  - Manual: cantitatea se seteaza manual pe linie\n"
-"  - Analitică din cheltuieli: cantitatea este suma cantității din "
-"cheltuielile înregistrate\n"
-"  - Foaie de pontaj: cantitatea este suma orelor înregistrate pe sarcini "
-"legate de această linie de vânzare\n"
+"  - Analitică din cheltuieli: cantitatea este suma cantității din cheltuielile înregistrate\n"
+"  - Foaie de pontaj: cantitatea este suma orelor înregistrate pe sarcini legate de această linie de vânzare\n"
 "  - Mutări de stoc: cantitatea provine din ridicări confirmate\n"
 
 #. module: nexterp_product_kit_sale
@@ -218,7 +210,7 @@ msgstr "Linii de cumpărare generate"
 #. module: nexterp_product_kit_sale
 #: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: nexterp_product_kit_sale
 #: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__invoice_lines
@@ -321,8 +313,7 @@ msgid ""
 "Number of days between the order confirmation and the shipping of the "
 "products to the customer"
 msgstr ""
-"Număr de zile între confirmarea comenzii și livrarea produselor către "
-"client"
+"Număr de zile între confirmarea comenzii și livrarea produselor către client"
 
 #. module: nexterp_product_kit_sale
 #: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__purchase_line_count
@@ -497,7 +488,7 @@ msgstr "Mutări de stoc"
 #. module: nexterp_product_kit_sale
 #: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_subtotal
 msgid "Subtotal"
-msgstr "Subtotal"
+msgstr ""
 
 #. module: nexterp_product_kit_sale
 #: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__tax_id
@@ -517,7 +508,7 @@ msgstr "Termeni și condiții..."
 #. module: nexterp_product_kit_sale
 #: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_total
 msgid "Total"
-msgstr "Total"
+msgstr ""
 
 #. module: nexterp_product_kit_sale
 #: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_tax

@@ -54,8 +54,8 @@ msgid ""
 "<span> The shipment was made in our presence <br/> on ............ hour "
 ".......... </span>"
 msgstr ""
-"<span> Livrarea a fost efectuată în prezența noastră <br/> la ora ............"
-".......... </span>"
+"<span> Livrarea a fost efectuată în prezența noastră <br/> la ora "
+"...................... </span>"
 
 #. module: nexterp_conformity_report
 #: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report
@@ -98,8 +98,8 @@ msgid ""
 "<span>Signature ..................... Signature for receive "
 "......................</span>"
 msgstr ""
-"<span>Semnătura ..................... Semnătura pentru primire"
-"......................</span>"
+"<span>Semnătura ..................... Semnătura pentru "
+"primire......................</span>"
 
 #. module: nexterp_conformity_report
 #: model_terms:ir.ui.view,arch_db:nexterp_conformity_report.report_conformity_report

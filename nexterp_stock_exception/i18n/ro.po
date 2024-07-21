@@ -55,4 +55,4 @@ msgstr "Mișcare stoc"
 #. module: nexterp_stock_exception
 #: model:ir.model,name:nexterp_stock_exception.model_stock_picking
 msgid "Transfer"
-msgstr "Transfer"
+msgstr ""

@@ -28,7 +28,7 @@ msgstr ""
 #. module: nexterp_purchase_exception
 #: model:ir.model.fields,field_description:nexterp_purchase_exception.field_purchase_order_line__exception_ids
 msgid "Exceptions"
-msgstr "Exceptions"
+msgstr ""
 
 #. module: nexterp_purchase_exception
 #: model:ir.model.fields,field_description:nexterp_purchase_exception.field_purchase_order_line__exceptions_summary

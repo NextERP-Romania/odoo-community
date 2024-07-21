@@ -43,7 +43,9 @@ msgstr "Setări de configurare"
 #: code:addons/nexterp_sale_update_price_auto/models/sale.py:0
 #, python-format
 msgid "Product prices have been recomputed according to pricelist <b>%s<b> "
-msgstr "Prețurile produselor au fost recalculate conform listei de prețuri <b>%s<b>  "
+msgstr ""
+"Prețurile produselor au fost recalculate conform listei de prețuri <b>%s<b>"
+"  "
 
 #. module: nexterp_sale_update_price_auto
 #: model:ir.model,name:nexterp_sale_update_price_auto.model_sale_order

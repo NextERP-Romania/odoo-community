@@ -31,7 +31,7 @@ class ProductPircelist(models.Model):
                         quantity,
                         kit_line.component_product_id.uom_id,
                         date,
-                        **kwargs
+                        **kwargs,
                     )[kit_line.component_product_id.id]
                     new_price += kit_price[0] * quantity
                 res[product.id] = (new_price, False)

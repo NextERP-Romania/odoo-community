@@ -19,9 +19,7 @@
                 expr="//field[@name='move_ids_without_package']/tree"
                 position="attributes"
             >
-                <attribute
-                    name="decoration-danger"
-                >is_exception_danger</attribute>
+                <attribute name="decoration-danger">is_exception_danger</attribute>
             </xpath>
         </field>
     </record>

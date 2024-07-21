@@ -45,7 +45,8 @@ msgstr "Creat in"
 #. module: nexterp_product_kit
 #: model:ir.model.fields,help:nexterp_product_kit.field_product_product_kit__product_uom_id
 msgid "Default unit of measure used for all stock operations."
-msgstr "Unitate de măsură implicită utilizată pentru toate operațiunile de stoc."
+msgstr ""
+"Unitate de măsură implicită utilizată pentru toate operațiunile de stoc."
 
 #. module: nexterp_product_kit
 #: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__display_name
@@ -60,7 +61,7 @@ msgstr "Grupează după"
 #. module: nexterp_product_kit
 #: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: nexterp_product_kit
 #: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product__is_kit_component
