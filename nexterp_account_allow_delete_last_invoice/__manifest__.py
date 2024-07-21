@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Allow Delete Last Invoice",
     "summary": """NextERP - Allow Delete Last Invoice""",
-    "version": "16.0.1.0.1",
+    "version": "17.0.1.0.0",
     "category": "Invoicing",
     "depends": ["account"],
     "data": [
