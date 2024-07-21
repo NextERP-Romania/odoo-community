@@ -22,7 +22,7 @@ class ProductProduct(models.Model):
         self, price_type, uom=False, currency=False, company=None, date=False
     ):
         prices = super().price_compute(price_type, uom, currency, company, date)
-        kits = self.filtered(lambda l: l.kit_product_ids)
+        kits = self.filtered(lambda pr_kits: pr_kits.kit_product_ids)
         if kits:
             company = company or self.env.company
             date = date or fields.Date.context_today(self)
@@ -51,7 +51,7 @@ class ProductProduct(models.Model):
         to_uom = None
         if "uom" in self._context:
             to_uom = self.env["uom.uom"].browse(self._context["uom"])
-        kits = self.filtered(lambda l: l.kit_product_ids)
+        kits = self.filtered(lambda pr_kits: pr_kits.kit_product_ids)
         if kits:
             for product in kits:
                 price = 0

@@ -19,6 +19,7 @@ class AccountMove(models.Model):
             create_column(self.env.cr, "account_move", "is_inter_company", "boolean")
             company_partners = self.env["res.company"].search([]).mapped("partner_id")
             company_partners_ids = company_partners.mapped("id")
+            # pylint: disable=E8103
             self.env.cr.execute(
                 """
                 WITH am_link AS (
