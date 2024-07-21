@@ -3,7 +3,7 @@
 # (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
 {
     "name": "NextERP - Conformity Certificate",
-    "version": "16.0.1.0.1",
+    "version": "17.0.1.0.0",
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
     "category": "Special",
