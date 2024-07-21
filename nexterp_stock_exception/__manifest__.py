@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Stock Exception",
     "summary": "Custom exceptions on stock move",
-    "version": "16.0.1.0.3",
+    "version": "17.0.1.0.0",
     "category": "Generic Modules/Stock",
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
