@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Auto Create Sale Tasks",
     "summary": "NextERP - Auto Create Sale Tasks",
-    "version": "16.0.1.0.1",
+    "version": "17.0.1.0.0",
     "depends": ["sale_project"],
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
