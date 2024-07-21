@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Product Kit Sale Timesheet",
     "summary": "NextERP - Product Kit Sale Timesheet",
-    "version": "16.0.1.0.0",
+    "version": "17.0.1.0.0",
     "category": "Sales",
     "depends": ["sale_project", "nexterp_product_kit_sale"],
     "author": "NextERP Romania",
