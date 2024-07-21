@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Purchase Exception",
     "summary": "Custom exceptions on purchase order line",
-    "version": "16.0.1.0.3",
+    "version": "17.0.1.0.0",
     "category": "Generic Modules/Purchase",
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
