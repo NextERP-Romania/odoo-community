@@ -1,5 +1,3 @@
-
-
 [MASTER]
 load-plugins=pylint_odoo
 score=n
@@ -7,9 +5,9 @@ score=n
 [ODOOLINT]
 readme-template-url="https://github.com/OCA/maintainer-tools/blob/master/template/module/README.rst"
 manifest-required-authors=NextERP Romania
-manifest-required-keys=license
+manifest-required-keys=license,summary,development_status
 manifest-deprecated-keys=description,active
-license-allowed=AGPL-3,GPL-2,GPL-2 or any later version,GPL-3,GPL-3 or any later version,LGPL-3,OPL-1
+license-allowed=OPL-1,AGPL-3
 valid-odoo-versions=17.0
 
 [MESSAGES CONTROL]
@@ -21,6 +19,7 @@ disable=all
 # green travis to see optional checks that failed.
 # .pylintrc-mandatory containing only mandatory checks is used the pre-commit
 # config as a blocking check.
+
 
 enable=anomalous-backslash-in-string,
     api-one-deprecated,
@@ -66,7 +65,6 @@ enable=anomalous-backslash-in-string,
     use-vim-comment,
     wrong-tabs-instead-of-spaces,
     xml-syntax-error,
-    attribute-string-redundant,
     character-not-valid-in-resource-link,
     consider-merging-classes-inherited,
     context-overridden,
