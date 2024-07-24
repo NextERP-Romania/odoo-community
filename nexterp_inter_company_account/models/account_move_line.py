@@ -8,7 +8,6 @@ from odoo.tools.sql import column_exists, create_column
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
-    _name = "account.move.line"
 
     is_inter_company = fields.Boolean(
         related="move_id.is_inter_company", store=True, readonly=True, index=True

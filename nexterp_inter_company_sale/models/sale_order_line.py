@@ -8,7 +8,6 @@ from odoo.tools.sql import column_exists, create_column
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
-    _name = "sale.order.line"
 
     is_inter_company = fields.Boolean(
         related="order_id.is_inter_company", store=True, readonly=True, index=True

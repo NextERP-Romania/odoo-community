@@ -5,38 +5,29 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="account.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <div id="invoicing_settings" position="inside">
-                <div
-                    class="col-12 col-lg-6 o_setting_box"
-                    id="account_invoice_report_setting_options"
-                >
-                    <div class="o_setting_left_pane" />
-
-                    <div class="o_setting_right_pane">
-                        <span class="o_form_label">Account invoice report options</span>
-                        <div class="text-muted">
-                            Select the options you want to display on the customer invoice report
-                        </div>
-
-                        <div class="mt16">
-                            <div class="content-group" id="customer_invoice_report">
-                                <div>
-                                    <field name="print_show_refunds" />
-                                    <label for="print_show_refunds" />
-                                </div>
-                                <div>
-                                    <field name="print_invoice_tax_value" />
-                                    <label for="print_invoice_tax_value" />
-                                </div>
-                                <div>
-                                    <field name="print_invoice_total_value" />
-                                    <label for="print_invoice_total_value" />
-                                </div>
+            <block id="invoicing_settings" position="inside">
+                <setting id="default_setting_options" string="Default Invoice Report Options" help="Those options will be selected by default when clicking &quot;Send &amp; Print&quot; on invoices">
+                    <div class="mt16">
+                        <div class="content-group" id="send_default">
+                            <div>
+                                <field name="print_show_refunds"/>
+                                <label for="print_show_refunds"/>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."/>
+                            </div>
+                            <div>
+                                <field name="print_invoice_tax_value"/>
+                                <label for="print_invoice_tax_value"/>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."/>
+                            </div>
+                            <div>
+                                <field name="print_invoice_total_value"/>
+                                <label for="print_invoice_total_value"/>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."/>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </setting>
+            </block>
         </field>
     </record>
 </odoo>

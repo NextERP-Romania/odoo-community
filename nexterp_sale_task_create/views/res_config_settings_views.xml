@@ -7,26 +7,12 @@
         <field name="inherit_id" ref="sale.res_config_settings_view_form" />
         <field name="arch" type="xml">
             <xpath
-                expr="//div[@name='quotation_order_setting_container']"
+                expr="//block[@name='quotation_order_setting_container']"
                 position="inside"
             >
-                <div
-                    id="sale_create_taks_auto_company"
-                    class="col-12 col-lg-6 o_setting_box"
-                    title="Auto Create Sale Tasks."
-                >
-                    <div id="sale_create_taks_auto">
-                        <div class="o_setting_left_pane">
-                            <field name="sale_create_taks_auto" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <label for="sale_create_taks_auto" />
-                            <div class="text-muted">
-                                Auto Create Sale Tasks.
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <setting id="sale_create_taks_auto" help="Auto Create Sale Tasks.">
+                    <field name="sale_create_taks_auto"/>
+                </setting>
             </xpath>
         </field>
     </record>

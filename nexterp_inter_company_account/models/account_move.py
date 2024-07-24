@@ -7,8 +7,8 @@ from odoo.tools.sql import column_exists, create_column
 
 
 class AccountMove(models.Model):
-    _inherit = ["account.move", "base.inter.company"]
     _name = "account.move"
+    _inherit = ["account.move", "base.inter.company"]
 
     def _auto_init(self):
         """

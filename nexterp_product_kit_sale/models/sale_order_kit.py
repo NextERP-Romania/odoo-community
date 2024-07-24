@@ -61,16 +61,15 @@ class SaleOrderLineKit(models.Model):
         # )
 
         if order.pricelist_id and order.partner_id:
-            vals["price_unit"] = product._get_tax_included_unit_price(
-                line.company_id,
-                order.currency_id,
-                order.date_order,
-                "sale",
-                fiscal_position=order.fiscal_position_id,
-                product_price_unit=line.with_company(
-                    line.company_id
-                )._get_display_price(),
-                product_currency=order.currency_id,
+            kit_line = kit_line.with_company(line.company_id)
+            price = kit_line._get_display_price()
+            vals["price_unit"] = kit_line.product_id._get_tax_included_unit_price_from_price(
+                price,
+                kit_line.currency_id or kit_line.order_id.currency_id,
+                product_taxes=kit_line.product_id.taxes_id.filtered(
+                    lambda tax: tax.company_id == kit_line.env.company
+                ),
+                fiscal_position=kit_line.order_id.fiscal_position_id,
             )
         taxes = line.tax_id.compute_all(
             vals["price_unit"],

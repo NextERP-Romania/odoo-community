@@ -6,24 +6,10 @@
         <field name="priority" eval="40" />
         <field name="inherit_id" ref="sale.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//div[@id='pricelist_configuration']" position="after">
-                <div
-                    id="sale_auto_update_price_company"
-                    class="col-12 col-lg-6 o_setting_box"
-                    title="Auto Update Sale Prices."
-                >
-                    <div id="sale_auto_update_price">
-                        <div class="o_setting_left_pane">
-                            <field name="sale_auto_update_price" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <label for="sale_auto_update_price" />
-                            <div class="text-muted">
-                                Update prices automatically if needed.
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <xpath expr="//setting[@id='pricelist_configuration']" position="after">
+                <setting id="coupon_settings" title="Auto Update Sale Prices." help="Update prices automatically if needed.">
+                    <field name="sale_auto_update_price"/>
+                </setting>
             </xpath>
         </field>
     </record>

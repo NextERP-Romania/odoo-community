@@ -22,7 +22,7 @@ class AccountMove(models.Model):
             self.debt_recovery = True
             self.payment_state = "debt_recovery"
             receivable_line = self.line_ids.filtered(
-                lambda line: line.account_id.user_type_id.type == "receivable"
+                lambda line: line.account_id.account_type == "asset_receivable"
             )
             receivable_line.blocked = True
 
@@ -33,7 +33,7 @@ class AccountMove(models.Model):
                 if move.payment_state == "paid":
                     move.debt_recovery_done = True
                     receivable_line = move.line_ids.filtered(
-                        lambda line: line.account_id.user_type_id.type == "receivable"
+                        lambda line: line.account_id.account_type == "asset_receivable"
                     )
                     receivable_line.blocked = False
                 else:

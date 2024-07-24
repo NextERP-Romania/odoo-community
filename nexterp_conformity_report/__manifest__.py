@@ -10,5 +10,6 @@
     "depends": ["sale_stock", "l10n_ro_stock_picking_comment_template"],
     "data": ["report/certificat_conformitate.xml"],
     "auto_install": False,
+    "installable": False,
     "license": "AGPL-3",
 }

@@ -26,7 +26,7 @@
                 />
                 <td name="td_tax_value" class="text-end">
                     <span
-                        t-esc="sign * (line.price_total-line.price_subtotal)"
+                        t-out="sign * (line.price_total-line.price_subtotal)"
                         t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                     />
                 </td>
@@ -40,7 +40,7 @@
                 />
                 <td name="td_price_total" class="text-end">
                     <span
-                        t-esc="sign * line.price_total"
+                        t-out="sign * line.price_total"
                         t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                     />
                 </td>
@@ -59,14 +59,7 @@
             <td class="text-end o_price_total">
                 <span
                     class="text-nowrap"
-                    t-esc="sign * line.price_subtotal"
-                    groups="account.group_show_line_subtotals_tax_excluded"
-                    t-options='{"widget": "monetary", "display_currency": o.currency_id}'
-                />
-                <span
-                    class="text-nowrap"
-                    t-esc="sign * line.price_total"
-                    groups="account.group_show_line_subtotals_tax_included"
+                    t-out="sign * line.price_subtotal"
                     t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                 />
             </td>
@@ -79,7 +72,7 @@
                 t-set='sign'
                 t-value="-1 if o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund'] else 1"
             />
-            <span t-esc="sign * line.quantity" />
+            <span t-out="sign * line.quantity" />
         </xpath>
 
     </template>

@@ -9,7 +9,7 @@ class AccountInvoiceReport(models.Model):
     _inherit = "account.invoice.report"
     _name = "account.invoice.report"
 
-    is_inter_company = fields.Boolean(readonly=0)
+    is_inter_company = fields.Boolean(readonly=False)
 
     def _select(self):
         res = super()._select()

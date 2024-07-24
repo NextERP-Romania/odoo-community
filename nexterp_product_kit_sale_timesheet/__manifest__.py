@@ -11,7 +11,7 @@
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",
     "support": "odoo_apps@nexterp.ro",
-    "installable": True,
+    "installable": False,
     "auto_install": False,
     "development_status": "Mature",
     "maintainers": ["feketemihai"],

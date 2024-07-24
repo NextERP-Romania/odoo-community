@@ -7,8 +7,8 @@ from odoo.tools.sql import column_exists, create_column
 
 
 class SaleOrder(models.Model):
-    _inherit = ["sale.order", "base.inter.company"]
     _name = "sale.order"
+    _inherit = ["sale.order", "base.inter.company"]
 
     def _auto_init(self):
         """

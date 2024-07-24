@@ -12,7 +12,7 @@
                     string="Generate Tasks"
                     class="btn-primary"
                     type="object"
-                    attrs="{'invisible': [('sale_create_taks_auto', '!=', False)]}"
+                    invisible="sale_create_taks_auto != False"
                 />
             </button>
             <field name="payment_term_id" position="after">
