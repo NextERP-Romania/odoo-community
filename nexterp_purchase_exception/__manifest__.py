@@ -8,7 +8,7 @@
     "version": "17.0.1.0.0",
     "category": "Generic Modules/Purchase",
     "author": "NextERP Romania",
-    "website": "https://nexterp.ro",
+    "website": "https://www.nexterp.ro",
     "depends": ["purchase_exception"],
     "license": "AGPL-3",
     "data": [
@@ -16,4 +16,5 @@
     ],
     "installable": True,
     "maintainers": ["feketemihai"],
+    "development_status": "Mature",
 }

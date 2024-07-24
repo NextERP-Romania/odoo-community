@@ -1,6 +1,6 @@
 # Copyright (C) 2022 NextERP Romania SRL
 # License AGPL-3.0 or later
-# (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/17.0/legal/licenses/licenses.html#).
 
 import html
 
@@ -36,12 +36,15 @@ class PurchaseOrderLine(models.Model):
                 rec.exceptions_summary = False
 
     def _get_exception_summary(self):
-        return "<ul>%s</ul>" % "".join(
-            [
-                "<li>%s: <i>%s</i></li>"
-                % tuple(map(html.escape, (e.name, e.description)))
-                for e in self.exception_ids
-            ]
+        return "<ul>{}</ul>".format(
+            "".join(
+                [
+                    "<li>{}: <i>{}</i></li>".format(
+                        *tuple(map(html.escape, (e.name, e.description)))
+                    )
+                    for e in self.exception_ids
+                ]
+            )
         )
 
     def _detect_exceptions(self, rule):

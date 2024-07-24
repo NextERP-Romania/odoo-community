@@ -1,6 +1,6 @@
 # Copyright 2024 NextERP Romania SRL
 # License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/17.0/legal/licenses/licenses.html#).
 
 from odoo import _, models
 from odoo.tools.misc import formatLang
@@ -10,7 +10,7 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     def _compute_tax_totals(self):
-        res = super(AccountMove, self)._compute_tax_totals()
+        res = super()._compute_tax_totals()
 
         # Add sign (-) to formatted amount and taxes in case of refund
         # and if setting print_show_refunds is enabled

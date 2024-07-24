@@ -1,6 +1,6 @@
 # Copyright (C) 2022 NextERP Romania SRL
 # License AGPL-3.0 or later
-# (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/17.0/legal/licenses/licenses.html#).
 
 import html
 

@@ -1,6 +1,6 @@
 # Copyright (C) 2022 NextERP Romania SRL
 # License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/17.0/legal/licenses/licenses.html#).
 
 from odoo import api, fields, models
 
@@ -28,10 +28,7 @@ class ProductKit(models.Model):
     def name_get(self):
         result = []
         for kit_line in self.sudo():
-            name = "%s - %s" % (
-                kit_line.product_id.name_get()[0][1],
-                kit_line.component_product_id.name,
-            )
+            name = f"{kit_line.product_id.name_get()[0][1]} - {kit_line.component_product_id.name}"
             result.append((kit_line.id, name))
         return result
 

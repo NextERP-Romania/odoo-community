@@ -1,6 +1,6 @@
 # Copyright (C) 2024 NextERP Romania SRL
 # License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/17.0/legal/licenses/licenses.html#).
 
 from odoo import models
 from odoo.tools.sql import column_exists, create_column
@@ -21,7 +21,7 @@ class AccountMove(models.Model):
             company_partners_ids = company_partners.mapped("id")
             # pylint: disable=E8103
             self.env.cr.execute(
-                """
+                f"""
                 WITH am_link AS (
                     SELECT
                         am.id AS id,
@@ -39,13 +39,12 @@ class AccountMove(models.Model):
                 UPDATE account_move am
                 SET is_inter_company =
                     CASE
-                        WHEN am_link.partner_id = ANY(ARRAY%s)
+                        WHEN am_link.partner_id = ANY(ARRAY{company_partners_ids})
                             AND am_link.partner_id <> am_link.company_partner_id
                                 THEN TRUE
                         ELSE FALSE
                     END
                 FROM am_link
                 WHERE am.id = am_link.id;"""
-                % (company_partners_ids)
             )  # noqa
         return super()._auto_init()

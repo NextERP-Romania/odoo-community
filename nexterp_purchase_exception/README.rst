@@ -10,9 +10,9 @@ NextERP - Purchase Exception
    !! source digest: sha256:161ad66bec4b149ca8888a76e890ae03a7ca042e75457316ddc758ca54bb6da1
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-.. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
+.. |badge1| image:: https://img.shields.io/badge/maturity-Mature-brightgreen.png
     :target: https://odoo-community.org/page/development-status
-    :alt: Beta
+    :alt: Mature
 .. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
@@ -34,7 +34,7 @@ Installation
 
 To install this module, you need to:
 
--  clone the branch 16.0 of the repository
+-  clone the branch 17.0 of the repository
    https://github.com/NextERP-Romania/odoo-community
 -  add the path to this repository in your configuration (addons-path)
 -  update the module list

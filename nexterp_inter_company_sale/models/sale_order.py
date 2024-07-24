@@ -1,6 +1,6 @@
 # Copyright (C) 2024 NextERP Romania SRL
 # License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/17.0/legal/licenses/licenses.html#).
 
 from odoo import models
 from odoo.tools.sql import column_exists, create_column
@@ -21,7 +21,7 @@ class SaleOrder(models.Model):
             company_partners_ids = company_partners.mapped("id")
             # pylint: disable=E8103
             self.env.cr.execute(
-                """
+                f"""
                 WITH so_link AS (
                     SELECT
                         so.id AS id,
@@ -39,13 +39,12 @@ class SaleOrder(models.Model):
                 UPDATE sale_order so
                 SET is_inter_company =
                     CASE
-                        WHEN so_link.partner_id = ANY(ARRAY%s)
+                        WHEN so_link.partner_id = ANY(ARRAY{company_partners_ids})
                             AND so_link.partner_id <> so_link.company_partner_id
                                 THEN TRUE
                         ELSE FALSE
                     END
                 FROM so_link
                 WHERE so.id = so_link.id;"""
-                % company_partners_ids
             )  # noqa
         return super()._auto_init()

@@ -10,9 +10,9 @@ NextERP - Account Invoice Report
    !! source digest: sha256:434a3491f85a72583dcf80d91ca3f6cdc5fd1641d49e6012bf1ba1b3d0406782
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-.. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
+.. |badge1| image:: https://img.shields.io/badge/maturity-Mature-brightgreen.png
     :target: https://odoo-community.org/page/development-status
-    :alt: Beta
+    :alt: Mature
 .. |badge2| image:: https://img.shields.io/badge/github-NextERP--Romania%2Fodoo--community-lightgray.png?logo=github
     :target: https://github.com/NextERP-Romania/odoo-community/tree/17.0/nexterp_account_invoice_report
     :alt: NextERP-Romania/odoo-community
@@ -33,7 +33,7 @@ Installation
 
 To install this module, you need to:
 
--  clone the branch 16.0 of the repository
+-  clone the branch 17.0 of the repository
    https://github.com/NextERP-Romania/odoo-community
 -  add the path to this repository in your configuration (addons-path)
 -  update the module list
