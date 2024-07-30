@@ -27,6 +27,14 @@ class StockMove(models.Model):
     exceptions_summary = fields.Html(
         readonly=True, compute="_compute_exceptions_summary"
     )
+    is_exception_danger = fields.Boolean(compute="_compute_is_exception_danger")
+
+    @api.depends("exception_ids", "ignore_exception")
+    def _compute_is_exception_danger(self):
+        for rec in self:
+            rec.is_exception_danger = (
+                len(rec.exception_ids) > 0 and not rec.ignore_exception
+            )
 
     @api.depends("exception_ids", "ignore_exception")
     def _compute_exceptions_summary(self):
