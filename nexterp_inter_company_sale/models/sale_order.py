@@ -18,6 +18,7 @@ class SaleOrder(models.Model):
         if not column_exists(self.env.cr, "sale_order", "is_inter_company"):
             create_column(self.env.cr, "sale_order", "is_inter_company", "boolean")
             company_partners = self.env["res.company"].search([]).mapped("partner_id")
+            # pylint: disable=E8103
             self.env.cr.execute(
                 """
                 UPDATE sale_order so
@@ -28,6 +29,7 @@ class SaleOrder(models.Model):
                 partners = company_partners.filtered(
                     lambda p: p.id != company.partner_id.id
                 )
+                # pylint: disable=E8103
                 self.env.cr.execute(
                     """
                     UPDATE sale_order so

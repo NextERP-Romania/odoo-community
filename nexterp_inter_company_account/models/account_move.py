@@ -18,6 +18,7 @@ class AccountMove(models.Model):
         if not column_exists(self.env.cr, "account_move", "is_inter_company"):
             create_column(self.env.cr, "account_move", "is_inter_company", "boolean")
             company_partners = self.env["res.company"].search([]).mapped("partner_id")
+            # pylint: disable=E8103
             self.env.cr.execute(
                 """
                 UPDATE account_move am
@@ -28,6 +29,7 @@ class AccountMove(models.Model):
                 partners = company_partners.filtered(
                     lambda p: p.id != company.partner_id.id
                 )
+                # pylint: disable=E8103
                 self.env.cr.execute(
                     """
                     UPDATE account_move am
