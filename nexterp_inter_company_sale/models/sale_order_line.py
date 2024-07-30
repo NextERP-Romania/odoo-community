@@ -20,9 +20,7 @@ class SaleOrderLine(models.Model):
         """
         if not column_exists(self.env.cr, "sale_order_line", "is_inter_company"):
             create_column(self.env.cr, "sale_order_line", "is_inter_company", "boolean")
-            company_partners = self.env["res.company"].search([]).mapped("partner_id")
-            company_partners.mapped("id")
-            company_partners.mapped("vat")
+            # pylint: disable=E8103
             self.env.cr.execute(
                 """
                 UPDATE sale_order_line sol

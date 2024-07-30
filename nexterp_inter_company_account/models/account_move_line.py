@@ -20,6 +20,7 @@ class AccountMoveLine(models.Model):
         """
         if not column_exists(self.env.cr, "account_move", "is_inter_company"):
             create_column(self.env.cr, "account_move", "is_inter_company", "boolean")
+            # pylint: disable=E8103
             self.env.cr.execute(
                 """
                 UPDATE account_move_line aml
