@@ -33,34 +33,17 @@ class InterCompanyField(models.AbstractModel):
     @api.depends(lambda self: self._check_partner_id_in_fields())
     @api.depends_context("company")
     def _compute_is_inter_company(self):
-        all_companies = self.sudo().env["res.company"].search([])
         for record in self:
             has_company = record._check_company_id_in_fields()
             has_company = has_company and record.company_id
             company = record.company_id if has_company else record.env.company
 
-            record_companies = all_companies - company
-            record_companies_partners = [
-                comp.partner_id.id for comp in record_companies
-            ]
-            record_companies_vats = [comp.partner_id.vat for comp in record_companies]
-
             is_inter_company = False
             if "commercial_partner_id" in self._fields:
-                if record.commercial_partner_id.id in record_companies_partners:
-                    is_inter_company = True
-                elif (
-                    record.commercial_partner_id.vat
-                    and record.commercial_partner_id.vat in record_companies_vats
-                ):
+                if record.commercial_partner_id.is_inter_company and record.commercial_partner_id != company.partner_id:
                     is_inter_company = True
             elif "partner_id" in self._fields:
-                if record.partner_id.id in record_companies_partners:
-                    is_inter_company = True
-                elif (
-                    record.partner_id.vat
-                    and record.partner_id.vat in record_companies_vats
-                ):
+                if record.partner_id.is_inter_company and record.partner_id != company.partner_id:
                     is_inter_company = True
             else:
                 _logger.warning(

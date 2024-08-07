@@ -12,6 +12,7 @@
             >
                 <field name="exception_ids" invisible="1" />
                 <field name="ignore_exception" invisible="1" />
+                <field name="is_exception_danger" invisible="1" />
             </xpath>
 
             <xpath
@@ -20,7 +21,7 @@
             >
                 <attribute
                     name="decoration-danger"
-                >not ignore_exception and exception_ids</attribute>
+                >is_exception_danger</attribute>
             </xpath>
         </field>
     </record>
