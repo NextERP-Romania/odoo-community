@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record
+        id="res_config_settings_view_form_inherit_nexterp_pos_session_closing_by_date"
+        model="ir.ui.view"
+    >
+        <field
+            name="name"
+        >res.config.settings.view.form.inherit.nexterp_pos_session_closing_by_date</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="100" />
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='pos_interface_section']" position="after">
+                <h2>PoS Session Settings</h2>
+                <div class="row mt16 o_settings_container" id="pos_session_section">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="pos_session_close_by_date" />
+                        </div>
+
+                        <div class="o_setting_right_pane">
+                            <label
+                                for="pos_session_close_by_date"
+                                string="Allow POS session closing by date"
+                            />
+                            <div class="text-muted">
+                                If there are multiple sessions opened on several days for the same location, the user can close the selected session. Otherwise, the system will close the last opened session
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
