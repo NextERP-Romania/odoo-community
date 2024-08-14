@@ -8,7 +8,11 @@
             <xpath expr="//field[@name='company_type']" position="after">
                 <div class="">
                     <group class="">
-                        <field name="is_inter_company" attrs="{'invisible':[('company_type', '=', 'person')]}" />
+                        <field
+                            name="is_inter_company"
+                            attrs="{'invisible':[('company_type', '=', 'person')]}"
+                            groups="account.group_account_invoice"
+                        />
                     </group>
                 </div>
             </xpath>
