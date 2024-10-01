@@ -14,6 +14,6 @@
     "data": [
         "views/stock_view.xml",
     ],
-    "installable": False,
+    "installable": True,
     "maintainers": ["feketemihai"],
 }
