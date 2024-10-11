@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record model="ir.ui.view" id="sftp_server_view_form">
+        <field name="name">SFTP Server</field>
+        <field name="model">sftp.server</field>
+        <field name="arch" type="xml">
+            <form>
+                <label for="name" class="oe_edit_only" />
+                <h1>
+                    <field name="name" required="True" />
+                </h1>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <group name="config">
+                        <group id="left">
+                            <field name="host" />
+                            <field name="port" />
+                            <field name="username" />
+                            <field name="password" password="True" />
+                            <button
+                                name="test_sftp_connection"
+                                type="object"
+                                string="Test SFTP Connection"
+                            />
+
+                        </group>
+                        <group id="right">
+                            <field name="active" invisible="1" />
+                            <field name="read_directory" />
+                            <field name="write_directory" />
+                            <field
+                                name="company_ids"
+                                widget="many2many_tags"
+                                groups="base.group_multi_company"
+                            />
+                        </group>
+                    </group>
+                    <separator string="Errors" />
+                    <field name="errors" />
+
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="sftp_server_view_tree">
+        <field name="name">SFTP Server Tree</field>
+        <field name="model">sftp.server</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="host" />
+                <field name="port" />
+                <field name="username" />
+                <field name="read_directory" />
+                <field name="write_directory" />
+                <field name="active" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="sftp_server_view_search">
+        <field name="name">SFTP Server Search</field>
+        <field name="model">sftp.server</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="host" />
+                <field name="username" />
+                <field name="read_directory" />
+                <field name="write_directory" />
+            </search>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_sftp_server_view">
+        <field name="name">SFTP Server</field>
+        <field name="res_model">sftp.server</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="sftp_server_menu"
+        name="SFTP Server"
+        parent="base.menu_administration"
+        sequence="20"
+    />
+
+    <menuitem
+        id="sftp_server_entry_menu"
+        name="SFTP Server"
+        parent="sftp_server_menu"
+        action="action_sftp_server_view"
+        sequence="20"
+    />
+</odoo>
