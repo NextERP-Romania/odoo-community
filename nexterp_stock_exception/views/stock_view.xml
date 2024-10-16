@@ -10,9 +10,9 @@
                 expr="//field[@name='move_ids_without_package']/tree//field[@name='quantity']"
                 position="after"
             >
-                <field name="exception_ids" invisible="1" />
-                <field name="ignore_exception" invisible="1" />
-                <field name="is_exception_danger" invisible="1" />
+                <field name="exception_ids" column_invisible="1" />
+                <field name="ignore_exception" column_invisible="1" />
+                <field name="is_exception_danger" column_invisible="1" />
             </xpath>
 
             <xpath
