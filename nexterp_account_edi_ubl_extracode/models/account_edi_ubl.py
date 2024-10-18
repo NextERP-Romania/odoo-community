@@ -22,4 +22,3 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             names = pickings.mapped("name")
             vals_list["vals"]["despatch_advice"] = ", ".join(names)
         return vals_list
-

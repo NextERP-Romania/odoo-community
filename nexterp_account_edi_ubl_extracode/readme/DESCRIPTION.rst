@@ -1,4 +1,4 @@
-This module extends the UBl format (e-factura) functionality by adding additional codes to enhance the information provided in the invoices. 
+This module extends the UBl format (e-factura) functionality by adding additional codes to enhance the information provided in the invoices.
 The added codes include:
 
 - **BT-16 - Delivery Slip Number**: The number associated with the delivery slip for the items being invoiced.
@@ -8,4 +8,4 @@ The added codes include:
 
 
 
-These enhancements are particularly useful for businesses that require detailed tracking and identification of items in their electronic invoices. 
+These enhancements are particularly useful for businesses that require detailed tracking and identification of items in their electronic invoices.
