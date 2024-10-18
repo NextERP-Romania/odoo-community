@@ -23,23 +23,31 @@ class AccountEdiXmlCIUSRO(models.Model):
 
     def _get_delivery_vals_list(self, invoice):
         res = super()._get_delivery_vals_list(invoice)
-
-        shipping_address = False
-        if "partner_shipping_id" in invoice._fields and invoice.partner_shipping_id:
-            shipping_address = invoice.partner_shipping_id
-            if shipping_address == invoice.partner_id:
-                shipping_address = False
-        if shipping_address:
-            res = [
-                {
-                    "actual_delivery_date": invoice.invoice_date,
-                    "delivery_location_vals": {
-                        "delivery_address_vals": self._get_partner_address_vals(
-                            shipping_address
-                        ),
-                    },
-                    "id": shipping_address.gln,
-                }
-            ]
+        gln_module = (
+                    self.env["ir.module.module"]
+                    .sudo()
+                    .search(
+                        [("name", "=", "deltatech_gln"), ("state", "=", "installed")],
+                        limit=1,
+                    )
+                )
+        if gln_module:
+            shipping_address = False
+            if "partner_shipping_id" in invoice._fields and invoice.partner_shipping_id:
+                shipping_address = invoice.partner_shipping_id
+                if shipping_address == invoice.partner_id:
+                    shipping_address = False
+            if shipping_address:
+                res = [
+                    {
+                        "actual_delivery_date": invoice.invoice_date,
+                        "delivery_location_vals": {
+                            "delivery_address_vals": self._get_partner_address_vals(
+                                shipping_address
+                            ),
+                        },
+                        "id": shipping_address.gln,
+                    }
+                ]
 
         return res
