@@ -1,6 +1,5 @@
 # Copyright (C) 2024 NextERP Romania SRL
-# License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import models
 
@@ -24,13 +23,13 @@ class AccountEdiXmlCIUSRO(models.Model):
     def _get_delivery_vals_list(self, invoice):
         res = super()._get_delivery_vals_list(invoice)
         gln_module = (
-                    self.env["ir.module.module"]
-                    .sudo()
-                    .search(
-                        [("name", "=", "deltatech_gln"), ("state", "=", "installed")],
-                        limit=1,
-                    )
-                )
+            self.env["ir.module.module"]
+            .sudo()
+            .search(
+                [("name", "=", "deltatech_gln"), ("state", "=", "installed")],
+                limit=1,
+            )
+        )
         if gln_module:
             shipping_address = False
             if "partner_shipping_id" in invoice._fields and invoice.partner_shipping_id:
@@ -46,7 +45,7 @@ class AccountEdiXmlCIUSRO(models.Model):
                                 shipping_address
                             ),
                         },
-                        "id": shipping_address.gln,
+                        "gln": shipping_address.gln,
                     }
                 ]
 
