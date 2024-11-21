@@ -9,7 +9,7 @@
     "category": "Stock",
     "depends": ["stock"],
     "author": "NextERP Romania",
-    "website": "https://nexterp.ro",
+    "website": "https://www.nexterp.ro",
     "support": "odoo_apps@nexterp.ro",
     "data": [
         # views

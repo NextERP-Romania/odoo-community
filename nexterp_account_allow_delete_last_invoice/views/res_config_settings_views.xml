@@ -6,9 +6,12 @@
         <field name="inherit_id" ref="account.res_config_settings_view_form" />
         <field name="arch" type="xml">
             <block id="invoicing_settings" position="inside">
-                <setting id="allow_delete_last_invoice" help="Allow Delete Last Invoice.
-                            Be aware of the communication done already in the invoice.">
-                    <field name="account_allow_delete_last_invoice"/>
+                <setting
+                    id="allow_delete_last_invoice"
+                    help="Allow Delete Last Invoice.
+                            Be aware of the communication done already in the invoice."
+                >
+                    <field name="account_allow_delete_last_invoice" />
                 </setting>
             </block>
         </field>

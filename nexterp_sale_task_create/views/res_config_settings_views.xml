@@ -11,7 +11,7 @@
                 position="inside"
             >
                 <setting id="sale_create_taks_auto" help="Auto Create Sale Tasks.">
-                    <field name="sale_create_taks_auto"/>
+                    <field name="sale_create_taks_auto" />
                 </setting>
             </xpath>
         </field>
