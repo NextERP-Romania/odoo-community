@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Stock Picking Sequence",
     "summary": """NextERP - Stock Picking Sequence""",
-    "version": "14.0.1.0.2",
+    "version": "17.0.1.0.1",
     "category": "Stock",
     "depends": ["stock"],
     "author": "NextERP Romania",

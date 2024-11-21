@@ -14,7 +14,9 @@ class StockPicking(models.Model):
         assign_number = self.env.company.stock_assign_number_in_process
         if assign_number and self.env.company.draft_picking_sequence_id:
             for vals in vals_list:
-                vals["name"] = f"{self.env.company.draft_picking_sequence_id.next_by_id()}"
+                vals["name"] = (
+                    f"{self.env.company.draft_picking_sequence_id.next_by_id()}"
+                )
         res = super().create(vals_list)
         return res
 
