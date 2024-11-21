@@ -45,12 +45,15 @@ class StockMove(models.Model):
                 rec.exceptions_summary = False
 
     def _get_exception_summary(self):
-        return "<ul>%s</ul>" % "".join(
-            [
-                "<li>%s: <i>%s</i></li>"
-                % tuple(map(html.escape, (e.name, e.description)))
-                for e in self.exception_ids
-            ]
+        return "<ul>{}</ul>".format(
+            "".join(
+                [
+                    "<li>{}: <i>{}</i></li>".format(
+                        *tuple(map(html.escape, (e.name, e.description)))
+                    )
+                    for e in self.exception_ids
+                ]
+            )
         )
 
     def _detect_exceptions(self, rule):

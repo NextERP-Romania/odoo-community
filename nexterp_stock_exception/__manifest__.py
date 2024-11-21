@@ -16,4 +16,5 @@
     ],
     "installable": True,
     "maintainers": ["feketemihai"],
+    "development_status": "Mature",
 }
