@@ -9,13 +9,13 @@ from odoo import api, models
 class StockPicking(models.Model):
     _inherit = "stock.picking"
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         assign_number = self.env.company.stock_assign_number_in_process
         if assign_number and self.env.company.draft_picking_sequence_id:
-            vals["name"] = f"{self.env.company.draft_picking_sequence_id.next_by_id()}"
-        res = super().create(vals)
-
+            for vals in vals_list:
+                vals["name"] = f"{self.env.company.draft_picking_sequence_id.next_by_id()}"
+        res = super().create(vals_list)
         return res
 
     def _action_done(self):
