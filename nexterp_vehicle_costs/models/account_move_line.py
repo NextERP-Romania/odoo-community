@@ -25,8 +25,9 @@ class AccountMoveLine(models.Model):
 
     def _compute_need_vehicle(self):
         res = super()._compute_need_vehicle()
-        if self.product_id.refu
-        self.need_vehicle = False
+        for s in self:
+            if s.fleet_service_type_id:
+                s.need_vehicle = True
 
     def cancel_vehicle_cost(self):
         for s in self.cost_ids:
