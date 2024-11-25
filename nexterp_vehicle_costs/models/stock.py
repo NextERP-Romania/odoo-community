@@ -105,14 +105,14 @@ class StockMove(models.Model):
             s.unlink()
 
     def _action_done(self, cancel_backorder=False):
-        res = super(StockMove, self)._action_done(cancel_backorder=cancel_backorder)
+        res = super()._action_done(cancel_backorder=cancel_backorder)
         for move in self:
             if move.vehicle_id and not move.cost_ids:
                 move.create_vehicle_cost()
         return res
 
     def action_cancel(self):
-        res = super(StockMove, self).action_cancel()
+        res = super().action_cancel()
         for move in self:
             if move.vehicle_id and move.cost_ids:
                 move.cancel_vehicle_cost()

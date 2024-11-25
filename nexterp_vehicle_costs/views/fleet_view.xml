@@ -11,7 +11,7 @@
                 <field name="not_deductible" string="Not Deductible" />
                 <field
                     name="tax_non_deductible"
-                    attrs="{'invisible':[('not_deductible','=',False)]}"
+                    invisible="not_deductible == False"
                     domain="[('l10n_ro_is_nondeductible','=',True)]"
                 />
             </field>
