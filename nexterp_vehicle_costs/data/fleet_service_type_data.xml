@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="data_fleet_service_type_refuel" model="fleet.service.type">
+        <field name="name">Realimentare</field>
+        <field name="category">fuel</field>
+    </record>
+</odoo>

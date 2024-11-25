@@ -4,10 +4,8 @@
 # License AGPL-3.0 or later
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 
-from dateutil.relativedelta import relativedelta
 
-from odoo import _, fields, models
-from odoo.exceptions import UserError
+from odoo import fields, models
 
 
 class AccountMoveLine(models.Model):
@@ -20,11 +18,19 @@ class AccountMoveLine(models.Model):
     def _prepare_fleet_log_service(self):
         res = super()._prepare_fleet_log_service()
         if self.fleet_service_type_id:
-            res.update({"service_type_id": self.fleet_service_type_id.id})
+            res.update(
+                {
+                    "service_type_id": self.fleet_service_type_id.id,
+                    "product_id": self.product_id.id,
+                    "quantity": self.quantity,
+                    "price_unit": self.price_unit,
+                }
+            )
+
         return res
 
     def _compute_need_vehicle(self):
-        res = super()._compute_need_vehicle()
+        super()._compute_need_vehicle()
         for s in self:
             if s.fleet_service_type_id:
                 s.need_vehicle = True

@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
                 <field name="account_id" position="after">
                     <field name="vehicle_id" />
-                    <field name="refuel" />
+                    <!-- <field name="refuel" /> -->
                 </field>
             </field>
         </record>
@@ -19,7 +19,7 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form" />
             <field name="arch" type="xml">
-                <div name="button_box" position="inside">
+                <!-- <div name="button_box" position="inside">
                     <field name="has_vehicle_contracts" invisible="1" />
                     <field name="has_vehicle_services" invisible="1" />
                     <button
@@ -27,7 +27,7 @@
                     class="oe_stat_button"
                     icon="fa-bars"
                     type="object"
-                    attrs="{'invisible': [('has_vehicle_contracts', '!=', True)]}"
+
                     string="Vehicle Contract Costs"
                 >
                     </button>
@@ -36,30 +36,36 @@
                     class="oe_stat_button"
                     icon="fa-bars"
                     type="object"
-                    attrs="{'invisible': [('has_vehicle_services', '!=', True)]}"
+
                     string="Vehicle Service Costs"
                 >
                     </button>
-                </div>
+                </div> -->
                 <xpath
-                expr="//field[@name='invoice_line_ids']/tree/field[@name='quantity']"
+                expr="//field[@name='line_ids']//field[@name='quantity']"
                 position="before"
             >
                     <field
-                    name="vehicle_id"
-                    attrs="{'invisible': [('parent.move_type', 'not in', ('in_invoice', 'in_refund','in_receipt'))], 'column_invisible': [('parent.move_type', 'not in', ('in_invoice', 'in_refund','in_receipt'))]}"
+                    name="fleet_service_type_id"
+                    invisible="parent.move_type  not in ('in_invoice', 'in_refund','in_receipt')"
+                    column_invisible="parent.move_type not in ('in_invoice', 'in_refund','in_receipt')"
                 />
-                    <field
+                    <!-- <field
                     name="refuel"
-                    attrs="{'invisible': ['|', ('parent.move_type', 'not in', ('in_invoice', 'in_refund','in_receipt')), ('vehicle_id', '=', False)], 'column_invisible': [('parent.move_type', 'not in', ('in_invoice', 'in_refund','in_receipt'))]}"
-                />
+
+                    invisible = "(parent.move_type  not in ('in_invoice', 'in_refund','in_receipt')) or (vehicle_id == False)"
+                    column_invisible= "parent.move_type not in ('in_invoice', 'in_refund','in_receipt')"
+                /> -->
                 </xpath>
                 <xpath
-                expr="//field[@name='line_ids']/tree/field[@name='quantity']"
+                expr="//field[@name='invoice_line_ids']//field[@name='quantity']"
                 position="before"
             >
-                <field name="vehicle_id" invisible="1" />
-                <field name="refuel" invisible="1" />
+                <field
+                    name="fleet_service_type_id"
+                    invisible="parent.move_type  not in ('in_invoice', 'in_refund','in_receipt')"
+                    column_invisible="parent.move_type not in ('in_invoice', 'in_refund','in_receipt')"
+                />
 
                 </xpath>
             </field>

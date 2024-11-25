@@ -28,14 +28,14 @@ class AccountMove(models.Model):
             move.has_vehicle_contracts = has_vehicle_contracts
 
     def action_post(self):
-        res = super(AccountMove, self).action_post()
+        res = super().action_post()
         for line in self.invoice_line_ids:
             if line.vehicle_id and not line.cost_ids:
                 line.create_vehicle_cost()
         return res
 
     def button_cancel(self):
-        res = super(AccountMove, self).button_cancel()
+        res = super().button_cancel()
         for line in self.invoice_line_ids:
             if line.vehicle_id and line.cost_ids:
                 line.cancel_vehicle_cost()
@@ -45,7 +45,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         veh_costs = self.line_ids.mapped("veh_service_cost_ids").ids
         xml_id = "fleet_vehicle_log_services_action"
-        res = self.env["ir.actions.act_window"]._for_xml_id("fleet.%s" % xml_id)
+        res = self.env["ir.actions.act_window"]._for_xml_id(f"fleet.{xml_id}")
         res.update(
             context=dict(self.env.context, default_vehicle_id=self.id, group_by=False),
             domain=[("id", "in", veh_costs)],
@@ -56,7 +56,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         veh_costs = self.line_ids.mapped("veh_contract_cost_ids").ids
         xml_id = "fleet_vehicle_log_contract_action"
-        res = self.env["ir.actions.act_window"]._for_xml_id("fleet.%s" % xml_id)
+        res = self.env["ir.actions.act_window"]._for_xml_id(f"fleet.{xml_id}")
         res.update(
             context=dict(self.env.context, default_vehicle_id=self.id, group_by=False),
             domain=[("id", "in", veh_costs)],
