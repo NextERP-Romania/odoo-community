@@ -8,6 +8,7 @@
     "version": "17.0.1.0.0",
     "category": "Managing vehicles and contracts",
     "depends": ["fleet", "account_fleet", "l10n_ro_nondeductible_vat"],
+    "summary": "Manage vehicle costs, add categories for fuel and part, etc.",
     "data": [
         "security/ir.model.access.csv",
         "data/fleet_service_type_data.xml",
