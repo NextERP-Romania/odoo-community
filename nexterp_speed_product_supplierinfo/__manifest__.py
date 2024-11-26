@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Product SupplierInfo SpeedUp",
     "summary": "NextERP - Product SupplierInfo SpeedUp",
-    "version": "14.0.1.0.1",
+    "version": "14.0.1.0.2",
     "depends": ["product"],
     "author": "NextERP Romania",
     "website": "https://nexterp.ro",

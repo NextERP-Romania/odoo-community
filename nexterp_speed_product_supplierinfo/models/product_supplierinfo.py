@@ -10,6 +10,13 @@ class ProductProduct(models.Model):
 
     variant_seller_ids = fields.One2many("product.supplierinfo", "product_id")
 
+    def _prepare_sellers(self, params=False):
+        # only return sellers that are linked to the current product variant
+        res = super(ProductProduct, self)._prepare_sellers(params)
+        if self.variant_seller_ids:
+            res = res.filtered(lambda x: x.id in self.variant_seller_ids.ids)
+        return res
+
 
 class SupplierInfo(models.Model):
     _inherit = "product.supplierinfo"
