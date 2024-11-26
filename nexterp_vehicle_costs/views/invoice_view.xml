@@ -42,13 +42,14 @@
                     </button>
                 </div> -->
                 <xpath
-                expr="//field[@name='line_ids']//field[@name='quantity']"
-                position="before"
+                expr="//field[@name='line_ids']//field[@name='balance']"
+                position="after"
             >
                     <field
                     name="fleet_service_type_id"
                     invisible="parent.move_type  not in ('in_invoice', 'in_refund','in_receipt')"
                     column_invisible="parent.move_type not in ('in_invoice', 'in_refund','in_receipt')"
+                    optional="hide"
                 />
                     <!-- <field
                     name="refuel"
@@ -57,10 +58,8 @@
                     column_invisible= "parent.move_type not in ('in_invoice', 'in_refund','in_receipt')"
                 /> -->
                 </xpath>
-                <xpath
-                expr="//field[@name='invoice_line_ids']//field[@name='quantity']"
-                position="before"
-            >
+                <xpath expr="//field[@name='invoice_line_ids']//field[@name='quantity']"
+                position="before">
                 <field
                     name="fleet_service_type_id"
                     invisible="parent.move_type  not in ('in_invoice', 'in_refund','in_receipt')"

@@ -1,6 +1,6 @@
 # Copyright (C) 2014 Forest AND Biomass Romania SA
 # Copyright (C) 2019 OdooERP Romania SRL
-# Copyright (C) 2021 NextERP Romania SRL
+# Copyright (C) 2024 NextERP Romania SRL
 # License AGPL-3.0 or later
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 

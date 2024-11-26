@@ -7,7 +7,7 @@
     "name": "NextERP - Vehicle Cost Management",
     "version": "17.0.1.0.0",
     "category": "Managing vehicles and contracts",
-    "depends": ["fleet", "account_fleet", "l10n_ro_nondeductible_vat"],
+    "depends": ["fleet", "account_fleet", "l10n_ro_nondeductible_vat","stock"],
     "summary": "Manage vehicle costs, add categories for fuel and part, etc.",
     "data": [
         "security/ir.model.access.csv",
@@ -15,7 +15,7 @@
         "views/fleet_view.xml",
         "views/stock_view.xml",
         "views/invoice_view.xml",
-        "views/product_view.xml",
+        "views/fleet_board_view.xml"
     ],
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
