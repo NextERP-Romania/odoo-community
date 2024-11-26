@@ -21,6 +21,7 @@ class StockMove(models.Model):
     cost_ids = fields.One2many(
         "fleet.vehicle.log.services", "stock_move_id", string="Vehicle Costs"
     )
+    
 
     def create_vehicle_cost(self):
         self.ensure_one()

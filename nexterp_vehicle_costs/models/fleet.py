@@ -18,6 +18,22 @@ class FleetVehicle(models.Model):
     owner_id = fields.Many2one("res.partner", "Vehicle Owner", index=True)
     not_deductible = fields.Boolean()
     tax_non_deductible = fields.Many2one("account.tax", "Tax NonDeductible")
+    
+    def return_action_to_open(self):
+        """ This opens the xml view specified in xml_id for the current vehicle """
+        self.ensure_one()
+        xml_id = self.env.context.get('xml_id')
+        if xml_id:
+            groupby = False
+            if xml_id == 'fleet_vehicle_log_services_action' :
+                groupby = 'category_type'
+            res = self.env['ir.actions.act_window']._for_xml_id('fleet.%s' % xml_id)
+            res.update(
+                context=dict(self.env.context, default_vehicle_id=self.id, group_by=groupby),
+                domain=[('vehicle_id', '=', self.id)]
+            )
+            return res
+        return False
 
 
 class FleetServiceType(models.Model):
@@ -39,6 +55,7 @@ class FleetVehicleLogServices(models.Model):
     price_unit = fields.Float()
     move_line_id = fields.Many2one("account.move.line")
     stock_move_id = fields.Many2one("stock.move")
+    category_type =  fields.Selection(related='service_type_id.category',store=True)
 
 
 class FleetVehicleLogContract(models.Model):
@@ -51,6 +68,7 @@ class FleetVehicleLogContract(models.Model):
     move_line_id = fields.Many2one("account.move.line")
     stock_move_id = fields.Many2one("stock.move")
     purchaser_id = fields.Many2one(store=True)
+   
 
     @api.onchange("expiration_date")
     def _onchange_expiration_date(self):
