@@ -1,6 +1,6 @@
 # Copyright (C) 2014 Forest AND Biomass Romania SA
 # Copyright (C) 2019 OdooERP Romania SRL
-# Copyright (C) 2021 NextERP Romania SRL
+# Copyright (C) 2024 NextERP Romania SRL
 # License AGPL-3.0 or later
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 
@@ -27,12 +27,12 @@ class AccountMove(models.Model):
             move.has_vehicle_services = has_vehicle_services
             move.has_vehicle_contracts = has_vehicle_contracts
 
-    def action_post(self):
-        res = super().action_post()
-        for line in self.invoice_line_ids:
-            if line.vehicle_id and not line.cost_ids:
-                line.create_vehicle_cost()
-        return res
+    # def action_post(self):
+    #     res = super().action_post()
+    #     for line in self.invoice_line_ids:
+    #         if line.vehicle_id and not line.cost_ids:
+    #             line.create_vehicle_cost()
+    #     return res
 
     def button_cancel(self):
         res = super().button_cancel()
@@ -62,3 +62,5 @@ class AccountMove(models.Model):
             domain=[("id", "in", veh_costs)],
         )
         return res
+    
+   
