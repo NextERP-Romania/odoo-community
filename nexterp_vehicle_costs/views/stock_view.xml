@@ -23,7 +23,7 @@
             <field name="arch" type="xml">
                 <field name="location_dest_id" position="after">
                     <field name="vehicle_id" />
-                    <field name="fleet_service_type_id" />
+                    <field name="fleet_service_type_id"  domain="[('category', '!=', 'contract')]"/>
                 </field>
             </field>
         </record>
