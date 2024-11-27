@@ -24,9 +24,10 @@ class AccountMoveLine(models.Model):
                     "product_id": self.product_id.id,
                     "quantity": self.quantity,
                     "price_unit": self.price_unit,
+                    "move_line_id": self.id,
                 }
             )
-
+            
         return res
 
     def _compute_need_vehicle(self):

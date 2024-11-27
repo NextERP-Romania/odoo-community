@@ -22,64 +22,40 @@ class StockMove(models.Model):
         "fleet.vehicle.log.services", "stock_move_id", string="Vehicle Costs"
     )
     
+    fleet_service_type_id = fields.Many2one(
+        "fleet.service.type", string="Vehicle Service Type"
+    )
+
+    
 
     def create_vehicle_cost(self):
         self.ensure_one()
 
-        fstype = self.env["fleet.service.type"]
+        # fstype = self.env["fleet.service.type"]
 
-        def _getSubType(domain):
-            res = fstype.search(domain, limit=1)
-            if res:
-                return res
-            elif not res and domain:
-                return fstype.search([domain[0]], limit=1)
-            return res
+        # def _getSubType(domain):
+        #     res = fstype.search(domain, limit=1)
+        #     if res:
+        #         return res
+        #     elif not res and domain:
+        #         return fstype.search([domain[0]], limit=1)
+        #     return res
 
-        subtype = _getSubType([("category", "=", "service")])
+        subtype = self.fleet_service_type_id
         cost_type = "services"
         model = self.env["fleet.vehicle.log.services"]
 
-        if self.refuel:
-            subtype = _getSubType(
-                [
-                    ("category", "=", "fuel"),
-                    "|",
-                    ("name", "=", "Refueling"),
-                    ("name", "=", "Realimentare"),
-                ]
-            )
+        if self.fleet_service_type_id.category == "Contract":
+            cost_type = "contract"
+            model = self.env["fleet.vehicle.log.contract"]
+        elif self.fleet_service_type_id.name == "Realimentare":
             cost_type = "fuel"
             model = self.env["fleet.vehicle.log.services"]
-            if not subtype:
-                raise UserError(
-                    _(
-                        "Tip cheltuiala combustibil inexistent."
-                        "Adaugati unul in Configurari/Tipuri de servicii "
-                        "<Combustibil>\nEroare la %s"
-                    )
-                    % self.name
-                )
         else:
-            subtype = _getSubType(
-                [
-                    ("category", "=", "parts"),
-                    "|",
-                    ("name", "=", "Repairing"),
-                    ("name", "=", "Reparare"),
-                ]
-            )
-            cost_type = "parts"
+            cost_type = "services"
             model = self.env["fleet.vehicle.log.services"]
-            if not subtype:
-                raise UserError(
-                    _(
-                        "Tip cheltuiala piese inexistent."
-                        "Adaugati unul in Configurari/Tipuri de servicii "
-                        "<Piese>\nEroare la %s"
-                    )
-                    % self.name
-                )
+           
+           
 
         for svl in self.stock_valuation_layer_ids:
             sub_cost = {
@@ -91,10 +67,15 @@ class StockMove(models.Model):
                 "vendor_id": self.partner_id.id,
                 "date": self.date,
                 "notes": self.name,
+                
             }
+
             if cost_type == "fuel":
                 sub_cost["liter"] = -svl.quantity
-
+                sub_cost['service_type_id'] = self.fleet_service_type_id.id
+            elif cost_type == "services":
+                sub_cost['service_type_id'] = self.fleet_service_type_id.id
+          
             sub_cost["quantity"] = -svl.quantity
             sub_cost["price_unit"] = svl.unit_cost
             sub_cost["stock_move_id"] = self.id
