@@ -64,6 +64,7 @@
                     name="fleet_service_type_id"
                     invisible="parent.move_type  not in ('in_invoice', 'in_refund','in_receipt')"
                     column_invisible="parent.move_type not in ('in_invoice', 'in_refund','in_receipt')"
+                    domain="[('category', '!=', 'contract')]"
                 />
 
                 </xpath>
