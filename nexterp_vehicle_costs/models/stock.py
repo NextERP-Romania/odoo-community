@@ -4,8 +4,7 @@
 # License AGPL-3.0 or later
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 
-from odoo import _, fields, models
-from odoo.exceptions import UserError
+from odoo import fields, models
 
 
 class StockMove(models.Model):
@@ -21,12 +20,10 @@ class StockMove(models.Model):
     cost_ids = fields.One2many(
         "fleet.vehicle.log.services", "stock_move_id", string="Vehicle Costs"
     )
-    
+
     fleet_service_type_id = fields.Many2one(
         "fleet.service.type", string="Vehicle Service Type"
     )
-
-    
 
     def create_vehicle_cost(self):
         self.ensure_one()
@@ -54,8 +51,6 @@ class StockMove(models.Model):
         else:
             cost_type = "services"
             model = self.env["fleet.vehicle.log.services"]
-           
-           
 
         for svl in self.stock_valuation_layer_ids:
             sub_cost = {
@@ -67,15 +62,14 @@ class StockMove(models.Model):
                 "vendor_id": self.partner_id.id,
                 "date": self.date,
                 "notes": self.name,
-                
             }
 
             if cost_type == "fuel":
                 sub_cost["liter"] = -svl.quantity
-                sub_cost['service_type_id'] = self.fleet_service_type_id.id
+                sub_cost["service_type_id"] = self.fleet_service_type_id.id
             elif cost_type == "services":
-                sub_cost['service_type_id'] = self.fleet_service_type_id.id
-          
+                sub_cost["service_type_id"] = self.fleet_service_type_id.id
+
             sub_cost["quantity"] = -svl.quantity
             sub_cost["price_unit"] = svl.unit_cost
             sub_cost["stock_move_id"] = self.id

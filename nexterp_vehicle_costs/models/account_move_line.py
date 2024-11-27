@@ -12,7 +12,9 @@ class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
     fleet_service_type_id = fields.Many2one(
-        "fleet.service.type", string="Vehicle Service Type",  domain="[('category','not in',('contract'))]"
+        "fleet.service.type",
+        string="Vehicle Service Type",
+        domain="[('category','not in',('contract'))]",
     )
 
     def _prepare_fleet_log_service(self):
@@ -25,9 +27,10 @@ class AccountMoveLine(models.Model):
                     "quantity": self.quantity,
                     "price_unit": self.price_unit,
                     "move_line_id": self.id,
+                    "description": self.name,
                 }
             )
-            
+
         return res
 
     def _compute_need_vehicle(self):
