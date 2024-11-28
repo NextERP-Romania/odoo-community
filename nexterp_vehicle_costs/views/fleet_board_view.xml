@@ -5,8 +5,7 @@
         <field name="model">fleet.vehicle.log.report</field>
         <field name="arch" type="xml">
             <search string="Fleet Costs Analysis">
-                <!-- <field name="name" filter_domain="[('name', 'ilike', self)]"/>
-                <field name="driver_id" filter_domain="[('driver_id', 'ilike', self)]"/> -->
+               
                 <field name="date" />
                 <filter
                     string="Service"
@@ -24,10 +23,10 @@
                     date="date"
                     default_period="this_year"
                 />
-                <!-- <group expand="1" string="Group By">
+                <group expand="1" string="Group By">
                     <filter string="Vehicle" name="vehicle" context="{'group_by':'vehicle_id'}"/>
-                    <filter string="Driver" name="driver" context="{'group_by':'driver_id'}"/>
-                </group> -->
+                    <filter string="Vendor" name="driver" context="{'group_by':'purchaser_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -116,7 +115,7 @@
 
     <menuitem
         id="fleet_log_reporting_menu"
-        name="Costs Log"
+        name="Costs-Quantity Analysis"
         parent="fleet.menu_fleet_reporting"
         action="fleet_log_reporting_action"
         sequence="1"
