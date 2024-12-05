@@ -1,6 +1,6 @@
 # odoo-community
 
-Modules for Odoo Community
+Modules for Odoo Community 
 
 <!-- prettier-ignore-start -->
 [//]: # (addons)
