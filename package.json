@@ -1,0 +1,19 @@
+{
+  "name": "l10n-romania-enterprise",
+  "version": "1.0.0",
+  "description": "Odoo Modules for Odoo Romania Enterprise",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NextERP-Romania/l10n-romania-enterprise.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NextERP-Romania/l10n-romania-enterprise/issues"
+  },
+  "homepage": "https://github.com/NextERP-Romania/l10n-romania-enterprise#readme"
+}
