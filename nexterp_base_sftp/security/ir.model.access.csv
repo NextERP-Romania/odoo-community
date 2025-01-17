@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+sftp_server_admin,sftp_server-admin,nexterp_base_sftp.model_sftp_server,base.group_system,1,1,1,1
+sftp_server_user,sftp_server_user,nexterp_base_sftp.model_sftp_server,,1,0,0,0
