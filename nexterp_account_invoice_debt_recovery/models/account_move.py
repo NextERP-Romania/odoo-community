@@ -2,7 +2,7 @@
 # License OPL-1.0 or later
 # (https://www.odoo.com/documentation/user/17.0/legal/licenses/licenses.html#).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class AccountMove(models.Model):
@@ -15,6 +15,21 @@ class AccountMove(models.Model):
         selection_add=[("debt_recovery", "Debt Recovery")],
         ondelete={"debt_recovery": "cascade"},
     )
+    debt_state = fields.Selection(
+        selection=[("notification", "Notification"), ("lawyer", "Lawyer")],
+    )
+    debt_case_date = fields.Date("Case Date")
+    debt_law = fields.Char("Law Firm")
+    debt_amount = fields.Monetary("Amount in Litigation")
+    debt_commission = fields.Monetary("Commission (%)")
+    debt_penalties = fields.Monetary("Penalties (%)")
+    debt_company = fields.Boolean(compute="_compute_debt_company")
+
+    @api.depends("company_id")
+    @api.onchange("company_id")
+    def _compute_debt_company(self):
+        for record in self:
+            record.debt_company = record.company_id.country_code == "RO"
 
     def action_mark_as_debt_recovery(self):
         self.ensure_one()

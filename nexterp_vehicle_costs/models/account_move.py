@@ -62,5 +62,3 @@ class AccountMove(models.Model):
             domain=[("id", "in", veh_costs)],
         )
         return res
-    
-   
