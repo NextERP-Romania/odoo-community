@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <button id="account_invoice_payment_btn" position="attributes">
                 <attribute name="invisible">
-                    not debt_company and (state != 'posted' or payment_state not in ['not_paid', 'partial', 'debt_recovery'] or move_type == 'entry')
+                    debt_company and (state != 'posted' or payment_state not in ['not_paid', 'partial', 'debt_recovery'] or move_type == 'entry')
                 </attribute>
             </button>
             <button id="account_invoice_payment_btn" position="after">
@@ -16,7 +16,7 @@
                     id="account_invoice_debt_recovery"
                     type="object"
                     class="oe_highlight"
-                    invisible="not debt_company and (debt_recovery != False or state != 'posted' or payment_state not in ['not_paid', 'partial'] or move_type != 'out_invoice')"
+                    invisible="debt_company and (debt_recovery != False or state != 'posted' or payment_state not in ['not_paid', 'partial'] or move_type != 'out_invoice')"
                     string="Mark as Debt Recovery"
                     groups="account.group_account_invoice"
                 />
@@ -60,6 +60,18 @@
                     />
                 </page>
             </page>
+        </field>
+    </record>
+
+    <record id="view_out_invoice_tree_inherit_debt" model="ir.ui.view">
+        <field name="name">account.move.tree.inherit.debt</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="debt_state" optional="hide"/>
+                <field name="debt_case_date" optional="hide"/>
+            </field>
         </field>
     </record>
 </odoo>
