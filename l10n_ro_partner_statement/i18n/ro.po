@@ -1,0 +1,70 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * customer_activity_statement
+#
+# Translators:
+# Dorin Hongu <dhongu@gmail.com>, 2018
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 11.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-03-16 08:14+0000\n"
+"PO-Revision-Date: 2020-09-23 17:00+0000\n"
+"Last-Translator: Dorin Hongu <dhongu@gmail.com>\n"
+"Language-Team: Romanian (https://www.transifex.com/oca/teams/23907/ro/)\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;\n"
+"X-Generator: Weblate 3.10\n"
+
+#. module: partner_statement
+#. odoo-python
+#: code:addons/partner_statement/report/detailed_activity_statement_xlsx.py:0
+#: code:addons/partner_statement/report/outstanting_statement_xlsx.py:0
+#, python-format
+msgid "%(payable)sStatement up to %(end)s in %(currency)s"
+msgstr "Extras %(payable)s până la %(end)s în %(currency)s"
+
+#. module: l10n_ro_partner_statement
+#. odoo-python
+#: model_terms:ir.ui.view,arch_db:l10n_ro_partner_statement.outstanding_balance
+#, python-format
+msgid "Balance"
+msgstr "Sold"
+
+#. module: l10n_ro_partner_statement
+#. odoo-python
+#: model_terms:ir.ui.view,arch_db:l10n_ro_partner_statement.outstanding_balance
+#, python-format
+msgid "Date"
+msgstr "Dată"
+
+#. module: l10n_ro_partner_statement
+#. odoo-python
+#: model_terms:ir.ui.view,arch_db:l10n_ro_partner_statement.outstanding_balance
+#, python-format
+msgid "Due Date"
+msgstr "Data scadentă"
+
+#. module: l10n_ro_partner_statement
+#. odoo-python
+#: model_terms:ir.ui.view,arch_db:l10n_ro_partner_statement.outstanding_balance
+#, python-format
+msgid "Open Amount"
+msgstr "Suma restantă"
+
+#. module: l10n_ro_partner_statement
+#. odoo-python
+#: model_terms:ir.ui.view,arch_db:l10n_ro_partner_statement.outstanding_balance
+#, python-format
+msgid "Original"
+msgstr "Valoare factură"
+
+#. module: l10n_ro_partner_statement
+#. odoo-python
+#: model_terms:ir.ui.view,arch_db:l10n_ro_partner_statement.outstanding_balance
+#, python-format
+msgid "Reference number"
+msgstr "Număr factură"
