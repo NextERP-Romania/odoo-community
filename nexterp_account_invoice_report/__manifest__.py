@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Account Invoice Report",
     "summary": """NextERP - Account Invoice Report""",
-    "version": "14.0.1.0.1",
+    "version": "14.0.1.0.0",
     "category": "Invoicing",
     "depends": ["account"],
     "data": ["views/account_invoice_report.xml"],
