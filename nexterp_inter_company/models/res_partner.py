@@ -5,6 +5,7 @@
 from odoo import fields, models
 from odoo.tools.sql import column_exists, create_column
 
+
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
@@ -20,7 +21,9 @@ class ResPartner(models.Model):
     def _compute_is_inter_company(self):
         for record in self:
             is_inter_company = False
-            record_companies = self.env["res.company"].search([('partner_id', '=', record.id)])
+            record_companies = self.env["res.company"].search(
+                [("partner_id", "=", record.id)]
+            )
             if record_companies:
                 is_inter_company = True
             record.is_inter_company = is_inter_company
