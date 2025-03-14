@@ -16,6 +16,7 @@ class AccountMove(models.Model):
         ondelete={"debt_recovery": "cascade"},
     )
     debt_state = fields.Selection(
+        string="Debt Status",
         selection=[("notification", "Notification"), ("lawyer", "Lawyer")],
     )
     debt_case_date = fields.Date("Case Date")
