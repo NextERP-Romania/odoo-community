@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="cius_DeliveryParty" inherit_id="account_edi_ubl_cii.ubl_20_DeliveryType">
+        <xpath expr="//*[local-name()='DeliveryLocation']" 
+            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+            xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+            position="after">
+            <cac:DeliveryParty>
+                <cac:PartyName>
+                    <t t-set="vals" t-value="vals.get('delivery_location_vals', {}).get('delivery_address_vals', {})"/>
+                    <cbc:Name t-esc="vals.get('partner_name', '')"/>
+                </cac:PartyName>
+            </cac:DeliveryParty>
+        </xpath>
+    </template>
+</odoo>
