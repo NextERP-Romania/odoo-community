@@ -66,24 +66,33 @@
     <record id="view_out_invoice_tree_inherit_debt" model="ir.ui.view">
         <field name="name">account.move.tree.inherit.debt</field>
         <field name="model">account.move</field>
-        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="inherit_id" ref="account.view_out_invoice_tree" />
         <field name="arch" type="xml">
             <field name="state" position="after">
-                <field name="debt_state" optional="hide"/>
-                <field name="debt_case_date" optional="hide"/>
+                <field name="debt_state" optional="hide" />
+                <field name="debt_case_date" optional="hide" />
             </field>
         </field>
     </record>
     <record id="view_out_invoice_search_inherit_debt" model="ir.ui.view">
         <field name="name">account.move.search.inherit.debt</field>
         <field name="model">account.move</field>
-        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="inherit_id" ref="account.view_account_invoice_filter" />
         <field name="arch" type="xml">
             <filter name="status" position="after">
-                <filter string="Payment Status" name="groupy_by_payment_state" domain="[]" context="{'group_by': 'payment_state'}"/>
+                <filter
+                    string="Payment Status"
+                    name="groupy_by_payment_state"
+                    domain="[]"
+                    context="{'group_by': 'payment_state'}"
+                />
             </filter>
             <filter name="late" position="after">
-                <filter name="debt_recovery" string="Debt Recovery" domain="[('debt_recovery', '=', True)]"/>
+                <filter
+                    name="debt_recovery"
+                    string="Debt Recovery"
+                    domain="[('debt_recovery', '=', True)]"
+                />
             </filter>
         </field>
     </record>

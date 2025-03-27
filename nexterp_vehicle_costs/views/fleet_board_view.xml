@@ -53,7 +53,7 @@
         <field name="name">fleet.vehicle.log.report.view.tree</field>
         <field name="model">fleet.vehicle.log.report</field>
         <field name="arch" type="xml">
-            <tree string="Fleet Costs Analysis" create="0">
+            <tree create="0">
                 <field name="vehicle_id" />
                 <field name="date" optional="show" />
                 <field name="amount" optional="show" sum="Sum of Cost" />

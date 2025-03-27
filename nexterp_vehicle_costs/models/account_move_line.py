@@ -33,10 +33,11 @@ class AccountMoveLine(models.Model):
         return res
 
     def _compute_need_vehicle(self):
-        super()._compute_need_vehicle()
+        res = super()._compute_need_vehicle()
         for s in self:
             if s.fleet_service_type_id:
                 s.need_vehicle = True
+        return res
 
     def cancel_vehicle_cost(self):
         for s in self.cost_ids:
