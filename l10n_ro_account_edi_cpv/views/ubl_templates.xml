@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="ubl_20_InvoiceLineTypeCPV"
+        inherit_id="account_edi_ubl_cii.ubl_20_InvoiceLineType"
+    >
+        <xpath expr="//*[local-name()='SellersItemIdentification']" position="after">
+            <t t-if="item_vals.get('cpv')">
+                <cac:CommodityClassification
+                    xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+                >
+                    <cbc:ItemClassificationCode
+                        xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+                        t-esc="item_vals.get('cpv')"
+                        t-att-listID="item_vals['cpv_list']"
+                    />
+                </cac:CommodityClassification>
+            </t>
+        </xpath>
+    </template>
+</odoo>
