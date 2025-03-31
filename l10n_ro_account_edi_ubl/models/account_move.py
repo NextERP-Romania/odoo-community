@@ -2,20 +2,13 @@
 # Copyright (C) 2022 NextERP Romania
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from datetime import timedelta
 import logging
+from datetime import timedelta
 
-import io
 import requests
-import zipfile
-
-from lxml import etree
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-from odoo.addons.l10n_ro_efactura.models.ciusro_document import make_efactura_request
-from odoo.addons.l10n_ro_efactura.models.ciusro_document import NS_HEADER
 
 _logger = logging.getLogger(__name__)
 
@@ -110,8 +103,15 @@ class AccountMove(models.Model):
                     readonly_fields = True
             else:
                 if invoice.move_type in ("in_invoice", "in_refund"):
-                    show_fields = True if invoice.company_id.country_code == 'RO' else False
-                    readonly_fields = True if invoice.state == "posted" and invoice.company_id.country_code == 'RO' else False
+                    show_fields = (
+                        True if invoice.company_id.country_code == "RO" else False
+                    )
+                    readonly_fields = (
+                        True
+                        if invoice.state == "posted"
+                        and invoice.company_id.country_code == "RO"
+                        else False
+                    )
             invoice.l10n_ro_show_edi_fields = show_fields
             invoice.l10n_ro_edi_fields_readonly = readonly_fields
 
@@ -197,7 +197,7 @@ class AccountMove(models.Model):
             if not move.l10n_ro_edi_previous_transaction:
                 move.l10n_ro_edi_previous_transaction = old_transaction
             elif old_transaction not in move.l10n_ro_edi_previous_transaction:
-                move.l10n_ro_edi_previous_transaction += ", %s" % old_transaction
+                move.l10n_ro_edi_previous_transaction += f", {old_transaction}"
 
     def _l10n_ro_edi_fetch_invoice_sending_documents(self):
         """
@@ -277,21 +277,34 @@ class AccountMove(models.Model):
             template, force_synchronous, allow_fallback_pdf, bypass_download, **kwargs
         )
         return res
-    
+
     def template_send_email_invoice(self):
         template = self.env.ref(
             "account.email_template_edi_invoice",
             raise_if_not_found=False,
         )
         return template
-    
+
     def send_email_invoice_anaf(self):
         template = self.template_send_email_invoice()
-        company_ids = self.env['res.company'].sudo().search([('l10n_ro_edi_residence', '!=', False)]) 
+        company_ids = (
+            self.env["res.company"]
+            .sudo()
+            .search([("l10n_ro_edi_residence", "!=", False)])
+        )
         for company in company_ids:
             days = company.l10n_ro_edi_residence
             date = fields.Date.today() - timedelta(days=days)
-            invoices = self.env['account.move'].search([('l10n_ro_edi_state', '=', False), ('move_type', '!=', 'entry'), ('state', '=', ('posted')), ('invoice_date', '<=', date), ('country_code', '=', 'RO'), ('company_id', '=', company.id)])
+            invoices = self.env["account.move"].search(
+                [
+                    ("l10n_ro_edi_state", "=", False),
+                    ("move_type", "!=", "entry"),
+                    ("state", "=", ("posted")),
+                    ("invoice_date", "<=", date),
+                    ("country_code", "=", "RO"),
+                    ("company_id", "=", company.id),
+                ]
+            )
             composer = (
                 self.env["account.move.send"]
                 .with_context(active_model="account.move", active_ids=invoices.ids)
@@ -304,8 +317,22 @@ class AccountMove(models.Model):
                 )
             )
             composer.action_send_and_print(force_synchronous=False)
-    
+
     def fetch_invoice_anaf(self):
-        invoices = self.env['account.move'].search([('l10n_ro_edi_state', '=', 'invoice_sending'), ('country_code', '=', 'RO')])
+        invoices = self.env["account.move"].search(
+            [("l10n_ro_edi_state", "=", "invoice_sending"), ("country_code", "=", "RO")]
+        )
         if invoices:
             invoices._l10n_ro_edi_fetch_invoice_sending_documents()
+
+    def _is_l10n_ro_b2c(self):
+        self.ensure_one()
+        partner = self.partner_id.commercial_partner_id
+        return partner.country_id.code == "RO" and not partner.is_company
+
+    def _l10n_ro_edi_send_invoice(self, xml_data):
+        self.ensure_one()
+        # Add context in case of b2c invoices
+        if self._is_l10n_ro_b2c():
+            self = self.with_context(l10n_ro_edi_b2c=True)
+        return super()._l10n_ro_edi_send_invoice(xml_data)
