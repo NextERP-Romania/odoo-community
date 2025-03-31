@@ -16,17 +16,11 @@ Romania - eFactura Account EDI UBL
 .. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fl10n--romania-lightgray.png?logo=github
-    :target: https://github.com/OCA/l10n-romania/tree/17.0/l10n_ro_account_edi_ubl
-    :alt: OCA/l10n-romania
-.. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/l10n-romania-17-0/l10n-romania-17-0-l10n_ro_account_edi_ubl
-    :alt: Translate me on Weblate
-.. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/l10n-romania&target_branch=17.0
-    :alt: Try me on Runboat
+.. |badge3| image:: https://img.shields.io/badge/github-NextERP--Romania%2Fodoo--community-lightgray.png?logo=github
+    :target: https://github.com/NextERP-Romania/odoo-community/tree/17.0/l10n_ro_account_edi_ubl
+    :alt: NextERP-Romania/odoo-community
 
-|badge1| |badge2| |badge3| |badge4| |badge5|
+|badge1| |badge2| |badge3|
 
 The module will generate E-Invoice XML files according to ANAF
 E-Invoicing service.
@@ -39,10 +33,10 @@ E-Invoicing service.
 Configuration
 =============
 
--  Go to Accounting -> Configuration -> Journals, and set up the
-   "Electronic invoicing" option to "UBL 2.1 (CIUS-RO)"
--  Go to Settings -> Romania -> Configure ANAF sync and create a sync
-   config.
+- Go to Accounting -> Configuration -> Journals, and set up the
+  "Electronic invoicing" option to "UBL 2.1 (CIUS-RO)"
+- Go to Settings -> Romania -> Configure ANAF sync and create a sync
+  config.
 
 \*\* If you don't have any ANAF sync config, you can still generate the
 XML files, but you will have to send them manually to ANAF. \*\* If you
@@ -56,10 +50,10 @@ Pentru verificare XMl se poate utiliza: https://www.anaf.ro/uploadxmi/
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/OCA/l10n-romania/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/NextERP-Romania/odoo-community/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/l10n-romania/issues/new?body=module:%20l10n_ro_account_edi_ubl%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/NextERP-Romania/odoo-community/issues/new?body=module:%20l10n_ro_account_edi_ubl%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -75,29 +69,19 @@ Authors
 Contributors
 ------------
 
--  `Terrabit <https://www.terrabit.ro>`__:
+- `Terrabit <https://www.terrabit.ro>`__:
 
-   -  Dorin Hongu <dhongu@gmail.com>
+  - Dorin Hongu <dhongu@gmail.com>
 
--  `NextERP Romania <https://www.nexterp.ro>`__:
+- `NextERP Romania <https://www.nexterp.ro>`__:
 
-   -  Fekete Mihai <feketemihai@nexterp.ro>
+  - Fekete Mihai <feketemihai@nexterp.ro>
 
 Do not contact contributors directly about support or help with
 technical issues.
 
 Maintainers
 -----------
-
-This module is maintained by the OCA.
-
-.. image:: https://odoo-community.org/logo.png
-   :alt: Odoo Community Association
-   :target: https://odoo-community.org
-
-OCA, or the Odoo Community Association, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
 
 .. |maintainer-dhongu| image:: https://github.com/dhongu.png?size=40px
     :target: https://github.com/dhongu
@@ -106,10 +90,10 @@ promote its widespread use.
     :target: https://github.com/feketemihai
     :alt: feketemihai
 
-Current `maintainers <https://odoo-community.org/page/maintainer-role>`__:
+Current maintainers:
 
 |maintainer-dhongu| |maintainer-feketemihai| 
 
-This module is part of the `OCA/l10n-romania <https://github.com/OCA/l10n-romania/tree/17.0/l10n_ro_account_edi_ubl>`_ project on GitHub.
+This module is part of the `NextERP-Romania/odoo-community <https://github.com/NextERP-Romania/odoo-community/tree/17.0/l10n_ro_account_edi_ubl>`_ project on GitHub.
 
-You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
+You are welcome to contribute.

@@ -3,19 +3,19 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import io
-import requests
 import zipfile
 
+import requests
 from lxml import etree
 
 from odoo import api, models
-
-NS_UPLOAD = {"ns": "mfp:anaf:dgti:spv:respUploadFisier:v1"}
 
 from odoo.addons.l10n_ro_efactura.models.ciusro_document import (
     NS_HEADER,
     make_efactura_request,
 )
+
+NS_UPLOAD = {"ns": "mfp:anaf:dgti:spv:respUploadFisier:v1"}
 
 
 class L10nRoEdiDocument(models.Model):
@@ -75,21 +75,37 @@ class L10nRoEdiDocument(models.Model):
         :param move_type: ``move_type`` field from ``account.move`` object, used for the request parameter
         :return: Result dictionary -> {'error': <str>} | {'key_loading': <str>}
         """
-        if move_type in ["out_invoice", "out_refund"]:
+        is_l10n_ro_edi_b2c = self.env.context.get("l10n_ro_edi_b2c")
+        if move_type in ["out_invoice", "out_refund"] and not is_l10n_ro_edi_b2c:
             return super()._request_ciusro_send_invoice(company, xml_data, move_type)
-        send_params = {
-            "standard": "UBL" if move_type == "in_invoice" else "CN",
-            "cif": company.vat.replace("RO", ""),
-            "autofactura": "DA",
-        }
-        result = make_efactura_request(
-            session=requests,
-            company=company,
-            endpoint="upload",
-            method="POST",
-            params=send_params,
-            data=xml_data,
-        )
+        if is_l10n_ro_edi_b2c:
+            # B2C invoices are sent as B2B invoices
+            result = make_efactura_request(
+                session=requests,
+                company=company,
+                endpoint="uploadb2c",
+                method="POST",
+                params={
+                    "standard": "UBL" if move_type == "out_invoice" else "CN",
+                    "cif": company.vat.replace("RO", ""),
+                },
+                data=xml_data,
+            )
+        else:
+            # Autofacturi
+            send_params = {
+                "standard": "UBL" if move_type == "in_invoice" else "CN",
+                "cif": company.vat.replace("RO", ""),
+                "autofactura": "DA",
+            }
+            result = make_efactura_request(
+                session=requests,
+                company=company,
+                endpoint="upload",
+                method="POST",
+                params=send_params,
+                data=xml_data,
+            )
         if "error" in result:
             return result
         root = etree.fromstring(result["content"])
