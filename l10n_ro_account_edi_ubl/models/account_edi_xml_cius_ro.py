@@ -3,11 +3,11 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from base64 import b64decode, b64encode
-from odoo.exceptions import UserError
 
 import requests
 
 from odoo import _, models
+from odoo.exceptions import UserError
 
 
 class AccountEdiXmlCIUSRO(models.AbstractModel):
@@ -67,9 +67,9 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
         vals["name"] = vals["name"][:100]
         if vals["classified_tax_category_vals"]:
             if vals["classified_tax_category_vals"][0]["tax_category_code"] == "AE":
-                vals["classified_tax_category_vals"][0][
-                    "tax_exemption_reason_code"
-                ] = ""
+                vals["classified_tax_category_vals"][0]["tax_exemption_reason_code"] = (
+                    ""
+                )
                 vals["classified_tax_category_vals"][0]["tax_exemption_reason"] = ""
         return vals
 
@@ -149,12 +149,16 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
     def _import_fill_invoice_line_form(self, tree, invoice_line, qty_factor):
         vat_on_payment = False
         if invoice_line.partner_id.l10n_ro_vat_on_payment:
-            invoice_line.move_id.fiscal_position_id = invoice_line.partner_id.property_account_position_id
+            invoice_line.move_id.fiscal_position_id = (
+                invoice_line.partner_id.property_account_position_id
+            )
             vat_on_payment = True
         res = super()._import_fill_invoice_line_form(tree, invoice_line, qty_factor)
         if vat_on_payment:
-            new_tax = invoice_line.move_id.fiscal_position_id.map_tax(invoice_line.tax_ids)
-            invoice_line.tax_ids = [(5,)] 
+            new_tax = invoice_line.move_id.fiscal_position_id.map_tax(
+                invoice_line.tax_ids
+            )
+            invoice_line.tax_ids = [(5,)]
             invoice_line.tax_ids = [(4, new_tax.id)]
 
         tax_nodes = tree.findall(".//{*}Item/{*}ClassifiedTaxCategory/{*}ID")
@@ -175,7 +179,7 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
                 )
                 if tax and not invoice_line.tax_ids:
                     invoice_line.tax_ids = [(5,)]  # Șterge toate valorile existente
-                    invoice_line.tax_ids = [(4, tax.id)] # Adaugă noua taxă
+                    invoice_line.tax_ids = [(4, tax.id)]  # Adaugă noua taxă
         return res
 
     def _import_fill_invoice_line_taxes(
@@ -184,9 +188,9 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
         if not invoice_line.account_id:
             invoice_line.account_id = invoice_line.move_id.journal_id.default_account_id
         if not inv_line_vals.get("account_id"):
-            inv_line_vals[
-                "account_id"
-            ] = invoice_line.move_id.journal_id.default_account_id.id
+            inv_line_vals["account_id"] = (
+                invoice_line.move_id.journal_id.default_account_id.id
+            )
         return super()._import_fill_invoice_line_taxes(
             tax_nodes, invoice_line, inv_line_vals, logs
         )
@@ -209,10 +213,25 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
         country_code=False,
         peppol_eas=False,
         peppol_endpoint=False,
+        street=False,
+        street2=False,
+        city=False,
+        zip_code=False,
     ):
         """Update method to set the partner as a company, not individual"""
         res = super()._import_retrieve_and_fill_partner(
-            invoice, name, phone, mail, vat, country_code, peppol_eas, peppol_endpoint
+            invoice,
+            name,
+            phone,
+            mail,
+            vat,
+            country_code,
+            peppol_eas,
+            peppol_endpoint,
+            street,
+            street2,
+            city,
+            zip_code,
         )
         if country_code == "RO":
             if not invoice.partner_id.is_company and name and vat:
@@ -241,9 +260,7 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
         attachments = self.env["ir.attachment"].search(
             [("res_model", "=", invoice._name), ("res_id", "in", invoice.ids)]
         )
-        attachment = attachments.filtered(
-            lambda x: ".xml" in x.name
-        )[0]
+        attachment = attachments.filtered(lambda x: ".xml" in x.name)[0]
         if not attachment:
             return False
 
@@ -278,21 +295,19 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
                 "mimetype": "application/pdf",
             }
 
-            attachment_pdf = (
-                self.env["ir.attachment"].sudo().create(attachment_value)
-            )
+            attachment_pdf = self.env["ir.attachment"].sudo().create(attachment_value)
             if attachments:
                 invoice.with_context(no_new_invoice=True).message_post(
                     attachment_ids=attachment_pdf.ids
                 )
         return res
-    
+
     def _get_partner_address_vals(self, partner):
         address_vals = super()._get_partner_address_vals(partner)
         # Adaugă numele partenerului
-        address_vals['partner_name'] = partner.name
+        address_vals["partner_name"] = partner.name
         return address_vals
-    
+
     def _get_partner_party_vals(self, partner, role):
         # EXTENDS account.edi.xml.ubl_21
         vals = super()._get_partner_party_vals(partner, role)
@@ -310,20 +325,28 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
         for vals in vals_list:
             # /!\ For Romanian companies, the company_id can be with or without country code.
             if partner.country_id.code == "RO":
-                if ((partner.vat and not partner.vat.upper().startswith("RO"))
-                    or not partner.vat
+                if (
+                    partner.vat and not partner.vat.upper().startswith("RO")
+                ) or not partner.vat:
+                    vals["tax_scheme_vals"] = {"id": "!= VAT"}
+                if (
+                    not partner.is_company
+                    and not partner.l10n_ro_edi_ubl_no_send_cnp
+                    and not partner.vat
                 ):
-                    vals["tax_scheme_vals"] = {'id': "!= VAT"}
-                if not partner.is_company and not partner.l10n_ro_edi_ubl_no_send_cnp and not partner.vat:
                     vals["company_id"] = "0000000000000"
                 if not partner.is_company and partner.l10n_ro_edi_ubl_no_send_cnp:
                     vals["company_id"] = "0000000000000"
         return vals_list
-    
+
     def _get_partner_party_legal_entity_vals_list(self, partner):
         val_list = super()._get_partner_party_legal_entity_vals_list(partner)
         partner = partner.commercial_partner_id
-        if not partner.is_company and not partner.l10n_ro_edi_ubl_no_send_cnp and not partner.vat:
+        if (
+            not partner.is_company
+            and not partner.l10n_ro_edi_ubl_no_send_cnp
+            and not partner.vat
+        ):
             for vals in val_list:
                 if vals.get("commercial_partner") == partner:
                     vals["company_id"] = "0000000000000"
@@ -332,18 +355,18 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
                 if vals.get("commercial_partner") == partner:
                     vals["company_id"] = "0000000000000"
         return val_list
-    
+
     def split_string(self, string):
         return [string[i : i + 100] for i in range(0, len(string), 100)]
-    
+
     def _export_invoice_constraints(self, invoice, vals):
         # EXTENDS 'account_edi_ubl_cii'
         constraints = super()._export_invoice_constraints(invoice, vals)
-        partner = vals['customer']
+        partner = vals["customer"]
         if not partner.is_company:
-                constraints.pop("ciusro_customer_tax_identifier_required", False)
+            constraints.pop("ciusro_customer_tax_identifier_required", False)
         return constraints
-    
+
 
 class AccountEdiCommon(models.AbstractModel):
     _inherit = "account.edi.common"
