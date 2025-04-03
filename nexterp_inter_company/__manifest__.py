@@ -7,12 +7,13 @@
     "summary": """
         This module helps to identify if a record is inter
         company transaction or not.""",
-    "version": "17.0.1.0.0",
+    "version": "17.0.1.0.1",
     "category": "Base",
     "depends": ["base"],
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "support": "odoo_apps@nexterp.ro",
+    "data": ["views/res_partner.xml"],
     "installable": True,
     "auto_install": False,
     "development_status": "Mature",
