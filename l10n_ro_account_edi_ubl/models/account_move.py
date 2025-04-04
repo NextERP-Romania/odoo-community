@@ -93,7 +93,7 @@ class AccountMove(models.Model):
             if key_loading_docs:
                 invoice.l10n_ro_edi_transaction = key_loading_docs[0].key_loading
 
-    @api.depends("l10n_ro_edi_document_ids", "l10n_ro_edi_download")
+    @api.depends("l10n_ro_edi_document_ids", "state", "l10n_ro_edi_download")
     def _compute_l10n_ro_show_edi_fields(self):
         for invoice in self:
             show_fields = readonly_fields = False
@@ -102,16 +102,13 @@ class AccountMove(models.Model):
                     show_fields = True
                     readonly_fields = True
             else:
-                if invoice.move_type in ("in_invoice", "in_refund"):
-                    show_fields = (
-                        True if invoice.company_id.country_code == "RO" else False
-                    )
-                    readonly_fields = (
-                        True
-                        if invoice.state == "posted"
-                        and invoice.company_id.country_code == "RO"
-                        else False
-                    )
+                if (
+                    invoice.move_type in ("in_invoice", "in_refund")
+                    and not invoice.is_l10n_ro_autoinvoice()
+                    and invoice.company_id.country_code == "RO"
+                ):
+                    show_fields = True
+                    readonly_fields = True if invoice.state == "posted" else False
             invoice.l10n_ro_show_edi_fields = show_fields
             invoice.l10n_ro_edi_fields_readonly = readonly_fields
 
