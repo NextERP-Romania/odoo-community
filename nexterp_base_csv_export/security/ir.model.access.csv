@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+base_csv_export_user,base_csv_export_user,nexterp_base_csv_export.model_base_csv_export,,1,1,1,1
