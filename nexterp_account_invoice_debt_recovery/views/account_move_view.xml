@@ -98,7 +98,7 @@
     </record>
         <record id="action_mark_as_debt_recovery" model="ir.actions.server">
         <field name="name">Mark as debt recovery</field>
-        <field name="model_id" ref="account.model_account_move"/>
+        <field name="model_id" ref="account.model_account_move" />
         <field name="state">code</field>
         <field name="code">
             action_mark_as_debt_recovery()

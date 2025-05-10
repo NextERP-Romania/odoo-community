@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_account_move__no_invoice_reversal" model="ir.ui.view">
+            <field name="name">account.move.reversal.no.invoice.form</field>
+            <field name="model">account.move.reversal</field>
+            <field name="inherit_id" ref="account.view_account_move_reversal"/>
+            <field name="arch" type="xml">
+                    <button name="modify_moves" position='replace'/>     
+            </field>
+        </record>
+    </data>
+</odoo>

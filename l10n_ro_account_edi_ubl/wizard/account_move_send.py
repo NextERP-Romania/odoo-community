@@ -9,9 +9,9 @@ class AccountMoveSend(models.TransientModel):
     def _postprocess_invoice_ubl_xml(self, invoice, invoice_data):
         # configurable embed
         res = super()._postprocess_invoice_ubl_xml(invoice, invoice_data)
-        if invoice.company_id.country_code == 'RO':
+        if invoice.company_id.country_code == "RO":
             get_param = self.env["ir.config_parameter"].sudo().get_param
-            embed_pdf = safe_eval(get_param("efactura.embed_pdf", 'True'))
+            embed_pdf = safe_eval(get_param("efactura.embed_pdf", "True"))
             if not embed_pdf:
-                invoice_data['ubl_cii_xml_attachment_values']['raw'] = False
+                invoice_data["ubl_cii_xml_attachment_values"]["raw"] = False
         return res

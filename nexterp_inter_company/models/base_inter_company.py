@@ -40,10 +40,16 @@ class InterCompanyField(models.AbstractModel):
 
             is_inter_company = False
             if "commercial_partner_id" in self._fields:
-                if record.commercial_partner_id.is_inter_company and record.commercial_partner_id != company.partner_id:
+                if (
+                    record.commercial_partner_id.is_inter_company
+                    and record.commercial_partner_id != company.partner_id
+                ):
                     is_inter_company = True
             elif "partner_id" in self._fields:
-                if record.partner_id.is_inter_company and record.partner_id != company.partner_id:
+                if (
+                    record.partner_id.is_inter_company
+                    and record.partner_id != company.partner_id
+                ):
                     is_inter_company = True
             else:
                 _logger.warning(

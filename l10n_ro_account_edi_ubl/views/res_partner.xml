@@ -9,18 +9,15 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='nrc']" position="after">
+                    <field name="is_l10n_ro_record" invisible="1" />
                     <field
-                            name="is_l10n_ro_record"
-                            invisible="1"
-                        />
+                        name="l10n_ro_edi_ubl_no_send"
+                        invisible="is_company or not is_l10n_ro_record"
+                    />
                     <field
-                            name="l10n_ro_edi_ubl_no_send"
-                            invisible="is_company or not is_l10n_ro_record"
-                        />
-                    <field
-                            name="l10n_ro_edi_ubl_no_send_cnp"
-                            invisible="is_company or not is_l10n_ro_record"
-                        />
+                        name="l10n_ro_edi_ubl_no_send_cnp"
+                        invisible="is_company or not is_l10n_ro_record"
+                    />
                 </xpath>
             </data>
         </field>
