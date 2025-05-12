@@ -4,12 +4,14 @@
 {
     "name": "NextERP -  Account Edi UBL Move Date",
     "version": "17.0.1.0.0",
+    "summary": "NextERP -  Account Edi UBL Move Date",
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "category": "Special",
-    "depends": ["l10n_ro_account_edi_ubl",'account'],
+    "depends": ["l10n_ro_account_edi_ubl", "account"],
     "data": [],
     "auto_install": False,
     "installable": True,
+    "development_status": "Beta",
     "license": "AGPL-3",
 }

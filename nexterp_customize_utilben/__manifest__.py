@@ -3,13 +3,15 @@
 # (https://www.odoo.com/documentation/user/17.0/legal/licenses/licenses.html#).
 {
     "name": "NextERP -  Customize Utilben",
+    "summary": "NextERP -  Customize Utilben",
     "version": "17.0.1.0.0",
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "category": "Special",
-    "depends": ['account'],
+    "depends": ["account"],
     "data": ["wizard/account_move_reversal_view.xml"],
     "auto_install": False,
     "installable": True,
+    "development_status": "Beta",
     "license": "AGPL-3",
 }
