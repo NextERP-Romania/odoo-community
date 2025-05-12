@@ -219,19 +219,9 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
         zip_code=False,
     ):
         """Update method to set the partner as a company, not individual"""
+
         res = super()._import_retrieve_and_fill_partner(
-            invoice,
-            name,
-            phone,
-            mail,
-            vat,
-            country_code,
-            peppol_eas,
-            peppol_endpoint,
-            street,
-            street2,
-            city,
-            zip_code,
+            invoice, name, phone, mail, vat, country_code, peppol_eas, peppol_endpoint
         )
         if country_code == "RO":
             if not invoice.partner_id.is_company and name and vat:
@@ -252,6 +242,7 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
 
     def _import_invoice_ubl_cii(self, invoice, file_data, new=False):
         res = super()._import_invoice_ubl_cii(invoice, file_data, new=new)
+        invoice.date = invoice.invoice_date
         if invoice.company_id.l10n_ro_render_anaf_pdf:
             self.l10n_ro_renderAnafPdf(invoice)
         return res
