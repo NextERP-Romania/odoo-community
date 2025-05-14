@@ -333,3 +333,15 @@ class AccountMove(models.Model):
         if self._is_l10n_ro_b2c():
             self = self.with_context(l10n_ro_edi_b2c=True)
         return super()._l10n_ro_edi_send_invoice(xml_data)
+
+
+class AccountMoveLine(models.Model):
+    _inherit="account.move.line"
+
+    def _compute_all_tax(self):
+        invoices = self.mapped('move_id').filtered(lambda l: l.company_id.country_code=='RO' and l.move_type != 'entry')
+        for invoice in invoices:
+            if 'on_payment' in invoice.line_ids.tax_ids.flatten_taxes_hierarchy().mapped('tax_exigibility'):
+                invoice.always_tax_exigible = True
+        return super()._compute_all_tax()
+        

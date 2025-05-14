@@ -149,9 +149,6 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
     def _import_fill_invoice_line_form(self, tree, invoice_line, qty_factor):
         vat_on_payment = False
         if invoice_line.partner_id.l10n_ro_vat_on_payment:
-            invoice_line.move_id.fiscal_position_id = (
-                invoice_line.partner_id.property_account_position_id
-            )
             vat_on_payment = True
         res = super()._import_fill_invoice_line_form(tree, invoice_line, qty_factor)
         if vat_on_payment:
@@ -228,6 +225,8 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
                 invoice.partner_id.is_company = True
                 invoice.partner_id.ro_vat_change()
                 invoice.partner_id.check_vat_on_payment()
+            if invoice.partner_id:
+                invoice._onchange_partner_id()
         return res
 
     def _import_retrieve_partner_vals(self, tree, role):
