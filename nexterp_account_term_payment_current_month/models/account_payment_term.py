@@ -32,7 +32,7 @@ class AccountPaymentTermLine(models.Model):
         self.ensure_one()
         due_date = fields.Date.from_string(date_ref) or fields.Date.today()
         if self.delay_type == 'day_of_the_month':
-            return date_utils.start_of(due_date, 'month') + relativedelta(days=self.nb_days)
+            return date_utils.start_of(due_date, 'month') + relativedelta(days=self.nb_days - 1)
         return super(AccountPaymentTermLine, self)._get_due_date(date_ref)
       
 
