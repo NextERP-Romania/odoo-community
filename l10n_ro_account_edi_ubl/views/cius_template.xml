@@ -22,4 +22,18 @@
             </cac:DeliveryParty>
         </xpath>
     </template>
+    <template id="ubl_20_InvoiceType"
+        inherit_id="account_edi_ubl_cii.ubl_20_InvoiceType"
+    >
+        <xpath
+            expr="//*[local-name()='Note']"
+            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+            xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+            position="replace"
+        >
+            <t t-foreach="vals.get('note_vals', [])" t-as="note">
+                <cbc:Note t-out="note"/>
+            </t>
+        </xpath>
+    </template>
 </odoo>
