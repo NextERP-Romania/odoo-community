@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="sale_line_duplicate_view_form" model="ir.ui.view">
+        <field name="name">sale.line.duplicate.form</field>
+        <field name="model">sale.order.line.duplicate</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="sale_line_id" invisible="1" />
+                        <field name="count" string="How many times" />
+                    </group>
+                    <group />
+                </group>
+                <footer>
+                    <button
+                        string="Confirm"
+                        name="action_duplicate"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button string="Cancel" class="btn btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
