@@ -18,7 +18,7 @@
         "views/res_partner.xml",
     ],
     "license": "AGPL-3",
-    "version": "17.0.1.0.6",
+    "version": "17.0.1.0.7",
     "author": "Terrabit," "NextERP Romania," "Odoo Community Association (OCA)",
     "website": "https://www.nexterp.ro",
     "installable": True,

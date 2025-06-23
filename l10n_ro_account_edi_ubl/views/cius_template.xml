@@ -22,8 +22,10 @@
             </cac:DeliveryParty>
         </xpath>
     </template>
-    <template id="ubl_20_InvoiceType"
+    <template
+        id="ubl_20_InvoiceType"
         inherit_id="account_edi_ubl_cii.ubl_20_InvoiceType"
+        priority="100"
     >
         <xpath
             expr="//*[local-name()='Note']"
@@ -32,7 +34,7 @@
             position="replace"
         >
             <t t-foreach="vals.get('note_vals', [])" t-as="note">
-                <cbc:Note t-out="note"/>
+                <cbc:Note t-out="note" />
             </t>
         </xpath>
     </template>
