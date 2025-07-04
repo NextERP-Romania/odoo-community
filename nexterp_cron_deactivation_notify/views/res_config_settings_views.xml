@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cron_res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">cron.res.config.settings.view.form.inherit.mail</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="mail.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <block id="emails" position="inside">
+                <setting
+                    id="archived_cron_notify_users_ids"
+                    string="Users to Notify for cron deactivation"
+                    help="Add users to notify when a cron action is archived."
+                >
+                    <field
+                        name="archived_cron_notify_users_ids"
+                        widget="many2many_tags"
+                    />
+                </setting>
+            </block>
+        </field>
+    </record>
+</odoo>
