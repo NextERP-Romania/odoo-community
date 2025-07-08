@@ -19,6 +19,7 @@
         "views/res_config_settings_views.xml",
         "views/account_invoice.xml",
         "views/cius_template.xml",
+        "views/product_view.xml",
         "views/res_partner.xml",
     ],
     "installable": True,
