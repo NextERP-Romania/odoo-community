@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_account_invoice_filter_inter_company" model="ir.ui.view">
+        <field name="name">account.view_account_invoice_filter_inter_company</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter" />
+        <field name="arch" type="xml">
+            <filter name="invoice_date" position="before">
+                <filter
+                    name="inter_company"
+                    string="Inter Company"
+                    domain="[('is_inter_company','=', 1)]"
+                />
+                <filter
+                    name="no_inter_company"
+                    string="Without Inter Company"
+                    domain="[('is_inter_company','=', 0)]"
+                />
+                <separator />
+            </filter>
+        </field>
+    </record>
+
+    <record id="view_account_move_filter_inter_company" model="ir.ui.view">
+        <field name="name">account.view_account_move_filter_inter_company</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter" />
+        <field name="arch" type="xml">
+            <filter name="date" position="before">
+                <filter
+                    name="inter_company"
+                    string="Inter Company"
+                    domain="[('is_inter_company','=', 1)]"
+                />
+                <filter
+                    name="no_inter_company"
+                    string="Without Inter Company"
+                    domain="[('is_inter_company','=', 0)]"
+                />
+                <separator />
+            </filter>
+        </field>
+    </record>
+
+</odoo>
