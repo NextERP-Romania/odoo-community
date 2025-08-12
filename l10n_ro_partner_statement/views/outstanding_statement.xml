@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+<template id="outstanding_balance">
+        <p>
+            <span
+                t-out="'' if  account_type == 'asset_receivable' else 'Supplier '"
+            /><span t-out="title_name" /> up to <span t-out="ending_date" /> in <span
+                t-out="display_currency.name"
+            />
+        </p>
+        <table class="table table-sm table-statement">
+            <thead>
+                <tr>
+                    <th>Reference number</th>
+                    <th>Date</th>
+                    <th>Due Date</th>
+                    <th class="amount">Original</th>
+                    <th class="amount">Open Amount</th>
+                    <th class="amount">Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-set="total_amount" t-value="0.0" />
+                <tr
+                    t-foreach="currency[line_type]"
+                    t-as="line"
+                    t-att-class="'statement-blocked' if line['blocked'] else ''"
+                >
+                    <td>
+                        <t t-if="line['name'] != '/'">
+                            <t t-if="not line['ref']">
+                                <span t-out="line['name']" />
+                            </t>
+                            <t t-if="line['ref'] and not line['name']">
+                                <span t-out="line['ref']" />
+                            </t>
+                            <t t-if="line['ref'] and line['name']">
+                                <t
+                                    t-if="line['name'] not in line['ref'] or line['name'] == line['ref']"
+                                >
+                                    <span t-out="line['name']" />
+                                </t>
+                                <t t-if="line['ref'] not in line['name']">
+                                    <span t-out="line['ref']" />
+                                </t>
+                            </t>
+                        </t>
+                        <t t-if="line['name'] == '/'">
+                            <span t-out="line['ref']" />
+                        </t>
+                    </td>
+                    <td>
+                        <span t-out="line['date']" />
+                    </td>
+                    <td>
+                        <span t-out="line['date_maturity']" />
+                    </td>
+                    <td class="amount">
+                        <span
+                            t-out="line['amount']"
+                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                        />
+                    </td>
+                    <td class="amount">
+                        <t t-if="line.get('next')">
+                        <span>0,00</span>
+                        </t>
+                        <t t-else="">
+                            <span
+                                t-out="line['open_amount']"
+                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                            />
+                            <t
+                                t-set="total_amount"
+                                t-value="total_amount+line['open_amount']"
+                            />
+                        </t>
+                    </td>
+                    <td class="amount">
+                        <span
+                            t-out="line['balance']"
+                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td />
+                    <td>
+                        <span t-out="ending_date" />
+                    </td>
+                    <td>Open Amount</td>
+                    <td />
+                    <td class="amount">
+                        <span
+                            t-out="total_amount"
+                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                        />
+                    </td>
+                    <td />
+                </tr>
+                <tr>
+                    <td />
+                    <td>
+                        <span t-out="ending_date" />
+                    </td>
+                    <td>
+                            Ending Balance
+                        </td>
+                    <td />
+                    <td />
+                    <td class="amount">
+                        <span
+                            t-out="ending_amount"
+                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                        />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </template>
+    <template id="l10n_ro_statement_external_layout">
+        <t t-if="not o" t-set="o" t-value="o" />
+        <t t-if="not company">
+            <!-- Multicompany -->
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id" />
+            </t>
+            <t t-elif="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id.sudo()" />
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company" />
+            </t>
+        </t>
+        <div t-attf-class="header o_company_#{company.id}_layout">
+            <div class="o_boxed_header">
+                <div class="row mb8">
+                    <div class="col-4">
+                        <img
+                            t-if="company.logo"
+                            t-att-src="image_data_uri(company.logo)"
+                            style="width: 100%;"
+                            alt="Logo"
+                        />
+                    </div>
+                    <div class="col-8" style="text-align:right;">
+                    <span t-field="company.partner_id.name" /><br />
+                    <t t-if="company.partner_id.street"><span
+                                t-field="company.partner_id.street"
+                            /></t>
+                    <t t-if="company.partner_id.city_id"><span
+                                t-field="company.partner_id.city_id.name"
+                            /></t>
+                    <t t-if="company.partner_id.state_id"><span
+                                t-field="company.partner_id.state_id.code"
+                            /></t>
+                    <br /><span t-field="company.partner_id.vat" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            t-attf-class="article o_company_#{company.id}_layout"
+            t-att-data-oe-model="o and o._name"
+            t-att-data-oe-id="o and o.id"
+            t-att-data-oe-lang="o and o.env.context.get('lang')"
+        >
+            <t t-raw="0" />
+        </div>
+        <div t-attf-class="footer o_company_#{company.id}_layout">
+            <div style="text-left">
+                <div class="separator" />
+                <div style="border-top: 1px solid #000000;" />
+                <div class="row">
+                    <div class="col-2" t-if="report_type == 'pdf'">
+                        Page:
+                        <span class="page" />
+                        /
+                        <span class="topage" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="outstanding_statement_document">
+        <t t-call="l10n_ro_partner_statement.l10n_ro_statement_external_layout">
+            <t t-set="o" t-value="o.with_context({'lang': lang})" />
+            <div class="page">
+                <div id="from" style="font-size: 0.85rem">
+                    <div id="issuer">
+                        <span style="font-weight: bold;">Unitatea debitoare: <span
+                                t-field="res_company.partner_id.name"
+                            /></span>
+                    </div>
+                    <div id="phone">
+                        <span>Tel: <span
+                                t-field="res_company.partner_id.phone"
+                            /></span>
+                    </div>
+                    <div id="banks">
+                        <t t-set="partner_id" t-value="res_company.partner_id" />
+                        <t t-call="l10n_ro_config.banks" />
+                    </div>
+                    <t t-if="res_company.partner_id.email">
+                        <div id="email">
+                            <span><span t-field="res_company.partner_id.email" /></span>
+                        </div>
+                    </t>
+                </div>
+                <div id="to">
+                    <div id="to_text" class="h5" style="margin-top: 25px;">Către: </div>
+                    <div id="partner">
+                        <span style="font-weight: bold;" t-field="o.name" />
+                    </div>
+                    <div id="partner_vat">
+                        <span>Cod fiscal: </span><span t-field="o.vat" />
+                    </div>
+                    <div id="partner_address">
+                        <span>Adresa: </span>
+                        <span t-field="o.street" />, <span t-field="o.city" />, <span
+                            t-field="o.state_id"
+                        />
+                    </div>
+                    <t t-if="o.phone">
+                        <div id="partner_tel">
+                            <span>Tel.: </span><span t-field="o.phone" />
+                            <t t-if="o.mobile">
+                                <span>, </span><span t-field="o.mobile" />
+                            </t>
+                        </div>
+                    </t>
+                    <t t-if="o.email">
+                        <div id="partner_mail">
+                            <span>E-mail: </span><span t-field="o.email" />
+                        </div>
+                    </t>
+                </div>
+                <br />
+                <div id="text1" style="font-size: 0.85rem;">
+                    Conform dispozițiilor în vigoare, vă înștiințăm că în evidențele noastre contabile, unitatea dvs.
+                    figurează cu următoarele credite:
+                </div>
+                <div id="title" style="text-align: center; font-weight: bold">
+                    EXTRAS DE CONT
+                    <t t-if="date_to">
+                        LA DATA: <span t-esc="date_to" />
+                    </t>
+                </div>
+                <br />
+                <div id="sold" style="font-weight: bold">
+                    <span>Sold partener: </span>
+                    <t t-foreach="d['currencies'].items()" t-as="currency">
+                        <span
+                            t-esc="round(d['currencies'][currency[0]]['amount_due'],2)"
+                        />
+                        <span t-esc="Currencies[currency[0]].name" />
+                    </t>
+                </div>
+                <div id="text2" style="font-size: 0.85rem;">
+                    În termen de 5 zile de la primire urmează să ne restituiți acest extras confirmat pentru suma
+                    acceptată, iar în cazul constatării de diferențe să anexați o notă explicativă cuprinzând obiecțiile
+                    dumneavoastră.
+                    <br />
+                    Prezentul extras de cont ține cont de conciliere conform procedurii arbitrale.
+                </div>
+                <br />
+                <div id="signatures" style="font-size: 0.85rem; width: 100%">
+                    <div style="float: left; text-align:center; width: 50%;">
+                        Conducătorul unității
+                        <br />
+                        ______________________________________________
+                    </div>
+                    <div style="float: left; text-align:center; width: 50%;">
+                        Conducătorul dpt. financiar-contabil
+                        <br />
+                        ______________________________________________
+                    </div>
+                </div>
+
+                <div id="response" style="font-size: 0.85rem; margin-top: 90px;">
+                    <div id="partner_an_name">
+                        <span>Unitatea creditoare: </span><span t-field="o.name" />
+                    </div>
+                    <div id="nr_reg">
+                        <span>Nr. de înregistrare</span>
+                        <span>_______________</span>
+                        <span>din</span>
+                        <span>______________________</span>
+                    </div>
+                    <br />
+                    <div
+                        id="partner_an_to"
+                        style="text-align: center; font-weight:bold;"
+                    >
+                        Către
+                        <br />
+                        <span t-field="res_company.partner_id.name" />
+                    </div>
+                    <br />
+                    <div id="partner_an_text1">
+                        <span
+                        >Confirmăm prezentul extras de cont pentru suma de ______________ lei, pentru achitarea
+                            căreia (se va completa după caz):
+                        </span>
+                    </div>
+                    <div id="partner_an_text2">
+                        <span
+                        >a) Am depus la bancă ordinul de plată nr. _______________ din ________________</span>
+                    </div>
+                    <div id="partner_an_text3">
+                        <span
+                        >b) Urmează să efectuăm plata în termen de ____________________</span>
+                    </div>
+                    <div id="partner_an_text4">
+                        <span
+                        >Obiecțiile noastre privind sumele din prezentul extras de cont sunt cuprinse în nota
+                            explicativă anexată.
+                        </span>
+                    </div>
+                    <div id="signatures_an" style="font-size: 0.85rem; width: 100%">
+                        <div style="float: left; text-align:center; width: 50%;">
+                            Conducătorul unității
+                            <br />
+                            ______________________________________________
+                        </div>
+                        <div style="float: left; text-align:center; width: 50%;">
+                            Conducătorul dpt. financiar-contabil
+                            <br />
+                            ______________________________________________
+                        </div>
+                    </div>
+                </div>
+                <div style="page-break-before: always;" />
+                 <t t-if="d['currencies']">
+                    <br />
+                    <t t-foreach="d['currencies'].items()" t-as="currency">
+                        <t t-set="display_currency" t-value="Currencies[currency[0]]" />
+                        <t t-set="currency" t-value="currency[1]" />
+                        <t t-set="line_type" t-value="'lines'" />
+                        <t t-set="title_name" t-value="'Statement'" />
+                        <t t-set="ending_amount" t-value="currency['amount_due']" />
+                        <t t-set="ending_date" t-value="d['end']" />
+                        <t
+                            t-call="l10n_ro_partner_statement.outstanding_balance"
+                            name="outstanding"
+                        />
+                        <t
+                            t-call="partner_statement.aging_buckets"
+                            t-if="currency['buckets']"
+                        />
+                    </t>
+                </t>
+                <p t-if="d.get('no_entries')">
+                    <strong>The partner doesn't have due entries.</strong>
+                </p>
+            </div>
+        </t>
+    </template>
+    <template
+        inherit_id="partner_statement.outstanding_statement"
+        id="outstanding_statement"
+        priority="100"
+    >
+        <xpath expr="//t[@t-call='web.html_container']" position="replace">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="d" t-value="data.get(o.id)" />
+                    <t
+                        t-call="l10n_ro_partner_statement.outstanding_statement_document"
+                        t-lang="o.lang"
+                    />
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>
