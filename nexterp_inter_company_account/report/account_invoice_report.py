@@ -2,7 +2,8 @@
 # License OPL-1.0 or later
 # (https://www.odoo.com/documentation/user/18.0/legal/licenses/licenses.html#).
 
-from odoo import fields, models
+from odoo import fields, models, api
+from odoo.tools import SQL
 
 
 class AccountInvoiceReport(models.Model):
@@ -11,7 +12,8 @@ class AccountInvoiceReport(models.Model):
 
     is_inter_company = fields.Boolean(readonly=False)
 
-    def _select(self):
-        res = super()._select()
-        select_str = res + """, move.is_inter_company AS is_inter_company """
-        return select_str
+    @api.model
+    def _select(self) -> SQL:
+        return SQL(
+            "%s, move.is_inter_company AS is_inter_company", super()._select()
+        )
