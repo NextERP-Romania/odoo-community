@@ -14,7 +14,7 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
     _inherit = "account.edi.xml.ubl_ro"
 
     def _get_tax_category_list(self, customer, supplier, taxes):
-        vals_list = super()._get_tax_category_list(self, customer, supplier, taxes)
+        vals_list = super()._get_tax_category_list(customer, supplier, taxes)
         for vals in vals_list:
             word_to_check = "Invers"
             if any(
