@@ -13,9 +13,9 @@ NextERP - Inter Company Account
 .. |badge1| image:: https://img.shields.io/badge/maturity-Mature-brightgreen.png
     :target: https://odoo-community.org/page/development-status
     :alt: Mature
-.. |badge2| image:: https://img.shields.io/badge/github-NextERP--Romania%2Fodoo--community-lightgray.png?logo=github
-    :target: https://github.com/NextERP-Romania/odoo-community/tree/18.0/nexterp_inter_company_account
-    :alt: NextERP-Romania/odoo-community
+.. |badge2| image:: https://img.shields.io/badge/github-NextERP--Romania%2Fl10n--romania--enterprise-lightgray.png?logo=github
+    :target: https://github.com/NextERP-Romania/l10n-romania-enterprise/tree/17.0/nexterp_inter_company_account
+    :alt: NextERP-Romania/l10n-romania-enterprise
 
 |badge1| |badge2|
 
@@ -44,10 +44,10 @@ To install this module, you need to:
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/NextERP-Romania/odoo-community/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/NextERP-Romania/l10n-romania-enterprise/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/NextERP-Romania/odoo-community/issues/new?body=module:%20nexterp_inter_company_account%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/NextERP-Romania/l10n-romania-enterprise/issues/new?body=module:%20nexterp_inter_company_account%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -77,6 +77,6 @@ Current maintainer:
 
 |maintainer-feketemihai| 
 
-This module is part of the `NextERP-Romania/odoo-community <https://github.com/NextERP-Romania/odoo-community/tree/18.0/nexterp_inter_company_account>`_ project on GitHub.
+This module is part of the `NextERP-Romania/l10n-romania-enterprise <https://github.com/NextERP-Romania/l10n-romania-enterprise/tree/17.0/nexterp_inter_company_account>`_ project on GitHub.
 
 You are welcome to contribute.

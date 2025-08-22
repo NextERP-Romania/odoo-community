@@ -9,6 +9,7 @@ _logger = logging.getLogger("SFTP")
 
 class SaleOrderLineDuplicate(models.TransientModel):
     _name = "sale.order.line.duplicate"
+    _description = "Sale Order Line Duplicate Wizard"
 
     sale_line_id = fields.Many2one(
         "sale.order.line",
