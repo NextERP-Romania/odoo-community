@@ -143,13 +143,13 @@ class AccountMove(models.Model):
         return super()._need_ubl_cii_xml(ubl_cii_format)
 
     def _l10n_ro_edi_create_document_invoice_sending_failed(
-        self, message, attachment_raw=None, key_loading=None
+        self, values: dict
     ):
         res = super()._l10n_ro_edi_create_document_invoice_sending_failed(
-            message, attachment_raw, key_loading
+            values
         )
-        if message:
-            self.l10n_ro_edi_post_message(self, message, res)
+        if values.get("error"):
+            self.l10n_ro_edi_post_message(self, values['error'], res)
         return res
 
     @api.model
