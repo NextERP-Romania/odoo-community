@@ -4,10 +4,10 @@
 {
     "name": "Romania - eFactura Account EDI UBL",
     "summary": "Romania - eFactura - Account EDI UBL",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "category": "Localization",
     "author": "Terrabit," "NextERP Romania," "Odoo Community Association (OCA)",
-    "website": "https://www.nexterp.ro",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "support": "odoo_apps@nexterp.ro",
     "depends": [
         "l10n_ro_config",

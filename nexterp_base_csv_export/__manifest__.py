@@ -6,7 +6,7 @@
     "version": "18.0.1.0.0",
     "category": "Base",
     "author": "NextERP Romania",
-    "website": "https://www.nexterp.ro",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "support": "odoo_apps@nexterp.ro",
     "depends": [
         "base",
@@ -16,6 +16,7 @@
     ],
     "application": False,
     "installable": True,
+    "development_status": "Mature",
     "maintainers": ["feketemihai"],
     "license": "AGPL-3",
 }

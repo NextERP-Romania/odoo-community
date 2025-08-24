@@ -11,7 +11,7 @@
     "category": "Accounting",
     "depends": ["nexterp_inter_company", "account"],
     "author": "NextERP Romania",
-    "website": "https://www.nexterp.ro",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "support": "odoo_apps@nexterp.ro",
     "data": [
         # views

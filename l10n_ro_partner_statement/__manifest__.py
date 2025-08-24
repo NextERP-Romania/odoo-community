@@ -6,7 +6,7 @@
     "summary": "Romania - Partner Statement",
     "version": "18.0.0.0.0",
     "author": "NextERP Romania",
-    "website": "https://www.nexterp.ro",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "category": "Accounting",
     "countries": ["ro"],
     "depends": ["partner_statement", "account"],

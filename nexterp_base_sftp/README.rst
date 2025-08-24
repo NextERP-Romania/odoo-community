@@ -10,15 +10,15 @@ SFTP Server
    !! source digest: sha256:c5e621a0d772594b15278637b74d7e988f00dd3e82c347302db7fa8cbbb934e1
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-.. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
+.. |badge1| image:: https://img.shields.io/badge/maturity-Mature-brightgreen.png
     :target: https://odoo-community.org/page/development-status
-    :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
+    :alt: Mature
+.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-NextERP--Romania%2Fl10n--romania--enterprise-lightgray.png?logo=github
-    :target: https://github.com/NextERP-Romania/l10n-romania-enterprise/tree/17.0/nexterp_base_sftp
-    :alt: NextERP-Romania/l10n-romania-enterprise
+.. |badge3| image:: https://img.shields.io/badge/github-NextERP--Romania%2Fodoo--community-lightgray.png?logo=github
+    :target: https://github.com/NextERP-Romania/odoo-community/tree/18.0/nexterp_base_sftp
+    :alt: NextERP-Romania/odoo-community
 
 |badge1| |badge2| |badge3|
 
@@ -46,10 +46,8 @@ To install this module, you need to:
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/NextERP-Romania/l10n-romania-enterprise/issues>`_.
+Bugs are tracked on `NextERP Issues <https://www.nexterp.ro/helpdesk>`_.
 In case of trouble, please check there if your issue has already been reported.
-If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/NextERP-Romania/l10n-romania-enterprise/issues/new?body=module:%20nexterp_base_sftp%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -80,6 +78,6 @@ Current maintainer:
 
 |maintainer-feketemihai| 
 
-This module is part of the `NextERP-Romania/l10n-romania-enterprise <https://github.com/NextERP-Romania/l10n-romania-enterprise/tree/17.0/nexterp_base_sftp>`_ project on GitHub.
+This module is part of the `NextERP-Romania/odoo-community <https://github.com/NextERP-Romania/odoo-community/tree/18.0/nexterp_base_sftp>`_ project on GitHub.
 
 You are welcome to contribute.

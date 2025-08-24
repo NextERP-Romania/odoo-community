@@ -13,7 +13,7 @@
         "views/res_config_settings_views.xml",
     ],
     "author": "NextERP Romania",
-    "website": "https://www.nexterp.ro",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "support": "odoo_apps@nexterp.ro",
     "installable": True,
     "auto_install": False,

@@ -8,7 +8,7 @@
     "version": "18.0.0.0.0",
     "category": "Generic Modules/Stock",
     "author": "NextERP Romania",
-    "website": "https://www.nexterp.ro",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "depends": ["stock_exception"],
     "license": "AGPL-3",
     "data": [

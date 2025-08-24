@@ -11,7 +11,7 @@
     "category": "Base",
     "depends": ["base"],
     "author": "NextERP Romania",
-    "website": "https://www.nexterp.ro",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "support": "odoo_apps@nexterp.ro",
     "data": ["views/res_partner.xml"],
     "installable": True,

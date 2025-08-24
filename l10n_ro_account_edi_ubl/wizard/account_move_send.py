@@ -15,3 +15,14 @@ class AccountMoveSend(models.AbstractModel):
                 return
         else:
             return super()._postprocess_invoice_ubl_xml(invoice, invoice_data)
+
+    @api.model
+    def _is_ro_edi_applicable(self, move):
+        return all(
+            [
+                move._need_ubl_cii_xml("ciusro") or move.ubl_cii_xml_id,
+                move.country_code == "RO",
+                move.partner_id.country_code == "RO",
+                not move.l10n_ro_edi_state,
+            ]
+        )
