@@ -307,6 +307,7 @@ class AccountMove(models.Model):
                     ("company_id", "=", company.id),
                 ]
             )
+            invoices = invoices.filtered(lambda l: l._need_ubl_cii_xml())
             composer = (
                 self.env["account.move.send"]
                 .with_context(active_model="account.move", active_ids=invoices.ids)
