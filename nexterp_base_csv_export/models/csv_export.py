@@ -40,9 +40,9 @@ class CSVExporter(models.AbstractModel):
                         value = ""
                     if record._fields[odoo_field].type == "many2one":
                         if value:
-                            value = value.name_get()[0][1]
+                            value = value.display_name
                     elif record._fields[odoo_field].type in ["one2many", "many2many"]:
-                        value = ",".join([x.name_get()[0][1] for x in value])
+                        value = ",".join([x.display_name for x in value])
                     if (not value or value == "") and type_field:
                         if type_field == "boolean":
                             value = "False"

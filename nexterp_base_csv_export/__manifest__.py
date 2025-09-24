@@ -3,7 +3,7 @@
 {
     "name": "Base CSV Export",
     "summary": "Base implementation for CSV Export",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "category": "Base",
     "author": "NextERP Romania",
     "website": "https://github.com/NextERP-Romania/odoo-community",
