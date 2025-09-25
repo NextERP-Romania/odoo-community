@@ -18,10 +18,10 @@ odoo_version: 19.0
 org_name: NextERP Romania
 org_slug: NextERP-Romania
 rebel_module_groups: []
-repo_description: nexterp-base
-repo_name: nexterp-base
-repo_slug: nexterp-base
-repo_website: https://github.com/NextERP-Romania/nexterp-base
+repo_description: odoo-community
+repo_name: odoo-community
+repo_slug: odoo-community
+repo_website: https://github.com/NextERP-Romania/odoo-community
 use_pyproject_toml: true
 use_ruff: true
 
