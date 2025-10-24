@@ -15,7 +15,7 @@ class AccountMove(models.Model):
                 move.highest_name == highest_name
                 and move.company_id.account_allow_delete_last_invoice
             ):
-                if move.name >= highest_name:
+                if move.name and move.name >= highest_name:
                     move.name = "/"
                     move.posted_before = False
                     move.state = "draft"
