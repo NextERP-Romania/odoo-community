@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Menu items for BOM Excel Import -->
+
+    <!-- BOM Excel Import menu item under Manufacturing -->
+    <menuitem
+        id="menu_bom_excel_import"
+        name="BOM Excel Import"
+        parent="mrp.menu_mrp_bom"
+        action="action_bom_excel_import_wizard"
+        sequence="100"
+    />
+</odoo>

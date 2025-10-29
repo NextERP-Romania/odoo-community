@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Unified BOM Excel Import Wizard -->
+    <record id="view_bom_excel_import_wizard_form" model="ir.ui.view">
+        <field name="name">bom.excel.import.wizard.form</field>
+        <field name="model">bom.excel.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="BOM Excel Import - Two Step Process">
+                <!-- Step 1: File Upload -->
+                <div invisible="step != 'upload'">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Step 1: Upload Excel File</strong><br />
+                        Upload your Excel file containing BOM data.<br />
+                        <strong>Expected Excel format:</strong><br />
+                        - Column 1: Product produced<br />
+                        - Column 2: Operation name<br />
+                        - Column 3: Quantity consumed<br />
+                        - Column 4: Component consumed UOM<br />
+                        - Column 5: Component consumed<br />
+                        - Column 6: Workcenter name<br />
+                    </div>
+                    <group>
+                        <group>
+                            <field name="excel_file" filename="filename" required="1" />
+                            <field name="filename" invisible="1" />
+                        </group>
+                        <group>
+                            <field name="sheet_name" />
+                            <field name="start_row" />
+                        </group>
+                    </group>
+                </div>
+
+                <!-- Step 2: Operations Import -->
+                <div invisible="step != 'operations'">
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Step 2: Import Operations and Workcenters</strong><br />
+                        This step will create workcenters and operations from your Excel file.<br
+                    />
+                        Click "Import Operations" to proceed.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="filename" readonly="1" />
+                            <field name="sheet_name" readonly="1" />
+                            <field name="start_row" readonly="1" />
+                        </group>
+                    </group>
+                    <group
+                        string="Operations Import Log"
+                        invisible="not operations_import_log"
+                    >
+                        <field
+                            name="operations_import_log"
+                            nolabel="1"
+                            readonly="1"
+                            widget="text"
+                            class="o_field_text"
+                        />
+                    </group>
+                </div>
+
+                <!-- Step 3: BOM Import -->
+                <div invisible="step != 'bom'">
+                    <div class="alert alert-success" role="alert">
+                        <strong>Step 3: Import Bills of Materials</strong><br />
+                        Operations have been imported successfully. Now import the BOMs.<br
+                    />
+                        Click "Import BOMs" to proceed.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="workcenters_created" readonly="1" />
+                            <field name="operations_created" readonly="1" />
+                        </group>
+                    </group>
+                    <group string="BOM Import Log" invisible="not bom_import_log">
+                        <field
+                            name="bom_import_log"
+                            nolabel="1"
+                            readonly="1"
+                            widget="text"
+                            class="o_field_text"
+                        />
+                    </group>
+                </div>
+
+                <!-- Step 4: Complete -->
+                <div invisible="step != 'complete'">
+                    <div class="alert alert-success" role="alert">
+                        <strong>Import Completed Successfully!</strong><br />
+                        Your BOMs have been imported from the Excel file.
+                    </div>
+                    <group string="Import Summary">
+                        <group>
+                            <field name="workcenters_created" readonly="1" />
+                            <field name="operations_created" readonly="1" />
+                        </group>
+                        <group>
+                            <field name="boms_created" readonly="1" />
+                            <field name="bom_lines_created" readonly="1" />
+                        </group>
+                        <group>
+                            <field name="total_errors" readonly="1" />
+                        </group>
+                    </group>
+
+                    <!-- Show both logs -->
+                    <notebook>
+                        <page
+                            string="Operations Import Log"
+                            invisible="not operations_import_log"
+                        >
+                            <field
+                                name="operations_import_log"
+                                nolabel="1"
+                                readonly="1"
+                                widget="text"
+                                class="o_field_text"
+                            />
+                        </page>
+                        <page string="BOM Import Log" invisible="not bom_import_log">
+                            <field
+                                name="bom_import_log"
+                                nolabel="1"
+                                readonly="1"
+                                widget="text"
+                                class="o_field_text"
+                            />
+                        </page>
+                    </notebook>
+                </div>
+
+                <!-- Hidden fields -->
+                <field name="step" invisible="1" />
+                <field name="operations_completed" invisible="1" />
+                <field name="bom_completed" invisible="1" />
+
+                <!-- Footer with step-appropriate buttons -->
+                <footer>
+                    <!-- Step 1: Upload -->
+                    <button
+                        name="action_start_import"
+                        string="Start Import"
+                        type="object"
+                        class="btn-primary"
+                        invisible="step != 'upload'"
+                    />
+
+                    <!-- Step 2: Operations -->
+                    <button
+                        name="action_import_operations"
+                        string="Import Operations"
+                        type="object"
+                        class="btn-primary"
+                        invisible="step != 'operations'"
+                    />
+
+                    <!-- Step 3: BOM -->
+                    <button
+                        name="action_import_boms"
+                        string="Import BOMs"
+                        type="object"
+                        class="btn-primary"
+                        invisible="step != 'bom'"
+                    />
+
+                    <!-- Step 4: Complete -->
+                    <button
+                        name="action_restart"
+                        string="Import Another File"
+                        type="object"
+                        class="btn-primary"
+                        invisible="step != 'complete'"
+                    />
+
+                    <!-- Always available -->
+                    <button string="Close" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bom_excel_import_wizard" model="ir.actions.act_window">
+        <field name="name">BOM Excel Import</field>
+        <field name="res_model">bom.excel.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_bom_excel_import_wizard_form" />
+    </record>
+</odoo>
