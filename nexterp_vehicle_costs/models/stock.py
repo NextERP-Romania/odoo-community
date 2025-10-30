@@ -83,7 +83,11 @@ class StockMove(models.Model):
     def _action_done(self, cancel_backorder=False):
         res = super()._action_done(cancel_backorder=cancel_backorder)
         for move in self:
-            if move.vehicle_id and not move.cost_ids:
+            if (
+                move.vehicle_id
+                and not move.cost_ids
+                and move.location_dest_id.usage in ["consume", "usage_giving"]
+            ):
                 move.create_vehicle_cost()
         return res
 

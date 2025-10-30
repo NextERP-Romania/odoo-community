@@ -33,10 +33,10 @@ E-Invoicing service.
 Configuration
 =============
 
-- Go to Accounting -> Configuration -> Journals, and set up the
-  "Electronic invoicing" option to "UBL 2.1 (CIUS-RO)"
-- Go to Settings -> Romania -> Configure ANAF sync and create a sync
-  config.
+-  Go to Accounting -> Configuration -> Journals, and set up the
+   "Electronic invoicing" option to "UBL 2.1 (CIUS-RO)"
+-  Go to Settings -> Romania -> Configure ANAF sync and create a sync
+   config.
 
 \*\* If you don't have any ANAF sync config, you can still generate the
 XML files, but you will have to send them manually to ANAF. \*\* If you
@@ -69,13 +69,13 @@ Authors
 Contributors
 ------------
 
-- `Terrabit <https://www.terrabit.ro>`__:
+-  `Terrabit <https://www.terrabit.ro>`__:
 
-  - Dorin Hongu <dhongu@gmail.com>
+   -  Dorin Hongu <dhongu@gmail.com>
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 
 Do not contact contributors directly about support or help with
 technical issues.

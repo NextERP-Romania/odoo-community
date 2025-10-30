@@ -7,13 +7,9 @@
     "version": "17.0.1.0.0",
     "category": "Localization",
     "author": "NextERP Romania SRL",
-    "website": "https://nexterp.ro",
+    "website": "https://www.nexterp.ro",
     "license": "AGPL-3",
     "installable": True,
-    "depends": [
-       'account'
-    ],
-    "data": [
-       
-    ],
+    "depends": ["account"],
+    "data": [],
 }

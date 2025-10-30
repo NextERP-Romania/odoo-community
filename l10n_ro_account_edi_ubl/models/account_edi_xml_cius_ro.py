@@ -126,8 +126,10 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
             )
         result_list = []
         if vals_list["vals"].get("note_vals"):
-            if len(vals_list["vals"]["note_vals"][0]['note']) > 300:
-                split_strings = self.split_string(vals_list["vals"]["note_vals"][0]['note'])
+            if len(vals_list["vals"]["note_vals"][0]["note"]) > 300:
+                split_strings = self.split_string(
+                    vals_list["vals"]["note_vals"][0]["note"]
+                )
                 for _index, split_str in enumerate(split_strings[:20]):
                     result_list.append(split_str)
         if result_list:

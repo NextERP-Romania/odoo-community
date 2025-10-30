@@ -62,10 +62,10 @@ Authors
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
-  - Musat Natanaela <musatnatanaela@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
+   -  Musat Natanaela <musatnatanaela@nexterp.ro>
 
 Maintainers
 -----------

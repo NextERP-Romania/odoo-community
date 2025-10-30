@@ -34,12 +34,12 @@ Installation
 
 To install this module, you need to:
 
-- clone the branch 17.0 of the repository
-  <`https://github.com/NextERP-Romania/odoo-community\\> <https://github.com/NextERP-Romania/odoo-community\>>`__
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "Romania - Edi CPV" in your addons
-- install the module
+-  clone the branch 17.0 of the repository
+   <`https://github.com/NextERP-Romania/odoo-community\\> <https://github.com/NextERP-Romania/odoo-community\>>`__
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "Romania - Edi CPV" in your addons
+-  install the module
 
 Bug Tracker
 ===========
@@ -62,10 +62,10 @@ Authors
 Contributors
 ------------
 
-- [NextERP Romania](https://www.nexterp.ro):
+-  [NextERP Romania](https://www.nexterp.ro):
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
-  - Sima Elisabeta <elisabeta.sima@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
+   -  Sima Elisabeta <elisabeta.sima@nexterp.ro>
 
 Maintainers
 -----------

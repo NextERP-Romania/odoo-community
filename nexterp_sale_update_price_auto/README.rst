@@ -19,9 +19,9 @@ NextERP - Sale Update Prices Auto
 
 |badge1| |badge2|
 
-- This module allows you to auto update prices in sale orders in case
-  you change the pricelist.
-- Go to Settings -> Sales and tick the checkbox for auto update prices.
+-  This module allows you to auto update prices in sale orders in case
+   you change the pricelist.
+-  Go to Settings -> Sales and tick the checkbox for auto update prices.
 
 **Table of contents**
 
@@ -33,12 +33,12 @@ Installation
 
 To install this module, you need to:
 
-- clone the branch 17.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Sale Update Prices Auto" in your addons
-- install the module
+-  clone the branch 17.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Sale Update Prices Auto" in your addons
+-  install the module
 
 Bug Tracker
 ===========
@@ -61,9 +61,9 @@ Authors
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 
 Maintainers
 -----------
