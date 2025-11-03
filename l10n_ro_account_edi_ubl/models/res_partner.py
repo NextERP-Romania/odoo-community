@@ -28,12 +28,12 @@ class ResPartner(models.Model):
     )
 
     def _retrieve_partner(
-        self, name=None, phone=None, mail=None, vat=None, domain=None, company=None
+        self, name=None, phone=None, email=None, vat=None, domain=None, company=None
     ):
         if self.env.company.country_id == self.env.ref("base.ro"):
             phone = False
-            mail = False
+            email = False
             name = False
         return super()._retrieve_partner(
-            name=name, phone=phone, mail=mail, vat=vat, domain=domain, company=company
+            name=name, phone=phone, email=email, vat=vat, domain=domain, company=company
         )
