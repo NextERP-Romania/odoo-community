@@ -302,18 +302,22 @@ class AccountMove(models.Model):
                     ("company_id", "=", company.id),
                 ]
             )
+            invoices = invoices.filtered(
+                lambda inv: inv._need_ubl_cii_xml("ciusro")
+            )
+            if not invoices:
+                continue
             composer = (
-                self.env["account.move.send"]
+                self.env["account.move.send.wizard"]
                 .with_context(active_model="account.move", active_ids=invoices.ids)
                 .create(
                     {
                         "mail_template_id": template.id,
-                        "checkbox_download": False,
-                        "checkbox_send_mail": False,
+                        "sending_methods": False,
                     }
                 )
             )
-            composer.action_send_and_print(force_synchronous=False)
+            composer.action_send_and_print(allow_fallback_pdf=False)
 
     def fetch_invoice_anaf(self):
         invoices = self.env["account.move"].search(
