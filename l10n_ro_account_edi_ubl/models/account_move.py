@@ -142,14 +142,10 @@ class AccountMove(models.Model):
             return True
         return super()._need_ubl_cii_xml(ubl_cii_format)
 
-    def _l10n_ro_edi_create_document_invoice_sending_failed(
-        self, values: dict
-    ):
-        res = super()._l10n_ro_edi_create_document_invoice_sending_failed(
-            values
-        )
+    def _l10n_ro_edi_create_document_invoice_sending_failed(self, values: dict):
+        res = super()._l10n_ro_edi_create_document_invoice_sending_failed(values)
         if values.get("error"):
-            self.l10n_ro_edi_post_message(self, values['error'], res)
+            self.l10n_ro_edi_post_message(self, values["error"], res)
         return res
 
     @api.model
@@ -196,22 +192,26 @@ class AccountMove(models.Model):
             elif old_transaction not in move.l10n_ro_edi_previous_transaction:
                 move.l10n_ro_edi_previous_transaction += f", {old_transaction}"
 
-    def _l10n_ro_edi_fetch_invoice_sending_documents(self):
+    def _l10n_ro_edi_fetch_invoice_sent_documents(self):
         """
         Inherit to store key download to the invoice
         """
-        res = super()._l10n_ro_edi_fetch_invoice_sending_documents()
+        res = super()._l10n_ro_edi_fetch_invoice_sent_documents()
 
         session = requests.Session()
         invoices_to_fetch = self.filtered(
-            lambda inv: inv.l10n_ro_edi_state == "invoice_sent"
+            lambda inv: (
+                inv.l10n_ro_edi_state == "invoice_sent"
+                or inv.l10n_ro_edi_state == "invoice_validated"
+            )
             and not inv.l10n_ro_edi_download
+            and inv.move_type in ["out_invoice", "out_refund"]
         )
 
         for invoice in invoices_to_fetch:
             result = self.env["l10n_ro_edi.document"]._request_ciusro_fetch_status(
                 company=invoice.company_id,
-                key_loading=invoice.l10n_ro_edi_transaction,
+                key_loading=invoice.l10n_ro_edi_index,
                 session=session,
             )
             if result.get("key_download"):
@@ -317,10 +317,10 @@ class AccountMove(models.Model):
 
     def fetch_invoice_anaf(self):
         invoices = self.env["account.move"].search(
-            [("l10n_ro_edi_state", "=", "invoice_sending"), ("country_code", "=", "RO")]
+            [("l10n_ro_edi_state", "=", "invoice_sent"), ("country_code", "=", "RO")]
         )
         if invoices:
-            invoices._l10n_ro_edi_fetch_invoice_sending_documents()
+            invoices._l10n_ro_edi_fetch_invoice_sent_documents()
 
     def _is_l10n_ro_b2c(self):
         self.ensure_one()

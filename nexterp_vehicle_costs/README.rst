@@ -35,12 +35,12 @@ Installation
 
 To install this module, you need to:
 
-- clone the branch 14.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Vehicle Cost Management" in your addons
-- install the module
+-  clone the branch 14.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Vehicle Cost Management" in your addons
+-  install the module
 
 Bug Tracker
 ===========
@@ -61,9 +61,9 @@ Authors
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 
 Maintainers
 -----------

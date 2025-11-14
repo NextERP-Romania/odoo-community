@@ -83,12 +83,15 @@ Table              | Assembly   | 12       | Unit           | Screw          | A
 ### Common Issues
 
 1. **"openpyxl library is required"**
+
    - Install openpyxl: `pip install openpyxl`
 
 2. **"Could not find product"**
+
    - Products are created automatically, but check the product names in your Excel file
 
 3. **"BOM already exists"**
+
    - The module skips existing BOMs. Delete existing BOMs if you want to reimport
 
 4. **"Workcenter not found"**
