@@ -80,7 +80,7 @@ class AccountMove(models.Model):
                 )
                 % {
                     "ids": ", ".join(str(r[0]) for r in res),
-                    "numbers": ", ".join(r[1] for r in res),
+                    "numbers": ", ".join(r[1] or "" for r in res),
                 }
             )
 
@@ -302,9 +302,7 @@ class AccountMove(models.Model):
                     ("company_id", "=", company.id),
                 ]
             )
-            invoices = invoices.filtered(
-                lambda inv: inv._need_ubl_cii_xml("ciusro")
-            )
+            invoices = invoices.filtered(lambda inv: inv._need_ubl_cii_xml("ciusro"))
             if not invoices:
                 continue
             composer = (
