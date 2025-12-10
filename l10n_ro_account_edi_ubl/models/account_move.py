@@ -287,7 +287,7 @@ class AccountMove(models.Model):
         company_ids = (
             self.env["res.company"]
             .sudo()
-            .search([("l10n_ro_edi_residence", "!=", False)])
+            .search([("l10n_ro_edi_residence", "!=", False)]).filtered(lambda l: l.country_id.code == 'RO')
         )
         for company in company_ids:
             days = company.l10n_ro_edi_residence
