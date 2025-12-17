@@ -1,6 +1,6 @@
 {
     "name": "BOM Excel Import",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Manufacturing",
     "summary": """
         This module allows importing Bills of Materials (BOMs) from Excel files.
@@ -12,6 +12,8 @@
         - Column 4: Product/component consumed UOM
         - Column 5: Product/component consumed
         - Column 6: Workcenter
+        - Column 7: Subcontracting (boolean)
+        - Column 8: Subcontractors (comma-separated)
 
         The import process uses multi step wizard:
         1. Import operations and workcenters

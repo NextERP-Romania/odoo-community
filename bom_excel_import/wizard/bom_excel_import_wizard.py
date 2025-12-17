@@ -224,6 +224,15 @@ class BomExcelImportWizard(models.TransientModel):
         existing_workcenters = self.env["mrp.workcenter"].search([])  # pylint: disable=no-search-all
         existing_workcenter_names = {wc.name.lower() for wc in existing_workcenters}
 
+        # bom_data_example = {
+        #     "A": [
+        #         {"part": "Screw", "qty": 4},
+        #         {"part": "Bolt", "qty": 2},
+        #     ],
+        #     "B": [
+        #         {"part": "Spring", "qty": 1},
+        #     ]
+        # }
         # Group data by product to create BOMs
         bom_data = defaultdict(list)
         workcenters_to_create = set()
@@ -246,6 +255,8 @@ class BomExcelImportWizard(models.TransientModel):
                 # Column 4: Product/component consumed UOM
                 # Column 5: Product/component consumed
                 # Column 6: Workcenter
+                # Column 7: Subcontracting
+                # Column 8: Subcontractors (comma-separated)
 
                 product_produced = row[0] if len(row) > 0 and row[0] else None
                 operation_name = row[1] if len(row) > 1 and row[1] else None
@@ -253,6 +264,8 @@ class BomExcelImportWizard(models.TransientModel):
                 component_uom = row[3] if len(row) > 3 and row[3] else None
                 component = row[4] if len(row) > 4 and row[4] else None
                 workcenter_name = row[5] if len(row) > 5 and row[5] else None
+                subcontracting = bool(row[6]) if len(row) > 6 and row[6] else None
+                subcontractors = row[7] if len(row) > 7 and row[7] else None
 
                 if not product_produced:
                     log_lines.append(f"Row {row_num}: Skipped - Missing product")
@@ -281,6 +294,8 @@ class BomExcelImportWizard(models.TransientModel):
                         "component": component,
                         "component_uom": component_uom,
                         "quantity": quantity,
+                        "subcontracting": subcontracting,
+                        "subcontractors": subcontractors,
                         "row": row_num,
                     }
                 )
@@ -361,6 +376,8 @@ class BomExcelImportWizard(models.TransientModel):
                     )
                     continue
 
+                is_subcontracting = operations_data and bool(operations_data[0].get("subcontracting"))
+
                 # Create BOM
                 bom = self.env["mrp.bom"].create(
                     {
@@ -368,10 +385,16 @@ class BomExcelImportWizard(models.TransientModel):
                         .browse(product_id)
                         .product_tmpl_id.id,
                         "product_id": product_id,
-                        "type": "normal",
+                        "type": "subcontract" if is_subcontracting else "normal",
                         "product_qty": 1.0,
                     }
                 )
+
+                subcontractors = operations_data and operations_data[0].get("subcontractors").split(",") if operations_data[0].get("subcontractors") else []
+                if subcontractors:
+                    partners = self.env["res.partner"].search([("name", "in", subcontractors)])
+                    bom.subcontractor_ids = [(6, 0, partners.ids)]
+
                 created_boms += 1
                 log_lines.append(f"Created BOM for: {product_name}")
 

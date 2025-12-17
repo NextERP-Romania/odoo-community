@@ -18,6 +18,8 @@
                         - Column 4: Component consumed UOM<br />
                         - Column 5: Component consumed<br />
                         - Column 6: Workcenter name<br />
+                        - Column 7: Subcontracting<br />
+                        - Column 8: Subcontractors (comma-separated)<br />
                     </div>
                     <group>
                         <group>
