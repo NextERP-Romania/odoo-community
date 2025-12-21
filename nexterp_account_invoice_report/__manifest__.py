@@ -4,7 +4,7 @@
 
 {
     "name": "NextERP - Account Invoice Report",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.0.2",
     "summary": """ NextERP - Account Invoice Report""",
     "category": "Accounting",
     "author": "NextERP Romania",
