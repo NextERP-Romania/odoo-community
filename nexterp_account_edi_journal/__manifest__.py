@@ -3,7 +3,7 @@
 
 {
     "name": "NextERP - Account EDI Journalt",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "summary": """ NextERP - Account EDI Journal""",
     "category": "Accounting",
     "author": "NextERP Romania",
