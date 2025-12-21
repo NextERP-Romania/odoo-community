@@ -19,16 +19,9 @@
         </xpath>
         <xpath expr="//span[@t-field='line.price_unit']" position="attributes">
             <attribute name="t-options" t-if="o.company_id.print_invoice_tax_value">
-                {'"widget": "monetary", "display_currency": o.currency_id}'
+                {"widget": "monetary", "display_currency": o.currency_id}
             </attribute>
         </xpath>
-        <td class="text-end">
-            <span t-field="line.quantity"/>
-            <span t-field="line.product_uom_id"  groups="uom.group_uom"/>
-        </td>
-        <td t-attf-class="text-end {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
-            <span class="text-nowrap" t-field="line.price_unit"/>
-        </td>
 
         <xpath expr="//thead/tr" position="inside">
             <!-- Print invoice line tax value - Table Column -->
