@@ -4,8 +4,8 @@
 from odoo import models, fields
 
 
-class AccountMove(models.Model):
-    _inherit = "account.move"
+class AccountJournal(models.Model):
+    _inherit = "account.journal"
 
     l10n_ro_edi_send_enabled = models.Boolean(
         string="Enable EDI Send",
