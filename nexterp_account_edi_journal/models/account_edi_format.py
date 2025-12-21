@@ -7,12 +7,6 @@ from odoo import models
 class AccountEdiXmlCIUSRO(models.Model):
     _inherit = "account.edi.format"
 
-    def _is_compatible_with_journal(self, journal):
-        self.ensure_one()
-        if self.code == "cius_ro" and not journal.l10n_ro_edi_send_enabled:
-            return False
-        return super()._is_compatible_with_journal(journal)
-
     def _is_required_for_invoice(self, invoice):
         if self.code == "cius_ro" and not invoice.journal_id.l10n_ro_edi_send_enabled:
             return False
