@@ -18,13 +18,16 @@ class StockMoveLine(models.Model):
 
     def _get_aggregated_properties(self, move_line=False, move=False):
         # Get product name without default_code
-        res = super()._get_aggregated_properties(
-            move_line=move_line, move=move
-        )
+        res = super()._get_aggregated_properties(move_line=move_line, move=move)
         move = move or move_line.move_id
         if move.company_id.delivery_slip_report_only_name:
-            res['name'] = move.product_id.name
+            res["name"] = move.product_id.name
         return res
 
     def _get_report_lang(self):
-        return self.move_ids and self.move_ids[0].partner_id.lang or self.partner_id.lang or self.env.lang
+        return (
+            self.move_ids
+            and self.move_ids[0].partner_id.lang
+            or self.partner_id.lang
+            or self.env.lang
+        )
