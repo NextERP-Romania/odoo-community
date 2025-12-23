@@ -6,10 +6,18 @@
         priority='100'
     >
         <xpath expr="//th[@name='th_taxes']" position="attributes">
-            <attribute name="t-if" add="not o.company_id.print_invoice_tax_value" separator="and"/>
+            <attribute
+                name="t-if"
+                add="not o.company_id.print_invoice_tax_value"
+                separator="and"
+            />
         </xpath>
         <xpath expr="//td[@name='td_taxes']" position="attributes">
-            <attribute name="t-if" add="not o.company_id.print_invoice_tax_value" separator="and"/>
+            <attribute
+                name="t-if"
+                add="not o.company_id.print_invoice_tax_value"
+                separator="and"
+            />
         </xpath>
         <xpath expr="//span[@t-field='line.quantity']" position="attributes">
             <!-- Replace line quantity with precision, round with line.product_uom_id precision -->
