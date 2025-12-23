@@ -124,7 +124,7 @@ class SFTPServer(models.Model):
 
         for server in self:
             title += (
-                f"({server},name={server.name},host={server.host},"
+                f"({server}, name={server.name}, host={server.host}, "
                 f"username={server.username})\n"
             )
             sftp = server._open_sftp_client()

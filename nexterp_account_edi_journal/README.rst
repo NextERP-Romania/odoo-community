@@ -1,6 +1,6 @@
-================================
-NextERP - Account Invoice Report
-================================
+==============================
+NextERP - Account EDI Journalt
+==============================
 
 .. 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -13,14 +13,16 @@ NextERP - Account Invoice Report
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/github-NextERP--Romania%2Fodoo--community-lightgray.png?logo=github
-    :target: https://github.com/NextERP-Romania/odoo-community/tree/16.0/nexterp_account_invoice_report
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
+    :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
+    :alt: License: LGPL-3
+.. |badge3| image:: https://img.shields.io/badge/github-NextERP--Romania%2Fodoo--community-lightgray.png?logo=github
+    :target: https://github.com/NextERP-Romania/odoo-community/tree/16.0/nexterp_account_edi_journal
     :alt: NextERP-Romania/odoo-community
 
-|badge1| |badge2|
+|badge1| |badge2| |badge3|
 
-This module allows you set a print storno invoices with minus, tax and total values in each line
-A setting is available for each company in the Accounting Settings to allow/dissalow the behaviour.
+This module allows you set to enable or disable EDI sending per journal.
 
 **Table of contents**
 
@@ -35,7 +37,7 @@ To install this module, you need to:
 * clone the branch 16.0 of the repository https://github.com/NextERP-Romania/odoo-community
 * add the path to this repository in your configuration (addons-path)
 * update the module list
-* search for "NextERP - Account Invoice Report" in your addons
+* search for "NextERP - Account EDI Journal" in your addons
 * install the module
 
 Bug Tracker
@@ -44,7 +46,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/NextERP-Romania/odoo-community/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/NextERP-Romania/odoo-community/issues/new?body=module:%20nexterp_account_invoice_report%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/NextERP-Romania/odoo-community/issues/new?body=module:%20nexterp_account_edi_journal%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -66,6 +68,6 @@ Contributors
 Maintainers
 ~~~~~~~~~~~
 
-This module is part of the `NextERP-Romania/odoo-community <https://github.com/NextERP-Romania/odoo-community/tree/16.0/nexterp_account_invoice_report>`_ project on GitHub.
+This module is part of the `NextERP-Romania/odoo-community <https://github.com/NextERP-Romania/odoo-community/tree/16.0/nexterp_account_edi_journal>`_ project on GitHub.
 
 You are welcome to contribute.

@@ -1,7 +1,7 @@
 # Copyright (C) 2025 NextERP Romania
 # License LGPL-3 or later
 
-from odoo import models, fields
+from odoo import fields, models
 
 
 class AccountJournal(models.Model):

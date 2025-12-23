@@ -7,7 +7,7 @@
     "version": "16.0.1.0.0",
     "category": "Localisation",
     "author": "NextERP Romania",
-    "website": "https://www.nexterp.ro",
+    "website": "https://nexterp.ro",
     "support": "odoo_apps@nexterp.ro",
     "depends": ["l10n_ro_account_edi_ubl", "account_edi_ubl_cii"],
     "data": [

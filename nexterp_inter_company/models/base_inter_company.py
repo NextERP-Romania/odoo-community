@@ -52,13 +52,12 @@ class InterCompanyField(models.AbstractModel):
                 ):
                     is_inter_company = True
             else:
-                _logger.warning(
-                    f"""On model {self._name} you do not have field
-                    commercial_partner_id or partner_id; but you inherited
-                    inter company mixin. Please add one of the fields to the
-                    model to use inter company or update the compute method
-                    with the right partner field."""
-                )
+                warn_message = f"""On model {self._name} you do not have field
+                commercial_partner_id or partner_id, but you inherited inter
+                company mixin. Please add one of the fields to the model to use
+                inter company or update the compute method with the right
+                partner field."""
+                _logger.warning(warn_message)
             record.is_inter_company = is_inter_company
 
     def _check_partner_id_in_fields(self):

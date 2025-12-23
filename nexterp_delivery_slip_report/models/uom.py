@@ -3,7 +3,7 @@
 
 import math
 
-from odoo import api, models, fields
+from odoo import api, fields, models
 
 
 class StockMoveLine(models.Model):
@@ -14,12 +14,10 @@ class StockMoveLine(models.Model):
         help="Number of decimal places to use in reports for this unit of measure.",
         compute="_compute_report_precision",
         store=True,
-        readonly=False
+        readonly=False,
     )
 
     @api.depends("rounding")
     def _compute_report_precision(self):
         for uom in self:
-            uom.report_precision = uom.rounding and int(
-                -math.log10(uom.rounding)
-            ) or 0
+            uom.report_precision = uom.rounding and int(-math.log10(uom.rounding)) or 0
