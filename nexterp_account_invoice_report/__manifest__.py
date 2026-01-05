@@ -8,7 +8,7 @@
     "summary": """ NextERP - Account Invoice Report""",
     "category": "Accounting",
     "author": "NextERP Romania",
-    "website": "https://github.com/OCA/l10n-romania",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "support": "odoo_apps@nexterp.ro",
     "license": "OPL-1",
     "currency": "EUR",

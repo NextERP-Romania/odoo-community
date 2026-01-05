@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <template
         id="report_delivery_document"
         inherit_id="stock.report_delivery_document"
@@ -15,30 +14,29 @@
                 <span t-field="move.product_id" />
             </t>
         </xpath>
-        <xpath expr="//span[@t-field='move.description_picking']" position="attributes">
+        <xpath expr="//span[@t-out='move.description_picking']" position="attributes">
             <!-- Hide product description if only_name is selected -->
             <attribute
                 name="t-if"
-                set="not move.company_id.delivery_slip_report_only_name"
-            />
+            >not o.company_id.delivery_slip_report_only_name</attribute>
         </xpath>
         <!-- <span t-field="move.product_id"/> -->
-        <xpath expr="//span[@t-field='move.product_uom_qty']" position="attributes">
+        <xpath
+            expr="//span[@t-out='format_number(move.product_uom_qty)']"
+            position="attributes"
+        >
             <!-- Replace line quantity with precision, round with line.product_uom precision -->
-            <attribute
-                name="t-options"
-                t-if="o.company_id.delivery_slip_report_uom_precision"
-            >
-                {'precision': move.product_uom.report_precision}
+            <attribute name="t-options">
+                {'widget': 'float', 'precision': move.product_uom.report_precision} if o.company_id.delivery_slip_report_uom_precision else {}
             </attribute>
         </xpath>
-        <xpath expr="//span[@t-field='move.quantity_done']" position="attributes">
+        <xpath
+            expr="//span[@t-out='format_number(move.quantity)']"
+            position="attributes"
+        >
             <!-- Replace line quantity with precision, round with line.product_uom precision -->
-            <attribute
-                name="t-options"
-                t-if="o.company_id.delivery_slip_report_uom_precision"
-            >
-                {'precision': move.product_uom.report_precision}
+            <attribute name="t-options">
+                {'widget': 'float', 'precision': move.product_uom.report_precision} if o.company_id.delivery_slip_report_uom_precision else {}
             </attribute>
         </xpath>
     </template>
@@ -56,21 +54,19 @@
                 <span t-field="move_line.product_id" />
             </t>
         </xpath>
-        <xpath expr="//span[@t-esc='description']" position="attributes">
+        <xpath expr="//span[@t-out='description']" position="attributes">
             <!-- Hide product description if only_name is selected -->
             <attribute
                 name="t-if"
-                set="not o.company_id.delivery_slip_report_only_name"
-            />
+            >not o.company_id.delivery_slip_report_only_name</attribute>
         </xpath>
 
-        <xpath expr="//span[@t-field='move_line.qty_done']" position="attributes">
-            <!-- Replace line quantity with precision, round with line.product_uom precision -->
-            <attribute
-                name="t-options"
-                t-if="o.company_id.delivery_slip_report_uom_precision"
-            >
-                {'precision': ml.product_uom.report_precision}
+        <xpath
+            expr="//span[@t-out='format_number(move_line.quantity)']"
+            position="attributes"
+        >
+            <attribute name="t-options">
+                {'widget': 'float', 'precision': move_line.product_uom.report_precision} if o.company_id.delivery_slip_report_uom_precision else {}
             </attribute>
         </xpath>
     </template>
@@ -82,34 +78,25 @@
             expr="//span[@t-esc=&quot;aggregated_lines[line]['description']&quot;]"
             position="attributes"
         >
-            <!-- Hide product description if only_name is selected -->
             <attribute
                 name="t-if"
-                set="not o.company_id.delivery_slip_report_only_name"
-            />
+            >not o.company_id.delivery_slip_report_only_name</attribute>
         </xpath>
 
         <xpath
-            expr="//span[@t-esc=&quot;aggregated_lines[line]['qty_ordered']&quot;]"
+            expr="//span[@t-out=&quot;format_number(aggregated_lines[line]['qty_ordered'])&quot;]"
             position="attributes"
         >
-            <!-- Replace line quantity with precision, round with line.product_uom_id precision -->
-            <attribute
-                name="t-options"
-                t-if="o.company_id.delivery_slip_report_uom_precision"
-            >
-                {'widget': 'float', 'precision': aggregated_lines[line]['report_precision']}
+            <attribute name="t-options">
+                {'widget': 'float', 'precision': aggregated_lines[line]['report_precision']} if o.company_id.delivery_slip_report_uom_precision else {}
             </attribute>
-        </xpath><xpath
-            expr="//span[@t-esc=&quot;aggregated_lines[line]['qty_done']&quot;]"
+        </xpath>
+        <xpath
+            expr="//span[@t-out=&quot;format_number(aggregated_lines[line]['quantity'])&quot;]"
             position="attributes"
         >
-            <!-- Replace line quantity with precision, round with line.product_uom_id precision -->
-            <attribute
-                name="t-options"
-                t-if="o.company_id.delivery_slip_report_uom_precision"
-            >
-                {'widget': 'float', 'precision': aggregated_lines[line]['report_precision']}
+            <attribute name="t-options">
+                {'widget': 'float', 'precision': aggregated_lines[line]['report_precision']} if o.company_id.delivery_slip_report_uom_precision else {}
             </attribute>
         </xpath>
     </template>

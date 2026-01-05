@@ -4,20 +4,19 @@
 
 {
     "name": "NextERP - Stock Delivery Slip Report",
-    "version": "16.0.1.0.2",
+    "version": "19.0.0.0.0",
     "summary": """ NextERP - Stock Delivery Slip Report""",
     "category": "Warehouse",
     "author": "NextERP Romania",
-    "website": "https://nexterp.ro",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "support": "odoo_apps@nexterp.ro",
     "license": "OPL-1",
     "currency": "EUR",
     "data": [
         "views/report_picking.xml",
-        "views/uom_views.xml",
         "views/res_config_settings_views.xml",
     ],
-    "depends": ["stock"],
+    "depends": ["stock", "nexterp_account_invoice_report"],
     "installable": True,
     "auto_install": False,
     "application": False,
