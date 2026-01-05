@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.stock</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="stock.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <block name="operations_setting_container" position="after">
+                <block id="nexterp_delivery_slip_report_settings">
+                    <setting id="delivery_slip_report_only_name" company_dependent="1">
+                        <field name="delivery_slip_report_only_name" />
+                    </setting>
+                    <setting
+                        id="delivery_slip_report_uom_precision"
+                        company_dependent="1"
+                    >
+                        <field name="delivery_slip_report_uom_precision" />
+                    </setting>
+                    <setting id="picking_report_lang_company" company_dependent="1">
+                        <field name="picking_report_lang_company" />
+                    </setting>
+                </block>
+            </block>
+        </field>
+    </record>
+</odoo>

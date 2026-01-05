@@ -3,21 +3,20 @@
 # (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
 
 {
-    "name": "NextERP - Account Invoice Report",
+    "name": "NextERP - Stock Delivery Slip Report",
     "version": "19.0.0.0.0",
-    "summary": """ NextERP - Account Invoice Report""",
-    "category": "Accounting",
+    "summary": """ NextERP - Stock Delivery Slip Report""",
+    "category": "Warehouse",
     "author": "NextERP Romania",
     "website": "https://github.com/NextERP-Romania/odoo-community",
     "support": "odoo_apps@nexterp.ro",
     "license": "OPL-1",
     "currency": "EUR",
     "data": [
-        "views/report_invoice.xml",
+        "views/report_picking.xml",
         "views/res_config_settings_views.xml",
-        "views/uom_views.xml",
     ],
-    "depends": ["account"],
+    "depends": ["stock", "nexterp_account_invoice_report"],
     "installable": True,
     "auto_install": False,
     "application": False,
