@@ -150,7 +150,10 @@ class ResCompany(models.Model):
                         ):
                             continue
                 new_invoice = move_obj.search(
-                    [("l10n_ro_edi_download", "=", message.get("id"))]
+                    [
+                        ("company_id", "=", company.id),
+                        ("l10n_ro_edi_download", "=", message.get("id")),
+                    ]
                 )
                 if not new_invoice:
                     new_invoice = move_obj.with_context(

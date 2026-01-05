@@ -203,12 +203,12 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
             vals["value"] = "50"
         return vals
 
-    def _import_retrieve_and_fill_partner(
+    def _import_partner(
         self,
-        invoice,
+        company_id,
         name,
         phone,
-        mail,
+        email,
         vat,
         country_code=False,
         peppol_eas=False,
@@ -218,12 +218,11 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
         city=False,
         zip_code=False,
     ):
-        """Update method to set the partner as a company, not individual"""
-        res = super()._import_retrieve_and_fill_partner(
-            invoice,
+        partner, logs = super()._import_partner(
+            company_id,
             name,
             phone,
-            mail,
+            email,
             vat,
             country_code,
             peppol_eas,
@@ -234,11 +233,13 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
             zip_code,
         )
         if country_code == "RO":
-            if not invoice.partner_id.is_company and name and vat:
-                invoice.partner_id.is_company = True
-                invoice.partner_id.ro_vat_change()
-                invoice.partner_id.check_vat_on_payment()
-        return res
+            if not partner.is_company and name:
+                if not partner.vat:
+                    partner.vat = vat
+                partner.is_company = True
+                partner.ro_vat_change()
+                partner.check_vat_on_payment()
+        return partner, logs
 
     def _import_retrieve_partner_vals(self, tree, role):
         vals = super()._import_retrieve_partner_vals(tree, role)
