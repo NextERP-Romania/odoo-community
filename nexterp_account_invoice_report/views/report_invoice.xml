@@ -5,6 +5,13 @@
         inherit_id="account.report_invoice_document"
         priority='100'
     >
+        <xpath expr="//t[@t-set='line_colspan']" position="replace">
+            <t
+                t-set="line_colspan"
+                t-value="3 + (1 if display_discount else 0) + (1 if display_taxes and not line.tax_ids and not o.company_id.print_invoice_tax_value else 0)"
+            />
+        </xpath>
+
         <xpath expr="//th[@name='th_taxes']" position="attributes">
             <attribute
                 name="t-if"
@@ -12,6 +19,7 @@
                 separator="and"
             />
         </xpath>
+
         <xpath expr="//td[@name='td_taxes']" position="attributes">
             <attribute
                 name="t-if"
@@ -19,31 +27,63 @@
                 separator="and"
             />
         </xpath>
-        <xpath expr="//span[@t-field='line.quantity']" position="attributes">
-            <!-- Replace line quantity with precision, round with line.product_uom_id precision -->
-            <attribute name="t-options" t-if="o.company_id.print_invoice_tax_value">
-                {'precision': line.product_uom_id.rounding and int(-math.log10(line.product_uom_id.rounding)) or 0}
-            </attribute>
-        </xpath>
-        <xpath expr="//span[@t-field='line.price_unit']" position="attributes">
-            <attribute name="t-options" t-if="o.company_id.print_invoice_tax_value">
-                {"widget": "monetary", "display_currency": o.currency_id}
-            </attribute>
+        <xpath expr="//td[@name='td_taxes_grouped']" position="attributes">
+            <attribute
+                name="t-if"
+                add="not o.company_id.print_invoice_tax_value"
+                separator="and"
+            />
         </xpath>
 
+        <xpath expr="//span[@t-field='line.quantity']" position="replace">
+            <t
+                t-set='sign'
+                t-value="-1 if o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund'] else 1"
+            />
+            <t t-if="o.company_id.print_invoice_tax_value">
+                <span
+                    t-esc="sign * line.quantity"
+                    class="text-nowrap"
+                    t-options='{"widget": "float", "precision": line.product_uom_id.report_precision or 0}'
+                >3.00</span>
+            </t>
+            <t t-else="">
+                <span t-esc="line.quantity" class="text-nowrap">3.00</span>
+            </t>
+        </xpath>
+        <xpath expr="//span[@t-out='product_uom_qty']" position="replace">
+            <t
+                t-set='sign'
+                t-value="-1 if o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund'] else 1"
+            />
+            <t t-if="o.company_id.print_invoice_tax_value">
+                <span
+                    t-esc="sign * product_uom_qty"
+                    class="text-nowrap"
+                    t-options='{"widget": "float", "precision": line.product_id.uom_id.report_precision or 0}'
+                >3.00</span>
+            </t>
+            <t t-else="">
+                <span t-esc="product_uom_qty" class="text-nowrap">3.00</span>
+            </t>
+        </xpath>
         <xpath expr="//thead/tr" position="inside">
             <!-- Print invoice line tax value - Table Column -->
             <t t-if="o.company_id.print_invoice_tax_value">
-                <th name="th_tax_value" class="text-end"><span>Taxes</span></th>
+                <th name="th_tax_value" class="text-end">
+                    <span>VAT</span>
+                </th>
             </t>
 
             <!-- Print invoice line total value - Table Column -->
             <t t-if="o.company_id.print_invoice_total_value">
-                <th name="th_price_total" class="text-end"><span>Total</span></th>
+                <th name="th_price_total" class="text-end">
+                    <span>Total</span>
+                </th>
             </t>
         </xpath>
 
-        <xpath expr="//tbody/t/tr/t[1]" position="inside">
+        <xpath expr="//t[@t-if='is_product']" position="inside">
             <!-- Print invoice line tax value - Table Cell -->
             <t t-if="o.company_id.print_invoice_tax_value">
                 <t
@@ -74,39 +114,86 @@
         </xpath>
 
         <xpath
-            expr="//tbody[@class='invoice_tbody']//td[@class='text-end o_price_total']"
+            expr="//t[@t-elif=&quot;line.display_type in ('line_section', 'line_subsection')&quot;]"
+            position="inside"
+        >
+            <t t-set="section_tax_amount" t-value="line.get_section_tax_amount()" />
+            <t t-set="section_total_amount" t-value="line.get_section_total_amount()" />
+            <t t-if="o.company_id.print_invoice_tax_value">
+                <td name="td_tax_value" class="text-end">
+                    <span
+                        t-esc="section_tax_amount"
+                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'
+                    />
+                </td>
+            </t>
+
+            <t t-if="o.company_id.print_invoice_total_value">
+                <td name="td_price_total" class="text-end">
+                    <span
+                        t-esc="section_total_amount"
+                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'
+                    />
+                </td>
+            </t>
+        </xpath>
+        <xpath
+            expr="//td[@name='td_quantity_grouped']/div[@t-if='hide_details']/span[1]"
             position="replace"
         >
-            <!-- Replace product amount total value - with refund sign -->
             <t
-                t-set='sign'
-                t-value="-1 if o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund'] else 1"
-            />
-            <td class="text-end o_price_total">
-                <span
-                    class="text-nowrap"
-                    t-esc="sign * line.price_subtotal"
-                    groups="account.group_show_line_subtotals_tax_excluded"
-                    t-options='{"widget": "monetary", "display_currency": o.currency_id}'
-                />
-                <span
-                    class="text-nowrap"
-                    t-esc="sign * line.price_total"
-                    groups="account.group_show_line_subtotals_tax_included"
-                    t-options='{"widget": "monetary", "display_currency": o.currency_id}'
-                />
-            </td>
-
+                t-if="o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund']"
+            >
+                <span>-1</span>
+            </t>
+            <t t-elif="o.company_id.print_invoice_tax_value">
+                <span>1</span>
+            </t>
+            <t t-else="">
+                <span>1.00</span>
+            </t>
         </xpath>
-
-        <xpath expr="//span[@t-field='line.quantity']" position="replace">
-            <!-- Replace product quantity total - with refund sign -->
-            <t
-                t-set='sign'
-                t-value="-1 if o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund'] else 1"
-            />
-            <span t-esc="sign * line.quantity" />
+        <span t-out="grouped_line['quantity']" position="attributes">
+            <attribute name="t-options">
+                {'widget': 'float', "precision": grouped_line['line_uom'].report_precision or 0} if o.company_id.print_invoice_tax_value and grouped_line.get('line_uom') else {'widget': 'float', 'decimal_precision': 'Product Unit'}
+            </attribute>
+        </span>
+        <xpath
+            expr="//t[@t-if=&quot;grouped_line.get('line_uom')&quot;]/span/span[@t-out='product_uom_qty']"
+            position="attributes"
+        >
+            <attribute name="t-options">
+                {'widget': 'float', "precision": grouped_line['line_uom'].report_precision or 0} if o.company_id.print_invoice_tax_value and grouped_line.get('line_uom') else {'widget': 'float', 'decimal_precision': 'Product Unit'}
+            </attribute>
         </xpath>
+        <xpath expr="//td[@name='td_price_unit_grouped']/span" position="replace">
+            <span
+                t-if="not hide_prices"
+                t-out="grouped_line['price_unit']"
+                t-options="{'widget': 'float', 'decimal_precision': 'Product Price'}"
+                class="text-nowrap"
+            >9.00</span>
+        </xpath>
+        <xpath expr="//td[@name='td_subtotal_grouped']" position="after">
+            <t t-if="o.company_id.print_invoice_tax_value">
+                <td name="td_tax_value_grouped" class="text-end">
+                    <span
+                        t-if="not hide_prices"
+                        t-esc="grouped_line['tax_amount']"
+                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'
+                    />
+                </td>
+            </t>
 
+            <t t-if="o.company_id.print_invoice_total_value">
+                <td name="td_price_total_grouped" class="text-end">
+                    <span
+                        t-if="not hide_prices"
+                        t-esc="grouped_line['price_total']"
+                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'
+                    />
+                </td>
+            </t>
+        </xpath>
     </template>
 </odoo>

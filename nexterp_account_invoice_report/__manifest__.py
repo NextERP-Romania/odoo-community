@@ -4,17 +4,18 @@
 
 {
     "name": "NextERP - Account Invoice Report",
-    "version": "16.0.1.0.2",
+    "version": "19.0.0.0.0",
     "summary": """ NextERP - Account Invoice Report""",
     "category": "Accounting",
     "author": "NextERP Romania",
-    "website": "https://nexterp.ro",
+    "website": "https://github.com/OCA/l10n-romania",
     "support": "odoo_apps@nexterp.ro",
     "license": "OPL-1",
     "currency": "EUR",
     "data": [
         "views/report_invoice.xml",
         "views/res_config_settings_views.xml",
+        "views/uom_views.xml",
     ],
     "depends": ["account"],
     "installable": True,
