@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import requests
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError
 
 from odoo import _, api, fields, models
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT
@@ -102,8 +103,8 @@ class ResCompany(models.Model):
             method="GET",
             params=params,
         )
-        if "error" in result:
-            return result
+        if "error" in result or result.get("eroare"):
+            raise UserError(f"ANAF: {result.get('eroare') or result.get('error')}")
         content = result.get("content")
         if content:
             doc = json.loads(content.decode("utf-8"))
@@ -113,6 +114,8 @@ class ResCompany(models.Model):
                     doc.get("mesaje") or [],
                 )
             )
+            if doc.get("eroare"):
+                raise UserError(f"ANAF: {doc.get('eroare')}")
         messages += company_messages
         numar_total_pagini = doc.get("numar_total_pagini", 0)
 
@@ -150,7 +153,10 @@ class ResCompany(models.Model):
                         ):
                             continue
                 new_invoice = move_obj.search(
-                    [("l10n_ro_edi_download", "=", message.get("id"))]
+                    [
+                        ("company_id", "=", company.id),
+                        ("l10n_ro_edi_download", "=", message.get("id")),
+                    ]
                 )
                 if not new_invoice:
                     new_invoice = move_obj.with_context(

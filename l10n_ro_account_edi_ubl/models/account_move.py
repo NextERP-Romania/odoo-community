@@ -282,13 +282,15 @@ class AccountMove(models.Model):
         )
         return template
 
-    def send_email_invoice_anaf(self):
+    def send_email_invoice_anaf(self, param=10):
+        batch_size = param
         template = self.template_send_email_invoice()
         company_ids = (
             self.env["res.company"]
             .sudo()
-            .search([("l10n_ro_edi_residence", "!=", False)]).filtered(lambda l: l.country_id.code == 'RO')
+            .search([("l10n_ro_edi_residence", "!=", False)])
         )
+        all_invoices = self.env["account.move"]
         for company in company_ids:
             days = company.l10n_ro_edi_residence
             date = fields.Date.today() - timedelta(days=days)
@@ -296,27 +298,37 @@ class AccountMove(models.Model):
                 [
                     ("l10n_ro_edi_state", "=", False),
                     ("move_type", "!=", "entry"),
-                    ("state", "=", ("posted")),
+                    ("state", "=", "posted"),
                     ("invoice_date", "<=", date),
-                    ("country_code", "=", "RO"),
                     ("company_id", "=", company.id),
                 ]
             )
-            invoices = invoices.filtered(lambda inv: inv._need_ubl_cii_xml("ciusro")).filtered(lambda l: l.partner_id.country_code == "RO")
+            invoices = invoices.filtered(
+                lambda inv: inv._need_ubl_cii_xml("ciusro")
+            ).filtered(lambda l: l.partner_id.country_code == "RO")
             if not invoices:
                 continue
+            all_invoices += invoices
+
+        invoices = all_invoices[:batch_size]
+        all_invoices -= invoices
+        for invoice in invoices:
             composer = (
                 self.env["account.move.send.wizard"]
-                .with_context(active_model="account.move", active_ids=invoices.ids)
+                .with_context(active_model="account.move", active_ids=invoice.ids)
                 .create(
                     {
                         "mail_template_id": template.id,
                         "sending_methods": False,
-                        "extra_edis": "ro_edi",
+                        "extra_edis": ["ro_edi"],
                     }
                 )
             )
             composer.action_send_and_print(allow_fallback_pdf=False)
+        if all_invoices:
+            self.env.ref(
+                "l10n_ro_account_edi_ubl.ir_cron_res_company_send_toe_invoice"
+            )._trigger()
 
     def fetch_invoice_anaf(self):
         invoices = self.env["account.move"].search(

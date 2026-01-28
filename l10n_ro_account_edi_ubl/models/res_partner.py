@@ -9,15 +9,6 @@ from odoo import fields, models
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    peppol_eas = fields.Selection(
-        selection_add=[
-            ("AN", "AN - O.F.T.P. (ODETTE File Transfer Protocol)"),
-            ("AQ", "AQ - X.400 address for mail text"),
-            ("AS", "AS - AS2 exchange"),
-            ("AU", "AU - File Transfer Protocol"),
-            ("EM", "EM - Electronic mail"),
-        ],
-    )
     l10n_ro_edi_ubl_no_send = fields.Boolean(
         "Romania - No send UBL",
         help="Check this if the partner should not receive UBL invoices.",

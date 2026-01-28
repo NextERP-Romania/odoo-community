@@ -11,6 +11,7 @@ class OutstandingStatement(models.AbstractModel):
     ):
         res = dict(map(lambda x: (x, []), partner_ids))
         partners = tuple(partner_ids)
+
         # pylint: disable=E8103
         self.env.cr.execute(
             """
@@ -19,7 +20,7 @@ class OutstandingStatement(models.AbstractModel):
              Q3 AS ({})
         SELECT partner_id, currency_id, move_id, date, date_maturity, debit,
             credit, amount, open_amount, COALESCE(name, '') as name,
-            COALESCE(ref, '') as ref, blocked, id
+            COALESCE(ref, '') as ref, id
         FROM Q3
         ORDER BY date, date_maturity, move_id""".format(
                 self._display_outstanding_lines_sql_q1(
