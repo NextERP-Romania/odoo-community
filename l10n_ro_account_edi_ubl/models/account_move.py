@@ -298,7 +298,7 @@ class AccountMove(models.Model):
                 [
                     ("l10n_ro_edi_state", "=", False),
                     ("move_type", "!=", "entry"),
-                    ("state", "=", ("posted")),
+                    ("state", "=", "posted"),
                     ("invoice_date", "<=", date),
                     ("company_id", "=", company.id),
                 ]

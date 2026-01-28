@@ -232,8 +232,8 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
             city,
             zip_code,
         )
-        if country_code == "RO":
-            if not partner.is_company and name:
+        if country_code and country_code == "RO":
+            if not partner.is_company or name:
                 if not partner.vat:
                     partner.vat = vat
                 partner.is_company = True
