@@ -142,6 +142,8 @@ class ResCompany(models.Model):
             move_obj = self.env["account.move"].with_company(company)
             company_messages = company._l10n_ro_get_anaf_efactura_messages(filtru="P")
             for message in company_messages:
+                if not isinstance(message, dict):
+                    continue
                 if company.l10n_ro_download_einvoices_start_date:
                     if message.get("data_creare"):
                         message_date = datetime.strptime(
