@@ -14,7 +14,7 @@
     "data": [
         "views/account_journal_views.xml",
     ],
-    "depends": ["l10n_ro_account_edi_ubl"],
+    "depends": ["l10n_ro_edi"],
     "installable": True,
     "auto_install": False,
     "application": False,
