@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_move_form_inherit_purchase_fix" model="ir.ui.view">
+        <field name="name">account.move.inherit.purchase.fix.autocomplete</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="purchase.view_move_form_inherit_purchase" />
+        <field name="arch" type="xml">
+            <!-- Modificăm label-ul -->
+            <xpath expr="//label[@for='purchase_vendor_bill_id']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': ['|', ('state','!=','draft'), ('move_type', 'not in', ['in_invoice','in_refund'])]}
+                </attribute>
+            </xpath>
+
+            <!-- Modificăm field-ul purchase_vendor_bill_id -->
+            <xpath
+                expr="//field[@name='purchase_vendor_bill_id']"
+                position="attributes"
+            >
+                <attribute name="attrs">
+                    {'invisible': ['|', ('state','!=','draft'), ('move_type', 'not in', ['in_invoice','in_refund'])]}
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
