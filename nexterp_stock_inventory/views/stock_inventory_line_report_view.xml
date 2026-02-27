@@ -1,0 +1,115 @@
+<?xml version="1.0" ?>
+<odoo>
+    <!-- Inventory stock line REPORT - views and menu -->
+    <!-- Tree view -->
+    <record model="ir.ui.view" id="inventory_stock_line_tree_view">
+        <field name="name">l10n.ro.stock.inventory.line.tree</field>
+        <field name="model">l10n.ro.stock.inventory.line</field>
+        <field name="arch" type="xml">
+            <tree create="0">
+                <field name="inventory_id" />
+                <field name="location_id" />
+                <field name="product_id" />
+                <field name="product_lot_id" />
+                <field name="quantity" />
+                <field name="inventory_quantity" />
+                <field name="inventory_diff_quantity" />
+                <field name="standard_price" />
+                <field name="value" />
+                <field name="inventory_value" />
+                <field name="inventory_diff_value" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Pivot view -->
+    <record model="ir.ui.view" id="inventory_stock_line_pivot_view">
+        <field name="model">l10n.ro.stock.inventory.line</field>
+        <field name="arch" type="xml">
+            <pivot disable_linking="True">
+                <!-- Rows -->
+                <field name="inventory_id" type="row" />
+                <field name="product_id" type="row" />
+
+                <!-- Columns -->
+                <field name="accounting_date" type="col" />
+                <field name="location_id" type="col" />
+
+                <!-- Measures -->
+                <field name="quantity" type="measure" />
+                <field name="inventory_quantity" type="measure" />
+                <field name="inventory_diff_quantity" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph view -->
+    <record model="ir.ui.view" id="inventory_stock_line_graph_view">
+        <field name="name">l10n.ro.stock.inventory.line.graph</field>
+        <field name="model">l10n.ro.stock.inventory.line</field>
+        <field name="arch" type="xml">
+            <graph string="Inventory Stock Line Adjustments" type="bar">
+                <field name="inventory_id" type="row" />
+                <field name="product_id" type="row" />
+                <field name="location_id" type="col" />
+                <field name="inventory_diff_quantity" type="measure" />
+            </graph>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="inventory_stock_line_search_view" model="ir.ui.view">
+        <field name="name">l10n.ro.stock.inventory.line.search</field>
+        <field name="model">l10n.ro.stock.inventory.line</field>
+        <field name="arch" type="xml">
+            <search string="Inventory">
+                <field name="product_id" />
+                <field name="product_lot_id" />
+                <field name="location_id" />
+
+                <filter
+                    name="inventory_line_done"
+                    string="Done"
+                    domain="[('state', '=', 'done')]"
+                />
+                <filter
+                    name="filter_accounting_date"
+                    date="accounting_date"
+                    string="Accounting Date"
+                    default_period="this_year"
+                />
+
+                <group expand="1" string="Group By">
+                    <filter
+                        string="State"
+                        name="state"
+                        context="{'group_by':'state'}"
+                    />
+                    <filter
+                        string="Inventory"
+                        name="inventory"
+                        context="{'group_by':'inventory_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Open window action -->
+    <record id="action_open_stock_inventory_line_history" model="ir.actions.act_window">
+        <field name="name">Inventory Stock Line Adjustments History</field>
+        <field name="res_model">l10n.ro.stock.inventory.line</field>
+        <field name="view_mode">tree,pivot,graph</field>
+        <field name="context">{"search_default_inventory_line_done": 1} </field>
+        <field name="view_id" ref="inventory_stock_line_tree_view" />
+    </record>
+
+    <!-- Menu item -->
+    <menuitem
+        id="menu_action_stock_inventory_line_history_tree"
+        name="Inventory Stock Line Adjustments History"
+        parent="stock.menu_warehouse_report"
+        action="action_open_stock_inventory_line_history"
+        groups="stock.group_stock_manager"
+    />
+</odoo>
