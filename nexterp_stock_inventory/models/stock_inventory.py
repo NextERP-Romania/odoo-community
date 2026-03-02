@@ -15,7 +15,7 @@ class StockInventory(models.Model):
         compute="_compute_name",
         store=True,
     )
-    accounting_date = fields.Date(default=fields.Date.context_today)
+    accounting_date = fields.Date(default=fields.Date.context_today, required=True)
     company_id = fields.Many2one(
         "res.company",
         default=lambda self: self.env.company,
