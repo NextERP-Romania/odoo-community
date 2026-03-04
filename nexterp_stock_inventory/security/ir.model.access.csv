@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+nexterp_stock_inventory.access_stock_inventory,access_stock_inventory,nexterp_stock_inventory.model_l10n_ro_stock_inventory,stock.group_stock_user,1,1,1,1
+nexterp_stock_inventory.access_stock_inventory_line,access_stock_inventory_line,nexterp_stock_inventory.model_l10n_ro_stock_inventory_line,stock.group_stock_user,1,1,1,1
