@@ -147,6 +147,7 @@
                     string="Done"
                     domain="[('state', '=', 'done')]"
                 />
+                <separator />
                 <filter
                     name="filter_accounting_date"
                     date="accounting_date"

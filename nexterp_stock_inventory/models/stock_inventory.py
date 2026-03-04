@@ -197,9 +197,9 @@ class StockInventoryLine(models.Model):
     inventory_diff_quantity = fields.Float(string="Difference", readonly=True)
     quantity = fields.Float(string="On Hand Quantity", readonly=True)
     standard_price = fields.Float(readonly=True)
-    value = fields.Monetary()
-    inventory_value = fields.Monetary()
-    inventory_diff_value = fields.Monetary()
+    value = fields.Monetary(readonly=True)
+    inventory_value = fields.Monetary(readonly=True)
+    inventory_diff_value = fields.Monetary(readonly=True)
     location_id = fields.Many2one(
         "stock.location",
         domain="[('usage', '=', 'internal')]",
