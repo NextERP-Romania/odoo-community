@@ -53,6 +53,7 @@ repos:
           - --repo-name=odoo-community
           - --if-source-changed
           - --keep-source-digest
+          - --template-filename=gen_addon_readme.rst.jinja
   - repo: https://github.com/OCA/odoo-pre-commit-hooks
     rev: v0.0.25
     hooks:
