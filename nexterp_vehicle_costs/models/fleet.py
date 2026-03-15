@@ -18,6 +18,11 @@ class FleetVehicle(models.Model):
     owner_id = fields.Many2one("res.partner", index=True)
     not_deductible = fields.Boolean()
     non_deductible_percent = fields.Float()
+    l10n_ro_nondeductible_percent = fields.Selection(
+        [("0", "Deductible"), ("50", "50% Nondeductible"), ("100", "Nondeductible")],
+        string="Romania - Non Deductible Percent",
+        default="0",
+    )
     tax_non_deductible = fields.Many2one("account.tax", "Tax NonDeductible")
 
     def return_action_to_open(self):

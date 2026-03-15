@@ -27,16 +27,6 @@ class StockMove(models.Model):
     def create_vehicle_cost(self):
         self.ensure_one()
 
-        # fstype = self.env["fleet.service.type"]
-
-        # def _getSubType(domain):
-        #     res = fstype.search(domain, limit=1)
-        #     if res:
-        #         return res
-        #     elif not res and domain:
-        #         return fstype.search([domain[0]], limit=1)
-        #     return res
-
         subtype = self.fleet_service_type_id
         cost_type = "services"
         model = self.env["fleet.vehicle.log.services"]
@@ -51,29 +41,28 @@ class StockMove(models.Model):
             cost_type = "services"
             model = self.env["fleet.vehicle.log.services"]
 
-        for svl in self.stock_valuation_layer_ids:
-            sub_cost = {
-                "vehicle_id": self.vehicle_id.id,
-                "service_type_id": subtype and subtype.id,
-                "product_id": svl.product_id.id,
-                "amount": -svl.value,
-                "purchaser_id": self.create_uid.partner_id.id,
-                "vendor_id": self.partner_id.id,
-                "date": self.date,
-                "notes": self.name,
-            }
+        sub_cost = {
+            "vehicle_id": self.vehicle_id.id,
+            "service_type_id": subtype and subtype.id,
+            "product_id": self.product_id.id,
+            "amount": -self.value,
+            "purchaser_id": self.create_uid.partner_id.id,
+            "vendor_id": self.partner_id.id,
+            "date": self.date,
+            "notes": self.name,
+        }
 
-            if cost_type == "fuel":
-                sub_cost["liter"] = -svl.quantity
-                sub_cost["service_type_id"] = self.fleet_service_type_id.id
-            elif cost_type == "services":
-                sub_cost["service_type_id"] = self.fleet_service_type_id.id
+        if cost_type == "fuel":
+            sub_cost["liter"] = -self.quantity
+            sub_cost["service_type_id"] = self.fleet_service_type_id.id
+        elif cost_type == "services":
+            sub_cost["service_type_id"] = self.fleet_service_type_id.id
 
-            sub_cost["quantity"] = -svl.quantity
-            sub_cost["price_unit"] = svl.unit_cost
-            sub_cost["stock_move_id"] = self.id
+        sub_cost["quantity"] = -self.quantity
+        sub_cost["price_unit"] = self.unit_cost
+        sub_cost["stock_move_id"] = self.id
 
-            model.create(sub_cost)
+        model.create(sub_cost)
 
     def cancel_vehicle_cost(self):
         for s in self.cost_ids:
@@ -86,15 +75,13 @@ class StockMove(models.Model):
                 and move.vehicle_id.not_deductible
                 and not move.l10n_ro_nondeductible_tax_id
             ):
-                tax_ids = move.product_id.supplier_taxes_id.filtered(
-                    lambda tax, move=move: tax.company_id == move.company_id
-                )
-                if tax_ids and tax_ids.mapped("l10n_ro_nondeductible_tax_id"):
-                    move.l10n_ro_nondeductible_tax_id = tax_ids.mapped(
-                        "l10n_ro_nondeductible_tax_id"
-                    )[0]
-                if move.vehicle_id.non_deductible_percent:
-                    move.deductible_amount = int(move.vehicle_id.non_deductible_percent)
+                if move.vehicle_id.l10n_ro_nondeductible_percent:
+                    move.l10n_ro_nondeductible_percent = (
+                        move.vehicle_id.l10n_ro_nondeductible_percent
+                    )
+                    move.l10n_ro_nondeductible_tax_id = (
+                        move.vehicle_id.tax_non_deductible
+                    )
         res = super()._action_done(cancel_backorder=cancel_backorder)
         for move in self:
             if (

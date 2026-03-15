@@ -5,10 +5,14 @@
         <field name="model">fleet.vehicle</field>
         <field name="inherit_id" ref="fleet.fleet_vehicle_view_form" />
         <field name="arch" type="xml">
-            <field name="company_id" position="after">
+            <field name="horsepower_tax" position="after">
                 <field name="owner_id" />
                 <field name="not_deductible" string="Not Deductible" />
                 <field name="non_deductible_percent" string="Non Deductible Percent" />
+                <field
+                    name="l10n_ro_nondeductible_percent"
+                    string="Non Deductible Percent"
+                />
                 <field
                     name="tax_non_deductible"
                     invisible="not_deductible == False"
