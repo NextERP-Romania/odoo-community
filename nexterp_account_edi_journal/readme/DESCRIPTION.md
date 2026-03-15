@@ -1,0 +1,1 @@
+This module allows you set to enable or disable EDI sending per journal.
