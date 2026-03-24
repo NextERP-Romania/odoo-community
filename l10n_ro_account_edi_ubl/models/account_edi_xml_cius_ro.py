@@ -252,18 +252,20 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
         return vals
 
     def _import_invoice_ubl_cii(self, invoice, file_data, new=False):
-        res = super()._import_invoice_ubl_cii(invoice, file_data, new=new)
         if invoice.company_id.l10n_ro_render_anaf_pdf:
             self.l10n_ro_renderAnafPdf(invoice)
+        res = super()._import_invoice_ubl_cii(invoice, file_data, new=new)
+        invoice.date = invoice.invoice_date
         return res
 
     def l10n_ro_renderAnafPdf(self, invoice):
         attachments = self.env["ir.attachment"].search(
             [("res_model", "=", invoice._name), ("res_id", "in", invoice.ids)]
         )
-        attachment = attachments.filtered(lambda x: ".xml" in x.name)[0]
+        attachment = attachments.filtered(lambda x: ".xml" in x.name)
         if not attachment:
             return False
+        attachment = attachment[0]
 
         xml_file = b64decode(attachment.datas)
         headers = {"Content-Type": "text/plain"}
