@@ -6,7 +6,7 @@ from base64 import b64decode, b64encode
 
 import requests
 
-from odoo import _, models
+from odoo import _, models, api, SUPERUSER_ID
 from odoo.exceptions import UserError
 
 
@@ -313,6 +313,28 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
 
     def _get_partner_party_vals(self, partner, role):
         # EXTENDS account.edi.xml.ubl_21
+        env_sudo = api.Environment(self.env.cr, SUPERUSER_ID, self.env.context)
+        delivery_view = env_sudo.ref(
+            'account_edi_ubl_cii.ubl_20_DeliveryType',
+            raise_if_not_found=False
+        )
+
+        if (
+            role == 'delivery'
+            and (
+                not delivery_view
+                or '<cac:Party>' not in delivery_view.arch
+            )
+        ):
+            return {
+                'party_vals': {
+                    'party_name_vals': [
+                        {
+                            'name': partner.display_name,
+                        }
+                    ],
+                }
+            }
         vals = super()._get_partner_party_vals(partner, role)
 
         partner = partner.commercial_partner_id
