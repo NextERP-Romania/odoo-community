@@ -9,7 +9,7 @@
     "license": "AGPL-3",
     "category": "Generic Modules/Stock",
     "author": "NextERP Romania",
-    "website": "https://nexterp.ro",
+    "website": "https://github.com/NextERP-Romania/odoo-community",
     "depends": [
         "stock_account",
     ],
