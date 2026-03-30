@@ -5,7 +5,7 @@
 
 {
     "name": "NextERP - Vehicle Cost Management",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Managing vehicles and contracts",
     "depends": ["account_fleet", "l10n_ro_nondeductible_vat"],
     "summary": "Manage vehicle costs, add categories for fuel and part, etc.",

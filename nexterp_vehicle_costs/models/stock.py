@@ -4,7 +4,8 @@
 # License AGPL-3.0 or later
 # (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#).
 
-from odoo import fields, models
+from odoo import fields, models, api, _
+from odoo.exceptions import UserError
 
 
 class StockMove(models.Model):
@@ -21,16 +22,73 @@ class StockMove(models.Model):
     )
 
     fleet_service_type_id = fields.Many2one(
-        "fleet.service.type", string="Vehicle Service Type"
+        "fleet.service.type", string="Vehicle Service Type", compute="_compute_fleet_service_type_id", store=True
     )
 
+    @api.onchange("vehicle_id")
+    def _onchange_fleet_service_type_id(self):
+        if self.vehicle_id.tax_non_deductible:
+            self.l10n_ro_nondeductible_tax_id = self.vehicle_id.tax_non_deductible
+            self.l10n_ro_nondeductible_percent = (
+                self.vehicle_id.l10n_ro_nondeductible_percent
+            )
+
+    @api.depends("refuel", "vehicle_id")
+    def _compute_fleet_service_type_id(self):
+        fstype = self.env["fleet.service.type"]
+
+        def _getSubType(domain):
+            res = fstype.search(domain, limit=1)
+            if res:
+                return res
+            elif not res and domain:
+                return fstype.search([domain[0]], limit=1)
+            return res
+
+        subtype = _getSubType([("category", "=", "service")])
+
+        if self.refuel:
+            subtype = _getSubType(
+                [
+                    ("category", "=", "fuel"),
+                    "|",
+                    ("name", "=", "Refueling"),
+                    ("name", "=", "Realimentare"),
+                ]
+            )
+            if not subtype:
+                raise UserError(
+                    _(
+                        "Tip cheltuiala combustibil inexistent."
+                        "Adaugati unul in Configurari/Tipuri de servicii "
+                        "<Combustibil>\nEroare la %s"
+                    )
+                    % self.name
+                )
+        else:
+            subtype = _getSubType(
+                [
+                    ("category", "=", "parts"),
+                    "|",
+                    ("name", "=", "Repairing"),
+                    ("name", "=", "Reparare"),
+                ]
+            )
+            if not subtype:
+                raise UserError(
+                    _(
+                        "Tip cheltuiala piese inexistent."
+                        "Adaugati unul in Configurari/Tipuri de servicii "
+                        "<Piese>\nEroare la %s"
+                    )
+                    % self.name
+                )
+        self.fleet_service_type_id = subtype
+            
     def create_vehicle_cost(self):
         self.ensure_one()
-
         subtype = self.fleet_service_type_id
-        cost_type = "services"
-        model = self.env["fleet.vehicle.log.services"]
-
+        
         if self.fleet_service_type_id.category == "Contract":
             cost_type = "contract"
             model = self.env["fleet.vehicle.log.contract"]
@@ -49,7 +107,7 @@ class StockMove(models.Model):
             "purchaser_id": self.create_uid.partner_id.id,
             "vendor_id": self.partner_id.id,
             "date": self.date,
-            "notes": self.name,
+            "notes": self.reference,
         }
 
         if cost_type == "fuel":
@@ -59,7 +117,7 @@ class StockMove(models.Model):
             sub_cost["service_type_id"] = self.fleet_service_type_id.id
 
         sub_cost["quantity"] = -self.quantity
-        sub_cost["price_unit"] = self.unit_cost
+        sub_cost["price_unit"] = self.price_unit
         sub_cost["stock_move_id"] = self.id
 
         model.create(sub_cost)
