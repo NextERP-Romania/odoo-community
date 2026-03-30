@@ -20,6 +20,8 @@ exclude: |
   /tests/samples/.*|
   # You don't usually want a bot to modify your legal texts
   (LICENSE.*|COPYING.*)
+  # Ignore edi directories in addons
+  /l10n_ro_edi_extension/|
 default_language_version:
   python: python3
   node: "22.9.0"
