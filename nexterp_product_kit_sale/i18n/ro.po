@@ -1,0 +1,570 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_product_kit_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-23 08:00+0000\n"
+"PO-Revision-Date: 2024-05-23 12:00+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,help:nexterp_product_kit_sale.field_sale_order_line_kit__product_type
+msgid ""
+"A storable product is a product for which you manage stock. The Inventory "
+"app has to be installed.\n"
+"A consumable product is a product for which stock is not managed.\n"
+"A service is a non-material product you provide."
+msgstr ""
+"Un produs stocabil este un produs pentru care gestionați stocul. Aplicația "
+"Inventory trebuie instalată.\n"
+"Un produs consumabil este un produs pentru care stocul nu este gestionat.\n"
+"Un serviciu este un produs nematerial pe care îl oferiți."
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,help:nexterp_product_kit_sale.field_sale_order_line_kit__qty_delivered_method
+msgid ""
+"According to product configuration, the delivered quantity can be "
+"automatically computed by mechanism :\n"
+"  - Manual: the quantity is set manually on the line\n"
+"  - Analytic From expenses: the quantity is the quantity sum from posted "
+"expenses\n"
+"  - Timesheet: the quantity is the sum of hours recorded on tasks linked "
+"to this sale line\n"
+"  - Stock Moves: the quantity comes from confirmed pickings\n"
+msgstr ""
+"În funcție de configurația produsului, cantitatea livrată poate fi "
+"calculată automat prin mecanism:\n"
+"  - Manual: cantitatea se seteaza manual pe linie\n"
+"  - Analitică din cheltuieli: cantitatea este suma cantității din "
+"cheltuielile înregistrate\n"
+"  - Foaie de pontaj: cantitatea este suma orelor înregistrate pe sarcini "
+"legate de această linie de vânzare\n"
+"  - Mutări de stoc: cantitatea provine din ridicări confirmate\n"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Add a note"
+msgstr "Adaugă o notiță"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Add a product"
+msgstr "Adăugați un produs"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Add a section"
+msgstr "Adăugați o secțiune"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__analytic_distribution
+msgid "Analytic"
+msgstr "Analitic"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr "Căutare analitică de distribuție"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__analytic_precision
+msgid "Analytic Precision"
+msgstr "Precizie analitică"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__analytic_line_ids
+msgid "Analytic lines"
+msgstr "Linii analitice"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_template_attribute_value_ids
+msgid "Attribute Values"
+msgstr "Valori de atribut"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_updatable
+msgid "Can Edit Product"
+msgstr "Poate edita produsul"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_uom_category_id
+msgid "Category"
+msgstr "Categorie"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__company_id
+msgid "Company"
+msgstr "Companie"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,help:nexterp_product_kit_sale.field_sale_order_line_kit__product_uom_category_id
+msgid ""
+"Conversion between Units of Measure can only occur if they belong to the "
+"same category. The conversion will be made based on the ratios."
+msgstr ""
+"Conversia între unitățile de măsură poate avea loc numai dacă aparțin "
+"aceleiași categorii. Conversia se va face pe baza rapoartelor."
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__create_uid
+msgid "Created by"
+msgstr "Creat de"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__create_date
+msgid "Created on"
+msgstr "Creeat în"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__currency_id
+msgid "Currency"
+msgstr "Monedă"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_custom_attribute_value_ids
+msgid "Custom Values"
+msgstr "Valori personalizate"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__order_partner_id
+msgid "Customer"
+msgstr "Client"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Delivered"
+msgstr "Livrat"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__qty_delivered
+msgid "Delivery Quantity"
+msgstr "Cantitatea de livrare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__recompute_delivery_price
+msgid "Delivery cost should be recomputed"
+msgstr "Costul de livrare ar trebui recalculat"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__name
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Description"
+msgstr "Descriere"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Disc.%"
+msgstr "Reducere.%"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__discount
+msgid "Discount (%)"
+msgstr "Reducere(%)"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__display_qty_widget
+msgid "Display Qty Widget"
+msgstr "Afișează Widget Cantitate"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__display_type
+msgid "Display Type"
+msgstr "Tipul de afișare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,help:nexterp_product_kit_sale.field_sale_order_line_kit__is_downpayment
+msgid ""
+"Down payments are made when creating invoices from a sales order. They are "
+"not copied when duplicating a sales order."
+msgstr ""
+"Avansurile se fac la crearea facturilor dintr-o comandă de vânzare. Ele nu "
+"sunt copiate la duplicarea unei comenzi de vânzare."
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_no_variant_attribute_value_ids
+msgid "Extra Values"
+msgstr "Valori suplimentare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__forecast_expected_date
+msgid "Forecast Expected Date"
+msgstr "Data estimată a prognozei"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__free_qty_today
+msgid "Free Qty Today"
+msgstr "Cantitate gratuită astăzi"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__purchase_line_ids
+msgid "Generated Purchase Lines"
+msgstr "Linii de cumpărare generate"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__id
+msgid "ID"
+msgstr "ID"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__invoice_lines
+msgid "Invoice Lines"
+msgstr "Linii factură"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__invoice_status
+msgid "Invoice Status"
+msgstr "Starea facturii"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Invoiced"
+msgstr "Facturat"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__qty_invoiced
+msgid "Invoiced Quantity"
+msgstr "Cantitate facturată"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__is_mto
+msgid "Is Mto"
+msgstr ""
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__is_delivery
+msgid "Is a Delivery"
+msgstr "Este o Livrare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__is_downpayment
+msgid "Is a down payment"
+msgstr "Este un avans"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__is_expense
+msgid "Is expense"
+msgstr "Este cheltuială"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__is_configurable_product
+msgid "Is the product configurable?"
+msgstr "Este produsul configurabil?"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,help:nexterp_product_kit_sale.field_sale_order_line_kit__is_expense
+msgid ""
+"Is true if the sales order line comes from an expense or a vendor bills"
+msgstr ""
+"Este adevărat dacă linia de comandă de vânzări provine dintr-o cheltuială "
+"sau facturi de un furnizor"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Kit Order Lines"
+msgstr "Linii de comandă pentru kit"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order__kit_line_ids
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line__kit_line_ids
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__kit_line_ids
+msgid "Kit Sale Lines"
+msgstr "Linii de vânzare kit"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit____last_update
+msgid "Last Modified on"
+msgstr "Ultima modificare pe"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__write_uid
+msgid "Last Updated by"
+msgstr "Ultima actualizare de către"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__write_date
+msgid "Last Updated on"
+msgstr "Ultima actualizare pe"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__customer_lead
+msgid "Lead Time"
+msgstr "Perioada de graţie"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__qty_delivered_method
+msgid "Method to update delivered qty"
+msgstr "Metoda de actualizare a cantității livrate"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Note"
+msgstr "Notă"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,help:nexterp_product_kit_sale.field_sale_order_line_kit__customer_lead
+msgid ""
+"Number of days between the order confirmation and the shipping of the "
+"products to the customer"
+msgstr ""
+"Număr de zile între confirmarea comenzii și livrarea produselor către "
+"client"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__purchase_line_count
+msgid "Number of generated purchase items"
+msgstr "Numărul de articole de achiziție generate"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__sale_order_option_ids
+msgid "Optional Products Lines"
+msgstr "Linii de produse opționale"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__order_id
+msgid "Order Reference"
+msgstr "Referință Comandă"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__state
+msgid "Order Status"
+msgstr "Starea comenzii"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__pos_order_line_ids
+msgid "Order lines Transfered to Point of Sale"
+msgstr "Liniile de comandă au fost transferate la punctul de vânzare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_packaging_id
+msgid "Packaging"
+msgstr "Ambalare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_packaging_qty
+msgid "Packaging Quantity"
+msgstr "Cantitatea de ambalare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_reduce
+msgid "Price Reduce"
+msgstr "Reducere de preț"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_reduce_taxexcl
+msgid "Price Reduce Tax excl"
+msgstr "Preț Reducere Taxă exclusă"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_reduce_taxinc
+msgid "Price Reduce Tax incl"
+msgstr "Preț Reducere Taxa inclusă"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__pricelist_item_id
+msgid "Pricelist Item"
+msgstr "Articol din lista de preturi"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_id
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Product"
+msgstr "Produs"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_qty
+msgid "Product Qty"
+msgstr "Cantitate produs"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_template_id
+msgid "Product Template"
+msgstr "Șablon produs"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_type
+msgid "Product Type"
+msgstr "Tip produs"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_uom_readonly
+msgid "Product Uom Readonly"
+msgstr "Produs Uom Numai citire"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,help:nexterp_product_kit_sale.field_sale_order_line_kit__purchase_line_ids
+msgid ""
+"Purchase line generated by this Sales item on order confirmation, or when "
+"the quantity was increased."
+msgstr ""
+"Linia de cumpărare generată de acest articol de vânzări la confirmarea "
+"comenzii sau la creșterea cantității."
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__qty_available_today
+msgid "Qty Available Today"
+msgstr "Cantitate disponibilă astăzi"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__qty_to_deliver
+msgid "Qty To Deliver"
+msgstr "Cantitate de livrat"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_uom_qty
+msgid "Quantity"
+msgstr "Cantitate"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__qty_to_invoice
+msgid "Quantity To Invoice"
+msgstr "Cantitate de facturat"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Quantity:"
+msgstr "Cantitate:"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__route_id
+msgid "Route"
+msgstr "Traseu"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__sale_line_id
+msgid "Sale Order Line"
+msgstr "Linie comandă vânzare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model,name:nexterp_product_kit_sale.model_sale_order_line_kit
+msgid "Sale Order Line kit"
+msgstr "Set linie  comandă de vânzare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model,name:nexterp_product_kit_sale.model_sale_order
+msgid "Sales Order"
+msgstr "Comandă de vânzare"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model,name:nexterp_product_kit_sale.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Linie comandă vânzare"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Sales Order Lines"
+msgstr "Linii comandă de vânzări"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__salesman_id
+msgid "Salesperson"
+msgstr "Agent de vânzări"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__scheduled_date
+msgid "Scheduled Date"
+msgstr "Data programată"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Section Name (eg. Products, Services)"
+msgstr "Numele secțiunii (de ex. Produse, Servicii)"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__sequence
+msgid "Sequence"
+msgstr "Secvenţă"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__move_ids
+msgid "Stock Moves"
+msgstr "Mutări de stoc"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_subtotal
+msgid "Subtotal"
+msgstr "Subtotal"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__tax_id
+msgid "Taxes"
+msgstr "Impozite"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__temporal_type
+msgid "Temporal Type"
+msgstr "Tipul temporal"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Terms and conditions..."
+msgstr "Termeni și condiții..."
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_total
+msgid "Total"
+msgstr "Total"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_tax
+msgid "Total Tax"
+msgstr "Impozitul total"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__price_unit
+msgid "Unit Price"
+msgstr "Preț unitar"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "Unit Price:"
+msgstr "Preț unitar:"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__product_uom
+msgid "Unit of Measure"
+msgstr "Unitate de măsură"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__untaxed_amount_to_invoice
+msgid "Untaxed Amount To Invoice"
+msgstr "Sumă netaxată de facturat"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__untaxed_amount_invoiced
+msgid "Untaxed Invoiced Amount"
+msgstr "Suma facturată netaxată"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "UoM"
+msgstr ""
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__virtual_available_at_date
+msgid "Virtual Available At Date"
+msgstr "Virtual disponibil la data"
+
+#. module: nexterp_product_kit_sale
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__warehouse_id
+msgid "Warehouse"
+msgstr "Depozit"
+
+#. module: nexterp_product_kit_sale
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
+msgid "days"
+msgstr " zile"

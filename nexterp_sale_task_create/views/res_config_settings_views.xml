@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.sale</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="40" />
+        <field name="inherit_id" ref="sale.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//block[@name='quotation_order_setting_container']"
+                position="inside"
+            >
+                <setting
+                    id="sale_create_taks_auto_company"
+                    title="Auto Create Sale Tasks."
+                    help="Auto Create Sale Tasks."
+                >
+                    <field name="sale_create_taks_auto" />
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
