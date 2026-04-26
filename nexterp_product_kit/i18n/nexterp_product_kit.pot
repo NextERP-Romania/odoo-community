@@ -1,0 +1,132 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_product_kit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-23 07:55+0000\n"
+"PO-Revision-Date: 2024-05-23 07:55+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nexterp_product_kit
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Category"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Component"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__component_product_id
+msgid "Component Product"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,help:nexterp_product_kit.field_product_product_kit__product_uom_id
+msgid "Default unit of measure used for all stock operations."
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__id
+msgid "ID"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product__is_kit_component
+msgid "Is Kit Component"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product__kit_product_ids
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_view_form_inherit_kit
+msgid "Kit Products"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_id
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Product"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__categ_id
+msgid "Product Category"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.actions.act_window,name:nexterp_product_kit.product_kit_action
+#: model:ir.model,name:nexterp_product_kit.model_product_product_kit
+#: model:ir.ui.menu,name:nexterp_product_kit.product_product_kit_menu
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_pivot
+#: model_terms:ir.ui.view,arch_db:nexterp_product_kit.product_product_kit_view_search
+msgid "Product Kits"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_price
+msgid "Product Price"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_template_id
+msgid "Product Template"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model,name:nexterp_product_kit.model_product_product
+msgid "Product Variant"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_qty
+msgid "Quantity"
+msgstr ""
+
+#. module: nexterp_product_kit
+#: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_uom_id
+msgid "Unit of Measure"
+msgstr ""
