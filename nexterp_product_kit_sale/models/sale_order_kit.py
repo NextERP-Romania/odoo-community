@@ -19,6 +19,12 @@ class SaleOrderLineKit(models.Model):
         "invoice_line_id",
         copy=False,
     )
+    product_document_ids = fields.Many2many(
+        "product.document",
+        "sale_order_line_kit_product_document_rel",
+        "sale_order_line_kit_id",
+        "product_document_id",
+    )
 
     @api.model
     def _prepare_sale_order_line_data(self, kit_line, line):
@@ -56,15 +62,22 @@ class SaleOrderLineKit(models.Model):
             vals.update({"sale_line_id": line.id or line._origin.id})
 
         if order.pricelist_id and order.partner_id:
+            # Take the unit price from the component product's pricelist
+            # entry, NOT from the parent SO line (which is the kit-as-a-whole
+            # price). `product` is already wrapped with the pricelist /
+            # partner / quantity / uom / date context above, so
+            # `_get_contextual_price()` returns the correct unit price for
+            # this kit component.
+            component_price = product.with_company(
+                line.company_id
+            )._get_contextual_price()
             vals["price_unit"] = product._get_tax_included_unit_price(
                 line.company_id,
                 order.currency_id,
                 order.date_order,
                 "sale",
                 fiscal_position=order.fiscal_position_id,
-                product_price_unit=line.with_company(
-                    line.company_id
-                )._get_display_price(),
+                product_price_unit=component_price,
                 product_currency=order.currency_id,
             )
         taxes = line.tax_ids.compute_all(
@@ -83,19 +96,40 @@ class SaleOrderLineKit(models.Model):
         )
         return vals
 
+    _RECOMPUTE_PARENT_PRICE_FIELDS = (
+        "product_uom_qty",
+        "price_unit",
+        "product_id",
+        "tax_ids",
+    )
+
     def write(self, vals):
         res = super().write(vals)
-        if not self.env.context.get("change_from_soline") and (
-            "product_uom_qty" in vals or "price_unit" in vals
+        # Recompute parent SO line price only when relevant fields changed
+        # AND we are not already inside a parent-driven change.
+        if not self.env.context.get("change_from_soline") and any(
+            field in vals for field in self._RECOMPUTE_PARENT_PRICE_FIELDS
         ):
             sale_lines = self.mapped("sale_line_id")
             sale_lines = sale_lines.with_context(change_from_soline=True)
             for line in sale_lines:
                 line.price_unit = self.get_sale_kit_price(line, line.kit_line_ids)
-            # TODO - Check why we have lines without sale_line_id, could be from
-            # onchanges that's why we remove them here
-        not_linked = self.search([("sale_line_id", "=", False)])
-        not_linked.sudo().unlink()
+        # Drop orphan kit lines on the orders involved in this write.
+        # Runs unconditionally (even under `change_from_soline`) because
+        # `generate_sale_order_line_kit` clears kit_line_ids via `(6, 0, [])`,
+        # which leaves the previous rows orphaned (sale_line_id=False) and
+        # they need to be unlinked here. Scoped to the touched orders so
+        # unrelated SOs are not swept.
+        order_ids = self.mapped("order_id").ids
+        if order_ids:
+            orphan_lines = self.search(
+                [
+                    ("order_id", "in", order_ids),
+                    ("sale_line_id", "=", False),
+                ]
+            )
+            if orphan_lines:
+                orphan_lines.sudo().unlink()
         return res
 
     @api.model

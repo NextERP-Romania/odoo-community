@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <record id="product_template_view_form_inherit_kit" model="ir.ui.view">
+        <field name="name">product.template.view.form.inherit.kit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view" />
+        <field name="arch" type="xml">
+            <div name="options" position="inside">
+                <div>
+                    <field name="is_kit_component" />
+                    <label for="is_kit_component" />
+                </div>
+            </div>
+            <xpath expr="//notebook" position='inside'>
+                <page string="Kit Products" name="kit_products">
+                    <field
+                        name="kit_product_ids"
+                        widget="one2many"
+                        mode="list"
+                        nolabel="1"
+                    >
+                        <list editable="bottom">
+                            <field name="product_id" column_invisible="1" />
+                            <field name="component_product_id" />
+                            <field name="product_qty" />
+                            <field name="product_price" />
+                            <field name="product_uom_id" />
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
     <record id="product_product_view_form_inherit_kit" model="ir.ui.view">
         <field name="name">product.product.view.form.inherit.kit</field>
         <field name="model">product.product</field>
@@ -12,7 +44,7 @@
                 </div>
             </div>
             <xpath expr="//notebook" position='inside'>
-                <page string="Kit Products">
+                <page string="Kit Products" name="kit_products">
                     <field
                         name="kit_product_ids"
                         widget="one2many"
@@ -20,7 +52,7 @@
                         nolabel="1"
                     >
                         <list editable="bottom">
-                            <field name="product_id" invisible="1" />
+                            <field name="product_id" column_invisible="1" />
                             <field name="component_product_id" />
                             <field name="product_qty" />
                             <field name="product_price" />
@@ -31,6 +63,42 @@
             </xpath>
         </field>
     </record>
+
+    <!-- The "Variants" smart button on a product template opens the
+         minimal `product_variant_easy_edit_view`, which has no notebook.
+         Add the kit fields there so kit components are also editable
+         from the per-variant easy form. -->
+    <record id="product_variant_easy_edit_view_inherit_kit" model="ir.ui.view">
+        <field name="name">product.product.view.form.easy.inherit.kit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group>
+                    <field name="is_kit_component" />
+                </group>
+                <notebook>
+                    <page string="Kit Products" name="kit_products">
+                        <field
+                            name="kit_product_ids"
+                            widget="one2many"
+                            mode="list"
+                            nolabel="1"
+                        >
+                            <list editable="bottom">
+                                <field name="product_id" column_invisible="1" />
+                                <field name="component_product_id" />
+                                <field name="product_qty" />
+                                <field name="product_price" />
+                                <field name="product_uom_id" />
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
     <record id="product_product_kit_view_tree" model="ir.ui.view">
         <field name="name">product.product.kit.view.list</field>
         <field name="model">product.product.kit</field>
@@ -99,7 +167,7 @@
                 <field name="categ_id" />
                 <field name="product_id" />
                 <field name="component_product_id" />
-                <group expand="1" string="Group By">
+                <group>
                     <filter
                         string="Category"
                         name="category"
