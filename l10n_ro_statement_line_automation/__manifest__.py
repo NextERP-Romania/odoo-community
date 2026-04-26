@@ -5,7 +5,7 @@
 {
     "name": "Romania - Statement Line Automation",
     "summary": "Automatically create bank statements in statement lines",
-    "version": "19.0.0.0.0",
+    "version": "0.0.0",
     "author": "NextERP Romania",
     "website": "https://github.com/NextERP-Romania/odoo-community",
     "category": "Accounting",

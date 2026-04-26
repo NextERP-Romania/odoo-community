@@ -1,6 +1,6 @@
 {
     "name": "BOM Excel Import",
-    "version": "19.0.1.0.1",
+    "version": "1.0.1",
     "category": "Manufacturing",
     "summary": """
         This module allows importing Bills of Materials (BOMs) from Excel files.

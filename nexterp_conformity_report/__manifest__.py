@@ -3,7 +3,7 @@
 {
     "name": "NextERP - Conformity Certificate",
     "summary": "NextERP - Conformity Certificate",
-    "version": "19.0.1.0.0",
+    "version": "1.0.0",
     "author": "NextERP Romania",
     "website": "https://github.com/NextERP-Romania/odoo-community",
     "category": "Special",
