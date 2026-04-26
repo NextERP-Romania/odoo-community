@@ -44,15 +44,17 @@ class SaleOrderLine(models.Model):
 
     def generate_sale_order_line_kit(self):
         for order_line in self:
-            input_line_vals = []
+            # Explicitly unlink old kit lines. Using `[(6, 0, [])]` on a
+            # one2many only unrelates them (sale_line_id -> False) and leaves
+            # the rows in the DB as orphans, which then accumulate every time
+            # the parent SOL is edited.
             if order_line.kit_line_ids:
-                order_line.kit_line_ids = [(6, 0, [])]
+                order_line.kit_line_ids.sudo().unlink()
             if order_line.product_id.kit_product_ids:
                 kit_lines_list = order_line._prepare_sale_kit_lines()
-                input_line_vals = [
+                order_line.kit_line_ids = [
                     (0, 0, kit_line_vals) for kit_line_vals in kit_lines_list
                 ]
-            order_line.kit_line_ids = input_line_vals
             if not self.env.context.get("change_from_soline"):
                 order_line.price_unit = self.env[
                     "sale.order.line.kit"
