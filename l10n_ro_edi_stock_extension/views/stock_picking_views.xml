@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_picking_form_l10n_ro_edi_stock_extension" model="ir.ui.view">
+        <field name="name">stock.picking.form.l10n_ro_edi_stock_extension</field>
+        <field name="model">stock.picking</field>
+        <field
+            name="inherit_id"
+            ref="l10n_ro_edi_stock.l10n_ro_edi_stock_view_picking_form"
+        />
+        <field name="arch" type="xml">
+            <!-- New buttons for DEL/CON/MVH (visible when a validated UIT exists) -->
+            <xpath
+                expr="//button[@name='action_l10n_ro_edi_stock_send_etransport'][1]"
+                position="after"
+            >
+                <button
+                    name="%(action_l10n_ro_edi_stock_action_wizard_delete)d"
+                    string="Delete notification"
+                    type="action"
+                    invisible="l10n_ro_edi_stock_state != 'stock_validated'"
+                    confirm="Are you sure you want to delete the UIT notification from ANAF?"
+                />
+                <button
+                    name="%(action_l10n_ro_edi_stock_action_wizard_confirm)d"
+                    string="Confirm transport"
+                    type="action"
+                    invisible="l10n_ro_edi_stock_state != 'stock_validated'"
+                />
+                <button
+                    name="%(action_l10n_ro_edi_stock_action_wizard_modify_vehicle)d"
+                    string="Modify vehicle"
+                    type="action"
+                    invisible="l10n_ro_edi_stock_state != 'stock_validated'"
+                />
+            </xpath>
+
+            <!-- Price source in the eTransport tab -->
+            <xpath expr="//group[@string='General']" position="inside">
+                <field
+                    name="l10n_ro_edi_stock_price_source"
+                    readonly="l10n_ro_edi_stock_fields_readonly"
+                />
+                <field
+                    name="l10n_ro_edi_stock_post_outage"
+                    readonly="l10n_ro_edi_stock_fields_readonly"
+                />
+            </xpath>
+
+            <!-- New sections: Transport documents + Previous notifications -->
+            <xpath expr="//page[@name='etransport']" position="inside">
+                <separator string="Transport documents" />
+                <field
+                    name="l10n_ro_edi_stock_document_line_ids"
+                    readonly="l10n_ro_edi_stock_fields_readonly"
+                >
+                    <list editable="bottom">
+                        <field name="document_type" />
+                        <field name="document_number" />
+                        <field name="document_date" />
+                        <field name="remarks" />
+                    </list>
+                </field>
+
+                <separator
+                    string="Previous notifications (only operations 60 and 70)"
+                    invisible="l10n_ro_edi_stock_operation_type not in ('60', '70')"
+                />
+                <field
+                    name="l10n_ro_edi_stock_previous_ids"
+                    readonly="l10n_ro_edi_stock_fields_readonly"
+                    invisible="l10n_ro_edi_stock_operation_type not in ('60', '70')"
+                >
+                    <list editable="bottom">
+                        <field name="uit" />
+                        <field name="remarks" />
+                        <field name="declarant_ref" />
+                    </list>
+                </field>
+            </xpath>
+
+            <!-- New columns on the eTransport documents list -->
+            <xpath
+                expr="//page[@name='etransport_documents']/field/list/field[@name='l10n_ro_edi_stock_uit']"
+                position="before"
+            >
+                <field name="l10n_ro_edi_stock_event_type" />
+                <field name="l10n_ro_edi_stock_confirm_type" optional="hide" />
+                <field name="l10n_ro_edi_stock_modified_vehicle" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

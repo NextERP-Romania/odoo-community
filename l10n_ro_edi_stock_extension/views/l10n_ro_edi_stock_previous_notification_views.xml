@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_l10n_ro_edi_stock_previous_notification_list" model="ir.ui.view">
+        <field name="name">l10n.ro.edi.stock.previous.notification.list</field>
+        <field name="model">l10n.ro.edi.stock.previous.notification</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="uit" />
+                <field name="remarks" />
+                <field name="declarant_ref" />
+            </list>
+        </field>
+    </record>
+</odoo>

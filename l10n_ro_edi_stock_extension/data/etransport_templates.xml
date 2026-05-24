@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--
+        Overrides the official l10n_ro_edi_stock.l10n_ro_template_etransport
+        template to support:
+        - multiple documenteTransport entries
+        - notificareAnterioara
+        - declPostAvarie
+        - locatie with numar attribute split out
+        - corectie (uit) when send_type='amend'
+    -->
+    <template
+        id="l10n_ro_edi_stock.l10n_ro_template_etransport"
+        inherit_id="l10n_ro_edi_stock.l10n_ro_template_etransport"
+        name="l10n_ro_template_etransport (extension)"
+    >
+        <!-- declPostAvarie on the root element -->
+        <xpath expr="//*[local-name()='eTransport']" position="attributes">
+            <attribute
+                name="t-att-declPostAvarie"
+            >data.get('declPostAvarie')</attribute>
+        </xpath>
+
+        <!-- corectie must be a child of notificare per XSD v2 -->
+        <xpath expr="//*[local-name()='notificare']" position="inside">
+            <t t-if="data['send_type'] == 'amend' and data['notificare'].get('uit')">
+                <corectie t-att-uit="data['notificare']['uit']" />
+            </t>
+        </xpath>
+
+        <!-- Replace documenteTransport to support a list of documents -->
+        <xpath expr="//*[local-name()='documenteTransport']" position="replace">
+            <t t-set="docs" t-value="data['notificare']['documenteTransport']" />
+            <t t-if="not isinstance(docs, list)">
+                <t t-set="docs" t-value="[docs]" />
+            </t>
+            <t t-foreach="docs" t-as="doc">
+                <documenteTransport
+                    t-att-tipDocument="doc['tipDocument']"
+                    t-att-dataDocument="doc['dataDocument']"
+                    t-att-numarDocument="doc.get('numarDocument')"
+                    t-att-observatii="doc.get('observatii')"
+                />
+            </t>
+        </xpath>
+
+        <!-- notificareAnterioara after documenteTransport (per XSD ordering) -->
+        <xpath expr="//*[local-name()='documenteTransport'][last()]" position="after">
+            <t t-if="data['notificare'].get('notificariAnterioare')">
+                <t t-foreach="data['notificare']['notificariAnterioare']" t-as="ant">
+                    <notificareAnterioara
+                        t-att-uit="ant['uit']"
+                        t-att-observatii="ant.get('observatii')"
+                        t-att-refDeclarant="ant.get('refDeclarant')"
+                    />
+                </t>
+            </t>
+        </xpath>
+
+        <!-- Add numar as a separate attribute on locatie -->
+        <xpath
+            expr="//*[local-name()='locStartTraseuRutier']/*[local-name()='locatie']"
+            position="attributes"
+        >
+            <attribute name="t-att-numar">data_start_loc.get('numar')</attribute>
+        </xpath>
+        <xpath
+            expr="//*[local-name()='locFinalTraseuRutier']/*[local-name()='locatie']"
+            position="attributes"
+        >
+            <attribute name="t-att-numar">data_end_loc.get('numar')</attribute>
+        </xpath>
+    </template>
+
+    <!--
+        Standalone templates for non-notificare elements:
+        stergere, confirmare, modifVehicul.
+    -->
+    <template id="l10n_ro_template_etransport_delete">
+        <eTransport
+            xmlns="mfp:anaf:dgti:eTransport:declaratie:v2"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="mfp:anaf:dgti:eTransport:declaratie:v2"
+            t-att-codDeclarant="data['codDeclarant']"
+            t-att-refDeclarant="data.get('refDeclarant')"
+            t-att-declPostAvarie="data.get('declPostAvarie')"
+        >
+            <stergere t-att-uit="data['uit']" />
+        </eTransport>
+    </template>
+
+    <template id="l10n_ro_template_etransport_confirm">
+        <eTransport
+            xmlns="mfp:anaf:dgti:eTransport:declaratie:v2"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="mfp:anaf:dgti:eTransport:declaratie:v2"
+            t-att-codDeclarant="data['codDeclarant']"
+            t-att-refDeclarant="data.get('refDeclarant')"
+        >
+            <confirmare
+                t-att-uit="data['uit']"
+                t-att-tipConfirmare="data['tipConfirmare']"
+                t-att-observatii="data.get('observatii')"
+            />
+        </eTransport>
+    </template>
+
+    <template id="l10n_ro_template_etransport_modify_vehicle">
+        <eTransport
+            xmlns="mfp:anaf:dgti:eTransport:declaratie:v2"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="mfp:anaf:dgti:eTransport:declaratie:v2"
+            t-att-codDeclarant="data['codDeclarant']"
+            t-att-refDeclarant="data.get('refDeclarant')"
+            t-att-declPostAvarie="data.get('declPostAvarie')"
+        >
+            <modifVehicul
+                t-att-uit="data['uit']"
+                t-att-nrVehicul="data['nrVehicul']"
+                t-att-nrRemorca1="data.get('nrRemorca1')"
+                t-att-nrRemorca2="data.get('nrRemorca2')"
+                t-att-dataModificare="data['dataModificare']"
+                t-att-observatii="data.get('observatii')"
+            />
+        </eTransport>
+    </template>
+</odoo>

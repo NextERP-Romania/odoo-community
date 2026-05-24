@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_l10n_ro_edi_stock_doc_line,l10n.ro.edi.stock.document.line,model_l10n_ro_edi_stock_document_line,stock.group_stock_user,1,1,1,1
+access_l10n_ro_edi_stock_anterior,l10n.ro.edi.stock.previous.notification,model_l10n_ro_edi_stock_previous_notification,stock.group_stock_user,1,1,1,1
+access_l10n_ro_edi_stock_action_wizard,l10n.ro.edi.stock.action.wizard,model_l10n_ro_edi_stock_action_wizard,stock.group_stock_user,1,1,1,1
+access_l10n_ro_edi_stock_lista_wizard,l10n.ro.edi.stock.list.wizard,model_l10n_ro_edi_stock_list_wizard,stock.group_stock_user,1,1,1,1
+access_l10n_ro_edi_stock_lista_line,l10n.ro.edi.stock.list.line,model_l10n_ro_edi_stock_list_line,stock.group_stock_user,1,1,1,1
+access_l10n_ro_edi_stock_info_wizard,l10n.ro.edi.stock.transporter.info.wizard,model_l10n_ro_edi_stock_transporter_info_wizard,stock.group_stock_user,1,1,1,1
+access_l10n_ro_edi_stock_info_line,l10n.ro.edi.stock.transporter.info.line,model_l10n_ro_edi_stock_transporter_info_line,stock.group_stock_user,1,1,1,1

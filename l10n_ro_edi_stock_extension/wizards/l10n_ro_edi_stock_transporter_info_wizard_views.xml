@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_l10n_ro_edi_stock_transporter_info_wizard_form" model="ir.ui.view">
+        <field name="name">l10n.ro.edi.stock.transporter.info.wizard.form</field>
+        <field name="model">l10n.ro.edi.stock.transporter.info.wizard</field>
+        <field name="arch" type="xml">
+            <form string="eTransport transporter info">
+                <group>
+                    <field name="company_id" groups="base.group_multi_company" />
+                    <field name="operator_vat" />
+                    <field name="declarant_vat" />
+                    <field name="uit" />
+                    <field name="declarant_ref" />
+                </group>
+                <field name="line_ids" readonly="1">
+                    <list>
+                        <field name="uit" />
+                        <field name="declarant_name" />
+                        <field name="declarant_ref" />
+                        <field name="transport_date" />
+                        <field name="uit_expiry_date" />
+                        <field name="vehicle_number" />
+                        <field name="start_location" />
+                        <field name="end_location" />
+                    </list>
+                </field>
+                <footer>
+                    <button
+                        name="action_fetch"
+                        type="object"
+                        string="Query ANAF"
+                        class="btn-primary"
+                    />
+                    <button special="cancel" string="Close" class="btn-secondary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record
+        id="action_l10n_ro_edi_stock_transporter_info_wizard"
+        model="ir.actions.act_window"
+    >
+        <field name="name">eTransport transporter info</field>
+        <field name="res_model">l10n.ro.edi.stock.transporter.info.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_l10n_ro_edi_stock_transporter_info_wizard"
+        name="Notifications as transport operator"
+        action="action_l10n_ro_edi_stock_transporter_info_wizard"
+        parent="stock.menu_stock_inventory_control"
+        sequence="201"
+    />
+</odoo>

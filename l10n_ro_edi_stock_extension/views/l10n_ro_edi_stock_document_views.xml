@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Placeholder - the field extensions are already visible through the
+         optional columns added in stock_picking_views.xml. Kept for future
+         extensions (e.g. a global list of ANAF events). -->
+</odoo>
