@@ -4,6 +4,7 @@
     "version": "19.0.1.0.1",
     "category": "Accounting/Localizations/EDI",
     "summary": "E-Invoice implementation for Romania",
+    "website": "https://www.nexterp.ro",
     "depends": [
         "l10n_ro_edi",
         "l10n_ro_message_spv",
