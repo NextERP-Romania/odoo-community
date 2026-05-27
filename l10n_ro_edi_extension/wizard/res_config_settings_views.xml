@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_config_settings_form_inherit_l10n_ro_edi" model="ir.ui.view">
+        <field name="name">res.config.settings.form.inherit.l10n.ro.edi</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="l10n_ro_edi.res_config_settings_form_inherit_l10n_ro_edi"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//setting[@id='l10n_ro_edi_test_env_setting']"
+                position="before"
+            >
+                <div class="row">
+                    <label
+                        for="l10n_ro_edi_residence"
+                        string="Period of residence for the e-Invoice after which it is automatically sent"
+                        class="col-lg-3 o_light_label"
+                    />
+                    <field name="l10n_ro_edi_residence" />
+                </div>
+                <div class="row">
+                    <label
+                        for="l10n_ro_edi_residence"
+                        string="EDI Error Notification Users"
+                        class="col-lg-3 o_light_label"
+                    />
+                    <field
+                        name="l10n_ro_edi_error_notify_users"
+                        widget="many2many_tags"
+                    />
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
