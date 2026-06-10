@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.cron" id="ir_cron_l10n_ro_send_invoices_anaf">
+        <field name="name">Romania - Send Invoices to ANAF</field>
+        <field name="model_id" ref="account.model_account_move" />
+        <field name="state">code</field>
+        <field name="code">model._l10n_ro_edi_send_invoice_anaf_cron()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+</odoo>

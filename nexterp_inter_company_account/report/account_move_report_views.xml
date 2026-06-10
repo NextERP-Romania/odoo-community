@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_account_invoice_report_search_inter_company" model="ir.ui.view">
+        <field name="name">view_account_invoice_report_search_inter_company</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.view_account_invoice_report_search" />
+        <field name="arch" type="xml">
+            <filter name="filter_invoice_date" position="before">
+                <filter
+                    name="inter_company"
+                    string="Inter Company"
+                    domain="[('is_inter_company','=', 1)]"
+                />
+                <filter
+                    name="no_inter_company"
+                    string="Without Inter Company"
+                    domain="[('is_inter_company','=', 0)]"
+                />
+                <separator />
+            </filter>
+        </field>
+    </record>
+
+</odoo>

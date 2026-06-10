@@ -1,0 +1,14 @@
+scenarios:
+  - name: action_product_kit_action
+    description: "Action: Product Kits (auto-discovered)"
+    steps:
+      - goto: /odoo/action-nexterp_product_kit.product_kit_action
+      - wait: .o_form_view, .o_list_view, .o_kanban_view, .o_pivot_view, .o_graph_view
+      - sleep: 600
+      - screenshot:
+          filename: action_product_kit_action.png
+setup:
+  viewport:
+    width: 1440
+    height: 900
+  pause_ms_default: 500

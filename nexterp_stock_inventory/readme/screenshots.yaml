@@ -1,0 +1,22 @@
+scenarios:
+  - name: action_action_open_stock_inventory
+    description: "Action: Inventory Stock Adjustments (auto-discovered)"
+    steps:
+      - goto: /odoo/action-nexterp_stock_inventory.action_open_stock_inventory
+      - wait: .o_form_view, .o_list_view, .o_kanban_view, .o_pivot_view, .o_graph_view
+      - sleep: 600
+      - screenshot:
+          filename: action_action_open_stock_inventory.png
+  - name: action_action_open_stock_inventory_line_history
+    description: "Action: Inventory Stock Line Adjustments History (auto-discovered)"
+    steps:
+      - goto: /odoo/action-nexterp_stock_inventory.action_open_stock_inventory_line_history
+      - wait: .o_form_view, .o_list_view, .o_kanban_view, .o_pivot_view, .o_graph_view
+      - sleep: 600
+      - screenshot:
+          filename: action_action_open_stock_inventory_line_history.png
+setup:
+  viewport:
+    width: 1440
+    height: 900
+  pause_ms_default: 500

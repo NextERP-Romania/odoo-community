@@ -8,7 +8,7 @@
     "version": "19.0.1.0.1",
     "depends": ["sale_management"],
     "author": "NextERP Romania",
-    "website": "https://github.com/NextERP-Romania/odoo-community",
+    "website": "https://www.nexterp.ro",
     "support": "odoo_apps@nexterp.ro",
     "data": [
         # views

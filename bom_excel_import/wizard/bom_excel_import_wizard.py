@@ -376,7 +376,9 @@ class BomExcelImportWizard(models.TransientModel):
                     )
                     continue
 
-                is_subcontracting = operations_data and bool(operations_data[0].get("subcontracting"))
+                is_subcontracting = operations_data and bool(
+                    operations_data[0].get("subcontracting")
+                )
 
                 # Create BOM
                 bom = self.env["mrp.bom"].create(
@@ -390,9 +392,16 @@ class BomExcelImportWizard(models.TransientModel):
                     }
                 )
 
-                subcontractors = operations_data and operations_data[0].get("subcontractors").split(",") if operations_data[0].get("subcontractors") else []
+                subcontractors = (
+                    operations_data
+                    and operations_data[0].get("subcontractors").split(",")
+                    if operations_data[0].get("subcontractors")
+                    else []
+                )
                 if subcontractors:
-                    partners = self.env["res.partner"].search([("name", "in", subcontractors)])
+                    partners = self.env["res.partner"].search(
+                        [("name", "in", subcontractors)]
+                    )
                     bom.subcontractor_ids = [(6, 0, partners.ids)]
 
                 created_boms += 1

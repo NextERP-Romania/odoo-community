@@ -10,7 +10,7 @@
     "images": ["static/description/apps_icon.png"],
     "category": "Generic Modules/Stock",
     "author": "NextERP Romania",
-    "website": "https://github.com/NextERP-Romania/odoo-community",
+    "website": "https://www.nexterp.ro",
     "depends": [
         "stock_account",
     ],

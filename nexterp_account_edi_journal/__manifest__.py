@@ -7,9 +7,10 @@
     "summary": """ NextERP - Account EDI Journal""",
     "category": "Accounting",
     "author": "NextERP Romania",
-    "website": "https://github.com/NextERP-Romania/odoo-community",
+    "website": "https://www.nexterp.ro",
     "support": "odoo_apps@nexterp.ro",
     "license": "LGPL-3",
+    "images": ["static/description/apps_icon.png"],
     "currency": "EUR",
     "data": [
         "views/account_journal_views.xml",

@@ -9,7 +9,7 @@
     "category": "Sales",
     "depends": ["sale_project", "nexterp_product_kit_sale"],
     "author": "NextERP Romania",
-    "website": "https://github.com/NextERP-Romania/odoo-community",
+    "website": "https://www.nexterp.ro",
     "support": "odoo_apps@nexterp.ro",
     "installable": True,
     "auto_install": False,

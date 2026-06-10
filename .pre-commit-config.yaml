@@ -42,13 +42,13 @@ repos:
     rev: v1.3
     hooks:
       - id: whool-init
-  - repo: https://github.com/oca/maintainer-tools
-    rev: f9b919b9868143135a9c9cb03021089cabba8223
+  - repo: https://github.com/NextERP-Romania/maintainer-tools
+    rev: d0d5862c4b5354776193c260dbd3a9442e3ce3a4
     hooks:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
       - id: oca-fix-manifest-website
-        args: ["https://github.com/NextERP-Romania/odoo-community"]
+        args: ["https://www.nexterp.ro"]
       - id: oca-gen-addon-readme
         args:
           - --addons-dir=.
@@ -56,8 +56,10 @@ repos:
           - --org-name=NextERP-Romania
           - --repo-name=odoo-community
           - --if-source-changed
+          - --gen-html
           - --keep-source-digest
           - --convert-fragments-to-markdown
+          - --template-filename=gen_addon_readme.rst.jinja
       - id: oca-gen-external-dependencies
   - repo: https://github.com/OCA/odoo-pre-commit-hooks
     rev: v0.1.6

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.account</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <block id="invoicing_settings" position="inside">
+                <setting
+                    id="allow_debt_recovery_invoice"
+                    help="Allow Debt Recovery Invoice."
+                >
+                    <field name="account_allow_debt_recovery_invoice" />
+                </setting>
+            </block>
+        </field>
+    </record>
+</odoo>

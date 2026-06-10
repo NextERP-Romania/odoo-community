@@ -1,58 +1,20 @@
-## Stock Inventory Management for Romanian Localization
+Add a dedicated stock-inventory document on top of `stock.quant` so
+physical counts are grouped, dated and valued as a single record. The
+module introduces two new models — `l10n.ro.stock.inventory` (the
+header) and `l10n.ro.stock.inventory.line` (the counted lines) — with
+a form, list and search view, plus a reporting list / pivot / graph
+over the lines.
 
-This module provides an enhanced stock inventory management system
-specifically designed for Romanian localization requirements, offering
-comprehensive tools for physical inventory adjustments with proper
-accounting traceability.
+Each inventory is scoped to a set of internal locations and, optionally,
+to a list of products. Generating the lines fetches the corresponding
+`stock.quant` records, snapshots their on-hand quantity and value, and
+lets the operator enter the counted quantity. Validating the inventory
+applies the differences through `stock.quant.action_apply_inventory()`
+on the chosen accounting date and stores the resulting value
+difference per line.
 
-### Key Features
-
-**Inventory Document Management**  
-- Create and manage stock inventory documents with accounting dates
-- Track inventory states (Draft/Done) with proper validation workflow
-- Filter by specific locations and products for targeted inventory
-  counts
-
-**Automated Line Generation**  
-- Automatically generate inventory lines based on current stock
-  quantities
-- Smart detection to avoid duplicate lines for existing quants
-- Support for multiple locations and products selection
-- Preserve original on-hand quantities for accurate difference tracking
-
-**Comprehensive Value Tracking**  
-- Track both quantity and monetary value differences
-- Calculate inventory adjustments with proper accounting dates
-- Maintain historical records of inventory before and after validation
-- Support for standard cost valuation
-
-**Advanced Quant Integration**  
-- Seamless integration with Odoo's stock quant system
-- Automatic inventory document creation when quants are adjusted outside
-  the standard workflow
-- Bi-directional synchronization between inventory lines and stock
-  quantities
-- Context-aware processing to prevent recursive inventory creation
-
-### Workflow
-
-1.  **Create Inventory**: Create a new inventory document with
-    accounting date
-2.  **Select Scope**: Choose specific locations and/or products
-    (optional)
-3.  **Generate Inventory Lines**: Automatically populate inventory lines
-    from current stock.
-4.  **Or Create Inventory Lines & Stock Quants**: Create stock quant
-    directly from inventory line if it doesn't exist for the given
-    location/product/lot.
-5.  **Count & Adjust**: Enter counted quantities for each inventory line
-6.  **Validate**: Apply adjustments to stock and finalize the inventory
-
-### Technical Details
-
-- **Models**: l10n.ro.stock.inventory and l10n.ro.stock.inventory.line
-- **Dependencies**: stock_account
-- **Integration**: Extends stock.quant for automatic inventory creation
-- **Security**: Proper access controls with configurable user
-  permissions
-- **Data Integrity**: SQL constraints to prevent duplicate quant entries
+The model also wires the inverse side: when quants are adjusted outside
+this workflow (standard Odoo screens, third-party imports), an
+`l10n.ro.stock.inventory` is created automatically, grouped by
+accounting date, so every stock adjustment ends up captured in a
+traceable document.

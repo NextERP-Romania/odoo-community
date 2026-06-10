@@ -22,8 +22,9 @@
         The wizard guides you through the complete process in a single interface.
     """,
     "author": "NextERP Romania",
-    "website": "https://github.com/NextERP-Romania/odoo-community",
+    "website": "https://www.nexterp.ro",
     "license": "OPL-1",
+    "images": ["static/description/apps_icon.png"],
     "depends": [
         "mrp",
         "stock",
