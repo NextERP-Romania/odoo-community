@@ -1,503 +1,435 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils: https://docutils.sourceforge.io/" />
-<title>README.rst</title>
-<style type="text/css">
-
-/*
-:Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 9511 2024-01-13 09:50:07Z milde $
-:Copyright: This stylesheet has been placed in the public domain.
-
-Default cascading style sheet for the HTML output of Docutils.
-Despite the name, some widely supported CSS2 features are used.
-
-See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
-customize this style sheet.
-*/
-
-/* used to remove borders from tables and images */
-.borderless, table.borderless td, table.borderless th {
-  border: 0 }
-
-table.borderless td, table.borderless th {
-  /* Override padding for "table.docutils td" with "! important".
-     The right padding separates the table cells. */
-  padding: 0 0.5em 0 0 ! important }
-
-.first {
-  /* Override more specific margin styles with "! important". */
-  margin-top: 0 ! important }
-
-.last, .with-subtitle {
-  margin-bottom: 0 ! important }
-
-.hidden {
-  display: none }
-
-.subscript {
-  vertical-align: sub;
-  font-size: smaller }
-
-.superscript {
-  vertical-align: super;
-  font-size: smaller }
-
-a.toc-backref {
-  text-decoration: none ;
-  color: black }
-
-blockquote.epigraph {
-  margin: 2em 5em ; }
-
-dl.docutils dd {
-  margin-bottom: 0.5em }
-
-object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
-  overflow: hidden;
-}
-
-/* Uncomment (and remove this text!) to get bold-faced definition list terms
-dl.docutils dt {
-  font-weight: bold }
-*/
-
-div.abstract {
-  margin: 2em 5em }
-
-div.abstract p.topic-title {
-  font-weight: bold ;
-  text-align: center }
-
-div.admonition, div.attention, div.caution, div.danger, div.error,
-div.hint, div.important, div.note, div.tip, div.warning {
-  margin: 2em ;
-  border: medium outset ;
-  padding: 1em }
-
-div.admonition p.admonition-title, div.hint p.admonition-title,
-div.important p.admonition-title, div.note p.admonition-title,
-div.tip p.admonition-title {
-  font-weight: bold ;
-  font-family: sans-serif }
-
-div.attention p.admonition-title, div.caution p.admonition-title,
-div.danger p.admonition-title, div.error p.admonition-title,
-div.warning p.admonition-title, .code .error {
-  color: red ;
-  font-weight: bold ;
-  font-family: sans-serif }
-
-/* Uncomment (and remove this text!) to get reduced vertical space in
-   compound paragraphs.
-div.compound .compound-first, div.compound .compound-middle {
-  margin-bottom: 0.5em }
-
-div.compound .compound-last, div.compound .compound-middle {
-  margin-top: 0.5em }
-*/
-
-div.dedication {
-  margin: 2em 5em ;
-  text-align: center ;
-  font-style: italic }
-
-div.dedication p.topic-title {
-  font-weight: bold ;
-  font-style: normal }
-
-div.figure {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-div.footer, div.header {
-  clear: both;
-  font-size: smaller }
-
-div.line-block {
-  display: block ;
-  margin-top: 1em ;
-  margin-bottom: 1em }
-
-div.line-block div.line-block {
-  margin-top: 0 ;
-  margin-bottom: 0 ;
-  margin-left: 1.5em }
-
-div.sidebar {
-  margin: 0 0 0.5em 1em ;
-  border: medium outset ;
-  padding: 1em ;
-  background-color: #ffffee ;
-  width: 40% ;
-  float: right ;
-  clear: right }
-
-div.sidebar p.rubric {
-  font-family: sans-serif ;
-  font-size: medium }
-
-div.system-messages {
-  margin: 5em }
-
-div.system-messages h1 {
-  color: red }
-
-div.system-message {
-  border: medium outset ;
-  padding: 1em }
-
-div.system-message p.system-message-title {
-  color: red ;
-  font-weight: bold }
-
-div.topic {
-  margin: 2em }
-
-h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
-h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
-  margin-top: 0.4em }
-
-h1.title {
-  text-align: center }
-
-h2.subtitle {
-  text-align: center }
-
-hr.docutils {
-  width: 75% }
-
-img.align-left, .figure.align-left, object.align-left, table.align-left {
-  clear: left ;
-  float: left ;
-  margin-right: 1em }
-
-img.align-right, .figure.align-right, object.align-right, table.align-right {
-  clear: right ;
-  float: right ;
-  margin-left: 1em }
-
-img.align-center, .figure.align-center, object.align-center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-table.align-center {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.align-left {
-  text-align: left }
-
-.align-center {
-  clear: both ;
-  text-align: center }
-
-.align-right {
-  text-align: right }
-
-/* reset inner alignment in figures */
-div.align-right {
-  text-align: inherit }
-
-/* div.align-center * { */
-/*   text-align: left } */
-
-.align-top    {
-  vertical-align: top }
-
-.align-middle {
-  vertical-align: middle }
-
-.align-bottom {
-  vertical-align: bottom }
-
-ol.simple, ul.simple {
-  margin-bottom: 1em }
-
-ol.arabic {
-  list-style: decimal }
-
-ol.loweralpha {
-  list-style: lower-alpha }
-
-ol.upperalpha {
-  list-style: upper-alpha }
-
-ol.lowerroman {
-  list-style: lower-roman }
-
-ol.upperroman {
-  list-style: upper-roman }
-
-p.attribution {
-  text-align: right ;
-  margin-left: 50% }
-
-p.caption {
-  font-style: italic }
-
-p.credits {
-  font-style: italic ;
-  font-size: smaller }
-
-p.label {
-  white-space: nowrap }
-
-p.rubric {
-  font-weight: bold ;
-  font-size: larger ;
-  color: maroon ;
-  text-align: center }
-
-p.sidebar-title {
-  font-family: sans-serif ;
-  font-weight: bold ;
-  font-size: larger }
-
-p.sidebar-subtitle {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-p.topic-title {
-  font-weight: bold }
-
-pre.address {
-  margin-bottom: 0 ;
-  margin-top: 0 ;
-  font: inherit }
-
-pre.literal-block, pre.doctest-block, pre.math, pre.code {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-pre.code .ln { color: gray; } /* line numbers */
-pre.code, code { background-color: #eeeeee }
-pre.code .comment, code .comment { color: #5C6576 }
-pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
-pre.code .literal.string, code .literal.string { color: #0C5404 }
-pre.code .name.builtin, code .name.builtin { color: #352B84 }
-pre.code .deleted, code .deleted { background-color: #DEB0A1}
-pre.code .inserted, code .inserted { background-color: #A3D289}
-
-span.classifier {
-  font-family: sans-serif ;
-  font-style: oblique }
-
-span.classifier-delimiter {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-span.interpreted {
-  font-family: sans-serif }
-
-span.option {
-  white-space: nowrap }
-
-span.pre {
-  white-space: pre }
-
-span.problematic, pre.problematic {
-  color: red }
-
-span.section-subtitle {
-  /* font-size relative to parent (h1..h6 element) */
-  font-size: 80% }
-
-table.citation {
-  border-left: solid 1px gray;
-  margin-left: 1px }
-
-table.docinfo {
-  margin: 2em 4em }
-
-table.docutils {
-  margin-top: 0.5em ;
-  margin-bottom: 0.5em }
-
-table.footnote {
-  border-left: solid 1px black;
-  margin-left: 1px }
-
-table.docutils td, table.docutils th,
-table.docinfo td, table.docinfo th {
-  padding-left: 0.5em ;
-  padding-right: 0.5em ;
-  vertical-align: top }
-
-table.docutils th.field-name, table.docinfo th.docinfo-name {
-  font-weight: bold ;
-  text-align: left ;
-  white-space: nowrap ;
-  padding-left: 0 }
-
-/* "booktabs" style (no vertical lines) */
-table.docutils.booktabs {
-  border: 0px;
-  border-top: 2px solid;
-  border-bottom: 2px solid;
-  border-collapse: collapse;
-}
-table.docutils.booktabs * {
-  border: 0px;
-}
-table.docutils.booktabs th {
-  border-bottom: thin solid;
-  text-align: left;
-}
-
-h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
-h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
-  font-size: 100% }
-
-ul.auto-toc {
-  list-style-type: none }
-
-</style>
+<meta charset="utf-8" />
+<meta name="generator" content="nexterp-gen-addon-index-html" />
+<title>NextERP - Stock Inventory</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 </head>
 <body>
-<div class="document">
 
+<div class="container py-4" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
 
-<a class="reference external image-reference" href="https://odoo-community.org/get-involved?utm_source=readme">
-<img alt="Odoo Community Association" src="https://odoo-community.org/readme-banner-image" />
-</a>
-<div class="section" id="nexterp-stock-inventory">
-<h1>NextERP - Stock Inventory</h1>
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!! This file is generated by oca-gen-addon-readme !!
-!! changes will be overwritten.                   !!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!! source digest: sha256:14bf7b1a2d29ce1aee685b9c34a5ba7ad5ca57b5f44dbe824a557d99b040eb93
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/license-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/NextERP-Romania/odoo-community/tree/19.0/nexterp_stock_inventory"><img alt="NextERP-Romania/odoo-community" src="https://img.shields.io/badge/github-NextERP--Romania%2Fodoo--community-lightgray.png?logo=github" /></a></p>
-<div class="section" id="stock-inventory-management-for-romanian-localization">
-<h2>Stock Inventory Management for Romanian Localization</h2>
-<p>This module provides an enhanced stock inventory management system
-specifically designed for Romanian localization requirements, offering
-comprehensive tools for physical inventory adjustments with proper
-accounting traceability.</p>
-<div class="section" id="key-features">
-<h3>Key Features</h3>
-<p><strong>Inventory Document Management</strong></p>
-<ul class="simple">
-<li>Create and manage stock inventory documents with accounting dates</li>
-<li>Track inventory states (Draft/Done) with proper validation workflow</li>
-<li>Filter by specific locations and products for targeted inventory
-counts</li>
-</ul>
-<p><strong>Automated Line Generation</strong></p>
-<ul class="simple">
-<li>Automatically generate inventory lines based on current stock
-quantities</li>
-<li>Smart detection to avoid duplicate lines for existing quants</li>
-<li>Support for multiple locations and products selection</li>
-<li>Preserve original on-hand quantities for accurate difference tracking</li>
-</ul>
-<p><strong>Comprehensive Value Tracking</strong></p>
-<ul class="simple">
-<li>Track both quantity and monetary value differences</li>
-<li>Calculate inventory adjustments with proper accounting dates</li>
-<li>Maintain historical records of inventory before and after validation</li>
-<li>Support for standard cost valuation</li>
-</ul>
-<p><strong>Advanced Quant Integration</strong></p>
-<ul class="simple">
-<li>Seamless integration with Odoo’s stock quant system</li>
-<li>Automatic inventory document creation when quants are adjusted outside
-the standard workflow</li>
-<li>Bi-directional synchronization between inventory lines and stock
-quantities</li>
-<li>Context-aware processing to prevent recursive inventory creation</li>
-</ul>
+  <div class="card mb-4 border-0" style="border-left: 6px solid #e11d48; padding: 24px;">
+    <div class="row align-items-center">
+      <div class="col-md-2 text-center mb-3 mb-md-0">
+        <img src="icon.png" alt="NextERP - Stock Inventory icon" class="img-fluid rounded" style="max-width: 128px; padding: 4px;" />
+      </div>
+      <div class="col-md-10">
+        <h1 class="mb-2" style="font-weight: 700;">NextERP - Stock Inventory</h1>
+        <p class="lead text-muted mb-3">Stock Inventory</p>
+        <div>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.0</span>
+<span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Generic Modules/Stock</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">AGPL-3</span>        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
+    <li class="nav-item mx-1 mb-2" role="presentation">
+      <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
+    </li>
+    <li class="nav-item mx-1 mb-2" role="presentation">
+      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
+    </li>
+    <li class="nav-item mx-1 mb-2" role="presentation">
+      <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
+    </li>
+    <li class="nav-item mx-1 mb-2" role="presentation">
+      <a class="nav-link" id="nx-tab-usage" data-bs-toggle="pill" data-bs-target="#nx-panel-usage" href="#nx-panel-usage" role="tab" aria-controls="nx-panel-usage" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">How it works</a>
+    </li>
+    <li class="nav-item mx-1 mb-2" role="presentation">
+      <a class="nav-link" id="nx-tab-versions" data-bs-toggle="pill" data-bs-target="#nx-panel-versions" href="#nx-panel-versions" role="tab" aria-controls="nx-panel-versions" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Versions</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+
+    <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
+      <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
+      <div>
+        <p>Add a dedicated stock-inventory document on top of <code>stock.quant</code> so
+physical counts are grouped, dated and valued as a single record. The
+module introduces two new models — <code>l10n.ro.stock.inventory</code> (the
+header) and <code>l10n.ro.stock.inventory.line</code> (the counted lines) — with
+a form, list and search view, plus a reporting list / pivot / graph
+over the lines.</p>
+<p>Each inventory is scoped to a set of internal locations and, optionally,
+to a list of products. Generating the lines fetches the corresponding
+<code>stock.quant</code> records, snapshots their on-hand quantity and value, and
+lets the operator enter the counted quantity. Validating the inventory
+applies the differences through <code>stock.quant.action_apply_inventory()</code>
+on the chosen accounting date and stores the resulting value
+difference per line.</p>
+<p>The model also wires the inverse side: when quants are adjusted outside
+this workflow (standard Odoo screens, third-party imports), an
+<code>l10n.ro.stock.inventory</code> is created automatically, grouped by
+accounting date, so every stock adjustment ends up captured in a
+traceable document.</p>
+
+      </div>
+      <hr class="my-4" />
+      <div class="row align-items-center text-white rounded p-4 mx-0 mb-4" style="background-color: #0f172a;">
+        <div class="col-md-3 text-center mb-3 mb-md-0">
+          <div class="bg-white rounded p-2 d-inline-block">
+            <img src="nexterp_logo.png" alt="NextERP Romania" class="img-fluid" style="max-width: 140px;" />
+          </div>
+        </div>
+        <div class="col-md-9">
+          <h3 class="text-white mb-2" style="font-weight: 700;">Built &amp; supported by NextERP Romania</h3>
+          <p class="mb-0" style="color: #cbd5e1;">Romanian Odoo specialists, here for the long run — from implementation to localization and day-to-day production support.</p>
+        </div>
+      </div>
+      <div class="row text-center mb-4">
+  <div class="col-md-4 mb-3">
+    <div class="border rounded p-4 h-100" style="background-color: #ffffff;">
+      <div style="font-size: 2.4rem; font-weight: 800; color: #e11d48; line-height: 1;">10+</div>
+      <div class="text-muted mt-2" style="font-size: 0.9rem;">Years of Odoo experience per team member</div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="border rounded p-4 h-100" style="background-color: #ffffff;">
+      <div style="font-size: 2.4rem; font-weight: 800; color: #e11d48; line-height: 1;">80%+</div>
+      <div class="text-muted mt-2" style="font-size: 0.9rem;">of Romanian Localization maintained on Odoo Apps</div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="border rounded p-4 h-100" style="background-color: #ffffff;">
+      <div style="font-size: 2.4rem; font-weight: 800; color: #e11d48; line-height: 1;">19.0</div>
+      <div class="text-muted mt-2" style="font-size: 0.9rem;">Tracking every Odoo major release</div>
+    </div>
+  </div>
 </div>
-<div class="section" id="workflow">
-<h3>Workflow</h3>
-<ol class="arabic simple">
-<li><strong>Create Inventory</strong>: Create a new inventory document with accounting
-date</li>
-<li><strong>Select Scope</strong>: Choose specific locations and/or products
-(optional)</li>
-<li><strong>Generate Inventory Lines</strong>: Automatically populate inventory lines
-from current stock.</li>
-<li><strong>Or Create Inventory Lines &amp; Stock Quants</strong>: Create stock quant
-directly from inventory line if it doesn’t exist for the given
-location/product/lot.</li>
-<li><strong>Count &amp; Adjust</strong>: Enter counted quantities for each inventory line</li>
-<li><strong>Validate</strong>: Apply adjustments to stock and finalize the inventory</li>
-</ol>
+<h3 class="text-center mb-3" style="font-weight: 700;">What we do</h3>
+<div class="row mb-4">
+  <div class="col-md-4 mb-3">
+    <a href="https://www.nexterp.ro/ro/solutions" target="_blank" rel="noopener" class="card h-100 border text-decoration-none" style="color: #0f172a;">
+      <div class="card-body p-4">
+        <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded text-white" style="width: 48px; height: 48px; font-size: 1.6rem; background-color: #e11d48;">⚙️</div>
+        <h4 class="card-title" style="font-weight: 700; font-size: 1.1rem;">Odoo Solutions</h4>
+        <p class="card-text text-muted mb-0" style="font-size: 0.92rem;">From quick-start rollouts to multi-company deployments and custom modules built for your processes.</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4 mb-3">
+    <a href="https://www.nexterp.ro/ro/localizare-romania" target="_blank" rel="noopener" class="card h-100 border text-decoration-none" style="color: #0f172a;">
+      <div class="card-body p-4">
+        <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded text-white" style="width: 48px; height: 48px; font-size: 1.6rem; background-color: #e11d48;">🇷🇴</div>
+        <h4 class="card-title" style="font-weight: 700; font-size: 1.1rem;">Romanian Localization</h4>
+        <p class="card-text text-muted mb-0" style="font-size: 0.92rem;">SAF-T (D406), e-Factura, e-Transport, D300 / D390 / D394, ANAF integration, full chart of accounts and fiscal positions.</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4 mb-3">
+    <a href="https://www.nexterp.ro/ro/our-services" target="_blank" rel="noopener" class="card h-100 border text-decoration-none" style="color: #0f172a;">
+      <div class="card-body p-4">
+        <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded text-white" style="width: 48px; height: 48px; font-size: 1.6rem; background-color: #e11d48;">🛟</div>
+        <h4 class="card-title" style="font-weight: 700; font-size: 1.1rem;">Our Services</h4>
+        <p class="card-text text-muted mb-0" style="font-size: 0.92rem;">Implementation, customization, migration, integration, support and consultancy — Romanian-speaking, SLA-backed.</p>
+      </div>
+    </a>
+  </div>
 </div>
-<div class="section" id="technical-details">
-<h3>Technical Details</h3>
-<ul class="simple">
-<li><strong>Models</strong>: l10n.ro.stock.inventory and l10n.ro.stock.inventory.line</li>
-<li><strong>Dependencies</strong>: stock_account</li>
-<li><strong>Integration</strong>: Extends stock.quant for automatic inventory creation</li>
-<li><strong>Security</strong>: Proper access controls with configurable user
-permissions</li>
-<li><strong>Data Integrity</strong>: SQL constraints to prevent duplicate quant entries</li>
+
+    </div>
+
+    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
+      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
+      <ul>
+<li><strong>Inventory header model</strong> — <code>l10n.ro.stock.inventory</code> ties an
+accounting date, a company, internal locations and (optionally) a
+product list to a draft/done state, with an auto-computed name like
+<code>Inventory - YYYY-MM-DD</code>.</li>
+<li><strong>Counted-line model</strong> — <code>l10n.ro.stock.inventory.line</code> carries the
+counted quantity, on-hand quantity, difference, standard price,
+current value, post-validation value and value difference, each
+line linked to a <code>stock.quant</code>.</li>
+<li><strong>Quant uniqueness</strong> — a Postgres constraint
+<code>unique(inventory_id, quant_id)</code> blocks the same quant from
+appearing twice on the same inventory.</li>
+<li><strong>Generate / clear actions</strong> — <code>Generate Inventory Lines</code> fetches
+quants for the configured locations and products (creates missing
+quants on the fly), <code>Clear Inventory Lines</code> removes them and resets
+the flag.</li>
+<li><strong>Validate action</strong> — <code>Validate Inventory</code> calls
+<code>stock.quant.action_apply_inventory()</code> on each line with the
+inventory's accounting date, snapshots the new value, computes the
+per-line value difference and locks the document.</li>
+<li><strong>Reverse capture</strong> — the override of
+<code>stock.quant.action_apply_inventory</code> creates one
+<code>l10n.ro.stock.inventory</code> per accounting date when quants are
+adjusted outside this workflow, so manual quant edits are still
+archived as inventory documents.</li>
+<li><strong>Reporting</strong> — a list / pivot / graph view on
+<code>l10n.ro.stock.inventory.line</code> filterable by inventory, product,
+lot, location and accounting date, with <code>quantity</code>,
+<code>inventory_quantity</code> and <code>inventory_diff_quantity</code> as measures.</li>
+<li><strong>Manager-only menus</strong> — both menus live under the existing
+<code>stock.menu_stock_adjustments</code> / <code>stock.menu_warehouse_report</code>
+parents with <code>groups=&quot;stock.group_stock_manager&quot;</code>.</li>
 </ul>
-<p><strong>Table of contents</strong></p>
-<div class="contents local topic" id="contents">
-<ul class="simple">
-<li><a class="reference internal" href="#installation" id="toc-entry-1">Installation</a></li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-2">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-3">Credits</a></li>
+
+    </div>
+
+    <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
+      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
+      <p>The module ships with no settings page. All setup is master-data
+preparation and access-rights checks.</p>
+<h2>1. Install dependencies</h2>
+<p>The manifest depends on <code>stock_account</code>, so:</p>
+<ul>
+<li><strong>Inventory</strong> must be installed.</li>
+<li><strong>Accounting</strong> or another module pulling in <code>stock_account</code> must be
+installed so quants carry a <code>value</code> and a <code>standard_price</code> that the
+inventory lines can snapshot.</li>
 </ul>
-</div>
-<div class="section" id="installation">
-<h4><a class="toc-backref" href="#toc-entry-1">Installation</a></h4>
-<p>To install this module, you need to:</p>
-<ul class="simple">
+<h2>2. Grant access</h2>
+<p>The inventory header is editable by <code>base.group_user</code>, but both menu
+entries are restricted to <code>stock.group_stock_manager</code>. Go to
+<strong>Settings → Users &amp; Companies → Users</strong> and put the operators who run
+inventories in the <strong>Inventory: Administrator</strong> group. Other users can
+view inventories only through their record URL.</p>
+<p>Access rights for the two new models (read / write / create / unlink)
+are defined in <code>security/ir.model.access.csv</code> for
+<code>stock.group_stock_user</code> and <code>stock.group_stock_manager</code>.</p>
+<h2>3. Prepare locations</h2>
+<p>Open <strong>Inventory → Configuration → Warehouses Management → Locations</strong>
+and ensure every location that has to be counted is set to <strong>Usage:
+Internal</strong>. The inventory form filters location pickers by
+<code>usage == 'internal'</code> and silently ignores all others.</p>
+<h2>4. Prepare products (optional scoping)</h2>
+<p>Inventories can be limited to a product list. The form filters the
+many2many to products of type <code>consu</code> (which in 19.0 covers storable
+and non-storable goods). If no product is selected, all internal
+locations of the company are scanned.</p>
+<h2>5. Multi-company</h2>
+<p><code>company_id</code> defaults to <code>self.env.company</code> and is propagated through
+related fields on the lines. Each company maintains its own
+inventories; quants of another company are not picked up when lines
+are generated.</p>
+<h2>6. Open the menus</h2>
+<p>After install the new entries are:</p>
+<ul>
+<li><strong>Inventory → Operations → Adjustments → Inventory Stock
+Adjustments</strong> — the header list and form (action
+<code>action_open_stock_inventory</code>).</li>
+<li><strong>Inventory → Reporting → Inventory Stock Line Adjustments
+History</strong> — list / pivot / graph over validated lines (action
+<code>action_open_stock_inventory_line_history</code>), filtered to
+<code>state = done</code> by default.</li>
+</ul>
+
+<hr class="my-4" />      <p>To install this module, you need to:</p>
+<ul>
 <li>clone the branch 19.0 of the repository
-<a class="reference external" href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
+<a href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
 <li>add the path to this repository in your configuration (addons-path)</li>
 <li>update the module list</li>
-<li>search for “NextERP - Stock Inventory” in your addons</li>
+<li>search for &quot;NextERP - Stock Inventory&quot; in your addons</li>
 <li>install the module</li>
 </ul>
-</div>
-<div class="section" id="bug-tracker">
-<h4><a class="toc-backref" href="#toc-entry-2">Bug Tracker</a></h4>
-<p>Bugs are tracked on <a class="reference external" href="https://github.com/NextERP-Romania/odoo-community/issues">GitHub Issues</a>.
-In case of trouble, please check there if your issue has already been reported.
-If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/NextERP-Romania/odoo-community/issues/new?body=module:%20nexterp_stock_inventory%0Aversion:%2019.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
-<p>Do not contact contributors directly about support or help with technical issues.</p>
-</div>
-<div class="section" id="credits">
-<h4><a class="toc-backref" href="#toc-entry-3">Credits</a></h4>
-</div>
-</div>
-</div>
-<div class="section" id="authors">
-<h2>Authors</h2>
-<ul class="simple">
-<li>NextERP Romania</li>
+
+    </div>
+
+    <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
+      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
+      <p>The flow is built around the <code>l10n.ro.stock.inventory</code> form. A single
+record represents one physical inventory: pick a scope, generate the
+lines from current stock, count, then validate.</p>
+<h2>1. Create an inventory</h2>
+<p>Go to <strong>Inventory → Operations → Adjustments → Inventory Stock
+Adjustments</strong> and click <strong>New</strong>:</p>
+<ol>
+<li><strong>Accounting Date</strong> — defaults to today; the date the stock
+adjustments will be booked on.</li>
+<li><strong>Locations</strong> — pick one or more internal locations to count. Leave
+empty to count every internal location of the company.</li>
+<li><strong>Products</strong> — optionally restrict the inventory to a product list;
+leave empty to count every product on the selected quants.</li>
+</ol>
+<p>Save the draft.</p>
+<h2>2. Generate the lines</h2>
+<p>Click <strong>Generate Inventory Lines</strong>. The wizard:</p>
+<ul>
+<li>Searches <code>stock.quant</code> for the configured scope.</li>
+<li>Skips quants that already have a line on this inventory (the action
+can be called multiple times while the inventory is in <strong>Draft</strong>).</li>
+<li>Creates one line per quant, snapshotting <strong>On Hand Quantity</strong>,
+<strong>Counted Quantity</strong>, <strong>Difference</strong>, <strong>Standard Price</strong> and
+<strong>Value</strong>.</li>
+<li>Sets <code>inventory_quantity = 0</code> on quants that had no value, so the
+counter starts from a blank slate.</li>
 </ul>
-</div>
-<div class="section" id="contributors">
-<h2>Contributors</h2>
-<ul class="simple">
-<li><a class="reference external" href="https://www.nexterp.ro">NextERP Romania</a>:<ul>
-<li>Fekete Mihai &lt;<a class="reference external" href="mailto:feketemihai&#64;nexterp.ro">feketemihai&#64;nexterp.ro</a>&gt;</li>
-<li>Sima Elisabeta &lt;<a class="reference external" href="mailto:elisabeta.sima&#64;nexterp.ro">elisabeta.sima&#64;nexterp.ro</a>&gt;</li>
+<h2>3. Adjust the count</h2>
+<p>In the <strong>Inventory Lines</strong> tab:</p>
+<ul>
+<li>Edit <strong>Counted Quantity</strong> per line; <strong>Difference</strong> updates
+automatically through the related quant.</li>
+<li>Add manual lines for product / location / lot combinations not yet
+in stock — the create override on the line model finds the matching
+<code>stock.quant</code> (or creates one with <code>inventory_quantity = 0</code>).</li>
+<li>Click <strong>Clear Inventory Lines</strong> to wipe all lines and start over;
+the related quants' <code>inventory_quantity</code> is cleared as well.</li>
 </ul>
-</li>
+<h2>4. Validate</h2>
+<p>Click <strong>Validate Inventory</strong>. The action:</p>
+<ol>
+<li>Sets the accounting date on each quant.</li>
+<li>Re-reads the final on-hand quantity, value and difference on each
+line.</li>
+<li>Calls <code>stock.quant.action_apply_inventory()</code> on the quant, posting
+the stock-account journal entries.</li>
+<li>Captures <code>inventory_value</code> (post-apply value) and
+<code>inventory_diff_value</code> on each line, then locks the document with
+<strong>State = Done</strong>.</li>
+</ol>
+<h2>5. Inverse capture from elsewhere</h2>
+<p>When users adjust quants directly from <strong>Inventory → Operations →
+Physical Inventory</strong> or via imports, the override on
+<code>stock.quant.action_apply_inventory</code> creates one
+<code>l10n.ro.stock.inventory</code> per accounting date involved, generates its
+lines from the affected quants and validates it immediately. Those
+documents appear in the same list as user-created ones, marked
+<strong>Done</strong>.</p>
+<h2>6. Reporting</h2>
+<p>Open <strong>Inventory → Reporting → Inventory Stock Line Adjustments
+History</strong> for a flat list of every counted line. The view supports
+list, pivot and graph layouts, with measures <strong>On Hand Quantity</strong>,
+<strong>Counted Quantity</strong> and <strong>Difference</strong>, grouped by inventory or
+state.</p>
+
+    </div>
+
+
+    <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
+      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
+      <h2>19.0.1.0.0 (2026-05-25)</h2>
+<ul>
+<li><em>Changelog tracking starts at this release.</em></li>
 </ul>
+
+    </div>
+
+  </div>
+
+  <section class="bg-light rounded p-4 mb-4 border">
+    <h2 class="text-center mb-2" style="font-weight: 700;">Discover the NextERP suite</h2>
+    <p class="text-center text-muted mb-4">Other modules from the same publisher, built to work together.</p>
+    <div class="row">
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_account_edi_journal" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Account EDI Journalt</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting</div>              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Account EDI Journal</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_account_invoice_report" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Account Invoice Report</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting</div>              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Account Invoice Report</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_sale_task_create" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Auto Create Sale Tasks</div>
+              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Auto Create Sale Tasks</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_conformity_report" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Conformity Certificate</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Special</div>              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Conformity Certificate</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_product_kit" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Product Kit</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Sales</div>              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Product Kit</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_product_kit_sale" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Product Kit Sale</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Sales</div>              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Product Kit Sale</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_product_kit_sale_timesheet" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Product Kit Sale Timesheet</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Sales</div>              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Product Kit Sale Timesheet</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_sale_update_price_auto" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Sale Update Prices Auto</div>
+              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Sale Update Prices Auto</p>          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="rounded p-4 text-white" style="background-color: #0f172a;">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h4 class="text-white mb-1" style="font-weight: 700;">NextERP Romania</h4>
+        <p class="mb-0" style="color: #cbd5e1;">Odoo implementation, customization, Romanian localization and long-term support since 2018.</p>
+      </div>
+      <div class="col-md-4 text-md-right mt-3 mt-md-0">
+        <a href="https://www.nexterp.ro" target="_blank" rel="noopener" class="d-inline-block mb-2" style="color: #fda4af;">nexterp.ro</a><br />
+        <a href="https://apps.odoo.com/apps/browse?author=NextERP+Romania" target="_blank" rel="noopener" style="color: #fda4af;">All apps</a>
+      </div>
+    </div>
+  </div>
+
 </div>
-<div class="section" id="maintainers">
-<h2>Maintainers</h2>
-<p>Current maintainer:</p>
-<p><a class="reference external image-reference" href="https://github.com/feketemihai"><img alt="feketemihai" src="https://github.com/feketemihai.png?size=40px" /></a></p>
-<p>This module is part of the <a class="reference external" href="https://github.com/NextERP-Romania/odoo-community/tree/19.0/nexterp_stock_inventory">NextERP-Romania/odoo-community</a> project on GitHub.</p>
-<p>You are welcome to contribute.</p>
-</div>
-</div>
-</div>
+
 </body>
 </html>

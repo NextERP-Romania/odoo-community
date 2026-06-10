@@ -57,7 +57,9 @@ class StockQuant(models.Model):
                 accounting_date = fields.Date.context_today(self)
                 quants = self.filtered(lambda q: not q.accounting_date)
             else:
-                quants = self.filtered(lambda q: q.accounting_date == accounting_date)
+                quants = self.filtered(
+                    lambda q, d=accounting_date: q.accounting_date == d
+                )
             inventory = InventoryObject.create(
                 {
                     "accounting_date": accounting_date,
