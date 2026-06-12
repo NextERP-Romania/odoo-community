@@ -148,37 +148,44 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
                 )
         return res
 
-    def _import_fill_invoice_line_form(self, tree, invoice_line, qty_factor):
-        vat_on_payment = False
-        if invoice_line.partner_id.l10n_ro_vat_on_payment:
-            vat_on_payment = True
-        res = super()._import_fill_invoice_line_form(tree, invoice_line, qty_factor)
-        if vat_on_payment:
-            new_tax = invoice_line.move_id.fiscal_position_id.map_tax(
-                invoice_line.tax_ids
+    def _import_fill_invoice_line_form_batched(self, trees, invoice_lines, qty_factor):
+        # Folosim poziția fiscală deja setată pe document (calculată live la data
+        # facturii în _onchange_partner_id) ca sursă de adevăr pentru TVA la
+        # încasare. Câmpul stocat partner.l10n_ro_vat_on_payment este reîmprospătat
+        # cu date.today() și doar pentru parteneri nou creați, deci poate fi
+        # desincronizat: factura primește poziția fiscală corectă, dar gardarea pe
+        # câmpul stocat sărea maparea taxei (rămânea on_invoice în loc de on_payment).
+        res = super()._import_fill_invoice_line_form_batched(trees, invoice_lines, qty_factor)
+        for tree, invoice_line in zip(trees, invoice_lines):
+            fiscal_position = invoice_line.move_id.fiscal_position_id
+            vat_on_payment = bool(
+                fiscal_position
+                and fiscal_position
+                == invoice_line.company_id.l10n_ro_property_vat_on_payment_position_id
             )
-            invoice_line.tax_ids = [(5,)]
-            invoice_line.tax_ids = [(4, new_tax.id)]
+            if vat_on_payment:
+                new_tax = fiscal_position.map_tax(invoice_line.tax_ids)
+                invoice_line.tax_ids = [(6, 0, new_tax.ids)]
 
-        tax_nodes = tree.findall(".//{*}Item/{*}ClassifiedTaxCategory/{*}ID")
-        if len(tax_nodes) == 1:
-            if tax_nodes[0].text in ["O", "E", "Z"]:
-                # Acest TVA nu generaza inregistrari contabile,
-                # deci putem lua orice primul tva pe cota 0
-                # filtrat dupa companie si tip jurnal.
-                journal = invoice_line.move_id.journal_id
-                tax = self.env["account.tax"].search(
-                    [
-                        ("amount", "=", "0"),
-                        ("type_tax_use", "=", journal.type),
-                        ("amount_type", "=", "percent"),
-                        ("company_id", "=", invoice_line.company_id.id),
-                    ],
-                    limit=1,
-                )
-                if tax and not invoice_line.tax_ids:
-                    invoice_line.tax_ids = [(5,)]  # Șterge toate valorile existente
-                    invoice_line.tax_ids = [(4, tax.id)]  # Adaugă noua taxă
+            tax_nodes = tree.findall(".//{*}Item/{*}ClassifiedTaxCategory/{*}ID")
+            if len(tax_nodes) == 1:
+                if tax_nodes[0].text in ["O", "E", "Z"]:
+                    # Acest TVA nu generaza inregistrari contabile,
+                    # deci putem lua orice primul tva pe cota 0
+                    # filtrat dupa companie si tip jurnal.
+                    journal = invoice_line.move_id.journal_id
+                    tax = self.env["account.tax"].search(
+                        [
+                            ("amount", "=", "0"),
+                            ("type_tax_use", "=", journal.type),
+                            ("amount_type", "=", "percent"),
+                            ("company_id", "=", invoice_line.company_id.id),
+                        ],
+                        limit=1,
+                    )
+                    if tax and not invoice_line.tax_ids:
+                        invoice_line.tax_ids = [(5,)]  # Șterge toate valorile existente
+                        invoice_line.tax_ids = [(4, tax.id)]  # Adaugă noua taxă
         return res
 
     def _import_fill_invoice_line_taxes(
@@ -246,7 +253,48 @@ class AccountEdiXmlCIUSRO(models.AbstractModel):
             self.l10n_ro_renderAnafPdf(invoice)
         res = super()._import_invoice_ubl_cii(invoice, file_data, new=new)
         invoice.date = invoice.invoice_date
+        self._l10n_ro_apply_vat_on_payment(invoice)
         return res
+
+    def _l10n_ro_apply_vat_on_payment(self, invoice):
+        """Verificare defensivă, la data facturii, pentru TVA la încasare.
+
+        _onchange_partner_id (din l10n_ro_vat_on_payment) rulează în timpul
+        completării partenerului, ÎNAINTE ca invoice_date să fie setat de fluxul
+        de bază (account_edi_xml_ubl_20: partener pe linia 932, invoice_date abia
+        pe 953), deci verifică starea la date.today() în loc de data facturii.
+        Asta poate rata poziția fiscală pe facturi vechi de la furnizori care au
+        ieșit între timp din sistem, sau o poate seta greșit. Aici invoice_date e
+        deja completat, deci re-verificăm corect, setăm poziția fiscală dacă
+        lipsește și mapăm taxele rămase on_invoice. Metoda e idempotentă: pe
+        facturile deja corecte map_tax întoarce aceleași taxe on_payment.
+        """
+        if not invoice.is_l10n_ro_record or not invoice.is_purchase_document():
+            return
+        company = invoice.company_id
+        fp_vatp = company.l10n_ro_property_vat_on_payment_position_id
+        if not fp_vatp:
+            return
+        ctx = {"check_date": invoice.invoice_date or invoice.date}
+        partner = (
+            self.env["res.partner"]._find_accounting_partner(invoice.partner_id)
+            or invoice.partner_id
+        )
+        vatp = company.partner_id.with_context(**ctx)._check_vat_on_payment()
+        if not vatp and partner:
+            vatp = partner.with_context(**ctx)._check_vat_on_payment()
+        if not vatp:
+            return
+        # Nu suprascriem o poziție fiscală setată intenționat la altceva
+        # (ex. taxare inversă); doar completăm când lipsește.
+        if not invoice.fiscal_position_id:
+            invoice.fiscal_position_id = fp_vatp
+        if invoice.fiscal_position_id != fp_vatp:
+            return
+        for line in invoice.invoice_line_ids.filtered("tax_ids"):
+            new_tax = fp_vatp.map_tax(line.tax_ids)
+            if new_tax != line.tax_ids:
+                line.tax_ids = [(6, 0, new_tax.ids)]
 
     def l10n_ro_renderAnafPdf(self, invoice):
         attachments = self.env["ir.attachment"].search(
