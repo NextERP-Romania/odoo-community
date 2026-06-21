@@ -17,6 +17,7 @@ class AccountMove(models.Model):
         """
         if not column_exists(self.env.cr, "account_move", "is_inter_company"):
             create_column(self.env.cr, "account_move", "is_inter_company", "boolean")
+            # pylint: disable=no-search-all
             company_partners = self.env["res.company"].search([]).mapped("partner_id")
             # pylint: disable=E8103
             self.env.cr.execute(
@@ -25,9 +26,9 @@ class AccountMove(models.Model):
                 SET is_inter_company = FALSE;
                 """
             )  # noqa
-            for company in self.env["res.company"].search([]):
+            for company in self.env["res.company"].search([]):  # pylint: disable=no-search-all
                 partners = company_partners.filtered(
-                    lambda p: p.id != company.partner_id.id
+                    lambda p, company=company: p.id != company.partner_id.id
                 )
                 # pylint: disable=E8103
                 self.env.cr.execute(

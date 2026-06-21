@@ -40,9 +40,6 @@ class AccountMove(models.Model):
         if self.company_id.account_allow_debt_recovery_invoice:
             self.debt_recovery = True
             self.payment_state = "debt_recovery"
-            receivable_line = self.line_ids.filtered(
-                lambda line: line.account_id.account_type == "asset_receivable"
-            )
 
     def _compute_amount(self):
         res = super()._compute_amount()
@@ -50,9 +47,6 @@ class AccountMove(models.Model):
             if move.debt_recovery:
                 if move.payment_state == "paid":
                     move.debt_recovery_done = True
-                    receivable_line = move.line_ids.filtered(
-                        lambda line: line.account_id.account_type == "asset_receivable"
-                    )
                 else:
                     move.payment_state = "debt_recovery"
         return res
