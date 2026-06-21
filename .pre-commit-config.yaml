@@ -43,7 +43,7 @@ repos:
     hooks:
       - id: whool-init
   - repo: https://github.com/NextERP-Romania/maintainer-tools
-    rev: d0d5862c4b5354776193c260dbd3a9442e3ce3a4
+    rev: 2a9e0531afb2302457fc4cfd5c4a67eaef4833c0
     hooks:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
