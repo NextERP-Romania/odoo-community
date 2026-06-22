@@ -42,37 +42,38 @@ Use Cases / Context
 Key features
 ============
 
-- Inherits ``account.report_invoice_document`` (priority 100) so the
-  standard Invoice / Credit Note PDF is replaced everywhere it is used.
-- Optional **VAT** column added next to each invoice line, showing
-  ``price_total - price_subtotal`` per line.
-- Optional **Total** column added next to each invoice line, showing the
-  line total including taxes.
-- Refund (storno) invoices can be printed with negative quantities,
-  base, tax and total amounts so that the document visually matches the
-  accounting sign.
-- Section subtotals on grouped layouts are recomputed via
-  ``get_section_subtotal``, ``get_section_tax_amount`` and
-  ``get_section_total_amount`` to remain consistent with the printed
-  sign.
-- New ``report_precision`` field on ``uom.uom`` lets each unit of
-  measure define its own number of decimal places for printed
-  quantities.
-- The grouped lines view (``td_quantity_grouped``) is patched so the
-  unit count column also respects the refund sign and UoM precision.
-- All toggles are per company, stored on ``res.company``, and exposed
-  through the standard Accounting Settings form.
+-  Inherits ``account.report_invoice_document`` (priority 100) so the
+   standard Invoice / Credit Note PDF is replaced everywhere it is used.
+-  Optional **VAT** column added next to each invoice line, showing
+   ``price_total - price_subtotal`` per line.
+-  Optional **Total** column added next to each invoice line, showing
+   the line total including taxes.
+-  Refund (storno) invoices can be printed with negative quantities,
+   base, tax and total amounts so that the document visually matches the
+   accounting sign.
+-  Section subtotals on grouped layouts are recomputed via
+   ``get_section_subtotal``, ``get_section_tax_amount`` and
+   ``get_section_total_amount`` to remain consistent with the printed
+   sign.
+-  New ``report_precision`` field on ``uom.uom`` lets each unit of
+   measure define its own number of decimal places for printed
+   quantities.
+-  The grouped lines view (``td_quantity_grouped``) is patched so the
+   unit count column also respects the refund sign and UoM precision.
+-  All toggles are per company, stored on ``res.company``, and exposed
+   through the standard Accounting Settings form.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the repository https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Account Invoice Report" in your addons
-- install the module
+-  clone the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Account Invoice Report" in your addons
+-  install the module
 
 Configuration
 =============
@@ -92,10 +93,10 @@ block (added right after the standard *Account Reports* block).
 3. Tick any of the following options, depending on what you need on the
    printed invoice:
 
-   - **Print Show Refunds** — print refund / storno invoices with
-     negative quantities, base, taxes and totals.
-   - **Print Invoice Tax Value** — add a per-line **VAT** column.
-   - **Print Invoice Total Value** — add a per-line **Total** column.
+   -  **Print Show Refunds** — print refund / storno invoices with
+      negative quantities, base, taxes and totals.
+   -  **Print Invoice Tax Value** — add a per-line **VAT** column.
+   -  **Print Invoice Total Value** — add a per-line **Total** column.
 
 4. **Save** the settings. The options are stored on the current company;
    in a multi-company database, switch company and repeat the
@@ -149,17 +150,17 @@ Printing a refund (storno)
 How it works
 ------------
 
-- ``_compute_tax_totals`` on ``account.move`` inverts the sign of every
-  ``base_amount``, ``tax_amount`` and ``total_amount`` (and their
-  currency counterparts) on refund moves whose company has *Print Show
-  Refunds* enabled.
-- Line, section and grouped-line helpers (``get_section_subtotal``,
-  ``get_section_tax_amount``, ``get_section_total_amount``,
-  ``_get_child_lines``) apply the same sign so subtotals stay consistent
-  with the per-line numbers.
-- Each quantity span uses the UoM's ``report_precision`` when *Print
-  Invoice Tax Value* is on, so a kilogram line with precision ``3``
-  prints as ``1,250`` instead of ``1,25``.
+-  ``_compute_tax_totals`` on ``account.move`` inverts the sign of every
+   ``base_amount``, ``tax_amount`` and ``total_amount`` (and their
+   currency counterparts) on refund moves whose company has *Print Show
+   Refunds* enabled.
+-  Line, section and grouped-line helpers (``get_section_subtotal``,
+   ``get_section_tax_amount``, ``get_section_total_amount``,
+   ``_get_child_lines``) apply the same sign so subtotals stay
+   consistent with the per-line numbers.
+-  Each quantity span uses the UoM's ``report_precision`` when *Print
+   Invoice Tax Value* is on, so a kilogram line with precision ``3``
+   prints as ``1,250`` instead of ``1,25``.
 
 Changelog
 =========
@@ -170,7 +171,7 @@ Changelog
 19.0.0.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -181,7 +182,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

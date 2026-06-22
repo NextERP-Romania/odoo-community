@@ -41,43 +41,43 @@ Use Cases / Context
 Key features
 ============
 
-- Override of ``sale.order.line._timesheet_create_task``: after the
-  standard task is created for a ``task_in_project`` parent line, the
-  module loops over its ``kit_line_ids`` and creates one extra task per
-  service component.
-- Component-level task creation only fires when the kit component
-  product also has ``service_tracking == "task_in_project"``, so mixed
-  kits (services + storable) generate tasks only where it makes sense.
-- New ``sale.order.line.kit._timesheet_create_task`` builds the task
-  itself: it prepares values via
-  ``_timesheet_create_task_prepare_values``, creates the task with
-  ``sudo()`` and writes its id back onto the kit line through
-  ``task_id``.
-- Task naming convention:
-  ``"<Order name>: <parent product> - <component product>"`` — gives
-  immediate context in project lists, Kanban and search.
-- Tasks are linked back to the originating ``sale.order.line`` via
-  ``sale_line_id`` (so timesheet billing stays attached to the parent SO
-  line) and nested under the parent task via ``parent_id``, using the
-  ``parent_task`` context key passed by the override.
-- Override of ``sale.order._compute_tasks_ids``: when computing the set
-  of tasks belonging to an order, kit-line tasks that are not yet linked
-  to a ``sale_line_id`` are re-attached to their parent SO line, keeping
-  the order's task list consistent.
-- A creation message is posted on each kit task with a clickable link
-  back to the source sale order.
+-  Override of ``sale.order.line._timesheet_create_task``: after the
+   standard task is created for a ``task_in_project`` parent line, the
+   module loops over its ``kit_line_ids`` and creates one extra task per
+   service component.
+-  Component-level task creation only fires when the kit component
+   product also has ``service_tracking == "task_in_project"``, so mixed
+   kits (services + storable) generate tasks only where it makes sense.
+-  New ``sale.order.line.kit._timesheet_create_task`` builds the task
+   itself: it prepares values via
+   ``_timesheet_create_task_prepare_values``, creates the task with
+   ``sudo()`` and writes its id back onto the kit line through
+   ``task_id``.
+-  Task naming convention:
+   ``"<Order name>: <parent product> - <component product>"`` — gives
+   immediate context in project lists, Kanban and search.
+-  Tasks are linked back to the originating ``sale.order.line`` via
+   ``sale_line_id`` (so timesheet billing stays attached to the parent
+   SO line) and nested under the parent task via ``parent_id``, using
+   the ``parent_task`` context key passed by the override.
+-  Override of ``sale.order._compute_tasks_ids``: when computing the set
+   of tasks belonging to an order, kit-line tasks that are not yet
+   linked to a ``sale_line_id`` are re-attached to their parent SO line,
+   keeping the order's task list consistent.
+-  A creation message is posted on each kit task with a clickable link
+   back to the source sale order.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the branch 16.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Product Kit Sale Timesheet" in your addons
-- install the module
+-  clone the branch 16.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Product Kit Sale Timesheet" in your addons
+-  install the module
 
 Configuration
 =============
@@ -97,12 +97,12 @@ will be created in.
 2. For every kit component that must become a task, open the product and
    set:
 
-   - **Product Type** — ``Service``.
-   - **Invoicing Policy** — usually ``Based on Timesheets``.
-   - **Service Tracking** — ``Task in Project`` (this is the trigger
-     checked by ``_timesheet_create_task``).
-   - **Project** — the default project where tasks will land (if not
-     filled, the parent line's project is reused).
+   -  **Product Type** — ``Service``.
+   -  **Invoicing Policy** — usually ``Based on Timesheets``.
+   -  **Service Tracking** — ``Task in Project`` (this is the trigger
+      checked by ``_timesheet_create_task``).
+   -  **Project** — the default project where tasks will land (if not
+      filled, the parent line's project is reused).
 
 3. Make sure the parent kit product itself is also a ``task_in_project``
    service: the override only fires when the parent SO line creates a
@@ -149,12 +149,12 @@ What happens on order confirmation
 3. This module then loops over ``kit_line_ids`` on that SO line and, for
    every component whose own product is also ``task_in_project``:
 
-   - creates a new ``project.task`` via
-     ``sale.order.line.kit._timesheet_create_task``;
-   - writes the task id onto the kit line (``task_id``);
-   - attaches it to the parent SO line through ``sale_line_id``;
-   - sets ``parent_id`` to the task created at step 2, so the kit task
-     appears as a sub-task in the project.
+   -  creates a new ``project.task`` via
+      ``sale.order.line.kit._timesheet_create_task``;
+   -  writes the task id onto the kit line (``task_id``);
+   -  attaches it to the parent SO line through ``sale_line_id``;
+   -  sets ``parent_id`` to the task created at step 2, so the kit task
+      appears as a sub-task in the project.
 
 4. The new task gets the name
    ``"<Order>: <parent product> - <component product>"`` and receives a
@@ -163,33 +163,33 @@ What happens on order confirmation
 Tracking the tasks
 ------------------
 
-- Open **Project → All Tasks** and filter / group by the sale order to
-  see the parent task and its kit sub-tasks together.
-- The **Tasks** smart button on the sale order shows the same set;
-  ``_compute_tasks_ids`` is overridden so kit tasks created before the
-  order's full reload are still reattached to the parent SO line.
-- Open any kit task to view the chatter link back to the originating
-  sale order.
+-  Open **Project → All Tasks** and filter / group by the sale order to
+   see the parent task and its kit sub-tasks together.
+-  The **Tasks** smart button on the sale order shows the same set;
+   ``_compute_tasks_ids`` is overridden so kit tasks created before the
+   order's full reload are still reattached to the parent SO line.
+-  Open any kit task to view the chatter link back to the originating
+   sale order.
 
 Time tracking and invoicing
 ---------------------------
 
-- Time logged on a kit task is recorded against its ``sale_line_id`` —
-  the parent SO line of the kit. Invoicing the parent line therefore
-  aggregates the timesheets of every kit sub-task plus its own.
-- This matches the kit pricing model used by
-  ``nexterp_product_kit_sale``: the customer sees and pays one SO line
-  while internally the work is split across multiple tasks.
+-  Time logged on a kit task is recorded against its ``sale_line_id`` —
+   the parent SO line of the kit. Invoicing the parent line therefore
+   aggregates the timesheets of every kit sub-task plus its own.
+-  This matches the kit pricing model used by
+   ``nexterp_product_kit_sale``: the customer sees and pays one SO line
+   while internally the work is split across multiple tasks.
 
 Caveats
 -------
 
-- Kit components that are not services (or services not flagged as
-  ``task_in_project``) are silently skipped — no task is created for
-  them.
-- The override does not delete tasks when a kit line is removed later.
-  If you re-explode a kit, expect orphan tasks unless they are archived
-  manually.
+-  Kit components that are not services (or services not flagged as
+   ``task_in_project``) are silently skipped — no task is created for
+   them.
+-  The override does not delete tasks when a kit line is removed later.
+   If you re-explode a kit, expect orphan tasks unless they are archived
+   manually.
 
 Changelog
 =========
@@ -200,7 +200,7 @@ Changelog
 19.0.1.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -211,7 +211,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

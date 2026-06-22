@@ -42,40 +42,41 @@ Use Cases / Context
 Key features
 ============
 
-- Inherits the three standard delivery PDF templates at priority 100:
-  ``stock.report_delivery_document``,
-  ``stock.stock_report_delivery_has_serial_move_line`` and
-  ``stock.stock_report_delivery_aggregated_move_lines``.
-- **Delivery slip report only name** — replaces the product display name
-  (which prepends the internal reference) with the bare
-  ``product_id.name``, and hides the ``move.description_picking`` /
-  aggregated description so the product column is cleaner.
-- **Delivery slip report uom precision** — formats the demand and done
-  quantity using the ``report_precision`` defined per UoM (field
-  inherited from ``nexterp_account_invoice_report``), so quantities are
-  printed with the correct number of decimals for kg / l / m / etc.
-- **Picking report lang company** — for non-outgoing pickings (receipts,
-  internal transfers, returns…), forces the report language to the
-  company partner's language. Customer deliveries still print in the
-  customer's language.
-- All three switches are independent and can be combined.
-- Depends on ``nexterp_account_invoice_report`` to reuse the
-  ``uom.uom.report_precision`` field.
-- The aggregated-lines variant also propagates ``report_precision``
-  through ``_get_aggregated_product_quantities``, and the override of
-  ``_get_aggregated_properties`` strips the ``[CODE]`` prefix from the
-  printed product name when *only name* is on.
+-  Inherits the three standard delivery PDF templates at priority 100:
+   ``stock.report_delivery_document``,
+   ``stock.stock_report_delivery_has_serial_move_line`` and
+   ``stock.stock_report_delivery_aggregated_move_lines``.
+-  **Delivery slip report only name** — replaces the product display
+   name (which prepends the internal reference) with the bare
+   ``product_id.name``, and hides the ``move.description_picking`` /
+   aggregated description so the product column is cleaner.
+-  **Delivery slip report uom precision** — formats the demand and done
+   quantity using the ``report_precision`` defined per UoM (field
+   inherited from ``nexterp_account_invoice_report``), so quantities are
+   printed with the correct number of decimals for kg / l / m / etc.
+-  **Picking report lang company** — for non-outgoing pickings
+   (receipts, internal transfers, returns…), forces the report language
+   to the company partner's language. Customer deliveries still print in
+   the customer's language.
+-  All three switches are independent and can be combined.
+-  Depends on ``nexterp_account_invoice_report`` to reuse the
+   ``uom.uom.report_precision`` field.
+-  The aggregated-lines variant also propagates ``report_precision``
+   through ``_get_aggregated_product_quantities``, and the override of
+   ``_get_aggregated_properties`` strips the ``[CODE]`` prefix from the
+   printed product name when *only name* is on.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the repository https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Delivery Slip Report" in your addons
-- install the module
+-  clone the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Delivery Slip Report" in your addons
+-  install the module
 
 Configuration
 =============
@@ -93,13 +94,13 @@ settings page, right after the *Operations* block.
 2. Scroll down past the **Operations** block.
 3. Tick the options you want enabled for the printed delivery slip:
 
-   - **Delivery slip report only name** — print only the product name,
-     hide the ``[internal reference] Name`` prefix and the picking
-     description.
-   - **Delivery slip report uom precision** — format quantities using
-     the per-UoM **Report Precision**.
-   - **Picking report lang company** — print receipts and internal
-     transfers in the company partner's language.
+   -  **Delivery slip report only name** — print only the product name,
+      hide the ``[internal reference] Name`` prefix and the picking
+      description.
+   -  **Delivery slip report uom precision** — format quantities using
+      the per-UoM **Report Precision**.
+   -  **Picking report lang company** — print receipts and internal
+      transfers in the company partner's language.
 
 4. **Save** the settings. Repeat per company in a multi-company
    database.
@@ -143,34 +144,34 @@ Printing a delivery slip
 2. Click **Print -> Delivery Slip**.
 3. The generated PDF reflects the company options:
 
-   - Product column shows the bare product name (no ``[CODE]`` prefix,
-     no description) when *only name* is enabled.
-   - Demand and done quantities are printed with the UoM-specific number
-     of decimals when *uom precision* is enabled.
-   - The PDF is rendered in the company partner's language for
-     non-outgoing pickings when *lang company* is enabled.
+   -  Product column shows the bare product name (no ``[CODE]`` prefix,
+      no description) when *only name* is enabled.
+   -  Demand and done quantities are printed with the UoM-specific
+      number of decimals when *uom precision* is enabled.
+   -  The PDF is rendered in the company partner's language for
+      non-outgoing pickings when *lang company* is enabled.
 
 How it works
 ------------
 
-- ``stock.report_delivery_document`` is patched to replace
-  ``move.product_id`` and conditionally hide
-  ``move.description_picking``.
-- ``stock.stock_report_delivery_has_serial_move_line`` applies the same
-  replacements on the per-serial-number view used for tracked products.
-- ``stock.stock_report_delivery_aggregated_move_lines`` hides the
-  aggregated description and consumes a ``report_precision`` value
-  attached to each aggregated line.
-- ``StockMoveLine._get_aggregated_product_quantities`` injects
-  ``report_precision`` from the line UoM into the aggregated dict.
-- ``StockMoveLine._get_aggregated_properties`` returns ``product.name``
-  (instead of the display name) when *only name* is on.
-- ``StockPicking._get_report_lang`` returns the company partner language
-  for non-outgoing pickings when *lang company* is on; the default
-  behaviour is preserved for customer deliveries.
-- ``StockMoveLine._get_report_lang`` picks the move partner language
-  first, falling back to the line partner language and then to the user
-  language.
+-  ``stock.report_delivery_document`` is patched to replace
+   ``move.product_id`` and conditionally hide
+   ``move.description_picking``.
+-  ``stock.stock_report_delivery_has_serial_move_line`` applies the same
+   replacements on the per-serial-number view used for tracked products.
+-  ``stock.stock_report_delivery_aggregated_move_lines`` hides the
+   aggregated description and consumes a ``report_precision`` value
+   attached to each aggregated line.
+-  ``StockMoveLine._get_aggregated_product_quantities`` injects
+   ``report_precision`` from the line UoM into the aggregated dict.
+-  ``StockMoveLine._get_aggregated_properties`` returns ``product.name``
+   (instead of the display name) when *only name* is on.
+-  ``StockPicking._get_report_lang`` returns the company partner
+   language for non-outgoing pickings when *lang company* is on; the
+   default behaviour is preserved for customer deliveries.
+-  ``StockMoveLine._get_report_lang`` picks the move partner language
+   first, falling back to the line partner language and then to the user
+   language.
 
 Changelog
 =========
@@ -181,7 +182,7 @@ Changelog
 19.0.0.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -192,7 +193,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

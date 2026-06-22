@@ -42,46 +42,46 @@ Use Cases / Context
 Key features
 ============
 
-- New model ``sale.order.line.kit`` (inherits ``sale.order.line``) that
-  stores the exploded component lines, linked back to the parent SO line
-  via ``sale_line_id``.
-- New one2many ``kit_line_ids`` on both ``sale.order`` (all kit lines of
-  the order) and ``sale.order.line`` (kit lines for that SO line).
-- Automatic explosion on ``create`` and on ``write`` for orders in
-  ``draft`` or ``sent`` state: ``generate_sale_order_line_kit``
-  re-creates the kit lines from ``product.product.kit`` whenever the
-  order lines change.
-- Per-component pricing through the order's pricelist, partner,
-  currency, UoM and date — taxes are recomputed via
-  ``tax_ids.compute_all`` so ``price_tax``, ``price_subtotal`` and
-  ``price_total`` are kept consistent on each kit line.
-- Parent SO line ``price_unit`` is recomputed from the sum of the kit
-  lines' subtotals through ``get_sale_kit_price``, so the customer sees
-  the kit as a single priced line.
-- Recursion guard via the ``change_from_soline`` context key avoids
-  loops between parent and kit line writes.
-- Orphan-line cleanup: stale ``sale.order.line.kit`` rows whose
-  ``sale_line_id`` was reset by a one2many replace are unlinked
-  automatically on write.
-- Dedicated **Kit Order Lines** tab on the sale order form, grouped by
-  SO line, with editable quantities, prices, taxes and UoM.
-- Cascade ``unlink`` from ``sale.order.line`` cleans the related kit
-  lines; ``_check_line_unlink`` is overridden so kit rows are always
-  deletable.
-- ``product_document_ids`` and ``invoice_lines`` are mirrored on kit
-  lines for document attachments and invoicing hooks.
+-  New model ``sale.order.line.kit`` (inherits ``sale.order.line``) that
+   stores the exploded component lines, linked back to the parent SO
+   line via ``sale_line_id``.
+-  New one2many ``kit_line_ids`` on both ``sale.order`` (all kit lines
+   of the order) and ``sale.order.line`` (kit lines for that SO line).
+-  Automatic explosion on ``create`` and on ``write`` for orders in
+   ``draft`` or ``sent`` state: ``generate_sale_order_line_kit``
+   re-creates the kit lines from ``product.product.kit`` whenever the
+   order lines change.
+-  Per-component pricing through the order's pricelist, partner,
+   currency, UoM and date — taxes are recomputed via
+   ``tax_ids.compute_all`` so ``price_tax``, ``price_subtotal`` and
+   ``price_total`` are kept consistent on each kit line.
+-  Parent SO line ``price_unit`` is recomputed from the sum of the kit
+   lines' subtotals through ``get_sale_kit_price``, so the customer sees
+   the kit as a single priced line.
+-  Recursion guard via the ``change_from_soline`` context key avoids
+   loops between parent and kit line writes.
+-  Orphan-line cleanup: stale ``sale.order.line.kit`` rows whose
+   ``sale_line_id`` was reset by a one2many replace are unlinked
+   automatically on write.
+-  Dedicated **Kit Order Lines** tab on the sale order form, grouped by
+   SO line, with editable quantities, prices, taxes and UoM.
+-  Cascade ``unlink`` from ``sale.order.line`` cleans the related kit
+   lines; ``_check_line_unlink`` is overridden so kit rows are always
+   deletable.
+-  ``product_document_ids`` and ``invoice_lines`` are mirrored on kit
+   lines for document attachments and invoicing hooks.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the branch 16.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Product Kit Sale" in your addons
-- install the module
+-  clone the branch 16.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Product Kit Sale" in your addons
+-  install the module
 
 Configuration
 =============
@@ -97,10 +97,10 @@ as soon as kit data exists on the products you sell.
 
 1. Configure the kit product and its components in the base module:
 
-   - Tick **Is a Kit Component** on each component at **Sales → Products
-     → Products**.
-   - Open the kit product and fill the **Kit Products** tab. See the
-     ``nexterp_product_kit`` documentation for the full setup.
+   -  Tick **Is a Kit Component** on each component at **Sales →
+      Products → Products**.
+   -  Open the kit product and fill the **Kit Products** tab. See the
+      ``nexterp_product_kit`` documentation for the full setup.
 
 2. Pricelist and taxes
 ----------------------
@@ -144,27 +144,27 @@ Adding a kit to a quotation
    automatically creates one ``sale.order.line.kit`` per component under
    the new **Kit Order Lines** tab, with:
 
-   - **Sale Order Line** — back-pointer to the parent SO line.
-   - **Product** — the component product.
-   - **Quantity** — ``parent_qty * kit_line.product_qty``, converted
-     through the parent's UoM.
-   - **Unit Price** — taken from the component's contextual price
-     (pricelist, partner, date, UoM).
-   - **Tax** — copied from the parent SO line and recomputed.
-   - **Subtotal** — recomputed via ``tax_ids.compute_all``.
+   -  **Sale Order Line** — back-pointer to the parent SO line.
+   -  **Product** — the component product.
+   -  **Quantity** — ``parent_qty * kit_line.product_qty``, converted
+      through the parent's UoM.
+   -  **Unit Price** — taken from the component's contextual price
+      (pricelist, partner, date, UoM).
+   -  **Tax** — copied from the parent SO line and recomputed.
+   -  **Subtotal** — recomputed via ``tax_ids.compute_all``.
 
 Adjusting a kit on the order
 ----------------------------
 
-- **Kit Order Lines** tab is editable: change quantities, prices,
-  discounts, taxes or even the component product on a kit row.
-- The parent SO line's **Unit Price** is recomputed automatically from
-  ``sum(kit_lines.price_subtotal) / parent.product_uom_qty``, so the
-  customer-facing total stays in sync.
-- Changing the parent SO line (product, quantity, taxes) re-explodes the
-  kit lines on save: the existing kit rows are unlinked and a fresh set
-  is generated from the kit definition.
-- Removing the parent SO line cascades and removes its kit lines.
+-  **Kit Order Lines** tab is editable: change quantities, prices,
+   discounts, taxes or even the component product on a kit row.
+-  The parent SO line's **Unit Price** is recomputed automatically from
+   ``sum(kit_lines.price_subtotal) / parent.product_uom_qty``, so the
+   customer-facing total stays in sync.
+-  Changing the parent SO line (product, quantity, taxes) re-explodes
+   the kit lines on save: the existing kit rows are unlinked and a fresh
+   set is generated from the kit definition.
+-  Removing the parent SO line cascades and removes its kit lines.
 
 Pricelist behaviour
 -------------------
@@ -177,13 +177,13 @@ rules on the component product apply directly.
 Limitations
 -----------
 
-- Re-explosion only runs while the order is in ``draft`` or ``sent``. On
-  confirmed / locked orders, kit lines can still be edited individually
-  but the standard order line will not regenerate them.
-- Kit lines are reference rows for pricing and reporting; they do not
-  produce their own delivery or invoice unless other modules hook into
-  ``sale.order.line.kit`` (e.g. ``nexterp_product_kit_sale_timesheet``
-  for tasks).
+-  Re-explosion only runs while the order is in ``draft`` or ``sent``.
+   On confirmed / locked orders, kit lines can still be edited
+   individually but the standard order line will not regenerate them.
+-  Kit lines are reference rows for pricing and reporting; they do not
+   produce their own delivery or invoice unless other modules hook into
+   ``sale.order.line.kit`` (e.g. ``nexterp_product_kit_sale_timesheet``
+   for tasks).
 
 Changelog
 =========
@@ -194,7 +194,7 @@ Changelog
 19.0.1.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -205,7 +205,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

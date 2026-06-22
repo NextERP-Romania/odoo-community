@@ -44,44 +44,45 @@ Use Cases / Context
 Key features
 ============
 
-- **Purchase-driven valuation** — the override of
-  ``stock.move._get_value_data`` returns the origin move's value when
-  the incoming move ``is_subcontract``, both legs are ``done``, and
-  ``move_orig_ids`` exists. The standard Odoo computation is bypassed in
-  that case.
-- **Automatic re-trigger on done** — ``stock.move._action_done`` is
-  extended so any inbound move with subcontracting destinations runs
-  ``_set_value()`` on its ``move_dest_ids`` after standard processing,
-  ensuring the new valuation rule is applied at the right moment.
-- **Single inheritance, no new models** — the module adds no fields,
-  views, menus or wizards; only two methods are overridden on
-  ``stock.move``.
-- **Romanian-stock-account integration** — the manifest depends on
-  ``l10n_ro_stock_account``, so the value flow uses the Romanian
-  inventory-valuation logic (separate goods received / not invoiced
-  account, FIFO/AVG per location, etc.).
-- **Subcontracting-purchase integration** — depends on
-  ``mrp_subcontracting_purchase``, the Odoo bridge that links a
-  subcontracting BOM to the purchase order line, providing the
-  ``is_subcontract`` flag and the move chain the override walks.
-- **Origin-move tracing** — uses Odoo's
-  ``_get_value_from_origin_move(quantity)`` helper to fetch the value
-  proportional to the received quantity, so partial subcontract receipts
-  are valued correctly.
-- **No effect when components are valued at receipt** — the override
-  only triggers for subcontract moves with an origin chain; regular
-  moves keep the standard Odoo costing.
+-  **Purchase-driven valuation** — the override of
+   ``stock.move._get_value_data`` returns the origin move's value when
+   the incoming move ``is_subcontract``, both legs are ``done``, and
+   ``move_orig_ids`` exists. The standard Odoo computation is bypassed
+   in that case.
+-  **Automatic re-trigger on done** — ``stock.move._action_done`` is
+   extended so any inbound move with subcontracting destinations runs
+   ``_set_value()`` on its ``move_dest_ids`` after standard processing,
+   ensuring the new valuation rule is applied at the right moment.
+-  **Single inheritance, no new models** — the module adds no fields,
+   views, menus or wizards; only two methods are overridden on
+   ``stock.move``.
+-  **Romanian-stock-account integration** — the manifest depends on
+   ``l10n_ro_stock_account``, so the value flow uses the Romanian
+   inventory-valuation logic (separate goods received / not invoiced
+   account, FIFO/AVG per location, etc.).
+-  **Subcontracting-purchase integration** — depends on
+   ``mrp_subcontracting_purchase``, the Odoo bridge that links a
+   subcontracting BOM to the purchase order line, providing the
+   ``is_subcontract`` flag and the move chain the override walks.
+-  **Origin-move tracing** — uses Odoo's
+   ``_get_value_from_origin_move(quantity)`` helper to fetch the value
+   proportional to the received quantity, so partial subcontract
+   receipts are valued correctly.
+-  **No effect when components are valued at receipt** — the override
+   only triggers for subcontract moves with an origin chain; regular
+   moves keep the standard Odoo costing.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the repository https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "Purchase Subcontracting Price" in your addons
-- install the module
+-  clone the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "Purchase Subcontracting Price" in your addons
+-  install the module
 
 Configuration
 =============
@@ -99,9 +100,9 @@ place.
 
 The manifest pulls two prerequisites that must be installable first:
 
-- ``l10n_ro_stock_account`` — Romanian stock-account valuation (OCA).
-- ``mrp_subcontracting_purchase`` — Odoo bridge between subcontracting
-  BOMs and purchase orders.
+-  ``l10n_ro_stock_account`` — Romanian stock-account valuation (OCA).
+-  ``mrp_subcontracting_purchase`` — Odoo bridge between subcontracting
+   BOMs and purchase orders.
 
 Install both before this module.
 
@@ -182,9 +183,9 @@ Typical flow
 4. **Validate the receipt** — when the receipt's ``stock.move`` reaches
    ``state == 'done'``, this module's override of ``_action_done`` runs:
 
-   - it inspects all inbound moves with a subcontracting destination,
-   - it re-runs ``_set_value()`` on those destinations so the inventory
-     layer is recomputed using the new rule.
+   -  it inspects all inbound moves with a subcontracting destination,
+   -  it re-runs ``_set_value()`` on those destinations so the inventory
+      layer is recomputed using the new rule.
 
 5. **Valuation is set from the PO** — ``_get_value_data`` detects the
    subcontract move with a finished origin chain and returns
@@ -194,24 +195,24 @@ Typical flow
 Inspecting the result
 ---------------------
 
-- Open **Inventory → Reporting → Valuation** and filter by product or
-  date to see the layer created by the receipt. The unit value matches
-  the PO line price.
-- Open the journal entry generated by the move: the input account is
-  posted against the standard Goods Received / Not Invoiced account
-  provided by ``l10n_ro_stock_account``.
-- The corresponding vendor bill, once posted, clears that account at the
-  same price.
+-  Open **Inventory → Reporting → Valuation** and filter by product or
+   date to see the layer created by the receipt. The unit value matches
+   the PO line price.
+-  Open the journal entry generated by the move: the input account is
+   posted against the standard Goods Received / Not Invoiced account
+   provided by ``l10n_ro_stock_account``.
+-  The corresponding vendor bill, once posted, clears that account at
+   the same price.
 
 When the override does nothing
 ------------------------------
 
-- Partial chain not done — if any move in ``move_orig_ids`` is still in
-  progress, the standard valuation is used until the chain is complete.
-- Non-subcontracting move — regular receipts, internal transfers and
-  manufacturing orders keep the unchanged Odoo costing.
-- Manual valuation — products configured with **Valuation: Manual** are
-  not updated at all by stock-move automation.
+-  Partial chain not done — if any move in ``move_orig_ids`` is still in
+   progress, the standard valuation is used until the chain is complete.
+-  Non-subcontracting move — regular receipts, internal transfers and
+   manufacturing orders keep the unchanged Odoo costing.
+-  Manual valuation — products configured with **Valuation: Manual** are
+   not updated at all by stock-move automation.
 
 Changelog
 =========
@@ -222,7 +223,7 @@ Changelog
 19.0.1.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -233,7 +234,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

@@ -4,7 +4,7 @@ import logging
 
 import markupsafe
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 from ..models.etransport_api_extra import ETransportAPIExtra
@@ -34,7 +34,7 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         required=True,
     )
     uit = fields.Char(string="Notification UIT", required=True, readonly=True)
-    remarks = fields.Char(string="Remarks", size=200)
+    remarks = fields.Char(size=200)
     post_outage = fields.Boolean(string="Post-outage declaration")
 
     # For confirmation
@@ -44,7 +44,6 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
             ("20", "Partially confirmed"),
             ("30", "Refused"),
         ],
-        string="Confirmation Type",
     )
 
     # For vehicle modification
@@ -72,7 +71,7 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
     def action_execute(self):
         self.ensure_one()
         if not self.uit:
-            raise UserError(_("The transfer has no validated UIT."))
+            raise UserError(self.env._("The transfer has no validated UIT."))
         method = {
             "delete": self._send_delete,
             "confirm": self._send_confirm,
@@ -108,7 +107,7 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
 
     def _send_confirm(self):
         if not self.confirmation_type:
-            raise UserError(_("Confirmation type is required."))
+            raise UserError(self.env._("Confirmation type is required."))
         data = self._common_data()
         data["tipConfirmare"] = self.confirmation_type
         raw_xml = self._render(
@@ -124,9 +123,9 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
 
     def _send_modify_vehicle(self):
         if not self.new_vehicle_number:
-            raise UserError(_("Vehicle number is required."))
+            raise UserError(self.env._("Vehicle number is required."))
         if not self.modification_date:
-            raise UserError(_("Modification date is required."))
+            raise UserError(self.env._("Modification date is required."))
         data = self._common_data()
         data.update(
             {
@@ -173,7 +172,7 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         )
         if "error" in result:
             raise UserError(
-                _(
+                self.env._(
                     "ANAF error on %(action)s: %(err)s",
                     action=event_type,
                     err=result["error"],
@@ -192,8 +191,9 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
             values.update(extras)
         self.env["l10n_ro_edi.document"].create(values)
         self.picking_id._message_log(
-            body=_(
-                "eTransport %(action)s sent successfully (UIT: %(uit)s, load: %(load)s).",
+            body=self.env._(
+                "eTransport %(action)s sent successfully "
+                "(UIT: %(uit)s, load: %(load)s).",
                 action=event_type,
                 uit=self.uit,
                 load=content["index_incarcare"],

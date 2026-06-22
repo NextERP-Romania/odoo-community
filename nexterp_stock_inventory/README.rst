@@ -44,49 +44,49 @@ Use Cases / Context
 Key features
 ============
 
-- **Inventory header model** — ``l10n.ro.stock.inventory`` ties an
-  accounting date, a company, internal locations and (optionally) a
-  product list to a draft/done state, with an auto-computed name like
-  ``Inventory - YYYY-MM-DD``.
-- **Counted-line model** — ``l10n.ro.stock.inventory.line`` carries the
-  counted quantity, on-hand quantity, difference, standard price,
-  current value, post-validation value and value difference, each line
-  linked to a ``stock.quant``.
-- **Quant uniqueness** — a Postgres constraint
-  ``unique(inventory_id, quant_id)`` blocks the same quant from
-  appearing twice on the same inventory.
-- **Generate / clear actions** — ``Generate Inventory Lines`` fetches
-  quants for the configured locations and products (creates missing
-  quants on the fly), ``Clear Inventory Lines`` removes them and resets
-  the flag.
-- **Validate action** — ``Validate Inventory`` calls
-  ``stock.quant.action_apply_inventory()`` on each line with the
-  inventory's accounting date, snapshots the new value, computes the
-  per-line value difference and locks the document.
-- **Reverse capture** — the override of
-  ``stock.quant.action_apply_inventory`` creates one
-  ``l10n.ro.stock.inventory`` per accounting date when quants are
-  adjusted outside this workflow, so manual quant edits are still
-  archived as inventory documents.
-- **Reporting** — a list / pivot / graph view on
-  ``l10n.ro.stock.inventory.line`` filterable by inventory, product,
-  lot, location and accounting date, with ``quantity``,
-  ``inventory_quantity`` and ``inventory_diff_quantity`` as measures.
-- **Manager-only menus** — both menus live under the existing
-  ``stock.menu_stock_adjustments`` / ``stock.menu_warehouse_report``
-  parents with ``groups="stock.group_stock_manager"``.
+-  **Inventory header model** — ``l10n.ro.stock.inventory`` ties an
+   accounting date, a company, internal locations and (optionally) a
+   product list to a draft/done state, with an auto-computed name like
+   ``Inventory - YYYY-MM-DD``.
+-  **Counted-line model** — ``l10n.ro.stock.inventory.line`` carries the
+   counted quantity, on-hand quantity, difference, standard price,
+   current value, post-validation value and value difference, each line
+   linked to a ``stock.quant``.
+-  **Quant uniqueness** — a Postgres constraint
+   ``unique(inventory_id, quant_id)`` blocks the same quant from
+   appearing twice on the same inventory.
+-  **Generate / clear actions** — ``Generate Inventory Lines`` fetches
+   quants for the configured locations and products (creates missing
+   quants on the fly), ``Clear Inventory Lines`` removes them and resets
+   the flag.
+-  **Validate action** — ``Validate Inventory`` calls
+   ``stock.quant.action_apply_inventory()`` on each line with the
+   inventory's accounting date, snapshots the new value, computes the
+   per-line value difference and locks the document.
+-  **Reverse capture** — the override of
+   ``stock.quant.action_apply_inventory`` creates one
+   ``l10n.ro.stock.inventory`` per accounting date when quants are
+   adjusted outside this workflow, so manual quant edits are still
+   archived as inventory documents.
+-  **Reporting** — a list / pivot / graph view on
+   ``l10n.ro.stock.inventory.line`` filterable by inventory, product,
+   lot, location and accounting date, with ``quantity``,
+   ``inventory_quantity`` and ``inventory_diff_quantity`` as measures.
+-  **Manager-only menus** — both menus live under the existing
+   ``stock.menu_stock_adjustments`` / ``stock.menu_warehouse_report``
+   parents with ``groups="stock.group_stock_manager"``.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the branch 19.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Stock Inventory" in your addons
-- install the module
+-  clone the branch 19.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Stock Inventory" in your addons
+-  install the module
 
 Configuration
 =============
@@ -102,10 +102,10 @@ preparation and access-rights checks.
 
 The manifest depends on ``stock_account``, so:
 
-- **Inventory** must be installed.
-- **Accounting** or another module pulling in ``stock_account`` must be
-  installed so quants carry a ``value`` and a ``standard_price`` that
-  the inventory lines can snapshot.
+-  **Inventory** must be installed.
+-  **Accounting** or another module pulling in ``stock_account`` must be
+   installed so quants carry a ``value`` and a ``standard_price`` that
+   the inventory lines can snapshot.
 
 2. Grant access
 ---------------
@@ -149,12 +149,13 @@ generated.
 
 After install the new entries are:
 
-- **Inventory → Operations → Adjustments → Inventory Stock Adjustments**
-  — the header list and form (action ``action_open_stock_inventory``).
-- **Inventory → Reporting → Inventory Stock Line Adjustments History** —
-  list / pivot / graph over validated lines (action
-  ``action_open_stock_inventory_line_history``), filtered to
-  ``state = done`` by default.
+-  **Inventory → Operations → Adjustments → Inventory Stock
+   Adjustments** — the header list and form (action
+   ``action_open_stock_inventory``).
+-  **Inventory → Reporting → Inventory Stock Line Adjustments History**
+   — list / pivot / graph over validated lines (action
+   ``action_open_stock_inventory_line_history``), filtered to
+   ``state = done`` by default.
 
 Usage
 =====
@@ -186,27 +187,27 @@ Save the draft.
 
 Click **Generate Inventory Lines**. The wizard:
 
-- Searches ``stock.quant`` for the configured scope.
-- Skips quants that already have a line on this inventory (the action
-  can be called multiple times while the inventory is in **Draft**).
-- Creates one line per quant, snapshotting **On Hand Quantity**,
-  **Counted Quantity**, **Difference**, **Standard Price** and
-  **Value**.
-- Sets ``inventory_quantity = 0`` on quants that had no value, so the
-  counter starts from a blank slate.
+-  Searches ``stock.quant`` for the configured scope.
+-  Skips quants that already have a line on this inventory (the action
+   can be called multiple times while the inventory is in **Draft**).
+-  Creates one line per quant, snapshotting **On Hand Quantity**,
+   **Counted Quantity**, **Difference**, **Standard Price** and
+   **Value**.
+-  Sets ``inventory_quantity = 0`` on quants that had no value, so the
+   counter starts from a blank slate.
 
 3. Adjust the count
 -------------------
 
 In the **Inventory Lines** tab:
 
-- Edit **Counted Quantity** per line; **Difference** updates
-  automatically through the related quant.
-- Add manual lines for product / location / lot combinations not yet in
-  stock — the create override on the line model finds the matching
-  ``stock.quant`` (or creates one with ``inventory_quantity = 0``).
-- Click **Clear Inventory Lines** to wipe all lines and start over; the
-  related quants' ``inventory_quantity`` is cleared as well.
+-  Edit **Counted Quantity** per line; **Difference** updates
+   automatically through the related quant.
+-  Add manual lines for product / location / lot combinations not yet in
+   stock — the create override on the line model finds the matching
+   ``stock.quant`` (or creates one with ``inventory_quantity = 0``).
+-  Click **Clear Inventory Lines** to wipe all lines and start over; the
+   related quants' ``inventory_quantity`` is cleared as well.
 
 4. Validate
 -----------
@@ -249,7 +250,7 @@ Changelog
 19.0.1.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -260,8 +261,8 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
-  - Sima Elisabeta <elisabeta.sima@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
+   -  Sima Elisabeta <elisabeta.sima@nexterp.ro>
 

@@ -42,39 +42,39 @@ Use Cases / Context
 Key features
 ============
 
-- Adds a new QWeb-PDF action **Conformity Report** on ``stock.picking``,
-  available as a print binding (``binding_type=report``) from the
-  picking form *Print* menu.
-- Header block prints the customer address, VAT number (using the fiscal
-  country's VAT label) and the trade-register number (``nrc``).
-- Title block shows the picking number, the dispatch date (uses
-  ``l10n_ro_accounting_date`` when present, otherwise ``date_done`` /
-  ``scheduled_date``) and the related sale order or customer order
-  reference (``client_order_ref``).
-- Move-line table renders one row per ``move.line`` with: row number,
-  product name, customer-specific product code (read from
-  ``product.customer_ids`` when the field exists), lot number, UoM,
-  quantity done and lot **expiration date** as minimum shelf life.
-- Conformity declaration paragraph cites the company name, city and
-  street and the picking name + date.
-- Footer signature block with agent details, sale order reference and a
-  delegate panel (name, ID, means of transport ``l10n_ro_mean_transp``,
-  date / hour and dual signature lines).
-- Report is rendered in the company partner language; the file name
-  follows the pattern ``Conformity_Report - <picking name>.pdf``.
-- The certificate body is only rendered for pickings in state ``done``.
+-  Adds a new QWeb-PDF action **Conformity Report** on
+   ``stock.picking``, available as a print binding
+   (``binding_type=report``) from the picking form *Print* menu.
+-  Header block prints the customer address, VAT number (using the
+   fiscal country's VAT label) and the trade-register number (``nrc``).
+-  Title block shows the picking number, the dispatch date (uses
+   ``l10n_ro_accounting_date`` when present, otherwise ``date_done`` /
+   ``scheduled_date``) and the related sale order or customer order
+   reference (``client_order_ref``).
+-  Move-line table renders one row per ``move.line`` with: row number,
+   product name, customer-specific product code (read from
+   ``product.customer_ids`` when the field exists), lot number, UoM,
+   quantity done and lot **expiration date** as minimum shelf life.
+-  Conformity declaration paragraph cites the company name, city and
+   street and the picking name + date.
+-  Footer signature block with agent details, sale order reference and a
+   delegate panel (name, ID, means of transport ``l10n_ro_mean_transp``,
+   date / hour and dual signature lines).
+-  Report is rendered in the company partner language; the file name
+   follows the pattern ``Conformity_Report - <picking name>.pdf``.
+-  The certificate body is only rendered for pickings in state ``done``.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the branch 17.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Conformity Certificate" in your addons
-- install the module
+-  clone the branch 17.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Conformity Certificate" in your addons
+-  install the module
 
 Configuration
 =============
@@ -98,9 +98,9 @@ the corresponding parts of the sentence will print blank:
    & Companies -> Companies**).
 2. Open the company and verify:
 
-   - **Name** — printed at the start of the declaration.
-   - **City** and **Street** — printed in the company address part of
-     the declaration.
+   -  **Name** — printed at the start of the declaration.
+   -  **City** and **Street** — printed in the company address part of
+      the declaration.
 
 2. Romanian localization fields (optional but recommended)
 ----------------------------------------------------------
@@ -108,25 +108,27 @@ the corresponding parts of the sentence will print blank:
 The template reads several optional Romanian-localization fields if they
 exist on the picking and partner. Filling them improves the output:
 
-+-----------------------------+-------------------+------------------------+
-| Field                       | Source            | Used for               |
-+=============================+===================+========================+
-| ``l10n_ro_accounting_date`` | ``stock.picking`` | Dispatch date in the   |
-|                             |                   | header and declaration |
-+-----------------------------+-------------------+------------------------+
-| ``l10n_ro_delegate_id``     | ``stock.picking`` | Name of the delegate   |
-|                             |                   | in the signature block |
-+-----------------------------+-------------------+------------------------+
-| ``l10n_ro_mean_transp``     | ``stock.picking`` | Means of transport in  |
-|                             |                   | the signature block    |
-+-----------------------------+-------------------+------------------------+
-| ``nrc``                     | ``res.partner``   | Trade register number  |
-|                             |                   | under the customer     |
-|                             |                   | address                |
-+-----------------------------+-------------------+------------------------+
-| ``vat``                     | ``res.partner``   | VAT / Tax ID under the |
-|                             |                   | customer address       |
-+-----------------------------+-------------------+------------------------+
++-----------------------+-------------------+-----------------------+
+| Field                 | Source            | Used for              |
++=======================+===================+=======================+
+| ``l10n                | ``stock.picking`` | Dispatch date in the  |
+| _ro_accounting_date`` |                   | header and            |
+|                       |                   | declaration           |
++-----------------------+-------------------+-----------------------+
+| ``                    | ``stock.picking`` | Name of the delegate  |
+| l10n_ro_delegate_id`` |                   | in the signature      |
+|                       |                   | block                 |
++-----------------------+-------------------+-----------------------+
+| ``                    | ``stock.picking`` | Means of transport in |
+| l10n_ro_mean_transp`` |                   | the signature block   |
++-----------------------+-------------------+-----------------------+
+| ``nrc``               | ``res.partner``   | Trade register number |
+|                       |                   | under the customer    |
+|                       |                   | address               |
++-----------------------+-------------------+-----------------------+
+| ``vat``               | ``res.partner``   | VAT / Tax ID under    |
+|                       |                   | the customer address  |
++-----------------------+-------------------+-----------------------+
 
 3. Lot tracking
 ---------------
@@ -161,18 +163,19 @@ Printing the certificate
 What appears on the PDF
 -----------------------
 
-- **Header**: customer address, VAT, trade register.
-- **Title block**: *Certificate of Conformity*, picking series / number,
-  dispatch date, order number (sale order or customer reference).
-- **Move-line table**: one row per move line, with row number, product,
-  customer product code, lot number, UoM, quantity done and lot
-  expiration date.
-- **Declaration**: the issuing company guarantees that the listed
-  products do not endanger life or health and comply with the sanitary /
-  veterinary food-safety legislation in force.
-- **Signature block**: agent, supplier code and sale order on the left;
-  shipping information, delegate name, ID, means of transport, date /
-  hour and signature lines on the right.
+-  **Header**: customer address, VAT, trade register.
+-  **Title block**: *Certificate of Conformity*, picking series /
+   number, dispatch date, order number (sale order or customer
+   reference).
+-  **Move-line table**: one row per move line, with row number, product,
+   customer product code, lot number, UoM, quantity done and lot
+   expiration date.
+-  **Declaration**: the issuing company guarantees that the listed
+   products do not endanger life or health and comply with the sanitary
+   / veterinary food-safety legislation in force.
+-  **Signature block**: agent, supplier code and sale order on the left;
+   shipping information, delegate name, ID, means of transport, date /
+   hour and signature lines on the right.
 
 Language
 --------
@@ -190,7 +193,7 @@ Changelog
 19.0.1.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -201,7 +204,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

@@ -11,7 +11,7 @@ NextERP - Purchase Exception
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-- This module allows you to see exception also on purchase order line.
+-  This module allows you to see exception also on purchase order line.
 
 
 **Table of contents**
@@ -25,33 +25,33 @@ Use Cases / Context
 Key features
 ============
 
-- **Line-level exception visibility** — ``exception_ids``,
-  ``exceptions_summary`` and ``is_exception_danger`` are exposed
-  directly on every ``purchase.order.line``, not just at order header
-  level.
-- **Extends ``purchase_exception``** — plugs into the existing OCA
-  exception-rule engine without replacing it; all rules you already
-  configured continue to work unchanged.
-- **HTML exception summary** — ``exceptions_summary`` renders a
-  colour-coded, human-readable digest of all triggered rules per line,
-  visible inline in the order form.
-- **Danger flag** — ``is_exception_danger`` lets you spot critical
-  violations at a glance directly in the order lines list, enabling
-  faster triage on large orders.
-- **Zero configuration required** — install and the line-level
-  indicators appear automatically on the standard Purchase Order form.
+-  **Line-level exception visibility** — ``exception_ids``,
+   ``exceptions_summary`` and ``is_exception_danger`` are exposed
+   directly on every ``purchase.order.line``, not just at order header
+   level.
+-  **Extends ``purchase_exception``** — plugs into the existing OCA
+   exception-rule engine without replacing it; all rules you already
+   configured continue to work unchanged.
+-  **HTML exception summary** — ``exceptions_summary`` renders a
+   colour-coded, human-readable digest of all triggered rules per line,
+   visible inline in the order form.
+-  **Danger flag** — ``is_exception_danger`` lets you spot critical
+   violations at a glance directly in the order lines list, enabling
+   faster triage on large orders.
+-  **Zero configuration required** — install and the line-level
+   indicators appear automatically on the standard Purchase Order form.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the branch 18.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Purchase Exception" in your addons
-- install the module
+-  clone the branch 18.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Purchase Exception" in your addons
+-  install the module
 
 Usage
 =====
@@ -88,7 +88,7 @@ Changelog
 19.0.0.0.0 (2026-06-03)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -99,7 +99,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

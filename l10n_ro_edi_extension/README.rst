@@ -28,36 +28,37 @@ closes the gaps left by the base localization module:
 What this module provides
 -------------------------
 
-- **Automated invoice submission cron**
-  (``ir_cron_l10n_ro_send_invoices_anaf``) — periodically picks up
-  invoices that are ready to send and submits them to ANAF without
-  manual intervention.
-- **SPV bill ingestion** — ``_l10n_ro_edi_fetch_invoices`` and
-  ``_l10n_ro_edi_process_bill_messages`` synchronize supplier bills
-  received in the SPV and create the corresponding ``account.move``
-  records in Odoo if they do not already exist.
-- **UBL XML length-limit enforcement** — ``_ro_apply_length_limits``,
-  ``_ro_truncate``, ``_ro_truncate_text``, and ``split_string`` on
-  ``account.edi.xml.ubl_ro`` ensure that free-text fields (item names,
-  descriptions, notes) never exceed the character limits mandated by the
-  CIUS-RO specification, preventing ANAF rejections.
-- **Invoice line note nodes** — ``_add_invoice_line_note_nodes`` and
-  ``_ubl_add_line_item_name_description_nodes`` improve the completeness
-  of generated UBL XML for invoices with long descriptions.
-- **Period of Residence setting** (``l10n_ro_edi_residence`` on
-  ``res.company``) — configures the fiscal residence period used in the
-  EDI exchange.
-- **EDI error notifications** (``l10n_ro_edi_error_notify_users`` on
-  ``res.company``) — designates specific Odoo users who receive internal
-  messages whenever an EDI submission error occurs, so failures are
-  never silently dropped.
-- **Send & print shortcut** (``action_send_and_print_anaf``) — a
-  dedicated button on the invoice form that triggers ANAF submission and
-  PDF generation in one step.
-- **Default sending method hook** — ``_get_default_sending_methods``
-  ensures the Romanian EDI channel is pre-selected when sending
-  invoices, and ``_hook_invoice_document_before_pdf_report_render``
-  aligns PDF generation with EDI dispatch.
+-  **Automated invoice submission cron**
+   (``ir_cron_l10n_ro_send_invoices_anaf``) — periodically picks up
+   invoices that are ready to send and submits them to ANAF without
+   manual intervention.
+-  **SPV bill ingestion** — ``_l10n_ro_edi_fetch_invoices`` and
+   ``_l10n_ro_edi_process_bill_messages`` synchronize supplier bills
+   received in the SPV and create the corresponding ``account.move``
+   records in Odoo if they do not already exist.
+-  **UBL XML length-limit enforcement** — ``_ro_apply_length_limits``,
+   ``_ro_truncate``, ``_ro_truncate_text``, and ``split_string`` on
+   ``account.edi.xml.ubl_ro`` ensure that free-text fields (item names,
+   descriptions, notes) never exceed the character limits mandated by
+   the CIUS-RO specification, preventing ANAF rejections.
+-  **Invoice line note nodes** — ``_add_invoice_line_note_nodes`` and
+   ``_ubl_add_line_item_name_description_nodes`` improve the
+   completeness of generated UBL XML for invoices with long
+   descriptions.
+-  **Period of Residence setting** (``l10n_ro_edi_residence`` on
+   ``res.company``) — configures the fiscal residence period used in the
+   EDI exchange.
+-  **EDI error notifications** (``l10n_ro_edi_error_notify_users`` on
+   ``res.company``) — designates specific Odoo users who receive
+   internal messages whenever an EDI submission error occurs, so
+   failures are never silently dropped.
+-  **Send & print shortcut** (``action_send_and_print_anaf``) — a
+   dedicated button on the invoice form that triggers ANAF submission
+   and PDF generation in one step.
+-  **Default sending method hook** — ``_get_default_sending_methods``
+   ensures the Romanian EDI channel is pre-selected when sending
+   invoices, and ``_hook_invoice_document_before_pdf_report_render``
+   aligns PDF generation with EDI dispatch.
 
 
 **Table of contents**
@@ -71,22 +72,22 @@ Use Cases / Context
 Key features
 ============
 
-- **Automated ANAF submission** — a scheduled cron sends confirmed
-  invoices to e-Factura / SPV without manual intervention.
-- **Inbound SPV bill ingestion** — supplier invoices received in SPV are
-  fetched and created automatically as Odoo vendor bills.
-- **UBL XML CIUS-RO compliance** — field-length truncation and
-  string-splitting prevent ANAF rejections caused by oversized text in
-  item names, descriptions, and notes.
-- **EDI error notifications** — designate internal users to receive
-  instant alerts when an ANAF submission fails.
-- **Period of Residence setting** — company-level field controls the
-  fiscal residence period declared in the EDI exchange.
-- **One-click Send & Print** — dedicated button submits to ANAF and
-  generates the PDF report in a single action.
-- **Romanian EDI channel pre-selected** — the standard Send & Print
-  dialog defaults to the Romanian EDI method, reducing clicks for
-  accounting staff.
+-  **Automated ANAF submission** — a scheduled cron sends confirmed
+   invoices to e-Factura / SPV without manual intervention.
+-  **Inbound SPV bill ingestion** — supplier invoices received in SPV
+   are fetched and created automatically as Odoo vendor bills.
+-  **UBL XML CIUS-RO compliance** — field-length truncation and
+   string-splitting prevent ANAF rejections caused by oversized text in
+   item names, descriptions, and notes.
+-  **EDI error notifications** — designate internal users to receive
+   instant alerts when an ANAF submission fails.
+-  **Period of Residence setting** — company-level field controls the
+   fiscal residence period declared in the EDI exchange.
+-  **One-click Send & Print** — dedicated button submits to ANAF and
+   generates the PDF report in a single action.
+-  **Romanian EDI channel pre-selected** — the standard Send & Print
+   dialog defaults to the Romanian EDI method, reducing clicks for
+   accounting staff.
 
 Configuration
 =============
@@ -105,19 +106,19 @@ Configuration → Settings**) and open your company record.
 
 Set the following fields on the **Romanian EDI** section:
 
-+--------------------------------------+----------------------------------+
-| Field                                | Description                      |
-+======================================+==================================+
-| **Period of Residence**              | Fiscal residence period required |
-| (``l10n_ro_edi_residence``)          | by ANAF for the EDI exchange.    |
-|                                      | Enter the value as an integer    |
-|                                      | (number of days).                |
-+--------------------------------------+----------------------------------+
-| **EDI Error Notify Users**           | Add one or more internal users   |
-| (``l10n_ro_edi_error_notify_users``) | who should receive an Odoo       |
-|                                      | notification whenever an ANAF    |
-|                                      | submission fails.                |
-+--------------------------------------+----------------------------------+
++----------------------------------+----------------------------------+
+| Field                            | Description                      |
++==================================+==================================+
+| **Period of Residence**          | Fiscal residence period required |
+| (``l10n_ro_edi_residence``)      | by ANAF for the EDI exchange.    |
+|                                  | Enter the value as an integer    |
+|                                  | (number of days).                |
++----------------------------------+----------------------------------+
+| **EDI Error Notify Users**       | Add one or more internal users   |
+| (``l                             | who should receive an Odoo       |
+| 10n_ro_edi_error_notify_users``) | notification whenever an ANAF    |
+|                                  | submission fails.                |
++----------------------------------+----------------------------------+
 
 2. Review the send-invoices cron
 --------------------------------
@@ -182,11 +183,11 @@ Receiving supplier bills from SPV
 Monitoring EDI errors
 ---------------------
 
-- Users listed in **EDI Error Notify Users** (see CONFIGURE)
-  automatically receive Odoo internal messages when a submission to ANAF
-  fails.
-- Check the invoice chatter for the full error response returned by
-  ANAF.
+-  Users listed in **EDI Error Notify Users** (see CONFIGURE)
+   automatically receive Odoo internal messages when a submission to
+   ANAF fails.
+-  Check the invoice chatter for the full error response returned by
+   ANAF.
 
 Changelog
 =========
@@ -197,7 +198,7 @@ Changelog
 19.0.1.0.1 (2026-05-28)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========

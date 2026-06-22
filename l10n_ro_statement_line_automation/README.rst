@@ -39,26 +39,27 @@ Use Cases / Context
 Key features
 ============
 
-- **Country-scoped automation** — the create override on
-  ``account.bank.statement.line`` runs only when the company's country
-  code is ``RO``, leaving other localisations untouched.
-- **Date + journal grouping** — a new line without ``statement_id`` is
-  attached to the existing ``account.bank.statement`` that matches its
-  ``journal_id`` and ``date``; one statement per journal per day.
-- **On-demand statement creation** — if no matching statement exists,
-  one is created with the line's date used as both ``date`` and
-  ``name``, then linked to the line.
-- **Balance recomputation** — after the link is set, the module triggers
-  ``_compute_balance_end`` and ``_compute_balance_end_real`` on the
-  statement so the running balance stays consistent with the new line.
-- **Batch-friendly** — implemented through ``@api.model_create_multi``,
-  the override processes each record of a multi-create call
-  individually, which keeps it compatible with bulk imports from parsers
-  and connectors.
-- **No new UI** — the module adds no fields, views, menus or
-  configuration; behaviour is automatic on record creation.
-- **No data files** — installation simply loads the model override;
-  there is nothing to seed or migrate.
+-  **Country-scoped automation** — the create override on
+   ``account.bank.statement.line`` runs only when the company's country
+   code is ``RO``, leaving other localisations untouched.
+-  **Date + journal grouping** — a new line without ``statement_id`` is
+   attached to the existing ``account.bank.statement`` that matches its
+   ``journal_id`` and ``date``; one statement per journal per day.
+-  **On-demand statement creation** — if no matching statement exists,
+   one is created with the line's date used as both ``date`` and
+   ``name``, then linked to the line.
+-  **Balance recomputation** — after the link is set, the module
+   triggers ``_compute_balance_end`` and ``_compute_balance_end_real``
+   on the statement so the running balance stays consistent with the new
+   line.
+-  **Batch-friendly** — implemented through ``@api.model_create_multi``,
+   the override processes each record of a multi-create call
+   individually, which keeps it compatible with bulk imports from
+   parsers and connectors.
+-  **No new UI** — the module adds no fields, views, menus or
+   configuration; behaviour is automatic on record creation.
+-  **No data files** — installation simply loads the model override;
+   there is nothing to seed or migrate.
 
 Configuration
 =============
@@ -75,9 +76,9 @@ settings, no menus and no user-facing toggles.
 
 The manifest depends on:
 
-- ``account`` — bank statement and statement line models.
-- ``l10n_ro`` — Romanian localisation; required so the country detection
-  on ``res.company`` matches a real installed chart.
+-  ``account`` — bank statement and statement line models.
+-  ``l10n_ro`` — Romanian localisation; required so the country
+   detection on ``res.company`` matches a real installed chart.
 
 Both must be installable in the database before this module.
 
@@ -103,12 +104,12 @@ statements within an existing journal.
 The automation is most useful when statement lines arrive without a
 parent statement, for example:
 
-- **CAMT.053 / MT940 imports** via ``account_bank_statement_import_*``
-  modules that read one transaction per line.
-- **OCR uploads** through ``account_invoice_extract`` or a custom
-  connector that drops lines into a journal.
-- **External connectors** posting ``account.bank.statement.line``
-  records via XML-RPC / ``web`` API.
+-  **CAMT.053 / MT940 imports** via ``account_bank_statement_import_*``
+   modules that read one transaction per line.
+-  **OCR uploads** through ``account_invoice_extract`` or a custom
+   connector that drops lines into a journal.
+-  **External connectors** posting ``account.bank.statement.line``
+   records via XML-RPC / ``web`` API.
 
 No specific setup is required on these pipelines — once they create the
 lines, this module fills in ``statement_id``.
@@ -169,12 +170,12 @@ Typical flow
 What it does not do
 -------------------
 
-- Does not reconcile or match the line to a journal entry.
-- Does not change the line's amount, partner or labels.
-- Does not run on non-Romanian companies, even in a multi-company
-  database.
-- Does not create statements for lines that already have a
-  ``statement_id``.
+-  Does not reconcile or match the line to a journal entry.
+-  Does not change the line's amount, partner or labels.
+-  Does not run on non-Romanian companies, even in a multi-company
+   database.
+-  Does not create statements for lines that already have a
+   ``statement_id``.
 
 Changelog
 =========
@@ -185,7 +186,7 @@ Changelog
 19.0.0.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========

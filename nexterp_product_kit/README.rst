@@ -41,40 +41,40 @@ Use Cases / Context
 Key features
 ============
 
-- New model ``product.product.kit`` storing the component lines of every
-  kit product (component product, quantity, unit price, unit of
-  measure).
-- Boolean field **Is a Kit Component** on ``product.template`` and
-  ``product.product``; ticking it automatically clears **Can be Sold**
-  via an onchange.
-- Kit lines exposed on both the product template form and the
-  per-variant easy-edit form via a dedicated **Kit Products** notebook
-  tab.
-- Kit list price (``lst_price``) recomputed from component
-  ``product_qty * product_price``, with pricelist and target UoM taken
-  into account through ``_compute_product_lst_price``.
-- Cost price (``standard_price``) and any other price type aggregated
-  from components in ``_price_compute``, so reports and valuations stay
-  consistent.
-- Pricelist override (``product.pricelist._compute_price_rule``):
-  whenever a pricelist is applied to a kit product, the engine sums the
-  components' contextual prices for the requested quantity, UoM and
-  date.
-- Dedicated **Product Kits** menu under **Sales → Products** with list,
-  form, pivot and grouping search views (restricted to the Sales Manager
-  group).
+-  New model ``product.product.kit`` storing the component lines of
+   every kit product (component product, quantity, unit price, unit of
+   measure).
+-  Boolean field **Is a Kit Component** on ``product.template`` and
+   ``product.product``; ticking it automatically clears **Can be Sold**
+   via an onchange.
+-  Kit lines exposed on both the product template form and the
+   per-variant easy-edit form via a dedicated **Kit Products** notebook
+   tab.
+-  Kit list price (``lst_price``) recomputed from component
+   ``product_qty * product_price``, with pricelist and target UoM taken
+   into account through ``_compute_product_lst_price``.
+-  Cost price (``standard_price``) and any other price type aggregated
+   from components in ``_price_compute``, so reports and valuations stay
+   consistent.
+-  Pricelist override (``product.pricelist._compute_price_rule``):
+   whenever a pricelist is applied to a kit product, the engine sums the
+   components' contextual prices for the requested quantity, UoM and
+   date.
+-  Dedicated **Product Kits** menu under **Sales → Products** with list,
+   form, pivot and grouping search views (restricted to the Sales
+   Manager group).
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the branch 16.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Product Kit" in your addons
-- install the module
+-  clone the branch 16.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Product Kit" in your addons
+-  install the module
 
 Configuration
 =============
@@ -102,10 +102,10 @@ Configuration
 3. Open the **Kit Products** tab.
 4. Add one line per component:
 
-   - **Component Product** — the component flagged at step 1.
-   - **Quantity** — how many units of that component the kit contains.
-   - **Unit of Measure** — pulled from the component product.
-   - **Price** — auto-computed as ``quantity * component list price``.
+   -  **Component Product** — the component flagged at step 1.
+   -  **Quantity** — how many units of that component the kit contains.
+   -  **Unit of Measure** — pulled from the component product.
+   -  **Price** — auto-computed as ``quantity * component list price``.
 
 5. Save. The kit's **Sales Price** and **Cost** are now computed from
    the sum of its components.
@@ -135,16 +135,17 @@ Pricing behaviour
 Once a product has at least one entry in the **Kit Products** tab, its
 price stops behaving like a regular product:
 
-- **Sales Price (``lst_price``)** is recomputed as
-  ``sum(line.product_qty * component.lst_price)`` for every kit line.
-  Changing a component's list price flows through to the kit price
-  immediately.
-- **Cost (``standard_price``)** is aggregated the same way from each
-  component's cost.
-- When a **pricelist** is active in the context, the kit price is
-  rebuilt by calling the pricelist on each component (using the
-  component's own UoM, the requested quantity, the partner and the date)
-  and summing the results, instead of using the kit's flat list price.
+-  **Sales Price (``lst_price``)** is recomputed as
+   ``sum(line.product_qty * component.lst_price)`` for every kit line.
+   Changing a component's list price flows through to the kit price
+   immediately.
+-  **Cost (``standard_price``)** is aggregated the same way from each
+   component's cost.
+-  When a **pricelist** is active in the context, the kit price is
+   rebuilt by calling the pricelist on each component (using the
+   component's own UoM, the requested quantity, the partner and the
+   date) and summing the results, instead of using the kit's flat list
+   price.
 
 Editing a kit
 -------------
@@ -180,7 +181,7 @@ Changelog
 19.0.1.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -191,7 +192,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

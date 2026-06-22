@@ -2,7 +2,7 @@
 import logging
 import re
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 
 from .etransport_constants import (
@@ -80,7 +80,7 @@ class StockPicking(models.Model):
         scope = data.get("l10n_ro_edi_stock_operation_scope")
         if allowed_scopes and scope and scope not in allowed_scopes:
             errors.append(
-                _(
+                self.env._(
                     "Operation scope %(scope)s is not allowed for type %(op)s. "
                     "Allowed values: %(allowed)s",
                     scope=scope,
@@ -97,7 +97,7 @@ class StockPicking(models.Model):
         if country_code:
             if is_national(op_type) and country_code != "RO":
                 errors.append(
-                    _(
+                    self.env._(
                         "For operation 30 (National transport), the "
                         "commercial partner must be from RO."
                     )
@@ -105,7 +105,7 @@ class StockPicking(models.Model):
             elif op_type in ("10", "12", "14", "20", "22", "24", "60", "70"):
                 if country_code not in EU_COUNTRY_CODES or country_code == "RO":
                     errors.append(
-                        _(
+                        self.env._(
                             "For operation %(op)s the partner country code "
                             "(%(cc)s) must be EU and different from RO.",
                             op=op_type,
@@ -115,7 +115,7 @@ class StockPicking(models.Model):
             elif op_type in ("40", "50"):
                 if country_code in EU_COUNTRY_CODES:
                     errors.append(
-                        _(
+                        self.env._(
                             "For operation %(op)s (Import/Export) the partner "
                             "country code (%(cc)s) must be outside the EU.",
                             op=op_type,
@@ -140,7 +140,7 @@ class StockPicking(models.Model):
         if op_type in ("60", "70"):
             if picking and not picking.l10n_ro_edi_stock_previous_ids:
                 errors.append(
-                    _(
+                    self.env._(
                         "For operation %(op)s at least one previous notification "
                         "is required.",
                         op=op_type,
@@ -178,22 +178,23 @@ class StockPicking(models.Model):
 
         if products_missing_tarifar:
             errors.append(
-                _(
+                self.env._(
                     "The following products are missing a tariff (NC8) code: %(names)s",
                     names=", ".join(sorted(products_missing_tarifar)),
                 )
             )
         if products_missing_weight:
             errors.append(
-                _(
+                self.env._(
                     "The following products have 0 net weight: %(names)s",
                     names=", ".join(sorted(products_missing_weight)),
                 )
             )
         if products_missing_value:
             errors.append(
-                _(
-                    "The following products have 0 value (check the price source): %(names)s",
+                self.env._(
+                    "The following products have 0 value "
+                    "(check the price source): %(names)s",
                     names=", ".join(sorted(products_missing_value)),
                 )
             )
@@ -211,14 +212,14 @@ class StockPicking(models.Model):
             gross = picking._l10n_ro_edi_stock_compute_gross_weight(move)
             if float_is_zero(gross, precision_digits=2):
                 errors.append(
-                    _(
+                    self.env._(
                         "Gross weight must be > 0 for %(p)s.",
                         p=move.product_id.display_name,
                     )
                 )
             if float_compare(gross, net, precision_digits=2) < 0:
                 errors.append(
-                    _(
+                    self.env._(
                         "Gross weight (%(g)s) must be >= net weight (%(n)s) for %(p)s.",
                         g=gross,
                         n=net,
@@ -232,16 +233,20 @@ class StockPicking(models.Model):
         errors = []
         for line in picking.l10n_ro_edi_stock_document_line_ids:
             if not line.document_type:
-                errors.append(_("Document type is missing on an eTransport line."))
+                errors.append(
+                    self.env._("Document type is missing on an eTransport line.")
+                )
             elif line.document_type == "9999" and not line.remarks:
                 errors.append(
-                    _(
+                    self.env._(
                         "When document type is 'Other' (9999) the remarks field "
                         "is mandatory (BR-026)."
                     )
                 )
             if not line.document_date:
-                errors.append(_("Document date is missing on an eTransport line."))
+                errors.append(
+                    self.env._("Document date is missing on an eTransport line.")
+                )
         return errors
 
     ################################################################################
@@ -508,7 +513,8 @@ class StockPicking(models.Model):
                 continue
             seen_packages.add(pkg.id)
             ship_w = pkg.shipping_weight or pkg.weight or 0.0
-            # Difference between shipping_weight (loaded) and weight (empty) is the packaging weight
+            # Difference between shipping_weight (loaded) and weight (empty)
+            # is the packaging weight
             empty_w = pkg.package_type_id.base_weight if pkg.package_type_id else 0.0
             packaging_extra += max(empty_w, ship_w - (pkg.weight or 0.0))
         return net + packaging_extra

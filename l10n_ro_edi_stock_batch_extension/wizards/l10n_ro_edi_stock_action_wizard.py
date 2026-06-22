@@ -76,7 +76,8 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         self.env["l10n_ro_edi.document"].create(values)
         self.batch_id._message_log(
             body=self.env._(
-                "eTransport %(action)s sent (UIT: %(uit)s, load: %(load)s).",
+                "eTransport %(action)s sent successfully "
+                "(UIT: %(uit)s, load: %(load)s).",
                 action=event_type,
                 uit=self.uit,
                 load=content["index_incarcare"],

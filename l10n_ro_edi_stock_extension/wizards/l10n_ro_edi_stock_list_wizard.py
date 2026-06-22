@@ -1,7 +1,7 @@
 # Copyright 2026 NextERP Romania SRL
 import logging
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 from ..models.etransport_api_extra import ETransportAPIExtra
@@ -28,13 +28,13 @@ class L10nRoEdiStockListWizard(models.TransientModel):
     def action_fetch(self):
         self.ensure_one()
         if self.days < 1 or self.days > 60:
-            raise UserError(_("Number of days must be between 1 and 60."))
+            raise UserError(self.env._("Number of days must be between 1 and 60."))
         result = ETransportAPIExtra().get_list(
             company_id=self.company_id,
             days=self.days,
         )
         if "error" in result:
-            raise UserError(_("ANAF error: %(err)s", err=result["error"]))
+            raise UserError(self.env._("ANAF error: %(err)s", err=result["error"]))
 
         self.line_ids = [(5, 0, 0)]
         rows = (
@@ -95,7 +95,7 @@ class L10nRoEdiStockListWizard(models.TransientModel):
         Informative only - does not change states (the user decides the
         follow-up actions).
         """
-        uits = {l.uit for l in self.line_ids if l.uit}
+        uits = {ln.uit for ln in self.line_ids if ln.uit}
         if not uits:
             return
         pickings = self.env["stock.picking"].search(
@@ -105,11 +105,11 @@ class L10nRoEdiStockListWizard(models.TransientModel):
         )
         for pk in pickings:
             line = self.line_ids.filtered(
-                lambda l, u=pk.l10n_ro_edi_stock_document_uit: l.uit == u
+                lambda ln, u=pk.l10n_ro_edi_stock_document_uit: ln.uit == u
             )[:1]
             if line and line.status == "ERR":
                 pk._message_log(
-                    body=_(
+                    body=self.env._(
                         "Notification with errors found via ANAF LIST: %(m)s",
                         m=line.messages,
                     )
@@ -123,17 +123,17 @@ class L10nRoEdiStockListLine(models.TransientModel):
     wizard_id = fields.Many2one(
         comodel_name="l10n.ro.edi.stock.list.wizard", ondelete="cascade"
     )
-    notification_type = fields.Char(string="Notification Type")
-    status = fields.Char(string="Status")
+    notification_type = fields.Char()
+    status = fields.Char()
     uit = fields.Char(string="UIT")
     declarant_vat = fields.Char(string="Declarant VAT")
     declarant_ref = fields.Char(string="Declarant Reference")
     load_id = fields.Char(string="Load ID")
-    operation_type = fields.Char(string="Operation Type")
-    transport_date = fields.Char(string="Transport Date")
+    operation_type = fields.Char()
+    transport_date = fields.Char()
     partner_vat = fields.Char(string="Partner VAT")
-    partner_name = fields.Char(string="Partner Name")
+    partner_name = fields.Char()
     transporter_vat = fields.Char(string="Transporter VAT")
-    transporter_name = fields.Char(string="Transporter Name")
-    vehicle_number = fields.Char(string="Vehicle Number")
-    messages = fields.Text(string="Messages")
+    transporter_name = fields.Char()
+    vehicle_number = fields.Char()
+    messages = fields.Text()

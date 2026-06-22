@@ -42,42 +42,42 @@ Use Cases / Context
 Key features
 ============
 
-- New boolean **Auto Create Sale Tasks** on ``res.company``, exposed in
-  **Settings → Sales → Quotations & Orders**, controlling the default
-  behaviour for all sale orders of that company.
-- Matching boolean on ``sale.order``, initialised from the company
-  setting via an ``onchange`` on ``company_id`` and shown next to the
-  payment terms on the order form.
-- Override of ``sale.order.line._timesheet_service_generation``:
+-  New boolean **Auto Create Sale Tasks** on ``res.company``, exposed in
+   **Settings → Sales → Quotations & Orders**, controlling the default
+   behaviour for all sale orders of that company.
+-  Matching boolean on ``sale.order``, initialised from the company
+   setting via an ``onchange`` on ``company_id`` and shown next to the
+   payment terms on the order form.
+-  Override of ``sale.order.line._timesheet_service_generation``:
 
-  - if the context flag ``create_tasks=True`` is passed, all lines in
-    ``self`` go through the standard generator;
-  - otherwise the override filters lines so only those whose order has
-    ``sale_create_taks_auto=True`` trigger task creation.
+   -  if the context flag ``create_tasks=True`` is passed, all lines in
+      ``self`` go through the standard generator;
+   -  otherwise the override filters lines so only those whose order has
+      ``sale_create_taks_auto=True`` trigger task creation.
 
-- New action ``sale.order.action_generate_tasks`` iterating over
-  ``order.order_line``, calling ``_timesheet_service_generation`` with
-  ``create_tasks=True`` only on lines that do not yet have a
-  ``task_id``; ``with_company`` is used so multi-company orders keep the
-  right project context.
-- New **Generate Tasks** button on the sale order form, placed next to
-  *Set to Draft*, visible only when **Auto Create Sale Tasks** is off —
-  turning the action into a one-click manual fallback.
-- All ``sudo()`` and company switching is handled inside the action so
-  salespeople without full project access can still trigger task
-  creation on their own orders.
+-  New action ``sale.order.action_generate_tasks`` iterating over
+   ``order.order_line``, calling ``_timesheet_service_generation`` with
+   ``create_tasks=True`` only on lines that do not yet have a
+   ``task_id``; ``with_company`` is used so multi-company orders keep
+   the right project context.
+-  New **Generate Tasks** button on the sale order form, placed next to
+   *Set to Draft*, visible only when **Auto Create Sale Tasks** is off —
+   turning the action into a one-click manual fallback.
+-  All ``sudo()`` and company switching is handled inside the action so
+   salespeople without full project access can still trigger task
+   creation on their own orders.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the branch 14.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Auto Create Sale Tasks" in your addons
-- install the module
+-  clone the branch 14.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Auto Create Sale Tasks" in your addons
+-  install the module
 
 Configuration
 =============
@@ -106,18 +106,19 @@ Configuration
    checkbox is shown. It is filled from the company default via the
    ``onchange`` on **Company**, but you can override it per order:
 
-   - **On** — tasks are created automatically on confirmation.
-   - **Off** — no tasks are created until **Generate Tasks** is clicked.
+   -  **On** — tasks are created automatically on confirmation.
+   -  **Off** — no tasks are created until **Generate Tasks** is
+      clicked.
 
 3. Prerequisites
 ----------------
 
-- The module depends on ``sale_project``. Make sure the service products
-  used on your orders have **Product Type = Service** and **Service
-  Tracking = Task in Project** (or *Project & Task*) — the standard
-  ``_timesheet_service_generation`` only acts on these lines.
-- The default project on each service product (or on the order) must be
-  set so tasks can be created in the right place.
+-  The module depends on ``sale_project``. Make sure the service
+   products used on your orders have **Product Type = Service** and
+   **Service Tracking = Task in Project** (or *Project & Task*) — the
+   standard ``_timesheet_service_generation`` only acts on these lines.
+-  The default project on each service product (or on the order) must be
+   set so tasks can be created in the right place.
 
 4. Access rights
 ----------------
@@ -178,14 +179,14 @@ service lines, just like the original behaviour.
 Switching mode mid-flight
 -------------------------
 
-- Changing the company default does not retroactively update existing
-  orders; the value is copied to each order at creation through the
-  ``onchange``. To enable / disable for an existing order, edit the
-  **Auto Create Sale Tasks** field directly on the order form.
-- Switching from manual to automatic on an existing order does not
-  re-fire ``_timesheet_service_generation``. Click **Generate Tasks**
-  (or temporarily switch the order to manual and click) to create the
-  missing tasks.
+-  Changing the company default does not retroactively update existing
+   orders; the value is copied to each order at creation through the
+   ``onchange``. To enable / disable for an existing order, edit the
+   **Auto Create Sale Tasks** field directly on the order form.
+-  Switching from manual to automatic on an existing order does not
+   re-fire ``_timesheet_service_generation``. Click **Generate Tasks**
+   (or temporarily switch the order to manual and click) to create the
+   missing tasks.
 
 Changelog
 =========
@@ -196,7 +197,7 @@ Changelog
 19.0.1.0.1 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -207,7 +208,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

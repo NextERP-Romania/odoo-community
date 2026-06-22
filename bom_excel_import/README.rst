@@ -42,30 +42,31 @@ Use Cases / Context
 Key features
 ============
 
-- **Multi-step wizard** — a single ``bom.excel.import.wizard`` transient
-  model drives four steps: upload, import operations, import BOM lines
-  and a final summary screen.
-- **Workcenter auto-creation** — every workcenter name in column 6 that
-  is not already present in ``mrp.workcenter`` is created automatically
-  before any operation is linked to it.
-- **BOM and operation creation** — for each unique product in column 1
-  one ``mrp.bom`` is created (skipped if a BOM already exists for the
-  template) and one ``mrp.routing.workcenter`` per distinct operation in
-  the rows, with a default cycle time of 60 minutes.
-- **Subcontracting awareness** — column 7 sets the BOM type to
-  ``subcontract``, and the comma-separated names in column 8 are matched
-  against ``res.partner`` and attached as subcontractors.
-- **Component bootstrapping** — components and produced products are
-  searched by name and by ``default_code``; if no match is found a new
-  storable product is created with the spreadsheet name as default code.
-- **UoM resolution** — column 4 is matched case-insensitively against
-  ``uom.uom``; when it cannot be resolved, the component product's
-  default UoM is used and a warning is added to the log.
-- **Detailed import log** — every row, every created record and every
-  error is captured in two text fields (``operations_import_log``,
-  ``bom_import_log``) shown on the wizard's final tab.
-- **External dependency** — relies on the ``openpyxl`` Python library,
-  which must be installed in the Odoo environment.
+-  **Multi-step wizard** — a single ``bom.excel.import.wizard``
+   transient model drives four steps: upload, import operations, import
+   BOM lines and a final summary screen.
+-  **Workcenter auto-creation** — every workcenter name in column 6 that
+   is not already present in ``mrp.workcenter`` is created automatically
+   before any operation is linked to it.
+-  **BOM and operation creation** — for each unique product in column 1
+   one ``mrp.bom`` is created (skipped if a BOM already exists for the
+   template) and one ``mrp.routing.workcenter`` per distinct operation
+   in the rows, with a default cycle time of 60 minutes.
+-  **Subcontracting awareness** — column 7 sets the BOM type to
+   ``subcontract``, and the comma-separated names in column 8 are
+   matched against ``res.partner`` and attached as subcontractors.
+-  **Component bootstrapping** — components and produced products are
+   searched by name and by ``default_code``; if no match is found a new
+   storable product is created with the spreadsheet name as default
+   code.
+-  **UoM resolution** — column 4 is matched case-insensitively against
+   ``uom.uom``; when it cannot be resolved, the component product's
+   default UoM is used and a warning is added to the log.
+-  **Detailed import log** — every row, every created record and every
+   error is captured in two text fields (``operations_import_log``,
+   ``bom_import_log``) shown on the wizard's final tab.
+-  **External dependency** — relies on the ``openpyxl`` Python library,
+   which must be installed in the Odoo environment.
 
 Configuration
 =============
@@ -96,26 +97,26 @@ to this command.
 The wizard expects a column-positional layout. Header row aside, each
 row must use these columns:
 
-+--------+-------------------------------------------------------------+
-| Column | Content                                                     |
-+========+=============================================================+
-| 1      | Product produced (name or internal reference)               |
-+--------+-------------------------------------------------------------+
-| 2      | Operation name                                              |
-+--------+-------------------------------------------------------------+
-| 3      | Quantity consumed                                           |
-+--------+-------------------------------------------------------------+
-| 4      | Component UoM (matched against ``uom.uom`` by name)         |
-+--------+-------------------------------------------------------------+
-| 5      | Component (name or internal reference)                      |
-+--------+-------------------------------------------------------------+
-| 6      | Workcenter name                                             |
-+--------+-------------------------------------------------------------+
-| 7      | Subcontracting flag (truthy value sets BOM type to          |
-|        | ``subcontract``)                                            |
-+--------+-------------------------------------------------------------+
-| 8      | Subcontractors, comma-separated partner names               |
-+--------+-------------------------------------------------------------+
++--------+------------------------------------------------------------+
+| Column | Content                                                    |
++========+============================================================+
+| 1      | Product produced (name or internal reference)              |
++--------+------------------------------------------------------------+
+| 2      | Operation name                                             |
++--------+------------------------------------------------------------+
+| 3      | Quantity consumed                                          |
++--------+------------------------------------------------------------+
+| 4      | Component UoM (matched against ``uom.uom`` by name)        |
++--------+------------------------------------------------------------+
+| 5      | Component (name or internal reference)                     |
++--------+------------------------------------------------------------+
+| 6      | Workcenter name                                            |
++--------+------------------------------------------------------------+
+| 7      | Subcontracting flag (truthy value sets BOM type to         |
+|        | ``subcontract``)                                           |
++--------+------------------------------------------------------------+
+| 8      | Subcontractors, comma-separated partner names              |
++--------+------------------------------------------------------------+
 
 By default the wizard reads the sheet named ``Sheet1`` and starts at row
 ``2`` (one header row). Both values are editable on the upload screen.
@@ -162,9 +163,9 @@ Open **Manufacturing → Products → BOM Excel Import**, attach the
 ``.xlsx`` file, optionally adjust **Sheet** and **Start Row**, then
 click **Start Import**. The wizard:
 
-- Loads the workbook with ``openpyxl`` in data-only mode.
-- Verifies the sheet exists, otherwise lists the available sheets.
-- Moves to the **Operations** step.
+-  Loads the workbook with ``openpyxl`` in data-only mode.
+-  Verifies the sheet exists, otherwise lists the available sheets.
+-  Moves to the **Operations** step.
 
 2. Import operations
 --------------------
@@ -172,14 +173,14 @@ click **Start Import**. The wizard:
 Click **Import Operations** to run ``action_import_operations``. The
 wizard scans every row from the start row downwards and:
 
-- Collects unique workcenter names; missing ones are created in
-  ``mrp.workcenter``.
-- Groups rows by produced product and creates one BOM per product
-  (skipping products that already have a BOM).
-- Creates one ``mrp.routing.workcenter`` per distinct operation in the
-  group, sequenced in steps of 10 with a 60-minute cycle time.
-- Sets the BOM type to ``subcontract`` and attaches matching partners
-  when column 7/8 are filled.
+-  Collects unique workcenter names; missing ones are created in
+   ``mrp.workcenter``.
+-  Groups rows by produced product and creates one BOM per product
+   (skipping products that already have a BOM).
+-  Creates one ``mrp.routing.workcenter`` per distinct operation in the
+   group, sequenced in steps of 10 with a 60-minute cycle time.
+-  Sets the BOM type to ``subcontract`` and attaches matching partners
+   when column 7/8 are filled.
 
 Counters for workcenters, operations and BOMs created are stored on the
 wizard and shown on the next screen.
@@ -189,14 +190,14 @@ wizard and shown on the next screen.
 
 Click **Import BOMs** to run ``action_import_boms``. The wizard:
 
-- Re-reads the sheet and groups component rows by produced product.
-- Resolves each component via name or internal reference, creating a new
-  storable product when nothing matches.
-- Resolves the UoM by name; falls back to the component's default UoM
-  with a warning.
-- Creates one ``mrp.bom.line`` per component, linked to the right
-  operation when column 2 matches. Components already present in the BOM
-  are skipped.
+-  Re-reads the sheet and groups component rows by produced product.
+-  Resolves each component via name or internal reference, creating a
+   new storable product when nothing matches.
+-  Resolves the UoM by name; falls back to the component's default UoM
+   with a warning.
+-  Creates one ``mrp.bom.line`` per component, linked to the right
+   operation when column 2 matches. Components already present in the
+   BOM are skipped.
 
 4. Review the summary
 ---------------------
@@ -215,7 +216,7 @@ Changelog
 19.0.1.0.1 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========

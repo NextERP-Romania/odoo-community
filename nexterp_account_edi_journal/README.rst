@@ -42,41 +42,41 @@ Use Cases / Context
 Key features
 ============
 
-- **Per-journal EDI switch** — adds the Boolean field
-  ``l10n_ro_edi_send_enabled`` on ``account.journal``, defaulting to
-  ``False``, so existing journals do not start sending EDI documents
-  silently after the module is installed.
-- **Form integration** — the field is injected into the standard journal
-  form view right after ``currency_id``, keeping it visible in the same
-  area as the other journal configuration toggles.
-- **Send-flow guard** — overrides
-  ``account.move.send._is_ro_edi_applicable`` so the move is considered
-  non-applicable as soon as ``move.journal_id.l10n_ro_edi_send_enabled``
-  is ``False``; the rest of the upstream conditions still apply when the
-  flag is on.
-- **No new menus or wizards** — the feature is purely configuration on
-  existing screens; there is nothing to open or trigger separately.
-- **Romanian-EDI dependency** — depends on ``l10n_ro_edi``, which
-  carries the SPV / e-Factura connectivity, EDI document model and
-  default applicability logic.
-- **Safe default** — because the new flag defaults to ``False``, every
-  journal must be explicitly opted in. Existing setups stop sending EDI
-  until journals are configured.
-- **Backwards-compatible with EDI logs** — the override only blocks
-  applicability; it does not delete or alter EDI documents already
-  attached to past moves.
+-  **Per-journal EDI switch** — adds the Boolean field
+   ``l10n_ro_edi_send_enabled`` on ``account.journal``, defaulting to
+   ``False``, so existing journals do not start sending EDI documents
+   silently after the module is installed.
+-  **Form integration** — the field is injected into the standard
+   journal form view right after ``currency_id``, keeping it visible in
+   the same area as the other journal configuration toggles.
+-  **Send-flow guard** — overrides
+   ``account.move.send._is_ro_edi_applicable`` so the move is considered
+   non-applicable as soon as
+   ``move.journal_id.l10n_ro_edi_send_enabled`` is ``False``; the rest
+   of the upstream conditions still apply when the flag is on.
+-  **No new menus or wizards** — the feature is purely configuration on
+   existing screens; there is nothing to open or trigger separately.
+-  **Romanian-EDI dependency** — depends on ``l10n_ro_edi``, which
+   carries the SPV / e-Factura connectivity, EDI document model and
+   default applicability logic.
+-  **Safe default** — because the new flag defaults to ``False``, every
+   journal must be explicitly opted in. Existing setups stop sending EDI
+   until journals are configured.
+-  **Backwards-compatible with EDI logs** — the override only blocks
+   applicability; it does not delete or alter EDI documents already
+   attached to past moves.
 
 Installation
 ============
 
 To install this module, you need to:
 
-- clone the branch 16.0 of the repository
-  https://github.com/NextERP-Romania/odoo-community
-- add the path to this repository in your configuration (addons-path)
-- update the module list
-- search for "NextERP - Account EDI Journal" in your addons
-- install the module
+-  clone the branch 16.0 of the repository
+   https://github.com/NextERP-Romania/odoo-community
+-  add the path to this repository in your configuration (addons-path)
+-  update the module list
+-  search for "NextERP - Account EDI Journal" in your addons
+-  install the module
 
 Configuration
 =============
@@ -116,18 +116,18 @@ you want to keep on EDI:
 
 Typical journals to enable:
 
-- The default **Customer Invoices** journal of the Romanian company.
-- Any additional sales journal that issues B2B invoices subject to SPV
-  reporting.
+-  The default **Customer Invoices** journal of the Romanian company.
+-  Any additional sales journal that issues B2B invoices subject to SPV
+   reporting.
 
 Typical journals to leave disabled:
 
-- Vendor bill journals (purchases are pulled by the ANAF API rather than
-  pushed).
-- Miscellaneous journals used for manual allocations.
-- Intercompany / consolidation journals where invoices are mirrored from
-  another database and have already been reported once.
-- Test or training journals.
+-  Vendor bill journals (purchases are pulled by the ANAF API rather
+   than pushed).
+-  Miscellaneous journals used for manual allocations.
+-  Intercompany / consolidation journals where invoices are mirrored
+   from another database and have already been reported once.
+-  Test or training journals.
 
 4. Verify in the move-send flow
 -------------------------------
@@ -185,11 +185,11 @@ Changing the setting
 The flag can be toggled at any time on **Accounting → Configuration →
 Journals**:
 
-- Turning it **on** makes new postings on that journal EDI-eligible,
-  starting from the next save.
-- Turning it **off** stops new postings from being submitted; EDI
-  documents already generated for past moves remain attached to those
-  moves and are not deleted.
+-  Turning it **on** makes new postings on that journal EDI-eligible,
+   starting from the next save.
+-  Turning it **off** stops new postings from being submitted; EDI
+   documents already generated for past moves remain attached to those
+   moves and are not deleted.
 
 Multi-company
 -------------
@@ -202,10 +202,10 @@ separately; switching companies in the top bar then opening **Accounting
 What the user does not see
 --------------------------
 
-- The override is silent — there is no warning popup when an invoice is
-  posted on a non-EDI journal.
-- The journal flag is not visible from the invoice itself; users needing
-  to check it must open the journal record.
+-  The override is silent — there is no warning popup when an invoice is
+   posted on a non-EDI journal.
+-  The journal flag is not visible from the invoice itself; users
+   needing to check it must open the journal record.
 
 Changelog
 =========
@@ -216,7 +216,7 @@ Changelog
 19.0.0.0.0 (2026-05-25)
 -----------------------
 
-- *Changelog tracking starts at this release.*
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -227,7 +227,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
-- `NextERP Romania <https://www.nexterp.ro>`__:
+-  `NextERP Romania <https://www.nexterp.ro>`__:
 
-  - Fekete Mihai <feketemihai@nexterp.ro>
+   -  Fekete Mihai <feketemihai@nexterp.ro>
 

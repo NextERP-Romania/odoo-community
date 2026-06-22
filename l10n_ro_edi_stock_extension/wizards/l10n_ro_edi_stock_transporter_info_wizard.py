@@ -1,5 +1,5 @@
 # Copyright 2026 NextERP Romania SRL
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.exceptions import UserError
 
 from ..models.etransport_api_extra import ETransportAPIExtra
@@ -26,7 +26,7 @@ class L10nRoEdiStockTransporterInfoWizard(models.TransientModel):
     def action_fetch(self):
         self.ensure_one()
         if not self.operator_vat:
-            raise UserError(_("Transport operator VAT is required."))
+            raise UserError(self.env._("Transport operator VAT is required."))
         result = ETransportAPIExtra().get_transporter_info(
             company_id=self.company_id,
             cui_op=self.operator_vat.replace("RO", ""),
@@ -37,7 +37,7 @@ class L10nRoEdiStockTransporterInfoWizard(models.TransientModel):
             ref_decl=self.declarant_ref,
         )
         if "error" in result:
-            raise UserError(_("ANAF error: %(err)s", err=result["error"]))
+            raise UserError(self.env._("ANAF error: %(err)s", err=result["error"]))
 
         self.line_ids = [(5, 0, 0)]
         rows = (
@@ -103,14 +103,14 @@ class L10nRoEdiStockTransporterInfoLine(models.TransientModel):
     )
     uit = fields.Char(string="UIT")
     declarant_vat = fields.Char(string="Declarant VAT")
-    declarant_name = fields.Char(string="Declarant Name")
+    declarant_name = fields.Char()
     declarant_ref = fields.Char(string="Declarant Reference")
-    transport_date = fields.Char(string="Transport Date")
+    transport_date = fields.Char()
     uit_expiry_date = fields.Char(string="UIT Expiry Date")
     transporter_vat = fields.Char(string="Transporter VAT")
-    transporter_name = fields.Char(string="Transporter Name")
-    vehicle_number = fields.Char(string="Vehicle Number")
-    trailer_1_number = fields.Char(string="Trailer 1 Number")
-    trailer_2_number = fields.Char(string="Trailer 2 Number")
-    start_location = fields.Char(string="Start Location")
-    end_location = fields.Char(string="End Location")
+    transporter_name = fields.Char()
+    vehicle_number = fields.Char()
+    trailer_1_number = fields.Char()
+    trailer_2_number = fields.Char()
+    start_location = fields.Char()
+    end_location = fields.Char()
