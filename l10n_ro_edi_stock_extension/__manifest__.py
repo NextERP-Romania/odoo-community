@@ -6,7 +6,7 @@
     "version": "19.0.1.0.0",
     "category": "Accounting/Localizations/EDI",
     "author": "NextERP Romania",
-    "website": "https://github.com/NextERP-Romania/odoo-community",
+    "website": "https://www.nexterp.ro",
     "license": "LGPL-3",
     "depends": [
         "l10n_ro_edi_stock",

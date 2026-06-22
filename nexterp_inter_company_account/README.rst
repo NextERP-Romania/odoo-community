@@ -28,31 +28,31 @@ Use Cases / Context
 Key features
 ============
 
--  **Automatic inter-company flag** — ``is_inter_company`` stored
-   computed field on ``account.move`` and related field on
-   ``account.move.line``, populated without manual intervention.
--  **Search filters on Invoices & Bills** — quickly isolate customer
-   invoices and vendor bills that are inter-company transactions.
--  **Journal Entry filter** — filter all journal entries by
-   inter-company status directly from the Journal Entries list view.
--  **Journal Items filter** — drill down to individual debit/credit
-   lines (``account.move.line``) belonging to inter-company moves.
--  **Invoice Analysis integration** — segment the built-in Invoice
-   Analysis report by inter-company vs. external transactions.
--  **Built on ``nexterp_inter_company``** — reuses the centralised
-   partner/company grouping logic; no duplicate configuration required.
+- **Automatic inter-company flag** — ``is_inter_company`` stored
+  computed field on ``account.move`` and related field on
+  ``account.move.line``, populated without manual intervention.
+- **Search filters on Invoices & Bills** — quickly isolate customer
+  invoices and vendor bills that are inter-company transactions.
+- **Journal Entry filter** — filter all journal entries by inter-company
+  status directly from the Journal Entries list view.
+- **Journal Items filter** — drill down to individual debit/credit lines
+  (``account.move.line``) belonging to inter-company moves.
+- **Invoice Analysis integration** — segment the built-in Invoice
+  Analysis report by inter-company vs. external transactions.
+- **Built on ``nexterp_inter_company``** — reuses the centralised
+  partner/company grouping logic; no duplicate configuration required.
 
 Installation
 ============
 
 To install this module, you need to:
 
--  clone the branch 18.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Inter Company Account" in your addons
--  install the module
+- clone the branch 18.0 of the repository
+  https://github.com/NextERP-Romania/odoo-community
+- add the path to this repository in your configuration (addons-path)
+- update the module list
+- search for "NextERP - Inter Company Account" in your addons
+- install the module
 
 Configuration
 =============
@@ -130,7 +130,7 @@ Changelog
 19.0.0.0.0 (2026-06-03)
 -----------------------
 
--  *Changelog tracking starts at this release.*
+- *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -141,7 +141,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
--  `NextERP Romania <https://www.nexterp.ro>`__:
+- `NextERP Romania <https://www.nexterp.ro>`__:
 
-   -  Fekete Mihai <feketemihai@nexterp.ro>
+  - Fekete Mihai <feketemihai@nexterp.ro>
 

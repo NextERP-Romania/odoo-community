@@ -29,33 +29,33 @@ Use Cases / Context
 Key features
 ============
 
--  **One-click debt escalation** — a *Mark as Debt Recovery* server
-   action flags any customer invoice and shifts its payment state to
-   *Debt Collector* instantly.
--  **Dedicated Debt Recovery tab** on the invoice form — capture case
-   date, law reference, debt amount, commission, and penalties
-   separately from the original invoice.
--  **Two-stage debt status** — track whether the case is at
-   *Notification* or *Lawyer* stage via the ``debt_state`` field.
--  **Follow-up blocking** — the receivable journal item is blocked from
-   automatic follow-up sequences while the invoice is in debt recovery.
--  **Company-level toggle** — enable or disable debt recovery
-   functionality per company from **Invoicing → Configuration →
-   Settings**.
--  **List view & search integration** — filter and spot debt-recovery
-   invoices at a glance from the standard invoice list.
+- **One-click debt escalation** — a *Mark as Debt Recovery* server
+  action flags any customer invoice and shifts its payment state to
+  *Debt Collector* instantly.
+- **Dedicated Debt Recovery tab** on the invoice form — capture case
+  date, law reference, debt amount, commission, and penalties separately
+  from the original invoice.
+- **Two-stage debt status** — track whether the case is at
+  *Notification* or *Lawyer* stage via the ``debt_state`` field.
+- **Follow-up blocking** — the receivable journal item is blocked from
+  automatic follow-up sequences while the invoice is in debt recovery.
+- **Company-level toggle** — enable or disable debt recovery
+  functionality per company from **Invoicing → Configuration →
+  Settings**.
+- **List view & search integration** — filter and spot debt-recovery
+  invoices at a glance from the standard invoice list.
 
 Installation
 ============
 
 To install this module, you need to:
 
--  clone the branch 18.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Allow Debt Recovery Invoice" in your addons
--  install the module
+- clone the branch 18.0 of the repository
+  https://github.com/NextERP-Romania/odoo-community
+- add the path to this repository in your configuration (addons-path)
+- update the module list
+- search for "NextERP - Allow Debt Recovery Invoice" in your addons
+- install the module
 
 Configuration
 =============
@@ -92,27 +92,27 @@ Marking an Invoice for Debt Recovery
 2. Click the **Mark as Debt Recovery** server action (available from the
    action menu or the form button).
 
-   -  The ``debt_recovery`` flag is set to ``True`` on the
-      ``account.move`` record.
-   -  The ``payment_state`` is updated to reflect *Debt Collector*
-      status, blocking the receivable line from further follow-up
-      sequences.
+   - The ``debt_recovery`` flag is set to ``True`` on the
+     ``account.move`` record.
+   - The ``payment_state`` is updated to reflect *Debt Collector*
+     status, blocking the receivable line from further follow-up
+     sequences.
 
 3. Switch to the **Debt Recovery** tab on the invoice form to fill in
    the case details:
 
-   -  **Debt Status** (``debt_state``) — choose ``Notification`` (first
-      contact) or ``Lawyer`` (escalated).
-   -  **Debt Case Date** (``debt_case_date``) — the date the case was
-      opened.
-   -  **Law Reference** (``debt_law``) — optional legal act or case
-      number.
-   -  **Debt Amount** (``debt_amount``), **Commission**
-      (``debt_commission``), **Penalties** (``debt_penalties``) —
-      monetary breakdowns tracked separately from the original invoice
-      amount.
-   -  **Debt Recovery Text** (``debt_recovery_text``) — free-text field
-      for terms, notes or correspondence history.
+   - **Debt Status** (``debt_state``) — choose ``Notification`` (first
+     contact) or ``Lawyer`` (escalated).
+   - **Debt Case Date** (``debt_case_date``) — the date the case was
+     opened.
+   - **Law Reference** (``debt_law``) — optional legal act or case
+     number.
+   - **Debt Amount** (``debt_amount``), **Commission**
+     (``debt_commission``), **Penalties** (``debt_penalties``) —
+     monetary breakdowns tracked separately from the original invoice
+     amount.
+   - **Debt Recovery Text** (``debt_recovery_text``) — free-text field
+     for terms, notes or correspondence history.
 
 4. Save the record. The invoice list view now shows the debt recovery
    status, and the search panel includes a **Debt Recovery** filter for
@@ -136,7 +136,7 @@ Changelog
 19.0.0.0.0 (2026-06-03)
 -----------------------
 
--  *Changelog tracking starts at this release.*
+- *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -147,7 +147,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
--  `NextERP Romania <https://www.nexterp.ro>`__:
+- `NextERP Romania <https://www.nexterp.ro>`__:
 
-   -  Fekete Mihai <feketemihai@nexterp.ro>
+  - Fekete Mihai <feketemihai@nexterp.ro>
 

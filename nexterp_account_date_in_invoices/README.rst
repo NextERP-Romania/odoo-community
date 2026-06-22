@@ -26,30 +26,29 @@ Use Cases / Context
 Key features
 ============
 
--  **Automatic accounting date alignment** — vendor bill accounting date
-   is set to the invoice date whenever the fiscal period is open.
--  **Tax lock date awareness** — if the invoice date falls inside a
-   locked period, the accounting date is automatically shifted to
-   ``tax_lock_date + 1``, preventing illegal back-dating.
--  **Zero configuration** — logic activates on install with no settings
-   to adjust.
--  **Transparent to users** — accountants work with invoice dates as
-   usual; the module handles period compliance silently.
--  **Lightweight ``account`` dependency** — no additional modules
-   required beyond the standard Odoo Invoicing / Accounting app.
+- **Automatic accounting date alignment** — vendor bill accounting date
+  is set to the invoice date whenever the fiscal period is open.
+- **Tax lock date awareness** — if the invoice date falls inside a
+  locked period, the accounting date is automatically shifted to
+  ``tax_lock_date + 1``, preventing illegal back-dating.
+- **Zero configuration** — logic activates on install with no settings
+  to adjust.
+- **Transparent to users** — accountants work with invoice dates as
+  usual; the module handles period compliance silently.
+- **Lightweight ``account`` dependency** — no additional modules
+  required beyond the standard Odoo Invoicing / Accounting app.
 
 Installation
 ============
 
 To install this module, you need to:
 
--  clone the branch 18.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Purchase Invoice Accounting Date" in your
-   addons
--  install the module
+- clone the branch 18.0 of the repository
+  https://github.com/NextERP-Romania/odoo-community
+- add the path to this repository in your configuration (addons-path)
+- update the module list
+- search for "NextERP - Purchase Invoice Accounting Date" in your addons
+- install the module
 
 Usage
 =====
@@ -71,11 +70,11 @@ applies the following logic:
 2. Set the **Invoice Date** field on the bill.
 3. On confirmation, Odoo automatically sets the **Accounting Date**:
 
-   -  If the invoice date falls **after** the current ``tax_lock_date``,
-      the accounting date is set to the **invoice date**.
-   -  If the invoice date falls **on or before** the ``tax_lock_date``,
-      the accounting date is pushed forward to **tax lock date + 1
-      day**, keeping the entry out of the locked fiscal period.
+   - If the invoice date falls **after** the current ``tax_lock_date``,
+     the accounting date is set to the **invoice date**.
+   - If the invoice date falls **on or before** the ``tax_lock_date``,
+     the accounting date is pushed forward to **tax lock date + 1 day**,
+     keeping the entry out of the locked fiscal period.
 
 4. No manual intervention is needed — the correct accounting date
    appears on the posted journal entry.
@@ -89,7 +88,7 @@ Changelog
 19.0.0.0.0 (2026-06-03)
 -----------------------
 
--  *Changelog tracking starts at this release.*
+- *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -100,7 +99,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
--  `NextERP Romania <https://www.nexterp.ro>`__:
+- `NextERP Romania <https://www.nexterp.ro>`__:
 
-   -  Fekete Mihai <feketemihai@nexterp.ro>
+  - Fekete Mihai <feketemihai@nexterp.ro>
 

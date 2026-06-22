@@ -1,40 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="view_picking_form_l10n_ro_edi_stock_extension" model="ir.ui.view">
-        <field name="name">stock.picking.form.l10n_ro_edi_stock_extension</field>
-        <field name="model">stock.picking</field>
+    <record
+        id="view_picking_batch_form_l10n_ro_edi_stock_batch_extension"
+        model="ir.ui.view"
+    >
+        <field
+            name="name"
+        >stock.picking.batch.form.l10n_ro_edi_stock_batch_extension</field>
+        <field name="model">stock.picking.batch</field>
         <field
             name="inherit_id"
-            ref="l10n_ro_edi_stock.l10n_ro_edi_stock_view_picking_form"
+            ref="l10n_ro_edi_stock_batch.l10n_ro_edi_stock_view_batch_form"
         />
         <field name="arch" type="xml">
-            <!-- New buttons for DEL/CON/MVH (visible when a validated UIT exists) -->
+            <!-- DEL / CON / MVH buttons (visible when a validated UIT exists) -->
             <xpath
-                expr="//button[@name='action_l10n_ro_edi_stock_send_etransport'][1]"
+                expr="//button[@name='action_l10n_ro_edi_stock_fetch_status']"
                 position="after"
             >
                 <button
-                    name="%(action_l10n_ro_edi_stock_action_wizard_delete)d"
+                    name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_delete)d"
                     string="Delete notification"
                     type="action"
                     invisible="l10n_ro_edi_stock_state != 'stock_validated'"
                     confirm="Are you sure you want to delete the UIT notification from ANAF?"
                 />
                 <button
-                    name="%(action_l10n_ro_edi_stock_action_wizard_confirm)d"
+                    name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_confirm)d"
                     string="Confirm transport"
                     type="action"
                     invisible="l10n_ro_edi_stock_state != 'stock_validated'"
                 />
                 <button
-                    name="%(action_l10n_ro_edi_stock_action_wizard_modify_vehicle)d"
+                    name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_modify_vehicle)d"
                     string="Modify vehicle"
                     type="action"
                     invisible="l10n_ro_edi_stock_state != 'stock_validated'"
                 />
             </xpath>
 
-            <!-- Price source in the eTransport tab -->
+            <!-- Price source + post-outage in the eTransport tab -->
             <xpath
                 expr="//page[@name='etransport']//field[@name='l10n_ro_edi_stock_remarks']"
                 position="after"
@@ -49,7 +54,7 @@
                 />
             </xpath>
 
-            <!-- New sections: Transport documents + Previous notifications -->
+            <!-- Transport documents + Previous notifications -->
             <xpath expr="//page[@name='etransport']" position="inside">
                 <separator string="Transport documents" />
                 <field
@@ -81,7 +86,7 @@
                 </field>
             </xpath>
 
-            <!-- New columns on the eTransport documents list -->
+            <!-- Extra columns on the eTransport documents list -->
             <xpath
                 expr="//page[@name='etransport_documents']/field/list/field[@name='l10n_ro_edi_stock_uit']"
                 position="before"

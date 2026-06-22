@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_l10n_ro_edi_stock_action_wizard_form_batch" model="ir.ui.view">
+        <field name="name">l10n.ro.edi.stock.action.wizard.form.batch</field>
+        <field name="model">l10n.ro.edi.stock.action.wizard</field>
+        <field
+            name="inherit_id"
+            ref="l10n_ro_edi_stock_extension.view_l10n_ro_edi_stock_action_wizard_form"
+        />
+        <field name="arch" type="xml">
+            <field name="picking_id" position="attributes">
+                <attribute name="invisible">not picking_id</attribute>
+            </field>
+            <field name="picking_id" position="after">
+                <field name="batch_id" readonly="1" invisible="not batch_id" />
+            </field>
+        </field>
+    </record>
+</odoo>

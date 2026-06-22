@@ -27,30 +27,30 @@ Use Cases / Context
 Key features
 ============
 
--  **Delete the last posted invoice** in a journal without breaking the
-   accounting sequence lock.
--  **Per-company toggle** — enable or disable the behaviour
-   independently for each company via
-   ``account_allow_delete_last_invoice`` on ``res.company``.
--  **Standard Settings UI** — the option appears directly in *Settings →
-   Invoicing*, requiring no developer mode or manual configuration.
--  **Minimal footprint** — extends only ``account.move.unlink`` and
-   ``res.config.settings``; no new models or data files introduced.
--  **Safe by default** — the flag is ``False`` on installation, so
-   existing companies are unaffected until an administrator explicitly
-   opts in.
+- **Delete the last posted invoice** in a journal without breaking the
+  accounting sequence lock.
+- **Per-company toggle** — enable or disable the behaviour independently
+  for each company via ``account_allow_delete_last_invoice`` on
+  ``res.company``.
+- **Standard Settings UI** — the option appears directly in *Settings →
+  Invoicing*, requiring no developer mode or manual configuration.
+- **Minimal footprint** — extends only ``account.move.unlink`` and
+  ``res.config.settings``; no new models or data files introduced.
+- **Safe by default** — the flag is ``False`` on installation, so
+  existing companies are unaffected until an administrator explicitly
+  opts in.
 
 Installation
 ============
 
 To install this module, you need to:
 
--  clone the branch 18.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Allow Delete Last Invoice" in your addons
--  install the module
+- clone the branch 18.0 of the repository
+  https://github.com/NextERP-Romania/odoo-community
+- add the path to this repository in your configuration (addons-path)
+- update the module list
+- search for "NextERP - Allow Delete Last Invoice" in your addons
+- install the module
 
 Configuration
 =============
@@ -111,7 +111,7 @@ Changelog
 19.0.0.0.0 (2026-06-03)
 -----------------------
 
--  *Changelog tracking starts at this release.*
+- *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
@@ -122,7 +122,7 @@ In case of trouble, please check there if your issue has already been reported.
 Contributors
 ------------
 
--  `NextERP Romania <https://www.nexterp.ro>`__:
+- `NextERP Romania <https://www.nexterp.ro>`__:
 
-   -  Fekete Mihai <feketemihai@nexterp.ro>
+  - Fekete Mihai <feketemihai@nexterp.ro>
 

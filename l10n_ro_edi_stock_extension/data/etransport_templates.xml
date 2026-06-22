@@ -10,7 +10,7 @@
         - corectie (uit) when send_type='amend'
     -->
     <template
-        id="l10n_ro_edi_stock.l10n_ro_template_etransport"
+        id="l10n_ro_template_etransport"
         inherit_id="l10n_ro_edi_stock.l10n_ro_template_etransport"
         name="l10n_ro_template_etransport (extension)"
     >
@@ -28,8 +28,19 @@
             </t>
         </xpath>
 
-        <!-- Replace documenteTransport to support a list of documents -->
-        <xpath expr="//*[local-name()='documenteTransport']" position="replace">
+        <!--
+            Emit a list of documenteTransport (the base template has a single
+            one) followed by notificareAnterioara (per XSD ordering).
+            The base node is disabled with t-if="False" rather than
+            position="replace" (flagged as dangerous by the OCA checks on a
+            priority-0 view). Both blocks are inserted at the notificare level
+            after the disabled node.
+        -->
+        <xpath expr="//*[local-name()='documenteTransport']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+
+        <xpath expr="//*[local-name()='documenteTransport']" position="after">
             <t t-set="docs" t-value="data['notificare']['documenteTransport']" />
             <t t-if="not isinstance(docs, list)">
                 <t t-set="docs" t-value="[docs]" />
@@ -42,10 +53,6 @@
                     t-att-observatii="doc.get('observatii')"
                 />
             </t>
-        </xpath>
-
-        <!-- notificareAnterioara after documenteTransport (per XSD ordering) -->
-        <xpath expr="//*[local-name()='documenteTransport'][last()]" position="after">
             <t t-if="data['notificare'].get('notificariAnterioare')">
                 <t t-foreach="data['notificare']['notificariAnterioare']" t-as="ant">
                     <notificareAnterioara
