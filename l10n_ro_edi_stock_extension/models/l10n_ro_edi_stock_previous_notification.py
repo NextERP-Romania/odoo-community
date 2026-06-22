@@ -14,5 +14,5 @@ class L10nRoEdiStockPreviousNotification(models.Model):
         index=True,
     )
     uit = fields.Char(string="Previous UIT", size=16, required=True)
-    remarks = fields.Char(string="Remarks", size=200)
+    remarks = fields.Char(size=200)
     declarant_ref = fields.Char(string="Declarant Reference", size=50)

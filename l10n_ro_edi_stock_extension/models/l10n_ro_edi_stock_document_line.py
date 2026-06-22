@@ -17,14 +17,12 @@ class L10nRoEdiStockDocumentLine(models.Model):
     )
     document_type = fields.Selection(
         selection=DOCUMENT_TYPES,
-        string="Document Type",
         required=True,
         default="30",
     )
-    document_number = fields.Char(string="Document Number", size=50)
-    document_date = fields.Date(string="Document Date", required=True)
+    document_number = fields.Char(size=50)
+    document_date = fields.Date(required=True)
     remarks = fields.Char(
-        string="Remarks",
         size=200,
         help="Required when document type is 'Other' (9999).",
     )
