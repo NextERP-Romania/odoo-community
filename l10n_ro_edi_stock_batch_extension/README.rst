@@ -26,3 +26,14 @@ Technically the batch reuses the picking-level logic of
 ``l10n_ro_edi_stock_extension``: the batch is injected as the
 ``_picking_record`` used by the extension's validation and template
 enrichment, and implements the same helper interface.
+
+Detailed documentation
+======================
+
+The full eTransport flow — how to configure and operate it across all
+situations, plus the batch-specific behaviour — is documented in the
+``l10n_ro_edi_stock_extension`` module:
+
+* ``docs/ghid_utilizare_etransport.rst`` — practical guide (configuration +
+  all situations, including batch transfers).
+* ``docs/flux_etransport.rst`` — technical flow description.

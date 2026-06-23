@@ -44,3 +44,13 @@ Funcționalitate nouă
 
 * Serviciu INFO TRANSPORTATORI - vizualizare notificări pentru
   organizator transport.
+
+Documentație detaliată
+======================
+
+* ``docs/ghid_utilizare_etransport.rst`` – ghid practic: cum se configurează
+  și cum se lucrează, cu toate situațiile (per tip de operațiune, transferuri
+  în lot, corecții, acțiuni pe UIT, erori frecvente).
+* ``docs/flux_etransport.rst`` – descriere tehnică pas cu pas a fluxului
+  (stări, acțiuni, validări, calculul valorii, greutăți, locații, fluxul pe
+  loturi și serviciile ANAF auxiliare).

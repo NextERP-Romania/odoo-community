@@ -13,6 +13,7 @@ from .etransport_constants import (
     is_outgoing,
     needs_goods_full_data,
 )
+from .l10n_ro_edi_stock_document import EXTRA_DOCUMENT_STATES
 
 _logger = logging.getLogger(__name__)
 
@@ -26,6 +27,16 @@ _STREET_NUMBER_PATTERN = re.compile(
 
 class StockPicking(models.Model):
     _inherit = "stock.picking"
+
+    # The base ``l10n_ro_edi_stock_state`` field copies ``document.state`` into a
+    # Selection limited to DOCUMENT_STATES. The extension adds extra document
+    # states (deleted / confirmed / vehicle modified), so the picking selection
+    # has to be widened too, otherwise the state compute raises
+    # ``ValueError: Wrong value ... 'stock_vehicle_modified'``.
+    l10n_ro_edi_stock_state = fields.Selection(
+        selection_add=EXTRA_DOCUMENT_STATES,
+        ondelete={k: "set null" for k, _ in EXTRA_DOCUMENT_STATES},
+    )
 
     # Configurable price source per transfer
     l10n_ro_edi_stock_price_source = fields.Selection(
@@ -248,6 +259,28 @@ class StockPicking(models.Model):
                     self.env._("Document date is missing on an eTransport line.")
                 )
         return errors
+
+    ################################################################################
+    # Allow sending the notification before the transfer is validated
+    ################################################################################
+
+    @api.depends("l10n_ro_edi_stock_enable", "state", "l10n_ro_edi_stock_state")
+    def _compute_l10n_ro_edi_stock_enable_send(self):
+        # EXTENDS l10n_ro_edi_stock
+        # The base only allows sending once the picking is 'done'. ANAF must be
+        # notified *before* the goods are moved, so allow it on any non-draft,
+        # non-cancelled, not-yet-done transfer too (waiting/confirmed/assigned).
+        res = super()._compute_l10n_ro_edi_stock_enable_send()
+        for picking in self:
+            if (
+                not picking.l10n_ro_edi_stock_enable_send
+                and picking.l10n_ro_edi_stock_enable
+                and picking.state not in ("cancel", "done")
+                and picking.l10n_ro_edi_stock_state in (False, "stock_sending_failed")
+                and not picking._l10n_ro_edi_stock_get_last_document("stock_validated")
+            ):
+                picking.l10n_ro_edi_stock_enable_send = True
+        return res
 
     ################################################################################
     # Override template data computation

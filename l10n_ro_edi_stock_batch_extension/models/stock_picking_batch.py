@@ -6,10 +6,23 @@ from odoo.addons.l10n_ro_edi_stock_extension.models.etransport_constants import 
     is_national,
     is_outgoing,
 )
+from odoo.addons.l10n_ro_edi_stock_extension.models.l10n_ro_edi_stock_document import (
+    EXTRA_DOCUMENT_STATES,
+)
 
 
 class StockPickingBatch(models.Model):
     _inherit = "stock.picking.batch"
+
+    # The base ``l10n_ro_edi_stock_state`` field copies ``document.state`` into a
+    # Selection limited to DOCUMENT_STATES. l10n_ro_edi_stock_extension adds extra
+    # document states (deleted / confirmed / vehicle modified), so the batch
+    # selection has to be widened too, otherwise the state compute raises
+    # ``ValueError: Wrong value ... 'stock_vehicle_modified'``.
+    l10n_ro_edi_stock_state = fields.Selection(
+        selection_add=EXTRA_DOCUMENT_STATES,
+        ondelete={k: "set null" for k, _ in EXTRA_DOCUMENT_STATES},
+    )
 
     # Same configuration fields the extension adds on stock.picking, so the
     # batch eTransport notification benefits from the same facilities.

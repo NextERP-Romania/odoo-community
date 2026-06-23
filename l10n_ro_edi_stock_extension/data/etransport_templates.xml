@@ -21,8 +21,14 @@
             >data.get('declPostAvarie')</attribute>
         </xpath>
 
-        <!-- corectie must be a child of notificare per XSD v2 -->
-        <xpath expr="//*[local-name()='notificare']" position="inside">
+        <!--
+            corectie must be the FIRST child of notificare per XSD v2
+            (NotificareType sequence: corectie, bunuriTransportate, ...).
+            Inserting it before the first existing child (the bunuriTransportate
+            t-foreach) keeps the sequence order; position="inside" would append
+            it last and trigger cvc-complex-type.2.4.a.
+        -->
+        <xpath expr="//*[local-name()='notificare']/*[1]" position="before">
             <t t-if="data['send_type'] == 'amend' and data['notificare'].get('uit')">
                 <corectie t-att-uit="data['notificare']['uit']" />
             </t>
