@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="generator" content="nexterp-gen-addon-index-html" />
-<title>Romania - Statement Line Automation</title>
+<title>Romania - eTransport Batch Extension</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 </head>
@@ -14,14 +14,14 @@
   <div class="card mb-4 border-0" style="border-left: 6px solid #e11d48; padding: 24px;">
     <div class="row align-items-center">
       <div class="col-md-2 text-center mb-3 mb-md-0">
-        <img src="icon.png" alt="Romania - Statement Line Automation icon" class="img-fluid rounded" style="max-width: 128px; padding: 4px;" />
+        <img src="icon.png" alt="Romania - eTransport Batch Extension icon" class="img-fluid rounded" style="max-width: 128px; padding: 4px;" />
       </div>
       <div class="col-md-10">
-        <h1 class="mb-2" style="font-weight: 700;">Romania - Statement Line Automation</h1>
-        <p class="lead text-muted mb-3">Automatically create bank statements in statement lines</p>
+        <h1 class="mb-2" style="font-weight: 700;">Romania - eTransport Batch Extension</h1>
+        <p class="lead text-muted mb-3">Brings the l10n_ro_edi_stock_extension facilities to batch transfers</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.0.0.0</span>
-<span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Accounting</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">AGPL-3</span>        </div>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.0</span>
+<span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Accounting/Localizations/EDI</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">LGPL-3</span>        </div>
       </div>
     </div>
   </div>
@@ -49,19 +49,20 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>Automate the attachment of bank statement lines to a parent bank
-statement on Romanian companies. When a new line is created without a
-<code>statement_id</code>, the module looks for an existing statement on the same
-journal and date, creates one if it does not exist, and links the line
-to it.</p>
-<p>This avoids the manual step of opening or creating a daily statement
-before importing bank transactions — useful for setups that ingest
-statement lines through MT940 / CAMT.053 parsers, OCR uploads or
-external feeds, where the source format only carries the line and not
-its statement wrapper.</p>
-<p>The behaviour is gated on the company's country code being <code>RO</code>, so
-multi-company databases that mix Romanian and non-Romanian entities
-keep the standard Odoo behaviour everywhere else.</p>
+        <p>Extends eTransport (e-Transport) EDI notifications to <strong>batch transfers</strong> (<code>stock.picking.batch</code>), bringing the full feature set of <code>l10n_ro_edi_stock_extension</code> to multi-picking shipments declared together to ANAF.</p>
+<p>By default, the base <code>l10n_ro_edi_stock_batch</code> module can send a single UIT notification for a batch, but it lacks the stricter validation and enrichment that <code>l10n_ro_edi_stock_extension</code> provides for individual transfers. This module bridges that gap: a batch notification sent through this module is treated identically to a single-transfer notification, satisfying ANAF Schematron v2.0.2 requirements.</p>
+<h2>What this module provides</h2>
+<ul>
+<li><strong>Schematron v2.0.2 validation for batches</strong> — operation scope vs operation type, partner country code, mandatory tariff code (<code>codTarifar</code> / NC8), weights, values, and previous notification references for operations 60/70.</li>
+<li><strong>Configurable price source</strong> (<code>l10n_ro_edi_stock_price_source</code>) on the batch — choose between <em>Automatic (by operation)</em>, <em>Cost price</em>, <em>Purchase order price</em>, <em>Sale order price</em>, or <em>Product list price</em> to drive the <code>valoareLeiFaraTva</code> field sent to ANAF.</li>
+<li><strong>Correct per-move data</strong>: net and gross weight computation, quantity and unit of measure (<code>_l10n_ro_edi_stock_get_qty_and_uom</code>), and NC8 tariff code (<code>_l10n_ro_edi_stock_get_codtarifar</code>).</li>
+<li><strong>Street / number split</strong> on location addresses (<code>_l10n_ro_edi_stock_split_street</code>) per ANAF schema.</li>
+<li><strong>Multiple transport document entries</strong> (<code>l10n_ro_edi_stock_document_line_ids</code>) and <strong>previous notification entries</strong> (<code>l10n_ro_edi_stock_previous_ids</code>) directly on the batch form.</li>
+<li><strong>Post-outage declaration flag</strong> (<code>l10n_ro_edi_stock_post_outage</code>) — OUG 41/2022 art. 8 par. 1³, allowing late declaration until end of the next working day after ANAF system recovery.</li>
+<li><strong>Full ANAF action wizard</strong> on the batch form — <em>Send</em>, <em>Delete</em>, <em>Confirm</em>, and <em>Modify Vehicle</em> actions (<code>l10n.ro.edi.stock.action.wizard</code>) extended to work against a <code>stock.picking.batch</code> instead of a single picking.</li>
+<li><strong>Batch UIT reconciliation</strong> in the ANAF LIST cron job — batch UITs are picked up alongside individual transfer UITs during the scheduled sync (<code>_l10n_ro_edi_stock_list_sync_one</code>).</li>
+</ul>
+<p>Technically, the batch record is injected as the <code>_picking_record</code> consumed by <code>l10n_ro_edi_stock_extension</code>'s validation and XML template pipeline, implementing the same helper interface so no duplicate logic is needed.</p>
 
       </div>
       <hr class="my-4" />
@@ -132,125 +133,53 @@ keep the standard Odoo behaviour everywhere else.</p>
     <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
       <ul>
-<li><strong>Country-scoped automation</strong> — the create override on
-<code>account.bank.statement.line</code> runs only when the company's country
-code is <code>RO</code>, leaving other localisations untouched.</li>
-<li><strong>Date + journal grouping</strong> — a new line without <code>statement_id</code> is
-attached to the existing <code>account.bank.statement</code> that matches its
-<code>journal_id</code> and <code>date</code>; one statement per journal per day.</li>
-<li><strong>On-demand statement creation</strong> — if no matching statement exists,
-one is created with the line's date used as both <code>date</code> and <code>name</code>,
-then linked to the line.</li>
-<li><strong>Balance recomputation</strong> — after the link is set, the module
-triggers <code>_compute_balance_end</code> and <code>_compute_balance_end_real</code> on
-the statement so the running balance stays consistent with the new
-line.</li>
-<li><strong>Batch-friendly</strong> — implemented through <code>@api.model_create_multi</code>,
-the override processes each record of a multi-create call
-individually, which keeps it compatible with bulk imports from
-parsers and connectors.</li>
-<li><strong>No new UI</strong> — the module adds no fields, views, menus or
-configuration; behaviour is automatic on record creation.</li>
-<li><strong>No data files</strong> — installation simply loads the model override;
-there is nothing to seed or migrate.</li>
+<li><strong>Full eTransport parity for batch transfers</strong> — batch notifications go through the same ANAF Schematron v2.0.2 validation as individual transfer notifications.</li>
+<li><strong>Configurable price source per batch</strong> — drive <code>valoareLeiFaraTva</code> from cost, purchase order, sale order, or list price.</li>
+<li><strong>Correct weights, UoM, and NC8 tariff codes</strong> computed per move within the batch.</li>
+<li><strong>Street/number address split</strong> on location addresses, satisfying ANAF schema requirements.</li>
+<li><strong>Multiple transport documents and previous notifications</strong> on the batch form for operations 60/70.</li>
+<li><strong>Post-outage declaration flag</strong> (OUG 41/2022 art. 8 par. 1³) directly on the batch.</li>
+<li><strong>Delete / Confirm / Modify Vehicle</strong> ANAF actions available on the batch form via the shared action wizard.</li>
+<li><strong>Batch UIT reconciliation</strong> included in the scheduled ANAF LIST sync cron job automatically.</li>
 </ul>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>The module is dependency-driven: install it and the automation runs as
-soon as a Romanian company creates a bank statement line. There are no
-settings, no menus and no user-facing toggles.</p>
-<h2>1. Install dependencies</h2>
-<p>The manifest depends on:</p>
-<ul>
-<li><code>account</code> — bank statement and statement line models.</li>
-<li><code>l10n_ro</code> — Romanian localisation; required so the country detection
-on <code>res.company</code> matches a real installed chart.</li>
-</ul>
-<p>Both must be installable in the database before this module.</p>
-<h2>2. Set the company country</h2>
-<p>Go to <strong>Settings → Companies → Companies</strong> and open the Romanian
-company. Make sure <strong>Country</strong> is set to <strong>Romania</strong> (<code>RO</code>). The
-automation reads <code>record.company_id.country_id.code</code> to decide whether
-to run, so any company with a different country code is skipped.</p>
-<h2>3. Configure a bank journal</h2>
-<p>Go to <strong>Accounting → Configuration → Journals</strong> and ensure each bank
-journal that receives lines has the right currency and accounting
-defaults. The module does not create journals; it only attaches lines
-to statements within an existing journal.</p>
-<h2>4. Optional — import pipelines</h2>
-<p>The automation is most useful when statement lines arrive without a
-parent statement, for example:</p>
-<ul>
-<li><strong>CAMT.053 / MT940 imports</strong> via <code>account_bank_statement_import_*</code>
-modules that read one transaction per line.</li>
-<li><strong>OCR uploads</strong> through <code>account_invoice_extract</code> or a custom
-connector that drops lines into a journal.</li>
-<li><strong>External connectors</strong> posting <code>account.bank.statement.line</code>
-records via XML-RPC / <code>web</code> API.</li>
-</ul>
-<p>No specific setup is required on these pipelines — once they create
-the lines, this module fills in <code>statement_id</code>.</p>
-<h2>5. User access</h2>
-<p>The override runs in <code>sudo</code>-less context as the user who creates the
-line. Standard Accounting access on
-<code>account.bank.statement</code> / <code>account.bank.statement.line</code> is enough; no
-extra security groups are added.</p>
+      <p>This module requires no dedicated configuration steps beyond installing its two dependencies (<code>l10n_ro_edi_stock_batch</code> and <code>l10n_ro_edi_stock_extension</code>). All configuration required for those modules (ANAF credentials, eTransport product settings, warehouse addresses) applies equally to batch transfers.</p>
+<p>The only batch-specific setting is the <strong>eTransport Price Source</strong> field on each batch transfer form, which defaults to <em>Automatic (by operation)</em> via <code>_l10n_ro_edi_stock_default_price_source</code>. Change it per batch as needed before sending the notification.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <p>The whole module is one override on <code>account.bank.statement.line.create</code>.
-There is nothing to click — usage is observing the side effect when
-new lines are created.</p>
-<h2>Trigger</h2>
-<p>A new <code>account.bank.statement.line</code> is created (single record or batch)
-on a company whose country is <code>RO</code>, and <code>statement_id</code> is not set in
-the <code>vals</code>.</p>
-<h2>Resolution</h2>
-<p>For each affected line, the override:</p>
+      <p>This module extends the existing eTransport workflows on batch transfers. The steps below assume <code>l10n_ro_edi_stock_batch</code> and <code>l10n_ro_edi_stock_extension</code> are already in use for individual transfers.</p>
+<h2>Sending an eTransport notification from a batch transfer</h2>
 <ol>
-<li>Searches <code>account.bank.statement</code> for a record with
-<code>journal_id == record.journal_id</code> and <code>date == record.date</code>.</li>
-<li>If a statement exists, links the line to it.</li>
-<li>If no statement exists, creates one with <code>journal_id</code>, <code>date</code>, and
-<code>name = date</code>, then links the line to the new statement.</li>
-<li>Calls <code>_compute_balance_end</code> and <code>_compute_balance_end_real</code> on the
-resulting statement so the closing balance is refreshed
-immediately.</li>
+<li>Navigate to <strong>Inventory → Operations → Batch Transfers</strong> and open (or create) the batch you want to declare.</li>
+<li>On the batch form, locate the <strong>eTransport</strong> section (added by this module).</li>
+<li>Set <strong>eTransport Price Source</strong> (<code>l10n_ro_edi_stock_price_source</code>) to the value appropriate for the shipment — e.g. <em>Purchase order price</em> for inbound goods.</li>
+<li>If the transport is a continuation or correction of a previous notification (operations 60/70), add entries under <strong>Previous Notifications</strong> (<code>l10n_ro_edi_stock_previous_ids</code>).</li>
+<li>Add any accompanying <strong>Transport Documents</strong> (<code>l10n_ro_edi_stock_document_line_ids</code>) (CMR, waybill, etc.).</li>
+<li>If the notification could not be sent during an ANAF outage, tick <strong>Post-Outage Declaration</strong> (<code>l10n_ro_edi_stock_post_outage</code>).</li>
+<li>Click the <strong>Send eTransport</strong> button (from the action wizard). The wizard (<code>l10n.ro.edi.stock.action.wizard</code>) validates the batch data against ANAF Schematron v2.0.2 and uploads the XML. The returned UIT is stored on the batch.</li>
 </ol>
-<h2>Typical flow</h2>
+<h2>Modifying vehicle or deleting/confirming a previously sent notification</h2>
 <ol>
-<li>A bank-statement importer (CAMT.053, MT940, custom feed) calls
-<code>create()</code> on <code>account.bank.statement.line</code> with one record per
-transaction.</li>
-<li>Odoo would normally leave each line orphaned until a user opens
-<strong>Accounting → Bank → Bank Statements</strong> and creates a daily
-statement.</li>
-<li>With this module installed, the line is already attached to a
-per-journal, per-date statement by the time <code>create()</code> returns.</li>
-<li>Open <strong>Accounting → Bank</strong> to find the statement listed with its
-computed end balance; the lines are visible inside it.</li>
+<li>Open the batch transfer that already has a UIT.</li>
+<li>Use the <strong>Delete</strong>, <strong>Confirm</strong>, or <strong>Modify Vehicle</strong> actions available on the batch form (same wizard, <code>batch_id</code>-aware branch).</li>
+<li>ANAF's response is logged on the chatter.</li>
 </ol>
-<h2>What it does not do</h2>
-<ul>
-<li>Does not reconcile or match the line to a journal entry.</li>
-<li>Does not change the line's amount, partner or labels.</li>
-<li>Does not run on non-Romanian companies, even in a multi-company
-database.</li>
-<li>Does not create statements for lines that already have a
-<code>statement_id</code>.</li>
-</ul>
+<h2>Monitoring batch UITs via the ANAF LIST cron</h2>
+<p>The scheduled action <strong>eTransport — ANAF LIST sync</strong> (defined in <code>l10n_ro_edi_stock</code>) automatically reconciles batch UITs alongside individual transfer UITs. No extra configuration is needed — batches are included in <code>_l10n_ro_edi_stock_list_sync_one</code> automatically.</p>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.0.0.0 (2026-05-25)</h2>
+      <h2>19.0.1.0.0 (2026-06-23)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>
@@ -264,30 +193,6 @@ database.</li>
     <p class="text-center text-muted mb-4">Other modules from the same publisher, built to work together.</p>
     <div class="row">
       <div class="col-md-3 col-sm-6 mb-3">
-        <a href="https://apps.odoo.com/apps/modules/19.0/l10n_ro_edi_extension" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
-          <div class="card-body p-3">
-            <div class="d-flex align-items-center mb-2">
-              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">RO</div>
-              <div>
-                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">Romania - E-invoicing Extension</div>
-<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting/Localizations/EDI</div>              </div>
-            </div>
-<p class="text-muted mb-0" style="font-size: 12px;">E-Invoice implementation for Romania</p>          </div>
-        </a>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-3">
-        <a href="https://apps.odoo.com/apps/modules/19.0/l10n_ro_edi_stock_batch_extension" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
-          <div class="card-body p-3">
-            <div class="d-flex align-items-center mb-2">
-              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">RO</div>
-              <div>
-                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">Romania - eTransport Batch Extension</div>
-<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting/Localizations/EDI</div>              </div>
-            </div>
-<p class="text-muted mb-0" style="font-size: 12px;">Brings the l10n_ro_edi_stock_extension facilities to batch transfers</p>          </div>
-        </a>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-3">
         <a href="https://apps.odoo.com/apps/modules/19.0/l10n_ro_edi_stock_extension" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
           <div class="card-body p-3">
             <div class="d-flex align-items-center mb-2">
@@ -300,40 +205,27 @@ database.</li>
         </a>
       </div>
       <div class="col-md-3 col-sm-6 mb-3">
-        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_account_edi_journal" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+        <a href="https://apps.odoo.com/apps/modules/19.0/l10n_ro_edi_extension" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
           <div class="card-body p-3">
             <div class="d-flex align-items-center mb-2">
-              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">RO</div>
               <div>
-                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Account EDI Journalt</div>
-<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting</div>              </div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">Romania - E-invoicing Extension</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting/Localizations/EDI</div>              </div>
             </div>
-<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Account EDI Journal</p>          </div>
+<p class="text-muted mb-0" style="font-size: 12px;">E-Invoice implementation for Romania</p>          </div>
         </a>
       </div>
       <div class="col-md-3 col-sm-6 mb-3">
-        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_account_invoice_report" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+        <a href="https://apps.odoo.com/apps/modules/19.0/l10n_ro_statement_line_automation" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
           <div class="card-body p-3">
             <div class="d-flex align-items-center mb-2">
-              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">RO</div>
               <div>
-                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Account Invoice Report</div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">Romania - Statement Line Automation</div>
 <div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting</div>              </div>
             </div>
-<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Account Invoice Report</p>          </div>
-        </a>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-3">
-        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_inter_company_account" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
-          <div class="card-body p-3">
-            <div class="d-flex align-items-center mb-2">
-              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
-              <div>
-                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Inter Company Account</div>
-<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting</div>              </div>
-            </div>
-<p class="text-muted mb-0" style="font-size: 12px;">This module helps to identify if an account move line
-        and account move is inter company transaction or not.</p>          </div>
+<p class="text-muted mb-0" style="font-size: 12px;">Automatically create bank statements in statement lines</p>          </div>
         </a>
       </div>
       <div class="col-md-3 col-sm-6 mb-3">
@@ -365,6 +257,30 @@ database.</li>
         </a>
       </div>
       <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_account_edi_journal" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Account EDI Journalt</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting</div>              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Account EDI Journal</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_account_invoice_report" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Account Invoice Report</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting</div>              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Account Invoice Report</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
         <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_account_invoice_debt_recovery" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
           <div class="card-body p-3">
             <div class="d-flex align-items-center mb-2">
@@ -374,6 +290,18 @@ database.</li>
 <div class="text-muted" style="font-size: 11px; margin-top: 2px;">Invoicing</div>              </div>
             </div>
 <p class="text-muted mb-0" style="font-size: 12px;">NextERP - Allow Debt Recovery Invoice</p>          </div>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <a href="https://apps.odoo.com/apps/modules/19.0/nexterp_account_allow_delete_last_invoice" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">NE</div>
+              <div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">NextERP - Allow Delete Last Invoice</div>
+<div class="text-muted" style="font-size: 11px; margin-top: 2px;">Invoicing</div>              </div>
+            </div>
+<p class="text-muted mb-0" style="font-size: 12px;">NextERP - Allow Delete Last Invoice</p>          </div>
         </a>
       </div>
     </div>

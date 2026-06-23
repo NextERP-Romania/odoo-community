@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="generator" content="nexterp-gen-addon-index-html" />
-<title>Romania - E-invoicing Extension</title>
+<title>Romania - eTransport Extension</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 </head>
@@ -14,13 +14,13 @@
   <div class="card mb-4 border-0" style="border-left: 6px solid #e11d48; padding: 24px;">
     <div class="row align-items-center">
       <div class="col-md-2 text-center mb-3 mb-md-0">
-        <img src="icon.png" alt="Romania - E-invoicing Extension icon" class="img-fluid rounded" style="max-width: 128px; padding: 4px;" />
+        <img src="icon.png" alt="Romania - eTransport Extension icon" class="img-fluid rounded" style="max-width: 128px; padding: 4px;" />
       </div>
       <div class="col-md-10">
-        <h1 class="mb-2" style="font-weight: 700;">Romania - E-invoicing Extension</h1>
-        <p class="lead text-muted mb-3">E-Invoice implementation for Romania</p>
+        <h1 class="mb-2" style="font-weight: 700;">Romania - eTransport Extension</h1>
+        <p class="lead text-muted mb-3">Fixes and extensions for l10n_ro_edi_stock per ANAF eTransport v2.0.2</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.1</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.0</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Accounting/Localizations/EDI</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">LGPL-3</span>        </div>
       </div>
     </div>
@@ -49,18 +49,31 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>Extends the standard Odoo Romanian e-invoicing stack (<code>l10n_ro_edi</code>) with production-grade reliability improvements for the <strong>e-Factura / SPV</strong> workflow: automated cron-driven sending, inbound bill ingestion from the SPV portal, UBL XML compliance fixes, and company-level error notifications.</p>
-<p>Romanian regulations require that VAT-registered companies submit outgoing invoices to ANAF's SPV (Spațiul Privat Virtual) as UBL XML and also receive supplier invoices through the same portal. This module closes the gaps left by the base localization module:</p>
+        <p>Fixes and extensions for the official Odoo <code>l10n_ro_edi_stock</code> module to align it with the ANAF eTransport v2 specification (XSD 2023-01-26, Schematron v2.0.2 from 2024-08-12).</p>
+<p>The official module ships with several calculation bugs and missing features required by the current ANAF eTransport schema. This module corrects those issues and adds the full set of operations mandated by eTransport v2.0.2.</p>
+<h2>Corrections to the official module</h2>
+<ul>
+<li><strong><code>valoareLeiFaraTva</code> (VAT-excluded value)</strong> is computed correctly per operation direction:
+<ul>
+<li><em>Incoming</em> (operations 10, 12, 14, 30-transfer, 40, 60): cost price from the stock move or, when a Purchase Order exists, <code>purchase.order.line.price_unit</code> converted to RON.</li>
+<li><em>Outgoing</em> (operations 20, 22, 24, 30-sale, 50, 70): sale price from <code>sale.order.line.price_unit</code> converted to RON, or <code>list_price</code> as fallback.</li>
+</ul>
+</li>
+<li><strong>Quantity / UoM conversion</strong> between <code>move.product_uom</code> and the declared <code>codUnitateMasura</code> is now consistent.</li>
+<li><strong>Gross weight</strong> no longer doubles <code>shipping_weight</code> when a package has multiple <code>move_lines</code>; <code>greutateBruta &gt;= greutateNeta</code> is always guaranteed.</li>
+<li><strong><code>codTarifar</code></strong> (NC8/HS code) is required — the erroneous <code>00000000</code> fallback is removed.</li>
+<li><strong><code>denumireStrada</code></strong> is correctly split from <code>numar / bloc / scara / etaj / apartament</code> per the <code>LocatieType</code> XSD definition.</li>
+</ul>
 <h2>What this module provides</h2>
 <ul>
-<li><strong>Automated invoice submission cron</strong> (<code>ir_cron_l10n_ro_send_invoices_anaf</code>) — periodically picks up invoices that are ready to send and submits them to ANAF without manual intervention.</li>
-<li><strong>SPV bill ingestion</strong> — <code>_l10n_ro_edi_fetch_invoices</code> and <code>_l10n_ro_edi_process_bill_messages</code> synchronize supplier bills received in the SPV and create the corresponding <code>account.move</code> records in Odoo if they do not already exist.</li>
-<li><strong>UBL XML length-limit enforcement</strong> — <code>_ro_apply_length_limits</code>, <code>_ro_truncate</code>, <code>_ro_truncate_text</code>, and <code>split_string</code> on <code>account.edi.xml.ubl_ro</code> ensure that free-text fields (item names, descriptions, notes) never exceed the character limits mandated by the CIUS-RO specification, preventing ANAF rejections.</li>
-<li><strong>Invoice line note nodes</strong> — <code>_add_invoice_line_note_nodes</code> and <code>_ubl_add_line_item_name_description_nodes</code> improve the completeness of generated UBL XML for invoices with long descriptions.</li>
-<li><strong>Period of Residence setting</strong> (<code>l10n_ro_edi_residence</code> on <code>res.company</code>) — configures the fiscal residence period used in the EDI exchange.</li>
-<li><strong>EDI error notifications</strong> (<code>l10n_ro_edi_error_notify_users</code> on <code>res.company</code>) — designates specific Odoo users who receive internal messages whenever an EDI submission error occurs, so failures are never silently dropped.</li>
-<li><strong>Send &amp; print shortcut</strong> (<code>action_send_and_print_anaf</code>) — a dedicated button on the invoice form that triggers ANAF submission and PDF generation in one step.</li>
-<li><strong>Default sending method hook</strong> — <code>_get_default_sending_methods</code> ensures the Romanian EDI channel is pre-selected when sending invoices, and <code>_hook_invoice_document_before_pdf_report_render</code> aligns PDF generation with EDI dispatch.</li>
+<li><strong>Flexible price source</strong> (<code>l10n_ro_edi_stock_price_source</code> on <code>stock.picking</code>): <em>Automatic</em>, <em>Cost price</em>, <em>Purchase order price</em>, <em>Sale order price</em>, or <em>Product list price</em> — configurable per transfer or as a company-wide default.</li>
+<li><strong>Multiple transport documents per notification</strong> (<code>l10n.ro.edi.stock.document.line</code>): <code>tipDocument</code> types 10 CMR / 20 Invoice / 30 Delivery note / 9999 Other, with free-text <code>remarks</code> for type 9999.</li>
+<li><strong>Previous notifications</strong> (<code>l10n.ro.edi.stock.previous.notification</code>): <code>notificareAnterioara</code> entries required for operations 60/70 (DIN/DIE).</li>
+<li><strong>Post-outage declaration</strong> (<code>l10n_ro_edi_stock_post_outage</code>): <code>declPostAvarie</code> flag per OUG 41/2022 art. 8 par. 1³.</li>
+<li><strong>Full UIT lifecycle wizard</strong> (<code>l10n.ro.edi.stock.action.wizard</code>): Delete (DEL), Confirm (CON — confirmed / partially confirmed / refused), and Vehicle Modification (MVH) actions sent directly to ANAF.</li>
+<li><strong>LIST service sync</strong> (<code>l10n.ro.edi.stock.list.wizard</code>): fetch and reconcile the ANAF notifications list for any date range (1–60 days); automatic reconciliation logs matched UITs in the transfer chatter. A scheduled cron job (<code>ir_cron_l10n_ro_edi_stock_list_sync</code>) runs every 6 hours.</li>
+<li><strong>Transporter Info service</strong> (<code>l10n.ro.edi.stock.transporter.info.wizard</code>): query ANAF for all notifications in which the company acts as transport operator, with full vehicle and location details.</li>
+<li><strong>Extended document state tracking</strong>: <code>l10n_ro_edi_stock_event_type</code> (NOT / COR / DEL / CON / MVH) and <code>l10n_ro_edi_stock_confirm_type</code> (10 / 20 / 30) stored on <code>l10n_ro_edi.document</code>.</li>
 </ul>
 
       </div>
@@ -132,84 +145,108 @@
     <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
       <ul>
-<li><strong>Automated ANAF submission</strong> — a scheduled cron sends confirmed invoices to e-Factura / SPV without manual intervention.</li>
-<li><strong>Inbound SPV bill ingestion</strong> — supplier invoices received in SPV are fetched and created automatically as Odoo vendor bills.</li>
-<li><strong>UBL XML CIUS-RO compliance</strong> — field-length truncation and string-splitting prevent ANAF rejections caused by oversized text in item names, descriptions, and notes.</li>
-<li><strong>EDI error notifications</strong> — designate internal users to receive instant alerts when an ANAF submission fails.</li>
-<li><strong>Period of Residence setting</strong> — company-level field controls the fiscal residence period declared in the EDI exchange.</li>
-<li><strong>One-click Send &amp; Print</strong> — dedicated button submits to ANAF and generates the PDF report in a single action.</li>
-<li><strong>Romanian EDI channel pre-selected</strong> — the standard Send &amp; Print dialog defaults to the Romanian EDI method, reducing clicks for accounting staff.</li>
+<li><strong>Compliant with ANAF eTransport v2.0.2</strong> — corrects value, weight, UoM, address and HS-code bugs in the official <code>l10n_ro_edi_stock</code> module.</li>
+<li><strong>Flexible VAT-excluded value calculation</strong> — choose between Automatic, Cost, Purchase Order, Sale Order, or List price per transfer or as a company default.</li>
+<li><strong>Multiple transport documents per notification</strong> — attach CMR, invoices, delivery notes or other documents to a single eTransport XML.</li>
+<li><strong>Full UIT lifecycle</strong> — Delete, Confirm (confirmed / partially / refused), and Vehicle Modification actions sent directly to ANAF from the transfer.</li>
+<li><strong>Previous notification support</strong> — <code>notificareAnterioara</code> entries for operations 60/70 (DIN/DIE).</li>
+<li><strong>Post-outage declaration flag</strong> — <code>declPostAvarie</code> per OUG 41/2022 for submissions during ANAF system outages.</li>
+<li><strong>Automatic LIST sync cron</strong> — reconciles ANAF notification list with local transfers every 6 hours; manual wizard also available.</li>
+<li><strong>Transporter Info service</strong> — query ANAF for all notifications where the company acts as transport operator, with full vehicle and route details.</li>
 </ul>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>After installing <code>l10n_ro_edi_extension</code>, complete the following steps.</p>
-<h2>1. Company EDI settings</h2>
-<p>Go to <strong>Settings → General Settings → Companies</strong> (or <strong>Accounting → Configuration → Settings</strong>) and open your company record.</p>
-<p>Set the following fields on the <strong>Romanian EDI</strong> section:</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Period of Residence</strong> (<code>l10n_ro_edi_residence</code>)</td>
-<td>Fiscal residence period required by ANAF for the EDI exchange. Enter the value as an integer (number of days).</td>
-</tr>
-<tr>
-<td><strong>EDI Error Notify Users</strong> (<code>l10n_ro_edi_error_notify_users</code>)</td>
-<td>Add one or more internal users who should receive an Odoo notification whenever an ANAF submission fails.</td>
-</tr>
-</tbody>
-</table>
-<h2>2. Review the send-invoices cron</h2>
+      <h2>1. Company-wide default price source</h2>
 <ol>
-<li>Go to <strong>Settings → Technical → Automation → Scheduled Actions</strong>.</li>
-<li>Find <strong>Romania - Send Invoices to ANAF</strong> (<code>ir_cron_l10n_ro_send_invoices_anaf</code>).</li>
-<li>Adjust the <strong>Execution Frequency</strong> to suit your submission cadence (e.g. every 15 minutes).</li>
-<li>Ensure the cron is <strong>Active</strong>.</li>
+<li>Go to <strong>Settings → Inventory</strong> (or <strong>Settings → Accounting</strong>) and search for the <strong>eTransport</strong> section.</li>
+<li>Set <strong>Default eTransport Price Source</strong> (<code>l10n_ro_edi_stock_default_price_source</code>) to the strategy that matches your typical operations:
+<ul>
+<li><em>Automatic (by operation)</em> is recommended for mixed-use companies.</li>
+<li>Override per transfer when needed using the field on <code>stock.picking</code>.</li>
+</ul>
+</li>
 </ol>
-<h2>3. SPV / ANAF credentials</h2>
-<p>Ensure the ANAF OAuth credentials are configured as required by the base <code>l10n_ro_edi</code> and <code>l10n_ro_message_spv</code> modules. This module relies on those credentials to submit outgoing invoices and pull inbound SPV messages.</p>
+<h2>2. Automatic LIST sync (cron)</h2>
+<ol>
+<li>In the same settings page, tick <strong>Automatic List Sync</strong> (<code>l10n_ro_edi_stock_list_enabled</code>).</li>
+<li>Set <strong>List Sync Days</strong> (<code>l10n_ro_edi_stock_list_days</code>, 1–60) — the number of days the cron looks back each run.</li>
+<li>The scheduled action <em>eTransport: ANAF notifications list sync</em> (<code>ir_cron_l10n_ro_edi_stock_list_sync</code>) runs every 6 hours automatically once enabled. To adjust the interval, go to <strong>Settings → Technical → Automation → Scheduled Actions</strong> and edit the cron record.</li>
+</ol>
+<h2>3. Verify NC8/HS codes on products</h2>
+<p>Because <code>codTarifar</code> is now mandatory (the <code>00000000</code> fallback has been removed), ensure every product that appears on eTransport-eligible transfers has a valid 4-, 6-, or 8-digit HS/NC8 code set on the product form before sending notifications.</p>
+<h2>4. Verify address structure</h2>
+<p>The module splits Romanian street addresses into <code>denumireStrada</code> + number/building details automatically via <code>_l10n_ro_edi_stock_split_street</code>. Confirm that partner addresses follow the format <em>&quot;Street name number&quot;</em> (e.g. <em>&quot;Calea Victoriei 12-14&quot;</em>) to ensure correct splitting.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <h2>Sending an outgoing invoice to ANAF</h2>
-<h3>Automatic (cron)</h3>
-<p>Once the module is installed and configured, the cron job <strong>Romania - Send Invoices to ANAF</strong> runs on a schedule and submits all confirmed, unsent invoices automatically. No manual action is required for routine operation.</p>
-<h3>Manual send from the invoice</h3>
+      <h2>Configuring the price source for a transfer</h2>
 <ol>
-<li>Open the invoice: <strong>Accounting → Customers → Invoices</strong>.</li>
-<li>Confirm the invoice (status <strong>Posted</strong>).</li>
-<li>Click <strong>Send &amp; Print</strong> → the Romanian EDI channel is pre-selected by default.</li>
-<li>Alternatively, use the dedicated <strong>Send to ANAF</strong> button (<code>action_send_and_print_anaf</code>) on the invoice form to submit immediately and generate the PDF in one step.</li>
-<li>The invoice status bar and the chatter show the ANAF submission result. If an error occurs, the users configured in <strong>EDI Error Notify Users</strong> receive an internal notification.</li>
-</ol>
-<h2>Receiving supplier bills from SPV</h2>
-<ol>
-<li>The cron <code>_l10n_ro_edi_fetch_invoices</code> runs periodically and queries the SPV for new inbound messages.</li>
-<li>For each new message, <code>_l10n_ro_edi_process_bill_messages</code> creates a draft <code>account.move</code> (vendor bill) in <strong>Accounting → Vendors → Bills</strong> if the bill does not already exist.</li>
-<li>Open the generated draft bill, verify the lines, and confirm as usual.</li>
-</ol>
-<h2>Monitoring EDI errors</h2>
+<li>Open a validated or in-progress transfer in <strong>Inventory → Transfers</strong>.</li>
+<li>In the <strong>eTransport</strong> tab, locate the <strong>eTransport Price Source</strong> field (<code>l10n_ro_edi_stock_price_source</code>).</li>
+<li>Choose one of:
 <ul>
-<li>Users listed in <strong>EDI Error Notify Users</strong> (see CONFIGURE) automatically receive Odoo internal messages when a submission to ANAF fails.</li>
-<li>Check the invoice chatter for the full error response returned by ANAF.</li>
+<li><em>Automatic (by operation)</em> — cost on incoming/internal, sale price on outgoing.</li>
+<li><em>Cost price</em> — always uses <code>standard_price</code>.</li>
+<li><em>Purchase order price</em> — pulls from the linked PO line in RON.</li>
+<li><em>Sale order price</em> — pulls from the linked SO line in RON.</li>
+<li><em>Product list price</em> — uses <code>list_price</code>.</li>
 </ul>
+</li>
+<li>Continue with the normal eTransport notification flow.</li>
+</ol>
+<h2>Adding transport documents (CMR, Invoice, etc.)</h2>
+<ol>
+<li>Open the transfer and go to the <strong>eTransport</strong> tab.</li>
+<li>Under <strong>Transport Documents</strong>, click <strong>Add a line</strong>.</li>
+<li>Set <strong>Document Type</strong> (10 CMR / 20 Invoice / 30 Delivery Note / 9999 Other), <strong>Document Number</strong>, and <strong>Document Date</strong>.</li>
+<li>If type is <em>Other (9999)</em>, fill in the <strong>Remarks</strong> field (required by ANAF).</li>
+<li>Add as many documents as needed; all will be included in the XML notification.</li>
+</ol>
+<h2>Declaring previous notifications (operations 60/70)</h2>
+<ol>
+<li>On the transfer, go to the <strong>eTransport</strong> tab → <strong>Previous Notifications</strong> section.</li>
+<li>Click <strong>Add a line</strong> and enter the <strong>Previous UIT</strong>, optional <strong>Remarks</strong>, and <strong>Declarant Reference</strong>.</li>
+<li>These entries are serialised as <code>notificareAnterioara</code> elements in the XML sent to ANAF.</li>
+</ol>
+<h2>Marking a post-outage declaration</h2>
+<ol>
+<li>On the transfer <strong>eTransport</strong> tab, tick <strong>Post-Outage Declaration</strong> (<code>l10n_ro_edi_stock_post_outage</code>).</li>
+<li>This sets <code>declPostAvarie=1</code> in the submitted XML, allowed until the end of the next working day after an ANAF system outage (OUG 41/2022 art. 8 par. 1³).</li>
+</ol>
+<h2>Performing UIT lifecycle actions (Delete / Confirm / Modify vehicle)</h2>
+<p>After a notification UIT has been obtained:</p>
+<ol>
+<li>Open the transfer and use the action buttons in the <strong>eTransport</strong> tab (or the action menu).</li>
+<li><strong>Delete notification</strong> — opens <code>l10n.ro.edi.stock.action.wizard</code> pre-set to <em>DEL</em>; confirm to send the deletion to ANAF.</li>
+<li><strong>Confirm transport</strong> — opens the wizard pre-set to <em>CON</em>; choose confirmation type (10 Confirmed / 20 Partially confirmed / 30 Refused) and submit.</li>
+<li><strong>Modify vehicle</strong> — opens the wizard pre-set to <em>MVH</em>; enter the new vehicle number, optional trailer numbers, and modification date/time.</li>
+<li>The wizard calls <code>_upload_and_log</code>, posts the ANAF response in the chatter, and updates <code>l10n_ro_edi_stock_event_type</code> on the related <code>l10n_ro_edi.document</code> record.</li>
+</ol>
+<h2>Syncing the ANAF notifications list manually</h2>
+<ol>
+<li>Go to <strong>Inventory → Operations → eTransport notifications list</strong> (<code>menu_l10n_ro_edi_stock_list_wizard</code>).</li>
+<li>Enter the <strong>Number of days</strong> (1–60) to look back.</li>
+<li>Click <strong>Fetch</strong> (<code>action_fetch</code>). The wizard retrieves the ANAF LIST and displays all returned notifications as <code>l10n.ro.edi.stock.list.line</code> records.</li>
+<li>Click <strong>Reconcile</strong> to automatically match UITs to local transfers and log the result in each transfer's chatter.</li>
+</ol>
+<h2>Querying transporter info (as transport operator)</h2>
+<ol>
+<li>Go to <strong>Inventory → Operations → Notifications as transport operator</strong> (<code>menu_l10n_ro_edi_stock_transporter_info_wizard</code>).</li>
+<li>Fill in <strong>Transport operator VAT</strong>, and optionally <strong>Initial declarant VAT</strong>, <strong>Specific UIT</strong>, or <strong>Declarant reference</strong>.</li>
+<li>Click <strong>Fetch</strong> (<code>action_fetch</code>). Each matching ANAF notification appears as an <code>l10n.ro.edi.stock.transporter.info.line</code> row with UIT, vehicle numbers, start/end locations, and expiry date.</li>
+</ol>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.1 (2026-05-28)</h2>
+      <h2>19.0.1.0.0 (2026-06-23)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>
@@ -235,15 +272,15 @@
         </a>
       </div>
       <div class="col-md-3 col-sm-6 mb-3">
-        <a href="https://apps.odoo.com/apps/modules/19.0/l10n_ro_edi_stock_extension" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
+        <a href="https://apps.odoo.com/apps/modules/19.0/l10n_ro_edi_extension" target="_blank" rel="noopener" class="card h-100 text-decoration-none border" style="color: #0f172a;">
           <div class="card-body p-3">
             <div class="d-flex align-items-center mb-2">
               <div class="d-flex align-items-center justify-content-center text-white font-weight-bold rounded mr-3" style="width: 40px; height: 40px; font-size: 14px; background-color: #e11d48; flex-shrink: 0;">RO</div>
               <div>
-                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">Romania - eTransport Extension</div>
+                <div style="font-weight: 600; font-size: 14px; line-height: 1.2;">Romania - E-invoicing Extension</div>
 <div class="text-muted" style="font-size: 11px; margin-top: 2px;">Accounting/Localizations/EDI</div>              </div>
             </div>
-<p class="text-muted mb-0" style="font-size: 12px;">Fixes and extensions for l10n_ro_edi_stock per ANAF eTransport v2.0.2</p>          </div>
+<p class="text-muted mb-0" style="font-size: 12px;">E-Invoice implementation for Romania</p>          </div>
         </a>
       </div>
       <div class="col-md-3 col-sm-6 mb-3">

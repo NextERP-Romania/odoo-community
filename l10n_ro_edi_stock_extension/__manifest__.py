@@ -8,6 +8,7 @@
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "license": "LGPL-3",
+    "images": ["static/description/apps_icon.png"],
     "depends": [
         "l10n_ro_edi_stock",
         "purchase_stock",
