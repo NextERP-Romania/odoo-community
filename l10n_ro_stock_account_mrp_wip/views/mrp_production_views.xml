@@ -1,0 +1,38 @@
+<odoo>
+    <record id="mrp_production_wip_form_view" model="ir.ui.view">
+        <field name="name">mrp.production.wip.form.view.inherited</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    type="object"
+                    name="action_view_wip_account_moves"
+                    class="oe_stat_button"
+                    icon="fa-truck"
+                    groups="base.group_user"
+                    invisible="l10n_ro_wip_account_move_count == 0"
+                >
+                    <field
+                        name="l10n_ro_wip_account_move_count"
+                        widget="statinfo"
+                        string="WIP Account Moves"
+                    />
+                </button>
+            </xpath>
+            <xpath expr="//div[@name='bom_div']" position="after">
+                <field name="l10n_ro_auto_wip_accounting" />
+            </xpath>
+            <xpath expr="//page[@name='miscellaneous']/group" position="inside">
+                <group
+                    name="l10n_ro_mrp_wip_accounting_group"
+                    invisible="not l10n_ro_auto_wip_accounting"
+                >
+                    <field name="l10n_ro_wip_initial" widget="monetary" />
+                    <field name="l10n_ro_wip" widget="monetary" />
+                    <field name="l10n_ro_wip_total" widget="monetary" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

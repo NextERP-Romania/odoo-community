@@ -1,0 +1,15 @@
+<odoo>
+    <record id="mrp_bom_wip_form_view" model="ir.ui.view">
+        <field name="name">l10n.ro.mrp.bom.view.inherited</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='allow_operation_dependencies']"
+                position="after"
+            >
+                <field name="l10n_ro_auto_wip_accounting" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

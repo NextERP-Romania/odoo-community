@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="50" />
+        <field name="inherit_id" ref="l10n_ro_config.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//setting[@id='module_l10n_ro_stock_account_config']/div"
+                position="inside"
+            >
+                <div class="row mt16">
+                    <label
+                        for="account_production_wip_account_id"
+                        class="col-lg-3 o_light_label"
+                    />
+                    <field
+                        name="account_production_wip_account_id"
+                        placeholder="Select 331"
+                    />
+                </div>
+                <div class="row mt16">
+                    <label
+                        for="account_production_wip_overhead_account_id"
+                        class="col-lg-3 o_light_label"
+                    />
+                    <field
+                        name="account_production_wip_overhead_account_id"
+                        placeholder="Select 711"
+                    />
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
