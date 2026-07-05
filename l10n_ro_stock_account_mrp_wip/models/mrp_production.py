@@ -45,12 +45,6 @@ class MrpProduction(models.Model):
         store=True,
         help="The total WIP amount for this manufacturing order.",
     )
-    # Native ``wip_move_ids`` (mrp_account) holds the account moves linked to
-    # this MO through ``account.move.wip_production_ids``. We reuse it instead
-    # of a private one2many.
-    l10n_ro_wip_account_move_count = fields.Integer(
-        string="WIP Account Moves", compute="_compute_l10n_ro_wip_account_move_count"
-    )
 
     @api.depends("bom_id.l10n_ro_auto_wip_accounting")
     def _compute_l10n_ro_auto_wip_accounting(self):
@@ -87,31 +81,18 @@ class MrpProduction(models.Model):
             production.l10n_ro_wip = wip_amount
             production.l10n_ro_wip_total = production.l10n_ro_wip_initial + wip_amount
 
-    @api.depends("wip_move_ids")
-    def _compute_l10n_ro_wip_account_move_count(self):
-        for production in self:
-            production.l10n_ro_wip_account_move_count = len(
-                production.wip_move_ids.sudo()
-            )
-
-    def action_view_wip_account_moves(self):
-        """Display the WIP account moves related to this manufacturing order."""
-        self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "account.action_move_journal_line"
-        )
-        if len(self.wip_move_ids) > 1:
-            action["domain"] = [("id", "in", self.wip_move_ids.ids)]
-        elif self.wip_move_ids:
-            action["res_id"] = self.wip_move_ids.id
-            move_form = self.env.ref("account.view_move_form", False)
-            move_form_view = [(move_form and move_form.id or False, "form")]
-            action["views"] = move_form_view + [
-                (state, view)
-                for state, view in action.get("views", [])
-                if view != "form"
+    def action_view_move_wip(self):
+        action = super().action_view_move_wip()
+        # The native action registers only the list view, so a WIP journal entry
+        # cannot be opened in form from the list. Add the account move form view.
+        if action.get("res_model") == "account.move" and not any(
+            view[1] == "form" for view in action.get("views", [])
+        ):
+            form = self.env.ref("account.view_move_form", False)
+            action["views"] = list(action.get("views", [])) + [
+                (form.id if form else False, "form")
             ]
-        action["context"] = dict(self._context, default_origin=self.name)
+            action.setdefault("view_mode", "list,form")
         return action
 
     def _cal_price(self, consumed_moves):
