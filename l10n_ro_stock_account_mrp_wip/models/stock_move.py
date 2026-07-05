@@ -9,6 +9,14 @@ class StockMove(models.Model):
     _name = "stock.move"
     _inherit = ["stock.move", "l10n.ro.mixin"]
 
+    def write(self, vals):
+        res = super().write(vals)
+        if "quantity" in vals and not self.env.context.get("skip_mo_check"):
+            # A consumption edited after validation (correction) must keep its
+            # WIP entry in sync with the new consumed value.
+            self._l10n_ro_sync_consumption_wip()
+        return res
+
     def _l10n_ro_wip_production(self):
         """Return the WIP-enabled production this move belongs to, if any.
 
@@ -30,19 +38,32 @@ class StockMove(models.Model):
 
     def _action_done(self, cancel_backorder=False):
         res = super()._action_done(cancel_backorder=cancel_backorder)
-        # Each component consumption posts its own WIP entry (Dr 331 / Cr 711)
-        # with the consumed product on the lines. Finished-goods moves are
-        # handled when the order is marked done (WIP is cleared there).
+        # Each component consumption posts/refreshes its own WIP entry
+        # (Dr 331 / Cr 711) with the consumed product on the lines.
+        self._l10n_ro_sync_consumption_wip()
+        return res
+
+    def _l10n_ro_sync_consumption_wip(self):
+        """Post the incremental WIP entry needed so each consumption move's WIP
+        (331) matches its current consumed value. Handles both the initial
+        consumption and later corrections (one entry per stock move, product
+        kept on the lines)."""
         for move in self:
             production = move._l10n_ro_wip_production()
-            if not production or not move.raw_material_production_id:
+            if (
+                not production
+                or not move.raw_material_production_id
+                or move.state != "done"
+            ):
                 continue
+            target = move._get_l10n_ro_value("value")
+            posted = production._l10n_ro_wip_posted_for_move(move)
             production._l10n_ro_post_wip_entry(
-                move._get_l10n_ro_value("value"),
+                target - posted,
                 product=move.product_id,
+                stock_move=move,
                 label=move.env._(
                     "WIP consumption - %(product)s",
                     product=move.product_id.display_name,
                 ),
             )
-        return res

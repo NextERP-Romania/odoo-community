@@ -6,3 +6,4 @@ from . import mrp_workcenter_productivity
 from . import product_category
 from . import product
 from . import stock_move
+from . import stock_move_line

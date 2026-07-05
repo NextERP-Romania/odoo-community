@@ -133,7 +133,28 @@ class MrpProduction(models.Model):
         )
         return journal, wip_account, counterpart
 
-    def _l10n_ro_post_wip_entry(self, value, product=None, label=None, workorder=None):
+    def _l10n_ro_wip_posted_for_move(self, move):
+        """WIP amount (331) already posted for a given consumption move."""
+        self.ensure_one()
+        wip_account = self._get_l10n_ro_wip_account()
+        if not wip_account:
+            return 0.0
+        lines = (
+            self.env["account.move.line"]
+            .sudo()
+            .search(
+                [
+                    ("move_id.l10n_ro_wip_stock_move_id", "=", move.id),
+                    ("account_id", "=", wip_account.id),
+                    ("parent_state", "=", "posted"),
+                ]
+            )
+        )
+        return sum(lines.mapped("balance"))
+
+    def _l10n_ro_post_wip_entry(
+        self, value, product=None, label=None, workorder=None, stock_move=None
+    ):
         """Post one WIP entry (Dr 331 / Cr 711 for a positive value, reversed
         for a negative one), keeping the product on both lines so the entry is
         traceable to the consumed component or the finished product.
@@ -167,6 +188,7 @@ class MrpProduction(models.Model):
                     "ref": label,
                     "company_id": self.company_id.id,
                     "l10n_ro_wip_workorder_id": workorder.id if workorder else False,
+                    "l10n_ro_wip_stock_move_id": stock_move.id if stock_move else False,
                     "wip_production_ids": [Command.link(self.id)],
                     "line_ids": [
                         Command.create(

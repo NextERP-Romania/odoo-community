@@ -20,3 +20,9 @@ class AccountMove(models.Model):
         string="WIP Work Order",
         help="The work order whose labour cost generated this WIP account move.",
     )
+    l10n_ro_wip_stock_move_id = fields.Many2one(
+        "stock.move",
+        string="WIP Stock Move",
+        help="The component consumption move this WIP account move belongs to, "
+        "used to keep the WIP in sync when the consumption is corrected.",
+    )
