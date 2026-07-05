@@ -2,8 +2,6 @@
 # License LGPL-3.0 or later
 # (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
 
-from datetime import datetime, time
-
 from odoo import Command, api, fields, models
 
 
@@ -107,77 +105,82 @@ class MrpProduction(models.Model):
         res = super().button_mark_done()
         # Order finished: clear its work in progress (331 -> 0). The finished
         # goods note (345 = 711) already stands on its own.
-        self.filtered(lambda mo: mo.state == "done")._l10n_ro_update_wip(target=0.0)
+        for production in self.filtered(
+            lambda mo: mo.state == "done" and mo.l10n_ro_auto_wip_accounting
+        ):
+            production.invalidate_recordset(["l10n_ro_wip"])
+            if not production.company_id.currency_id.is_zero(production.l10n_ro_wip):
+                production._l10n_ro_post_wip_entry(
+                    -production.l10n_ro_wip,
+                    product=production.product_id,
+                    label=production.env._(
+                        "WIP clearing - %(name)s", name=production.name
+                    ),
+                )
         return res
 
-    def _l10n_ro_update_wip(self, target=None):
-        """Bring the WIP account (331) to the current work-in-progress value by
-        posting only the incremental difference (Dr 331 / Cr 711, or the
-        reverse), reusing the standard Odoo WIP wizard computation.
-
-        Called automatically on component consumption, work order finish and
-        time logged on a not-done work order; called with ``target=0`` when the
-        order is done, to clear its WIP.
-        """
-        for production in self.filtered("l10n_ro_auto_wip_accounting"):
-            production._l10n_ro_post_wip_delta(target=target)
-
-    def _l10n_ro_post_wip_delta(self, target=None):
+    def _l10n_ro_wip_accounts(self):
+        """Return (journal, wip account 331, counterpart 711) for this order,
+        taken from the finished product / category."""
         self.ensure_one()
-        company = self.company_id
-        currency = company.currency_id
-        date = fields.Date.context_today(self)
-        wizard = self.env["mrp.account.wip.accounting"].with_company(company).new({})
-        lines = wizard._get_line_vals(self, datetime.combine(date, time.max))
-        debit_vals = next((cmd[2] for cmd in lines if cmd[2].get("debit")), None)
-        credit_vals = next((cmd[2] for cmd in lines if cmd[2].get("credit")), None)
-        if not debit_vals or not credit_vals:
-            return self.env["account.move"]
-        wip_account_id = debit_vals["account_id"]  # 331
-        counterpart_id = credit_vals["account_id"]  # 711
-        if target is None:
-            target = debit_vals["debit"]  # component value + overhead
-        # Recompute the already-posted WIP before measuring the delta.
-        self.invalidate_recordset(["l10n_ro_wip"])
-        delta = currency.round(target - self.l10n_ro_wip)
-        if currency.is_zero(delta):
-            return self.env["account.move"]
-
         accounts = self.product_id.product_tmpl_id.with_company(
-            company
+            self.company_id
         ).get_product_accounts()
-        journal = accounts.get("stock_journal") or company.account_stock_journal_id
-        debit_acc, credit_acc = (
-            (wip_account_id, counterpart_id)
-            if delta > 0
-            else (counterpart_id, wip_account_id)
+        wip_account = accounts.get("production_wip")
+        counterpart = accounts.get("production_wip_overhead") or accounts.get("expense")
+        journal = accounts.get("stock_journal") or (
+            self.company_id.account_stock_journal_id
         )
-        amount = abs(delta)
-        label = self.env._("WIP - %(name)s", name=self.name)
+        return journal, wip_account, counterpart
+
+    def _l10n_ro_post_wip_entry(self, value, product=None, label=None, workorder=None):
+        """Post one WIP entry (Dr 331 / Cr 711 for a positive value, reversed
+        for a negative one), keeping the product on both lines so the entry is
+        traceable to the consumed component or the finished product.
+
+        One entry is posted per stock move / work order, not aggregated.
+        """
+        self.ensure_one()
+        currency = self.company_id.currency_id
+        value = currency.round(value)
+        if currency.is_zero(value):
+            return self.env["account.move"]
+        journal, wip_account, counterpart = self._l10n_ro_wip_accounts()
+        if not journal or not wip_account or not counterpart:
+            return self.env["account.move"]
+        label = label or self.env._("WIP - %(name)s", name=self.name)
+        debit_acc, credit_acc = (
+            (wip_account, counterpart) if value > 0 else (counterpart, wip_account)
+        )
+        amount = abs(value)
+        line = {"name": label}
+        if product:
+            line["product_id"] = product.id
         move = (
             self.env["account.move"]
             .sudo()
             .create(
                 {
                     "journal_id": journal.id,
-                    "date": date,
+                    "date": fields.Date.context_today(self),
                     "move_type": "entry",
                     "ref": label,
-                    "company_id": company.id,
+                    "company_id": self.company_id.id,
+                    "l10n_ro_wip_workorder_id": workorder.id if workorder else False,
                     "wip_production_ids": [Command.link(self.id)],
                     "line_ids": [
                         Command.create(
                             {
-                                "name": label,
-                                "account_id": debit_acc,
+                                **line,
+                                "account_id": debit_acc.id,
                                 "debit": amount,
                                 "credit": 0.0,
                             }
                         ),
                         Command.create(
                             {
-                                "name": label,
-                                "account_id": credit_acc,
+                                **line,
+                                "account_id": credit_acc.id,
                                 "debit": 0.0,
                                 "credit": amount,
                             }

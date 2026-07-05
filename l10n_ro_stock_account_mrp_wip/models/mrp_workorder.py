@@ -20,11 +20,45 @@ class MrpWorkorder(models.Model):
                 continue
             # Post the raw material consumption at the end of the work order so
             # stock and accounting entries happen together (Dr 601 / Cr 301).
+            # Each consumption move posts its own WIP entry (Dr 331 / Cr 711).
             wo._l10n_ro_post_inventory()
-            # Update the work in progress (Dr 331 / Cr 711) with the components
-            # just consumed and the labour of this work order.
-            wo.production_id._l10n_ro_update_wip()
+            # Capitalise the labour of this work order into WIP.
+            wo._l10n_ro_post_labour_wip()
         return res
+
+    def _l10n_ro_post_labour_wip(self):
+        """Post the labour WIP entry (Dr 331 / Cr 711) for each work order, for
+        the labour recorded so far that is not yet capitalised (incremental per
+        work order). The finished product is kept on the lines."""
+        for wo in self:
+            production = wo.production_id
+            if not production.l10n_ro_auto_wip_accounting or wo.state == "cancel":
+                continue
+            wip_account = production._get_l10n_ro_wip_account()
+            if not wip_account:
+                continue
+            posted_moves = (
+                self.env["account.move"]
+                .sudo()
+                .search(
+                    [
+                        ("l10n_ro_wip_workorder_id", "=", wo.id),
+                        ("state", "=", "posted"),
+                    ]
+                )
+            )
+            already = sum(
+                posted_moves.line_ids.filtered(
+                    lambda line, acc=wip_account: line.account_id == acc
+                ).mapped("balance")
+            )
+            delta = wo._cal_cost() - already
+            production._l10n_ro_post_wip_entry(
+                delta,
+                product=production.product_id,
+                label=production.env._("WIP labour - %(wo)s", wo=wo.display_name),
+                workorder=wo,
+            )
 
     def _l10n_ro_post_inventory(self):
         moves_not_available = self.move_raw_ids.filtered(

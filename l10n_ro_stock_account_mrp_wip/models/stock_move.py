@@ -30,13 +30,19 @@ class StockMove(models.Model):
 
     def _action_done(self, cancel_backorder=False):
         res = super()._action_done(cancel_backorder=cancel_backorder)
-        # A component consumption updates the work in progress (Dr 331 / Cr 711)
-        # for the incremental value just consumed. Finished-goods moves are
+        # Each component consumption posts its own WIP entry (Dr 331 / Cr 711)
+        # with the consumed product on the lines. Finished-goods moves are
         # handled when the order is marked done (WIP is cleared there).
-        productions = self.env["mrp.production"]
         for move in self:
-            if move.raw_material_production_id and move._l10n_ro_wip_production():
-                productions |= move.raw_material_production_id
-        if productions:
-            productions._l10n_ro_update_wip()
+            production = move._l10n_ro_wip_production()
+            if not production or not move.raw_material_production_id:
+                continue
+            production._l10n_ro_post_wip_entry(
+                move._get_l10n_ro_value("value"),
+                product=move.product_id,
+                label=move.env._(
+                    "WIP consumption - %(product)s",
+                    product=move.product_id.display_name,
+                ),
+            )
         return res

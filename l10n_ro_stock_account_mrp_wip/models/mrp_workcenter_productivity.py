@@ -20,13 +20,13 @@ class MrpWorkcenterProductivity(models.Model):
         return res
 
     def _l10n_ro_update_wip_from_time(self):
-        """Time logged on a *not-done* work order updates the WIP (Dr 331 /
-        Cr 711) with the labour recorded so far."""
-        productions = self.filtered(
+        """Time logged on a *not-done* work order capitalises the labour into
+        WIP (Dr 331 / Cr 711), one entry per work order."""
+        workorders = self.filtered(
             lambda p: p.duration
             and p.workorder_id
             and p.workorder_id.state not in ("done", "cancel")
             and p.workorder_id.production_id.l10n_ro_auto_wip_accounting
-        ).workorder_id.production_id
-        if productions:
-            productions._l10n_ro_update_wip()
+        ).workorder_id
+        if workorders:
+            workorders._l10n_ro_post_labour_wip()
