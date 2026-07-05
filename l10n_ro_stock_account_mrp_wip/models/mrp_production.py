@@ -2,7 +2,9 @@
 # License LGPL-3.0 or later
 # (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
 
-from odoo import api, fields, models
+from datetime import datetime, time
+
+from odoo import Command, api, fields, models
 
 
 class MrpProduction(models.Model):
@@ -119,3 +121,89 @@ class MrpProduction(models.Model):
             # not only from the moves validated at production registration.
             consumed_moves = self.move_raw_ids.filtered(lambda x: x.state == "done")
         return super()._cal_price(consumed_moves)
+
+    def button_mark_done(self):
+        res = super().button_mark_done()
+        # Order finished: clear its work in progress (331 -> 0). The finished
+        # goods note (345 = 711) already stands on its own.
+        self.filtered(lambda mo: mo.state == "done")._l10n_ro_update_wip(target=0.0)
+        return res
+
+    def _l10n_ro_update_wip(self, target=None):
+        """Bring the WIP account (331) to the current work-in-progress value by
+        posting only the incremental difference (Dr 331 / Cr 711, or the
+        reverse), reusing the standard Odoo WIP wizard computation.
+
+        Called automatically on component consumption, work order finish and
+        time logged on a not-done work order; called with ``target=0`` when the
+        order is done, to clear its WIP.
+        """
+        for production in self.filtered("l10n_ro_auto_wip_accounting"):
+            production._l10n_ro_post_wip_delta(target=target)
+
+    def _l10n_ro_post_wip_delta(self, target=None):
+        self.ensure_one()
+        company = self.company_id
+        currency = company.currency_id
+        date = fields.Date.context_today(self)
+        wizard = self.env["mrp.account.wip.accounting"].with_company(company).new({})
+        lines = wizard._get_line_vals(self, datetime.combine(date, time.max))
+        debit_vals = next((cmd[2] for cmd in lines if cmd[2].get("debit")), None)
+        credit_vals = next((cmd[2] for cmd in lines if cmd[2].get("credit")), None)
+        if not debit_vals or not credit_vals:
+            return self.env["account.move"]
+        wip_account_id = debit_vals["account_id"]  # 331
+        counterpart_id = credit_vals["account_id"]  # 711
+        if target is None:
+            target = debit_vals["debit"]  # component value + overhead
+        # Recompute the already-posted WIP before measuring the delta.
+        self.invalidate_recordset(["l10n_ro_wip"])
+        delta = currency.round(target - self.l10n_ro_wip)
+        if currency.is_zero(delta):
+            return self.env["account.move"]
+
+        accounts = self.product_id.product_tmpl_id.with_company(
+            company
+        ).get_product_accounts()
+        journal = accounts.get("stock_journal") or company.account_stock_journal_id
+        debit_acc, credit_acc = (
+            (wip_account_id, counterpart_id)
+            if delta > 0
+            else (counterpart_id, wip_account_id)
+        )
+        amount = abs(delta)
+        label = self.env._("WIP - %(name)s", name=self.name)
+        move = (
+            self.env["account.move"]
+            .sudo()
+            .create(
+                {
+                    "journal_id": journal.id,
+                    "date": date,
+                    "move_type": "entry",
+                    "ref": label,
+                    "company_id": company.id,
+                    "wip_production_ids": [Command.link(self.id)],
+                    "line_ids": [
+                        Command.create(
+                            {
+                                "name": label,
+                                "account_id": debit_acc,
+                                "debit": amount,
+                                "credit": 0.0,
+                            }
+                        ),
+                        Command.create(
+                            {
+                                "name": label,
+                                "account_id": credit_acc,
+                                "debit": 0.0,
+                                "credit": amount,
+                            }
+                        ),
+                    ],
+                }
+            )
+        )
+        move._post()
+        return move

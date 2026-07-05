@@ -34,7 +34,7 @@ class ProductTemplate(models.Model):
         accounts = super()._get_product_accounts()
 
         company = (
-            self.env["res.company"].browse(self._context.get("force_company"))
+            self.env["res.company"].browse(self.env.context.get("force_company"))
             or self.env.company
         )
         if not company.l10n_ro_accounting:
