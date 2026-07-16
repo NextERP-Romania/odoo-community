@@ -1,0 +1,203 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ro_edi_stock_batch_extension
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-16 13:27+0000\n"
+"PO-Revision-Date: 2026-07-16 13:27+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
+msgid "ANAF error on %(action)s: %(err)s"
+msgstr "Eroare ANAF la %(action)s: %(err)s"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
+msgid "Are you sure you want to delete the UIT notification from ANAF?"
+msgstr "Sigur doriți să ștergeți notificarea UIT din ANAF?"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_price_source__auto
+msgid "Automatic (by operation)"
+msgstr "Automat (după operație)"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_stock_picking_batch
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_action_wizard__batch_id
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_document_line__batch_id
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_previous_notification__batch_id
+msgid "Batch Transfer"
+msgstr "Transfer în lot"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_res_company
+msgid "Companies"
+msgstr "Companii"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
+msgid "Confirm transport"
+msgstr "Confirmați transportul"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_state__stock_confirmed
+msgid "Confirmed"
+msgstr "Confirmat"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_price_source__cost
+msgid "Cost price (standard_price)"
+msgstr "Preț de cost (standard_price)"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
+msgid "Delete notification"
+msgstr "Ștergeți notificarea"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_state__stock_deleted
+msgid "Deleted"
+msgstr "Șters"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_action_wizard__display_name
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_document_line__display_name
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_previous_notification__display_name
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_res_company__display_name
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking__display_name
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_action_wizard__id
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_document_line__id
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_previous_notification__id
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_res_company__id
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking__id
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
+msgid "Modify vehicle"
+msgstr "Modificați vehiculul"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,help:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_post_outage
+msgid ""
+"OUG 41/2022 art. 8 par. 1^3 - declaration allowed until the end of the next "
+"working day after the ANAF system is restored."
+msgstr ""
+"OUG 41/2022 art. 8 alin. 1^3 - declarație permisă până la sfârșitul zilei "
+"lucrătoare următoare după restabilirea sistemului ANAF."
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_post_outage
+msgid "Post-Outage Declaration"
+msgstr "Declarație post-avarie"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_previous_ids
+msgid "Previous Notifications"
+msgstr "Notificări anterioare"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
+msgid "Previous notifications (only operations 60 and 70)"
+msgstr "Notificări anterioare (doar operațiunile 60 și 70)"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_price_source__list
+msgid "Product list price"
+msgstr "Prețul de listă al produsului"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_price_source__purchase
+msgid "Purchase order price"
+msgstr "Prețul din comanda de achiziție"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_price_source__sale
+msgid "Sale order price"
+msgstr "Prețul din comanda de vânzare"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,help:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_price_source
+msgid ""
+"Source for the VAT-excluded value sent to ANAF.\n"
+"Automatic: uses cost price on purchases and internal transfers; uses sale price on deliveries."
+msgstr ""
+"Sursa pentru valoarea fără TVA transmisă la ANAF.\n"
+"Automat: utilizează prețul de cost pentru achiziții și transferuri interne; utilizează prețul de vânzare pentru livrări."
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_stock_picking
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_action_wizard__picking_id
+msgid "Transfer"
+msgstr "Transfer"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_document_line_ids
+msgid "Transport Documents"
+msgstr "Documente de transport"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
+msgid "Transport documents"
+msgstr "Documente de transport"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "Unhandled eTransport status returned by ANAF: %(state)s"
+msgstr "Stare eTransport nerecunoscută returnată de ANAF: %(state)s"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_state__stock_vehicle_modified
+msgid "Vehicle Modified"
+msgstr "Vehicul modificat"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
+msgid ""
+"eTransport %(action)s sent successfully (UIT: %(uit)s, load: %(load)s)."
+msgstr ""
+"eTransport %(action)s trimis cu succes (UIT: %(uit)s, încărcare: %(load)s)."
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_price_source
+msgid "eTransport Price Source"
+msgstr "Sursa prețului eTransport"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_state
+msgid "eTransport Status"
+msgstr "Starea eTransport"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_l10n_ro_edi_stock_action_wizard
+msgid "eTransport UIT action wizard (delete / confirm / modify vehicle)"
+msgstr "Expert acțiuni eTransport UIT (ștergere / confirmare / modificare vehicul)"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_l10n_ro_edi_stock_previous_notification
+msgid "eTransport previous notification (operations 60/70)"
+msgstr "Notificare anterioară eTransport (operațiunile 60/70)"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_l10n_ro_edi_stock_document_line
+msgid "eTransport transport document line"
+msgstr "Linie document transport eTransport"

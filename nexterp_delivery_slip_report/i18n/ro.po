@@ -28,7 +28,7 @@ msgstr "<span>Taxe</span>"
 #. module: nexterp_account_invoice_report
 #: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_report.report_invoice_document
 msgid "<span>Total</span>"
-msgstr ""
+msgstr "<span>Total</span>"
 
 #. module: nexterp_account_invoice_report
 #: model:ir.model,name:nexterp_account_invoice_report.model_res_company

@@ -1,0 +1,299 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bom_excel_import
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-16 13:26+0000\n"
+"PO-Revision-Date: 2026-07-16 13:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid ""
+"<strong>Import Completed Successfully!</strong><br/>\n"
+"                        Your BOMs have been imported from the Excel file."
+msgstr ""
+"<strong>Importul s-a finalizat cu succes!</strong><br/>\n"
+"                        LMF-urile dvs. au fost importate din fișierul Excel."
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid ""
+"<strong>Step 1: Upload Excel File</strong><br/>\n"
+"                        Upload your Excel file containing BOM data.<br/>\n"
+"                        <strong>Expected Excel format:</strong><br/>\n"
+"                        - Column 1: Product produced<br/>\n"
+"                        - Column 2: Operation name<br/>\n"
+"                        - Column 3: Quantity consumed<br/>\n"
+"                        - Column 4: Component consumed UOM<br/>\n"
+"                        - Column 5: Component consumed<br/>\n"
+"                        - Column 6: Workcenter name<br/>\n"
+"                        - Column 7: Subcontracting<br/>\n"
+"                        - Column 8: Subcontractors (comma-separated)<br/>"
+msgstr ""
+"<strong>Pasul 1: Încărcați fișierul Excel</strong><br/>\n"
+"                        Încărcați fișierul Excel care conține datele LMF.<br/>\n"
+"                        <strong>Formatul Excel așteptat:</strong><br/>\n"
+"                        - Coloana 1: Produs fabricat<br/>\n"
+"                        - Coloana 2: Denumire operațiune<br/>\n"
+"                        - Coloana 3: Cantitate consumată<br/>\n"
+"                        - Coloana 4: UOM componentă consumată<br/>\n"
+"                        - Coloana 5: Componentă consumată<br/>\n"
+"                        - Coloana 6: Denumire centru de lucru<br/>\n"
+"                        - Coloana 7: Subcontractare<br/>\n"
+"                        - Coloana 8: Subcontractanți (separați prin virgulă)<br/>"
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid ""
+"<strong>Step 2: Import Operations and Workcenters</strong><br/>\n"
+"                        This step will create workcenters and operations from your Excel file.<br/>\n"
+"                        Click \"Import Operations\" to proceed."
+msgstr ""
+"<strong>Pasul 2: Importați operațiunile și centrele de lucru</strong><br/>\n"
+"                        Acest pas va crea centrele de lucru și operațiunile din fișierul dvs. Excel.<br/>\n"
+"                        Faceți clic pe \"Importați operațiunile\" pentru a continua."
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid ""
+"<strong>Step 3: Import Bills of Materials</strong><br/>\n"
+"                        Operations have been imported successfully. Now import the BOMs.<br/>\n"
+"                        Click \"Import BOMs\" to proceed."
+msgstr ""
+"<strong>Pasul 3: Importați listele de materiale</strong><br/>\n"
+"                        Operațiunile au fost importate cu succes. Acum importați LMF-urile.<br/>\n"
+"                        Faceți clic pe \"Importați LMF-urile\" pentru a continua."
+
+#. module: bom_excel_import
+#: model:ir.actions.act_window,name:bom_excel_import.action_bom_excel_import_wizard
+#: model:ir.ui.menu,name:bom_excel_import.menu_bom_excel_import
+msgid "BOM Excel Import"
+msgstr "Import LMF Excel"
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid "BOM Excel Import - Two Step Process"
+msgstr "Import LMF Excel - Proces în doi pași"
+
+#. module: bom_excel_import
+#: model:ir.model,name:bom_excel_import.model_bom_excel_import_wizard
+msgid "BOM Excel Import Wizard - Two Step Process"
+msgstr "Asistent Import LMF Excel - Proces în doi pași"
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid "BOM Import Log"
+msgstr "Jurnal Import LMF"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__bom_completed
+msgid "Bom Completed"
+msgstr "LMF Finalizat"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__bom_import_log
+msgid "Bom Import Log"
+msgstr "Jurnal Import LMF"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__bom_lines_created
+msgid "Bom Lines Created"
+msgstr "Linii LMF Create"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__boms_created
+msgid "Boms Created"
+msgstr "LMF-uri Create"
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid "Close"
+msgstr "Închide"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__create_uid
+msgid "Created by"
+msgstr "Creat de"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__create_date
+msgid "Created on"
+msgstr "Creat la"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: bom_excel_import
+#. odoo-python
+#: code:addons/bom_excel_import/wizard/bom_excel_import_wizard.py:0
+msgid "Error importing BOMs: %(error)s"
+msgstr "Eroare la importul LMF-urilor: %(error)s"
+
+#. module: bom_excel_import
+#. odoo-python
+#: code:addons/bom_excel_import/wizard/bom_excel_import_wizard.py:0
+msgid "Error importing operations: %(error)s"
+msgstr "Eroare la importul operațiunilor: %(error)s"
+
+#. module: bom_excel_import
+#. odoo-python
+#: code:addons/bom_excel_import/wizard/bom_excel_import_wizard.py:0
+msgid "Error reading Excel file: %(error)s"
+msgstr "Eroare la citirea fișierului Excel: %(error)s"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__excel_file
+msgid "Excel File"
+msgstr "Fișier Excel"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,help:bom_excel_import.field_bom_excel_import_wizard__excel_file
+msgid "Excel file containing BOM data"
+msgstr "Fișier Excel care conține datele LMF"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__filename
+msgid "Filename"
+msgstr "Nume fișier"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid "Import Another File"
+msgstr "Importați un alt fișier"
+
+#. module: bom_excel_import
+#: model:ir.model.fields.selection,name:bom_excel_import.selection__bom_excel_import_wizard__step__bom
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid "Import BOMs"
+msgstr "Importați LMF-urile"
+
+#. module: bom_excel_import
+#: model:ir.model.fields.selection,name:bom_excel_import.selection__bom_excel_import_wizard__step__complete
+msgid "Import Complete"
+msgstr "Import finalizat"
+
+#. module: bom_excel_import
+#: model:ir.model.fields.selection,name:bom_excel_import.selection__bom_excel_import_wizard__step__operations
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid "Import Operations"
+msgstr "Importați operațiunile"
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid "Import Summary"
+msgstr "Sumar import"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Actualizat ultima dată de"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__write_date
+msgid "Last Updated on"
+msgstr "Actualizat ultima dată la"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,help:bom_excel_import.field_bom_excel_import_wizard__sheet_name
+msgid "Name of the sheet to import from"
+msgstr "Numele foii din care se importă"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__operations_completed
+msgid "Operations Completed"
+msgstr "Operațiuni finalizate"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__operations_created
+msgid "Operations Created"
+msgstr "Operațiuni create"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__operations_import_log
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid "Operations Import Log"
+msgstr "Jurnal import operațiuni"
+
+#. module: bom_excel_import
+#. odoo-python
+#: code:addons/bom_excel_import/wizard/bom_excel_import_wizard.py:0
+msgid "Please select an Excel file to import."
+msgstr "Vă rugăm să selectați un fișier Excel pentru import."
+
+#. module: bom_excel_import
+#: model:ir.model.fields,help:bom_excel_import.field_bom_excel_import_wizard__start_row
+msgid ""
+"Row number to start importing from. Ussualy first is the column header."
+msgstr ""
+"Numărul rândului de la care se începe importul. De obicei primul rând conține antetul coloanelor."
+
+#. module: bom_excel_import
+#. odoo-python
+#: code:addons/bom_excel_import/wizard/bom_excel_import_wizard.py:0
+msgid ""
+"Sheet %(sheet_name)s not found in the Excel file. Available sheets: "
+"%(available_sheets)s"
+msgstr ""
+"Foaia %(sheet_name)s nu a fost găsită în fișierul Excel. Foile disponibile: "
+"%(available_sheets)s"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__sheet_name
+msgid "Sheet Name"
+msgstr "Nume foaie"
+
+#. module: bom_excel_import
+#: model_terms:ir.ui.view,arch_db:bom_excel_import.view_bom_excel_import_wizard_form
+msgid "Start Import"
+msgstr "Începeți importul"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__start_row
+msgid "Start Row"
+msgstr "Rând de start"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__step
+msgid "Step"
+msgstr "Pas"
+
+#. module: bom_excel_import
+#. odoo-python
+#: code:addons/bom_excel_import/wizard/bom_excel_import_wizard.py:0
+msgid ""
+"The openpyxl library is required to import Excel files. Please install it "
+"with: pip install openpyxl"
+msgstr ""
+"Biblioteca openpyxl este necesară pentru importul fișierelor Excel. Vă rugăm să o instalați "
+"cu: pip install openpyxl"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__total_errors
+msgid "Total Errors"
+msgstr "Total erori"
+
+#. module: bom_excel_import
+#: model:ir.model.fields.selection,name:bom_excel_import.selection__bom_excel_import_wizard__step__upload
+msgid "Upload File"
+msgstr "Încărcați fișierul"
+
+#. module: bom_excel_import
+#: model:ir.model.fields,field_description:bom_excel_import.field_bom_excel_import_wizard__workcenters_created
+msgid "Workcenters Created"
+msgstr "Centre de lucru create"

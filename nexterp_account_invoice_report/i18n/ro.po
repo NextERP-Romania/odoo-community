@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-21 05:30+0000\n"
-"PO-Revision-Date: 2025-12-21 05:30+0000\n"
+"POT-Creation-Date: 2026-07-16 13:35+0000\n"
+"PO-Revision-Date: 2026-07-16 13:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,19 +16,29 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: nexterp_account_invoice_report
-#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_report.res_config_settings_view_form
-msgid "<span class=\"o_form_label\">Account invoice report options</span>"
-msgstr "<span class=\"o_form_label\">Optiuni Raport Factura"
+#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_report.report_invoice_document
+msgid "<span>-1</span>"
+msgstr "<span>-1</span>"
 
 #. module: nexterp_account_invoice_report
 #: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_report.report_invoice_document
-msgid "<span>Taxes</span>"
-msgstr "<span>Taxe</span>"
+msgid "<span>1.00</span>"
+msgstr "<span>1.00</span>"
+
+#. module: nexterp_account_invoice_report
+#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_report.report_invoice_document
+msgid "<span>1</span>"
+msgstr "<span>1</span>"
 
 #. module: nexterp_account_invoice_report
 #: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_report.report_invoice_document
 msgid "<span>Total</span>"
-msgstr ""
+msgstr "<span>Total</span>"
+
+#. module: nexterp_account_invoice_report
+#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_report.report_invoice_document
+msgid "<span>VAT</span>"
+msgstr "<span>TVA</span>"
 
 #. module: nexterp_account_invoice_report
 #: model:ir.model,name:nexterp_account_invoice_report.model_res_company
@@ -38,12 +48,40 @@ msgstr "Companii"
 #. module: nexterp_account_invoice_report
 #: model:ir.model,name:nexterp_account_invoice_report.model_res_config_settings
 msgid "Config Settings"
-msgstr "Setări configurare"
+msgstr "Setări de configurare"
+
+#. module: nexterp_account_invoice_report
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_account_move__display_name
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_res_company__display_name
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_uom_uom__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: nexterp_account_invoice_report
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_account_move__id
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_account_move_line__id
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_res_company__id
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_res_config_settings__id
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_uom_uom__id
+msgid "ID"
+msgstr "ID"
 
 #. module: nexterp_account_invoice_report
 #: model:ir.model,name:nexterp_account_invoice_report.model_account_move
 msgid "Journal Entry"
 msgstr "Notă contabilă"
+
+#. module: nexterp_account_invoice_report
+#: model:ir.model,name:nexterp_account_invoice_report.model_account_move_line
+msgid "Journal Item"
+msgstr "Element jurnal"
+
+#. module: nexterp_account_invoice_report
+#: model:ir.model.fields,help:nexterp_account_invoice_report.field_uom_uom__report_precision
+msgid "Number of decimal places to use in reports for this unit of measure."
+msgstr "Numărul de zecimale de utilizat în rapoarte pentru această unitate de măsură."
 
 #. module: nexterp_account_invoice_report
 #: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_res_company__print_invoice_tax_value
@@ -64,6 +102,11 @@ msgid "Print Show Refunds"
 msgstr "Printeaza Valori Cu Minus Facturi Storno"
 
 #. module: nexterp_account_invoice_report
-#: model_terms:ir.ui.view,arch_db:nexterp_account_invoice_report.res_config_settings_view_form
-msgid "Select the options you want to display on the customer invoice report"
-msgstr "Selectati optiunile pentru afisare raport factura client"
+#: model:ir.model,name:nexterp_account_invoice_report.model_uom_uom
+msgid "Product Unit of Measure"
+msgstr "Unitate de măsură produs"
+
+#. module: nexterp_account_invoice_report
+#: model:ir.model.fields,field_description:nexterp_account_invoice_report.field_uom_uom__report_precision
+msgid "Report Precision"
+msgstr "Precizie raport"
