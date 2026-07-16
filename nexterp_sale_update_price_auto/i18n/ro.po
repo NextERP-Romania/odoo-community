@@ -4,18 +4,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-23 09:16+0000\n"
-"PO-Revision-Date: 2024-05-23 12:21+0300\n"
+"POT-Creation-Date: 2026-07-16 13:36+0000\n"
+"PO-Revision-Date: 2026-07-16 13:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"X-Generator: Poedit 3.0.1\n"
 
 #. module: nexterp_sale_update_price_auto
 #: model_terms:ir.ui.view,arch_db:nexterp_sale_update_price_auto.res_config_settings_view_form
@@ -39,11 +37,24 @@ msgid "Config Settings"
 msgstr "Setări de configurare"
 
 #. module: nexterp_sale_update_price_auto
+#: model:ir.model.fields,field_description:nexterp_sale_update_price_auto.field_res_company__display_name
+#: model:ir.model.fields,field_description:nexterp_sale_update_price_auto.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:nexterp_sale_update_price_auto.field_sale_order__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: nexterp_sale_update_price_auto
+#: model:ir.model.fields,field_description:nexterp_sale_update_price_auto.field_res_company__id
+#: model:ir.model.fields,field_description:nexterp_sale_update_price_auto.field_res_config_settings__id
+#: model:ir.model.fields,field_description:nexterp_sale_update_price_auto.field_sale_order__id
+msgid "ID"
+msgstr ""
+
+#. module: nexterp_sale_update_price_auto
 #. odoo-python
 #: code:addons/nexterp_sale_update_price_auto/models/sale.py:0
-#, python-format
-msgid "Product prices have been recomputed according to pricelist <b>%s<b> "
-msgstr "Prețurile produselor au fost recalculate conform listei de prețuri <b>%s<b>  "
+msgid "Product prices have been recomputed according to pricelist <b>%s</b>"
+msgstr "Prețurile produselor au fost recalculate conform listei de prețuri <b>%s</b>"
 
 #. module: nexterp_sale_update_price_auto
 #: model:ir.model,name:nexterp_sale_update_price_auto.model_sale_order

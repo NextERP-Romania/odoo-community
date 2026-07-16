@@ -4,18 +4,30 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-23 09:01+0000\n"
-"PO-Revision-Date: 2024-05-23 12:11+0300\n"
+"POT-Creation-Date: 2026-07-16 13:38+0000\n"
+"PO-Revision-Date: 2026-07-16 13:38+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"X-Generator: Poedit 3.0.1\n"
+
+#. module: nexterp_product_kit_sale_timesheet
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale_timesheet.field_sale_order__display_name
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale_timesheet.field_sale_order_line__display_name
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale_timesheet.field_sale_order_line_kit__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: nexterp_product_kit_sale_timesheet
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale_timesheet.field_sale_order__id
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale_timesheet.field_sale_order_line__id
+#: model:ir.model.fields,field_description:nexterp_product_kit_sale_timesheet.field_sale_order_line_kit__id
+msgid "ID"
+msgstr ""
 
 #. module: nexterp_product_kit_sale_timesheet
 #: model:ir.model,name:nexterp_product_kit_sale_timesheet.model_sale_order_line_kit
@@ -35,10 +47,9 @@ msgstr "Linie comandă vânzare"
 #. module: nexterp_product_kit_sale_timesheet
 #. odoo-python
 #: code:addons/nexterp_product_kit_sale_timesheet/models/sale_order_kit.py:0
-#, python-format
 msgid ""
 "This task has been created from: <a href=# data-oe-model=sale.order data-oe-"
 "id=%(sale)s>%(order)s</a> (%(product)s)"
 msgstr ""
-"This task has been created from: <a href=# data-oe-model=sale.order data-oe-"
+"Această sarcină a fost creată din: <a href=# data-oe-model=sale.order data-oe-"
 "id=%(sale)s>%(order)s</a> (%(product)s)"
