@@ -1,5 +1,4 @@
 # Copyright 2026 NextERP Romania SRL
-from odoo import _
 
 from odoo.addons.l10n_ro_edi_stock.models.etransport_api import ETransportAPI
 
@@ -26,7 +25,9 @@ class ETransportAPIExtra(ETransportAPI):
                 data=data,
             )
         except (KeyError, ValueError, TypeError) as err:
-            return {"error": _("Unexpected response from ANAF eTransport: %s", err)}
+            return {
+                "error": self.env._("Unexpected response from ANAF eTransport: %s", err)
+            }
 
     def get_list(self, company_id, days=60, session=None):
         cif = company_id.vat.replace("RO", "")
