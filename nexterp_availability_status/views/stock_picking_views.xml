@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Traffic-light column on the transfers list.
-         products_availability_state / products_availability are already loaded. -->
+    <!-- Traffic-light column on the transfers list. -->
     <record id="vpicktree_availability" model="ir.ui.view">
         <field name="name">stock.picking.tree.availability.semaphore</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.vpicktree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='products_availability']" position="after">
+                <field name="availability_status_code" column_invisible="True"/>
+                <field name="availability_status_label" column_invisible="True"/>
+                <field name="availability_ratio" column_invisible="True"/>
                 <widget name="availability_semaphore"/>
             </xpath>
         </field>

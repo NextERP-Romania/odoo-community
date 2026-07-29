@@ -1,0 +1,43 @@
+from odoo import api, fields, models, _
+
+from .availability_status import STATUS_SELECTION
+
+
+class MrpProduction(models.Model):
+    _inherit = "mrp.production"
+
+    availability_status_code = fields.Selection(
+        STATUS_SELECTION, string="Availability Status",
+        compute="_compute_ne_availability_status", compute_sudo=True,
+    )
+    availability_status_label = fields.Char(
+        string="Availability Status Label",
+        compute="_compute_ne_availability_status", compute_sudo=True,
+    )
+    availability_ratio = fields.Float(
+        string="Availability Ratio",
+        compute="_compute_ne_availability_status", compute_sudo=True,
+    )
+
+    @api.depends("move_raw_ids.availability_status_code", "move_raw_ids.availability_ratio")
+    def _compute_ne_availability_status(self):
+        for production in self:
+            code, label, ratio = production.move_raw_ids._ne_aggregate_status()
+            production.availability_status_code = code
+            production.availability_status_label = label
+            production.availability_ratio = ratio
+
+    def _ne_mo_status(self, today, need):
+        """Status of this MO seen as a supply for a downstream demand."""
+        self.ensure_one()
+        if self.state == "draft":
+            return "mo_draft", _("Manufacturing not confirmed")
+        if self.workorder_ids and not self.is_planned:
+            return "mo_unplanned", _("Operations not planned")
+        expected = self.date_finished or self.date_start
+        move = self.env["stock.move"]
+        if move._ne_is_late(expected, need, today):
+            return "mo_late", _("Production is late")
+        days = move._ne_days(expected, today)
+        label = _("Production today") if days <= 0 else _("Production in %s days", days)
+        return "mo_planned", label

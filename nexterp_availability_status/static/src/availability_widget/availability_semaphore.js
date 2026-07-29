@@ -2,37 +2,35 @@
 
 import { registry } from "@web/core/registry";
 import { Component } from "@odoo/owl";
-import { _t } from "@web/core/l10n/translation";
 import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 
-const EPS = 1e-6;
-
-// Native Odoo selection values (stock.picking / mrp.production) -> semaphore.
-const NATIVE_STATE_MAP = {
-    available: "available",
-    expected: "waiting",
-    late: "waiting",
+// Status code -> visual colour class. The rich, translated text comes from the
+// server field `availability_status_label`; here we only pick the light colour.
+const COLOR = {
+    available: "available",       // green
+    partial: "partial",          // half green
+    // amber: in progress / expected
+    reception: "waiting",
+    transfer: "waiting",
+    to_transfer: "waiting",
+    mo_planned: "waiting",
+    po_draft: "waiting",
+    mo_draft: "waiting",
+    mo_unplanned: "waiting",
+    // red: nothing on the way / late
+    to_order: "unavailable",
+    to_manufacture: "unavailable",
+    reception_late: "unavailable",
+    transfer_late: "unavailable",
+    mo_late: "unavailable",
     unavailable: "unavailable",
 };
 
-function statusLabel(status) {
-    switch (status) {
-        case "available":
-            return _t("Available");
-        case "partial":
-            return _t("Partially available");
-        case "waiting":
-            return _t("Waiting for transfer");
-        default:
-            return _t("Unavailable");
-    }
-}
-
 /**
- * Read-only traffic-light for stock availability. It does NOT add any server
- * field: it derives its state purely from the standard Odoo fields already
- * present on the record, so the same widget works on stock.move, stock.picking,
- * mrp.production, sale.order.line and purchase.order.line.
+ * Read-only traffic-light for stock availability. It renders the status
+ * computed on the server (availability_status_code / _label / availability_ratio),
+ * so the exact same widget works on stock.move, stock.picking, mrp.production,
+ * sale.order.line and purchase.order.line.
  */
 export class AvailabilitySemaphore extends Component {
     static template = "nexterp_availability_status.AvailabilitySemaphore";
@@ -41,111 +39,42 @@ export class AvailabilitySemaphore extends Component {
         title: { type: String, optional: true },
     };
 
-    get data() {
-        return this.props.record.data;
+    get code() {
+        return this.props.record.data.availability_status_code || "none";
     }
 
-    /** @returns {{status: string, ratio: number}} */
-    get info() {
-        const model = this.props.record.resModel;
-        const d = this.data;
-        const gte = (a, b) => a >= b - EPS;
-
-        if (model === "stock.move") {
-            const demand = d.product_uom_qty || 0;
-            const reserved = d.quantity || 0;
-            const forecast = d.forecast_availability || 0;
-            const refQty = d.product_qty || 0;
-            if (d.state === "cancel" || d.state === "draft") {
-                return { status: "none", ratio: 0 };
-            }
-            if (demand <= EPS) {
-                // Nothing to move/consume on this line (e.g. a component scoped
-                // to 0 by a BOM attribute) -> no light instead of a misleading
-                // "available" with no actual stock behind it.
-                return { status: "none", ratio: 0 };
-            }
-            switch (d.state) {
-                case "done":
-                case "assigned":
-                    return { status: "available", ratio: 1 };
-                case "partially_available":
-                    return {
-                        status: "partial",
-                        ratio: demand ? Math.min(reserved / demand, 1) : 0,
-                    };
-                case "waiting":
-                    // Chained move waiting for its source transfer to be processed.
-                    return { status: "waiting", ratio: 0 };
-                default: // confirmed / draft
-                    if (refQty && gte(forecast, refQty)) {
-                        return { status: "waiting", ratio: 0 };
-                    }
-                    if (refQty && forecast > EPS) {
-                        return { status: "partial", ratio: Math.min(forecast / refQty, 1) };
-                    }
-                    return { status: "unavailable", ratio: 0 };
-            }
-        }
-
-        if (model === "sale.order.line") {
-            const demand = d.product_uom_qty || 0;
-            const free = d.free_qty_today || 0;
-            const availToday = d.qty_available_today || 0;
-            if (demand && gte(free, demand)) {
-                return { status: "available", ratio: 1 };
-            }
-            if (availToday > EPS) {
-                return {
-                    status: "partial",
-                    ratio: demand ? Math.min(availToday / demand, 1) : 0,
-                };
-            }
-            if (d.forecast_expected_date) {
-                return { status: "waiting", ratio: 0 };
-            }
-            return { status: "unavailable", ratio: 0 };
-        }
-
-        if (model === "purchase.order.line") {
-            // forecasted_issue = the incoming qty still leaves a negative forecast.
-            return d.forecasted_issue
-                ? { status: "waiting", ratio: 0 }
-                : { status: "available", ratio: 1 };
-        }
-
-        // stock.picking / mrp.production: reuse the native selection field.
-        // A falsy value means cancelled/draft/not-applicable -> no light.
-        const native = d.components_availability_state || d.products_availability_state;
-        if (!native) {
-            return { status: "none", ratio: 0 };
-        }
-        const status = NATIVE_STATE_MAP[native] || "unavailable";
-        return { status, ratio: status === "available" ? 1 : 0 };
+    get color() {
+        return COLOR[this.code] || "none";
     }
 
     get label() {
-        return statusLabel(this.info.status);
+        return this.props.record.data.availability_status_label || "";
     }
 
     get tooltip() {
-        // Prefer Odoo's own human-readable text when available.
-        const d = this.data;
-        return d.components_availability || d.products_availability || this.label;
+        return this.label;
+    }
+
+    get ratio() {
+        const r = this.props.record.data.availability_ratio || 0;
+        return Math.max(0, Math.min(1, r));
     }
 
     get fillStyle() {
-        const { status, ratio } = this.info;
-        if (status !== "partial") {
+        if (this.color !== "partial") {
             return "";
         }
-        const pct = Math.round(Math.max(0, Math.min(1, ratio)) * 100);
-        return `--ne-avail-fill: ${pct}%;`;
+        return `--ne-avail-fill: ${Math.round(this.ratio * 100)}%;`;
     }
 }
 
 export const availabilitySemaphore = {
     component: AvailabilitySemaphore,
+    fieldDependencies: [
+        { name: "availability_status_code", type: "selection" },
+        { name: "availability_status_label", type: "char" },
+        { name: "availability_ratio", type: "float" },
+    ],
     extractProps: ({ attrs }) => ({ title: attrs.title }),
 };
 

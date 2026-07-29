@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Traffic-light on sale order lines.
-         product_uom_qty is native; free_qty_today / qty_available_today /
-         forecast_expected_date are loaded by sale_stock's qty-at-date widget. -->
+    <!-- Traffic-light on sale order lines (delivery readiness). -->
     <record id="view_order_form_availability" model="ir.ui.view">
         <field name="name">sale.order.line.availability.semaphore</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='order_line']/tree/field[@name='qty_delivered']" position="after">
+                <field name="availability_status_code" column_invisible="True"/>
+                <field name="availability_status_label" column_invisible="True"/>
+                <field name="availability_ratio" column_invisible="True"/>
                 <widget name="availability_semaphore"/>
             </xpath>
         </field>

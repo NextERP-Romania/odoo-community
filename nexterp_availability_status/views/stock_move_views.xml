@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Traffic-light on the moves of a transfer (Operations tab).
-         state / product_uom_qty / product_qty / quantity / forecast_availability
-         are already present in the standard operations tree. -->
+    <!-- Traffic-light on the moves of a transfer (Operations tab). -->
     <record id="view_picking_form_availability" model="ir.ui.view">
         <field name="name">stock.picking.form.availability.semaphore</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="before">
+                <field name="availability_status_code" column_invisible="True"/>
+                <field name="availability_status_label" column_invisible="True"/>
+                <field name="availability_ratio" column_invisible="True"/>
                 <widget name="availability_semaphore"/>
             </xpath>
         </field>
@@ -22,8 +23,9 @@
         <field name="inherit_id" ref="stock.view_move_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//tree/field[@name='product_id']" position="before">
-                <field name="product_qty" column_invisible="True"/>
-                <field name="forecast_availability" column_invisible="True"/>
+                <field name="availability_status_code" column_invisible="True"/>
+                <field name="availability_status_label" column_invisible="True"/>
+                <field name="availability_ratio" column_invisible="True"/>
                 <widget name="availability_semaphore"/>
             </xpath>
         </field>

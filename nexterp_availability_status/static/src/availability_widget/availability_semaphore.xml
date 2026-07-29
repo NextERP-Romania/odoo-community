@@ -2,9 +2,9 @@
 <templates xml:space="preserve">
 
     <t t-name="nexterp_availability_status.AvailabilitySemaphore">
-        <span t-if="info.status !== 'none'"
+        <span t-if="color !== 'none' and label"
               class="ne_avail"
-              t-att-class="'ne_avail_' + info.status"
+              t-att-class="'ne_avail_' + color"
               t-att-title="tooltip">
             <span class="ne_avail_dot" t-att-style="fillStyle"/>
             <span class="ne_avail_label" t-esc="label"/>
