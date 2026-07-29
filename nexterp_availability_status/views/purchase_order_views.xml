@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Traffic-light on purchase order lines, driven by the native
+         purchase_stock computed field forecasted_issue. -->
+    <record id="purchase_order_form_availability" model="ir.ui.view">
+        <field name="name">purchase.order.line.availability.semaphore</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="after">
+                <field name="forecasted_issue" column_invisible="True"/>
+                <widget name="availability_semaphore"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,69 @@
+.ne_avail {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    line-height: 1;
+
+    // Palette
+    --ne-avail-green: #28a745;
+    --ne-avail-amber: #f0ad4e;
+    --ne-avail-red: #dc3545;
+    --ne-avail-empty: #d1d5db;
+    --ne-avail-color: var(--ne-avail-empty);
+    --ne-avail-fill: 0%;
+
+    .ne_avail_dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+        background: var(--ne-avail-color);
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+    }
+
+    .ne_avail_label {
+        font-size: 0.85em;
+        color: var(--ne-avail-color);
+    }
+
+    // Green = fully available
+    &.ne_avail_available {
+        --ne-avail-color: var(--ne-avail-green);
+    }
+
+    // Amber = waiting for another transfer / planned replenishment
+    &.ne_avail_waiting {
+        --ne-avail-color: var(--ne-avail-amber);
+    }
+
+    // Red = nothing available
+    &.ne_avail_unavailable {
+        --ne-avail-color: var(--ne-avail-red);
+    }
+
+    // Half green = partially available: fill the dot up to --ne-avail-fill.
+    &.ne_avail_partial {
+        --ne-avail-color: var(--ne-avail-green);
+
+        .ne_avail_dot {
+            background: linear-gradient(
+                to right,
+                var(--ne-avail-green) var(--ne-avail-fill),
+                var(--ne-avail-empty) var(--ne-avail-fill)
+            );
+        }
+
+        .ne_avail_label {
+            color: var(--ne-avail-green);
+        }
+    }
+}
+
+// Keep the widget compact inside editable list rows.
+.o_list_table .ne_avail .ne_avail_label {
+    max-width: 12ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
