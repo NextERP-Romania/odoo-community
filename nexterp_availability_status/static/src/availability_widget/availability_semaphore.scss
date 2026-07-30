@@ -43,16 +43,17 @@
         --ne-avail-color: var(--ne-avail-red);
     }
 
-    // Amber dot with a solid green ring = "will be fine, but with a caveat"
-    // (stock is in another location, or production is late). Green label.
-    &.ne_avail_ringed {
+    // Half amber / half green dot = "will be fine, but with a caveat" (stock is
+    // in another location, or production is late). Green label.
+    &.ne_avail_split {
         --ne-avail-color: var(--ne-avail-green); // label reads green
 
         .ne_avail_dot {
-            background: var(--ne-avail-amber);
-            border: 2px solid var(--ne-avail-green);
-            box-sizing: border-box;
-            box-shadow: none;
+            background: linear-gradient(
+                to right,
+                var(--ne-avail-amber) 50%,
+                var(--ne-avail-green) 50%
+            );
         }
     }
 

@@ -9,10 +9,10 @@ import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 const COLOR = {
     available: "available",       // green
     partial: "partial",          // half green
-    // "ringed": amber dot with a green ring = it will be fine (green) but with a
+    // "split": half amber / half green dot = it will be fine (green) but with a
     // caveat - stock is in another location, or production is running late.
-    to_transfer: "ringed",
-    mo_late: "ringed",
+    to_transfer: "split",
+    mo_late: "split",
     // amber: in progress / expected
     reception: "waiting",
     reception_late: "waiting",
