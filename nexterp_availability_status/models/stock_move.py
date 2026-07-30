@@ -113,10 +113,10 @@ class StockMove(models.Model):
             return supply.purchase_line_id._ne_po_line_status(today, need)
         if supply.production_id:
             return supply.production_id._ne_mo_status(today, need)
-        expected = supply.date_deadline or supply.date
         if supply.picking_id.picking_type_id.code == "internal":
-            return self._ne_date_status("transfer", expected, need, today)
-        return self._ne_date_status("reception", expected, need, today)
+            return "to_transfer", _("Internal transfer needed")
+        expected = supply.date_deadline or supply.date
+        return self._ne_date_status(expected, need, today)
 
     def _ne_infer_supply_status(self, today):
         """No linked supply (MTS): infer from stock elsewhere / product route."""
@@ -178,20 +178,13 @@ class StockMove(models.Model):
     # ------------------------------------------------------------------
     # Date helpers
     # ------------------------------------------------------------------
-    def _ne_date_status(self, kind, expected, need, today):
-        """Build (code, label) for a date-driven supply (reception/transfer)."""
-        late_code = {"reception": "reception_late", "transfer": "transfer_late"}[kind]
-        ok_code = kind
+    def _ne_date_status(self, expected, need, today):
+        """Build (code, label) for a date-driven reception supply."""
         if self._ne_is_late(expected, need, today):
-            label = {"reception": _("Reception is late"),
-                     "transfer": _("Transfer is late")}[kind]
-            return late_code, label
+            return "reception_late", _("Reception is late")
         days = self._ne_days(expected, today)
-        if kind == "reception":
-            label = _("Reception today") if days <= 0 else _("Reception in %s days", days)
-        else:
-            label = _("Transfer today") if days <= 0 else _("Transfer in %s days", days)
-        return ok_code, label
+        label = _("Reception today") if days <= 0 else _("Reception in %s days", days)
+        return "reception", label
 
     @staticmethod
     def _ne_to_date(value):

@@ -24,8 +24,6 @@ STATUS_SELECTION = [
     ("mo_late", "Production is late"),
     # Internal transfer route
     ("to_transfer", "Internal transfer needed"),
-    ("transfer", "Transfer expected"),
-    ("transfer_late", "Transfer is late"),
     # Catch-all
     ("unavailable", "Unavailable"),
     ("none", "Not applicable"),
@@ -38,7 +36,6 @@ STATUS_SEVERITY = {
     "available": 0,
     "partial": 1,
     "reception": 2,
-    "transfer": 2,
     "mo_planned": 2,
     "po_draft": 3,
     "mo_draft": 3,
@@ -47,7 +44,6 @@ STATUS_SEVERITY = {
     "to_order": 4,
     "to_manufacture": 4,
     "reception_late": 5,
-    "transfer_late": 5,
     "mo_late": 5,
     "unavailable": 5,
 }

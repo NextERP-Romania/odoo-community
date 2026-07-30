@@ -9,13 +9,12 @@ import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 const COLOR = {
     available: "available",       // green
     partial: "partial",          // half green
-    // blue: needs an internal transfer (stock is elsewhere) - the most common
-    // case, deliberately a distinct colour so it stands out.
+    // "transfer": stock exists but in another location - available-but-elsewhere
+    // (amber dot with a green ring), the most common case.
     to_transfer: "transfer",
     // amber: in progress / expected / late (still coming)
     reception: "waiting",
     reception_late: "waiting",
-    transfer: "waiting",
     mo_planned: "waiting",
     mo_unplanned: "waiting",
     mo_late: "waiting",
@@ -24,7 +23,6 @@ const COLOR = {
     to_manufacture: "unavailable",
     po_draft: "unavailable",
     mo_draft: "unavailable",
-    transfer_late: "unavailable",
     unavailable: "unavailable",
 };
 
