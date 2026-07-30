@@ -22,7 +22,6 @@
         "views/stock_picking_views.xml",
         "views/mrp_production_views.xml",
         "views/sale_order_views.xml",
-        "views/purchase_order_views.xml",
     ],
     "assets": {
         "web.assets_backend": [

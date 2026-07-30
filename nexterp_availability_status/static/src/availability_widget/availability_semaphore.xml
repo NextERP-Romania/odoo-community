@@ -7,7 +7,7 @@
               t-att-class="'ne_avail_' + color"
               t-att-title="tooltip">
             <span class="ne_avail_dot" t-att-style="fillStyle"/>
-            <span class="ne_avail_label" t-esc="label"/>
+            <span t-if="!props.compact" class="ne_avail_label" t-esc="label"/>
         </span>
     </t>
 

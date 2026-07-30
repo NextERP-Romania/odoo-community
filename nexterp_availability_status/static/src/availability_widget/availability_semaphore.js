@@ -2,7 +2,7 @@
 
 import { registry } from "@web/core/registry";
 import { Component } from "@odoo/owl";
-import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
+import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
 // Status code -> visual colour class. The rich, translated text comes from the
 // server field `availability_status_label`; here we only pick the light colour.
@@ -25,20 +25,27 @@ const COLOR = {
 };
 
 /**
- * Read-only traffic-light for stock availability. It renders the status
- * computed on the server (availability_status_code / _label / availability_ratio),
- * so the exact same widget works on stock.move, stock.picking, mrp.production,
- * sale.order.line and purchase.order.line.
+ * Read-only traffic-light for stock availability. Bound to
+ * `availability_status_code`, it renders the status computed on the server
+ * (code + `availability_status_label` + `availability_ratio`). The same widget
+ * works on stock.move, stock.picking, mrp.production and sale.order.line.
+ *
+ * `options="{'compact': true}"` shows only the dot (text on hover) for dense
+ * line grids; without it the label is shown inline.
  */
 export class AvailabilitySemaphore extends Component {
     static template = "nexterp_availability_status.AvailabilitySemaphore";
     static props = {
-        ...standardWidgetProps,
-        title: { type: String, optional: true },
+        ...standardFieldProps,
+        compact: { type: Boolean, optional: true },
     };
 
+    get data() {
+        return this.props.record.data;
+    }
+
     get code() {
-        return this.props.record.data.availability_status_code || "none";
+        return this.data.availability_status_code || "none";
     }
 
     get color() {
@@ -46,7 +53,7 @@ export class AvailabilitySemaphore extends Component {
     }
 
     get label() {
-        return this.props.record.data.availability_status_label || "";
+        return this.data.availability_status_label || "";
     }
 
     get tooltip() {
@@ -54,7 +61,7 @@ export class AvailabilitySemaphore extends Component {
     }
 
     get ratio() {
-        const r = this.props.record.data.availability_ratio || 0;
+        const r = this.data.availability_ratio || 0;
         return Math.max(0, Math.min(1, r));
     }
 
@@ -68,12 +75,12 @@ export class AvailabilitySemaphore extends Component {
 
 export const availabilitySemaphore = {
     component: AvailabilitySemaphore,
+    supportedTypes: ["selection"],
     fieldDependencies: [
-        { name: "availability_status_code", type: "selection" },
         { name: "availability_status_label", type: "char" },
         { name: "availability_ratio", type: "float" },
     ],
-    extractProps: ({ attrs }) => ({ title: attrs.title }),
+    extractProps: ({ options }) => ({ compact: !!(options && options.compact) }),
 };
 
-registry.category("view_widgets").add("availability_semaphore", availabilitySemaphore);
+registry.category("fields").add("availability_semaphore", availabilitySemaphore);

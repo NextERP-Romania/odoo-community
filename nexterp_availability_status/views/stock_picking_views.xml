@@ -8,10 +8,8 @@
         <field name="inherit_id" ref="stock.vpicktree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='products_availability']" position="after">
-                <field name="availability_status_code" column_invisible="True"/>
-                <field name="availability_status_label" column_invisible="True"/>
-                <field name="availability_ratio" column_invisible="True"/>
-                <widget name="availability_semaphore"/>
+                <field name="availability_status_code" string="Availability"
+                       widget="availability_semaphore" optional="show"/>
             </xpath>
         </field>
     </record>

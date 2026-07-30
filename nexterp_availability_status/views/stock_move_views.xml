@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Traffic-light on the moves of a transfer (Operations tab). -->
+    <!-- Traffic-light on the moves of a transfer (Operations tab): after the
+         Demand column, dot-only (label on hover). -->
     <record id="view_picking_form_availability" model="ir.ui.view">
         <field name="name">stock.picking.form.availability.semaphore</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="before">
-                <field name="availability_status_code" column_invisible="True"/>
-                <field name="availability_status_label" column_invisible="True"/>
-                <field name="availability_ratio" column_invisible="True"/>
-                <widget name="availability_semaphore"/>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom_qty']" position="after">
+                <field name="availability_status_code" string="Availability"
+                       widget="availability_semaphore" optional="show"
+                       options="{'compact': True}"/>
             </xpath>
             <!-- Aggregated status in the header, next to Product Availability. -->
             <xpath expr="//field[@name='products_availability']" position="after">
-                <field name="availability_status_code" invisible="1"/>
-                <field name="availability_status_label" invisible="1"/>
-                <field name="availability_ratio" invisible="1"/>
-                <widget name="availability_semaphore"/>
+                <field name="availability_status_code" widget="availability_semaphore" nolabel="1"/>
             </xpath>
         </field>
     </record>
@@ -30,10 +27,8 @@
         <field name="inherit_id" ref="stock.view_move_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//tree/field[@name='product_id']" position="before">
-                <field name="availability_status_code" column_invisible="True"/>
-                <field name="availability_status_label" column_invisible="True"/>
-                <field name="availability_ratio" column_invisible="True"/>
-                <widget name="availability_semaphore"/>
+                <field name="availability_status_code" string="Availability"
+                       widget="availability_semaphore" optional="show"/>
             </xpath>
         </field>
     </record>

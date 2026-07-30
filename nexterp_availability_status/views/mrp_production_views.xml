@@ -8,32 +8,26 @@
         <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='components_availability']" position="after">
-                <field name="availability_status_code" column_invisible="True"/>
-                <field name="availability_status_label" column_invisible="True"/>
-                <field name="availability_ratio" column_invisible="True"/>
-                <widget name="availability_semaphore"/>
+                <field name="availability_status_code" string="Availability"
+                       widget="availability_semaphore" optional="show"/>
             </xpath>
         </field>
     </record>
 
-    <!-- Per-component traffic-light in the MO form (Components tab). -->
+    <!-- Per-component traffic-light in the MO form (Components tab):
+         dot-only (label on hover). Plus the aggregated status in the header. -->
     <record id="mrp_production_form_view_availability" model="ir.ui.view">
         <field name="name">mrp.production.form.availability.semaphore</field>
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='forecast_availability'][@widget='forecast_widget']" position="after">
-                <field name="availability_status_code" column_invisible="True"/>
-                <field name="availability_status_label" column_invisible="True"/>
-                <field name="availability_ratio" column_invisible="True"/>
-                <widget name="availability_semaphore"/>
+                <field name="availability_status_code" string="Availability"
+                       widget="availability_semaphore" optional="show"
+                       options="{'compact': True}"/>
             </xpath>
-            <!-- Aggregated status in the header, next to Component Status. -->
             <xpath expr="//field[@name='components_availability']" position="after">
-                <field name="availability_status_code" invisible="1"/>
-                <field name="availability_status_label" invisible="1"/>
-                <field name="availability_ratio" invisible="1"/>
-                <widget name="availability_semaphore"/>
+                <field name="availability_status_code" widget="availability_semaphore" nolabel="1"/>
             </xpath>
         </field>
     </record>

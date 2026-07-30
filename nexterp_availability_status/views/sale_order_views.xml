@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Traffic-light on sale order lines (delivery readiness). -->
+    <!-- Traffic-light on sale order lines: small, dot-only column with a header
+         label; the status text shows on hover. -->
     <record id="view_order_form_availability" model="ir.ui.view">
         <field name="name">sale.order.line.availability.semaphore</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='order_line']/tree/field[@name='qty_delivered']" position="after">
-                <field name="availability_status_code" column_invisible="True"/>
-                <field name="availability_status_label" column_invisible="True"/>
-                <field name="availability_ratio" column_invisible="True"/>
-                <widget name="availability_semaphore"/>
+                <field name="availability_status_code" string="Availability"
+                       widget="availability_semaphore" optional="show"
+                       options="{'compact': True}"/>
             </xpath>
         </field>
     </record>
