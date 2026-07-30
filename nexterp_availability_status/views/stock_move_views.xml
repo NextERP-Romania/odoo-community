@@ -13,6 +13,13 @@
                 <field name="availability_ratio" column_invisible="True"/>
                 <widget name="availability_semaphore"/>
             </xpath>
+            <!-- Aggregated status in the header, next to Product Availability. -->
+            <xpath expr="//field[@name='products_availability']" position="after">
+                <field name="availability_status_code" invisible="1"/>
+                <field name="availability_status_label" invisible="1"/>
+                <field name="availability_ratio" invisible="1"/>
+                <widget name="availability_semaphore"/>
+            </xpath>
         </field>
     </record>
 
