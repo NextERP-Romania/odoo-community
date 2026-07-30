@@ -115,8 +115,7 @@ class StockMove(models.Model):
             return supply.production_id._ne_mo_status(today, need)
         if supply.picking_id.picking_type_id.code == "internal":
             return "to_transfer", _("Internal transfer needed")
-        expected = supply.date_deadline or supply.date
-        return self._ne_date_status(expected, need, today)
+        return "reception", _("Reception needed")
 
     def _ne_infer_supply_status(self, today):
         """No linked supply (MTS): infer from stock elsewhere / product route."""
@@ -176,16 +175,8 @@ class StockMove(models.Model):
             move.availability_status_label = label
 
     # ------------------------------------------------------------------
-    # Date helpers
+    # Date helpers (used to flag late production)
     # ------------------------------------------------------------------
-    def _ne_date_status(self, expected, need, today):
-        """Build (code, label) for a date-driven reception supply."""
-        if self._ne_is_late(expected, need, today):
-            return "reception_late", _("Reception is late")
-        days = self._ne_days(expected, today)
-        label = _("Reception today") if days <= 0 else _("Reception in %s days", days)
-        return "reception", label
-
     @staticmethod
     def _ne_to_date(value):
         if not value:
@@ -201,13 +192,6 @@ class StockMove(models.Model):
             return True
         need_d = self._ne_to_date(need)
         return bool(need_d and exp > need_d)
-
-    @api.model
-    def _ne_days(self, expected, today):
-        exp = self._ne_to_date(expected)
-        if not exp:
-            return 0
-        return max((exp - today).days, 0)
 
     # ------------------------------------------------------------------
     # Aggregation helper (used by picking / MO / sale line)

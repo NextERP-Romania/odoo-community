@@ -41,10 +41,4 @@ class PurchaseOrderLine(models.Model):
         self.ensure_one()
         if self.order_id.state in ("draft", "sent", "to approve"):
             return "po_draft", _("Purchase not validated")
-        expected = self.date_planned
-        move = self.env["stock.move"]
-        if move._ne_is_late(expected, need, today):
-            return "reception_late", _("Reception is late")
-        days = move._ne_days(expected, today)
-        label = _("Reception today") if days <= 0 else _("Reception in %s days", days)
-        return "reception", label
+        return "reception", _("Reception needed")

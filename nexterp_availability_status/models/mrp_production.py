@@ -32,12 +32,7 @@ class MrpProduction(models.Model):
         self.ensure_one()
         if self.state == "draft":
             return "mo_draft", _("Manufacturing not confirmed")
-        if self.workorder_ids and not self.is_planned:
-            return "mo_unplanned", _("Operations not planned")
         expected = self.date_finished or self.date_start
-        move = self.env["stock.move"]
-        if move._ne_is_late(expected, need, today):
+        if self.env["stock.move"]._ne_is_late(expected, need, today):
             return "mo_late", _("Production is late")
-        days = move._ne_days(expected, today)
-        label = _("Production today") if days <= 0 else _("Production in %s days", days)
-        return "mo_planned", label
+        return "production", _("Production needed")

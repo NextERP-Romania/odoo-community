@@ -13,11 +13,9 @@ const COLOR = {
     // caveat - stock is in another location, or production is running late.
     to_transfer: "split",
     mo_late: "split",
-    // amber: in progress / expected
+    // amber: replenishment needed / in progress
     reception: "waiting",
-    reception_late: "waiting",
-    mo_planned: "waiting",
-    mo_unplanned: "waiting",
+    production: "waiting",
     // red: blocking - nothing on the way / document not validated
     to_order: "unavailable",
     to_manufacture: "unavailable",
