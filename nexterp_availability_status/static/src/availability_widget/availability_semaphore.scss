@@ -9,6 +9,7 @@
     --ne-avail-green: #28a745;
     --ne-avail-amber: #f0ad4e;
     --ne-avail-red: #dc3545;
+    --ne-avail-blue: #2563eb;
     --ne-avail-empty: #d1d5db;
     --ne-avail-color: var(--ne-avail-empty);
     --ne-avail-fill: 0%;
@@ -41,6 +42,11 @@
     // Red = nothing available
     &.ne_avail_unavailable {
         --ne-avail-color: var(--ne-avail-red);
+    }
+
+    // Blue = internal transfer needed (stock is elsewhere) - stands out.
+    &.ne_avail_transfer {
+        --ne-avail-color: var(--ne-avail-blue);
     }
 
     // Half green = partially available: fill the dot up to --ne-avail-fill.

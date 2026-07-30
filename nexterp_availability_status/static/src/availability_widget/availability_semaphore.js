@@ -9,20 +9,22 @@ import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 const COLOR = {
     available: "available",       // green
     partial: "partial",          // half green
-    // amber: in progress / expected
+    // blue: needs an internal transfer (stock is elsewhere) - the most common
+    // case, deliberately a distinct colour so it stands out.
+    to_transfer: "transfer",
+    // amber: in progress / expected / late (still coming)
     reception: "waiting",
+    reception_late: "waiting",
     transfer: "waiting",
-    to_transfer: "waiting",
     mo_planned: "waiting",
-    po_draft: "waiting",
-    mo_draft: "waiting",
     mo_unplanned: "waiting",
-    // red: nothing on the way / late
+    mo_late: "waiting",
+    // red: blocking - nothing on the way / document not validated
     to_order: "unavailable",
     to_manufacture: "unavailable",
-    reception_late: "unavailable",
+    po_draft: "unavailable",
+    mo_draft: "unavailable",
     transfer_late: "unavailable",
-    mo_late: "unavailable",
     unavailable: "unavailable",
 };
 

@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.tools.float_utils import float_is_zero
+from odoo.tools.float_utils import float_compare, float_is_zero
 
 from .availability_status import STATUS_SELECTION, STATUS_SEVERITY
 
@@ -27,7 +27,7 @@ class StockMove(models.Model):
     # ------------------------------------------------------------------
     # Main compute
     # ------------------------------------------------------------------
-    @api.depends("state", "product_uom_qty", "quantity", "product_qty",
+    @api.depends("state", "product_uom_qty", "quantity", "product_qty", "location_id",
                  "move_orig_ids", "move_orig_ids.state", "date", "date_deadline")
     def _compute_availability_status(self):
         today = fields.Date.context_today(self)
@@ -39,21 +39,49 @@ class StockMove(models.Model):
         relevant = self.filtered(
             lambda m: m.state not in ("cancel", "draft") and m._is_consuming()
         )
+        # Availability is about STOCK EXISTING at the source, not about this
+        # move being reserved: a not-yet-reserved move is still "available" when
+        # there is free stock to cover it. Batch the free-qty lookup per
+        # (product, source location) to keep it a handful of queries.
+        quant = self.env["stock.quant"]
+        free_cache = {}
+
+        def free_at_source(product, location):
+            key = (product.id, location.id)
+            if key not in free_cache:
+                free_cache[key] = quant._get_available_quantity(product, location)
+            return free_cache[key]
+
         needs = self.browse()
         for move in relevant:
-            demand = move.product_uom_qty
-            rounding = move.product_id.uom_id.rounding or 0.01
-            if float_is_zero(demand, precision_rounding=rounding):
+            product = move.product_id
+            rounding = product.uom_id.rounding or 0.01
+            demand_ref = move.product_qty  # product reference uom
+            if float_is_zero(demand_ref, precision_rounding=rounding):
                 continue  # nothing to move on this line -> no light
-            if move.state in ("done", "assigned"):
+            if move.state == "done":
                 move.availability_status_code = "available"
                 move.availability_status_label = _("Available")
                 move.availability_ratio = 1.0
-            elif move.state == "partially_available":
+                continue
+            if product.type != "product":
+                # Consumables / services do not hold stock -> always available.
+                move.availability_status_code = "available"
+                move.availability_status_label = _("Available")
+                move.availability_ratio = 1.0
+                continue
+            # Own reservation + free stock at source (all in the product uom).
+            reserved_ref = move.product_uom._compute_quantity(move.quantity, product.uom_id)
+            avail_ref = reserved_ref + max(free_at_source(product, move.location_id), 0.0)
+            if float_compare(avail_ref, demand_ref, precision_rounding=rounding) >= 0:
+                move.availability_status_code = "available"
+                move.availability_status_label = _("Available")
+                move.availability_ratio = 1.0
+            elif avail_ref > 0:
                 move.availability_status_code = "partial"
                 move.availability_status_label = _("Partially available")
-                move.availability_ratio = min(move.quantity / demand, 1.0) if demand else 0.0
-            else:  # waiting / confirmed -> trace the supply
+                move.availability_ratio = min(avail_ref / demand_ref, 1.0)
+            else:  # no stock at source -> trace the supply
                 needs |= move
         if needs:
             needs._ne_fill_supply_status(today)
