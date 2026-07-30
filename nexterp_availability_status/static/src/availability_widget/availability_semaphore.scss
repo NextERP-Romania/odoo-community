@@ -43,14 +43,16 @@
         --ne-avail-color: var(--ne-avail-red);
     }
 
-    // Internal transfer needed: the stock exists, just in another location.
-    // Amber dot ringed in green = "available, only elsewhere".
-    &.ne_avail_transfer {
+    // Amber dot with a solid green ring = "will be fine, but with a caveat"
+    // (stock is in another location, or production is late). Green label.
+    &.ne_avail_ringed {
         --ne-avail-color: var(--ne-avail-green); // label reads green
 
         .ne_avail_dot {
             background: var(--ne-avail-amber);
-            box-shadow: inset 0 0 0 2px var(--ne-avail-green);
+            border: 2px solid var(--ne-avail-green);
+            box-sizing: border-box;
+            box-shadow: none;
         }
     }
 

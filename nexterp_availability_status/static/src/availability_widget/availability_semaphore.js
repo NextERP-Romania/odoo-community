@@ -9,15 +9,15 @@ import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 const COLOR = {
     available: "available",       // green
     partial: "partial",          // half green
-    // "transfer": stock exists but in another location - available-but-elsewhere
-    // (amber dot with a green ring), the most common case.
-    to_transfer: "transfer",
-    // amber: in progress / expected / late (still coming)
+    // "ringed": amber dot with a green ring = it will be fine (green) but with a
+    // caveat - stock is in another location, or production is running late.
+    to_transfer: "ringed",
+    mo_late: "ringed",
+    // amber: in progress / expected
     reception: "waiting",
     reception_late: "waiting",
     mo_planned: "waiting",
     mo_unplanned: "waiting",
-    mo_late: "waiting",
     // red: blocking - nothing on the way / document not validated
     to_order: "unavailable",
     to_manufacture: "unavailable",
