@@ -21,10 +21,12 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='forecast_availability'][@widget='forecast_widget']" position="before">
-                <field name="availability_status_code" string="Availability"
-                       widget="availability_semaphore" optional="show"
-                       options="{'compact': True}"/>
+            <!-- Merge the traffic-light INTO the native Forecast column (one
+                 column instead of two): dot + status on hover + report button. -->
+            <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='forecast_availability'][@widget='forecast_widget']" position="attributes">
+                <attribute name="widget">availability_forecast</attribute>
+                <attribute name="optional">show</attribute>
+                <attribute name="string">Availability</attribute>
             </xpath>
             <xpath expr="//field[@name='components_availability']" position="after">
                 <field name="availability_status_code" widget="availability_semaphore" nolabel="1"/>
