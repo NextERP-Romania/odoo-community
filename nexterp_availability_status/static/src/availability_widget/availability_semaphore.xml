@@ -2,10 +2,11 @@
 <templates xml:space="preserve">
 
     <t t-name="nexterp_availability_status.AvailabilitySemaphore">
+        <!-- No title here: Odoo already sets a data-tooltip on the cell from the
+             selection label, so a title would show the tooltip twice. -->
         <span t-if="color !== 'none' and label"
               class="ne_avail"
-              t-att-class="'ne_avail_' + color"
-              t-att-title="tooltip">
+              t-att-class="'ne_avail_' + color">
             <span class="ne_avail_dot" t-att-style="fillStyle"/>
             <span t-if="!props.compact" class="ne_avail_label" t-esc="label"/>
         </span>
