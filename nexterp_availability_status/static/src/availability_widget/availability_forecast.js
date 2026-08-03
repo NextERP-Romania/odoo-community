@@ -6,6 +6,7 @@ import { ForecastWidgetField, forecastWidgetField } from "@stock/widgets/forecas
 // Same colour mapping as the standalone semaphore.
 const COLOR = {
     available: "available",
+    available_sub: "available",
     partial: "partial",
     to_transfer: "split",
     mo_late: "split",

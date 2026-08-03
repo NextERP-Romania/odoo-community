@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Traffic-light on the moves of a transfer (Operations tab): after the
-         Demand column, dot-only (label on hover). -->
+    <!-- Traffic-light on the moves of a transfer (Operations tab): next to the
+         Forecast column, dot-only (label on hover). -->
     <record id="view_picking_form_availability" model="ir.ui.view">
         <field name="name">stock.picking.form.availability.semaphore</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom_qty']" position="after">
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='forecast_availability']" position="after">
                 <field name="availability_status_code" string="Availability"
                        widget="availability_semaphore" optional="show"
                        options="{'compact': True}"/>

@@ -8,6 +8,7 @@ import { standardFieldProps } from "@web/views/fields/standard_field_props";
 // server field `availability_status_label`; here we only pick the light colour.
 const COLOR = {
     available: "available",       // green
+    available_sub: "available",   // green (label notes it is in a sub-location)
     partial: "partial",          // half green
     // "split": half amber / half green dot = it will be fine (green) but with a
     // caveat - stock is in another location, or production is running late.

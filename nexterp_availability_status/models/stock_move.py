@@ -39,18 +39,27 @@ class StockMove(models.Model):
         relevant = self.filtered(
             lambda m: m.state not in ("cancel", "draft") and m._is_consuming()
         )
-        # Availability is about STOCK EXISTING at the source, not about this
-        # move being reserved: a not-yet-reserved move is still "available" when
-        # there is free stock to cover it. Batch the free-qty lookup per
-        # (product, source location) to keep it a handful of queries.
-        quant = self.env["stock.quant"]
-        free_cache = {}
+        # Availability is about PHYSICAL STOCK EXISTING at the source, not about
+        # this move being reserved: reservations can be re-shuffled between moves,
+        # so what matters is that the on-hand quantity exists (reservations by
+        # other moves are ignored). Stock sitting in a sub-location of the source
+        # counts too - it is directly reservable - but we flag it so the user
+        # knows it is not in the source location itself. On-hand is read per
+        # (product, location, strict) and cached to stay a handful of queries.
+        Quant = self.env["stock.quant"]
+        onhand_cache = {}
 
-        def free_at_source(product, location):
-            key = (product.id, location.id)
-            if key not in free_cache:
-                free_cache[key] = quant._get_available_quantity(product, location)
-            return free_cache[key]
+        def on_hand(product, location, strict):
+            key = (product.id, location.id, strict)
+            if key not in onhand_cache:
+                domain = [("product_id", "=", product.id)]
+                domain.append(
+                    ("location_id", "=", location.id) if strict
+                    else ("location_id", "child_of", location.id)
+                )
+                quants = Quant.search(domain)
+                onhand_cache[key] = sum(quants.mapped("quantity"))
+            return onhand_cache[key]
 
         needs = self.browse()
         for move in relevant:
@@ -70,18 +79,21 @@ class StockMove(models.Model):
                 move.availability_status_label = _("Available")
                 move.availability_ratio = 1.0
                 continue
-            # Own reservation + free stock at source (all in the product uom).
-            reserved_ref = move.product_uom._compute_quantity(move.quantity, product.uom_id)
-            avail_ref = reserved_ref + max(free_at_source(product, move.location_id), 0.0)
-            if float_compare(avail_ref, demand_ref, precision_rounding=rounding) >= 0:
+            here = on_hand(product, move.location_id, strict=True)   # source itself
+            sub = on_hand(product, move.location_id, strict=False)   # incl. sub-locations
+            if float_compare(here, demand_ref, precision_rounding=rounding) >= 0:
                 move.availability_status_code = "available"
                 move.availability_status_label = _("Available")
                 move.availability_ratio = 1.0
-            elif avail_ref > 0:
+            elif float_compare(sub, demand_ref, precision_rounding=rounding) >= 0:
+                move.availability_status_code = "available_sub"
+                move.availability_status_label = _("Available (sub-location)")
+                move.availability_ratio = 1.0
+            elif sub > 0:
                 move.availability_status_code = "partial"
                 move.availability_status_label = _("Partially available")
-                move.availability_ratio = min(avail_ref / demand_ref, 1.0)
-            else:  # no stock at source -> trace the supply
+                move.availability_ratio = min(sub / demand_ref, 1.0)
+            else:  # no physical stock anywhere under the source -> trace the supply
                 needs |= move
         if needs:
             needs._ne_fill_supply_status(today)
@@ -106,16 +118,36 @@ class StockMove(models.Model):
             no_chain._ne_infer_supply_status(today)
 
     def _ne_classify_supply_move(self, supply, today):
-        """Classify a linked supply move (MTO / procurement chain)."""
+        """Classify a linked supply by walking the chain to its real origin.
+
+        The immediate supply move may just be an internal step (e.g. input ->
+        stock) whose real driver is a PO, an MO or a receipt further upstream, so
+        we follow move_orig_ids until we hit something concrete. An internal
+        transfer with no deeper origin stays a transfer.
+        """
         self.ensure_one()
         need = self.date_deadline or self.date
-        if supply.purchase_line_id:
-            return supply.purchase_line_id._ne_po_line_status(today, need)
-        if supply.production_id:
-            return supply.production_id._ne_mo_status(today, need)
-        if supply.picking_id.picking_type_id.code == "internal":
-            return "to_transfer", _("Internal transfer needed")
-        return "reception", _("Reception needed")
+        move = supply
+        seen = set()
+        fallback = None
+        while move and move.id not in seen and len(seen) < 10:
+            seen.add(move.id)
+            if move.purchase_line_id:
+                return move.purchase_line_id._ne_po_line_status(today, need)
+            if move.production_id:
+                return move.production_id._ne_mo_status(today, need)
+            pt = move.picking_id.picking_type_id.code
+            if pt == "incoming":
+                return "reception", _("Reception needed")
+            if pt == "internal":
+                fallback = ("to_transfer", _("Internal transfer needed"))
+            deeper = move.move_orig_ids.filtered(
+                lambda m: m.state not in ("done", "cancel")
+            )[:1]
+            if not deeper:
+                break
+            move = deeper
+        return fallback or ("reception", _("Reception needed"))
 
     def _ne_infer_supply_status(self, today):
         """No linked supply (MTS): infer from stock elsewhere / product route."""

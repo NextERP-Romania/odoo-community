@@ -10,6 +10,7 @@ OWL widget colours everything consistently.
 # are built at compute time; this is the fallback / selection text.
 STATUS_SELECTION = [
     ("available", "Available"),
+    ("available_sub", "Available (sub-location)"),
     ("partial", "Partially available"),
     # Buy route
     ("to_order", "Must be ordered"),
@@ -32,14 +33,15 @@ STATUS_SELECTION = [
 STATUS_SEVERITY = {
     "none": -1,
     "available": 0,
-    "partial": 1,
-    "to_transfer": 2,
-    "reception": 3,
-    "production": 3,
-    "mo_late": 3,
-    "po_draft": 4,
-    "mo_draft": 4,
-    "to_order": 5,
-    "to_manufacture": 5,
-    "unavailable": 5,
+    "available_sub": 1,
+    "partial": 2,
+    "to_transfer": 3,
+    "reception": 4,
+    "production": 4,
+    "mo_late": 4,
+    "po_draft": 5,
+    "mo_draft": 5,
+    "to_order": 6,
+    "to_manufacture": 6,
+    "unavailable": 6,
 }
