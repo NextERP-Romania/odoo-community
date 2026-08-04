@@ -61,6 +61,7 @@ class StockMove(models.Model):
                 onhand_cache[key] = sum(quants.mapped("quantity"))
             return onhand_cache[key]
 
+        chained = self.browse()
         needs = self.browse()
         for move in relevant:
             product = move.product_id
@@ -68,7 +69,8 @@ class StockMove(models.Model):
             demand_ref = move.product_qty  # product reference uom
             if float_is_zero(demand_ref, precision_rounding=rounding):
                 continue  # nothing to move on this line -> no light
-            if move.state == "done":
+            if move.state in ("done", "assigned"):
+                # completed or fully reserved -> available
                 move.availability_status_code = "available"
                 move.availability_status_label = _("Available")
                 move.availability_ratio = 1.0
@@ -79,6 +81,13 @@ class StockMove(models.Model):
                 move.availability_status_label = _("Available")
                 move.availability_ratio = 1.0
                 continue
+            # Follow the reservation chain FIRST: a move linked to a specific
+            # supply (move_orig_ids) is fulfilled by THAT source, not by random
+            # stock, so its status must reflect the chain.
+            if move.move_orig_ids.filtered(lambda m: m.state not in ("done", "cancel")):
+                chained |= move
+                continue
+            # No chain -> physical on-hand at the source (incl. sub-locations).
             here = on_hand(product, move.location_id, strict=True)   # source itself
             sub = on_hand(product, move.location_id, strict=False)   # incl. sub-locations
             if float_compare(here, demand_ref, precision_rounding=rounding) >= 0:
@@ -93,10 +102,12 @@ class StockMove(models.Model):
                 move.availability_status_code = "partial"
                 move.availability_status_label = _("Partially available")
                 move.availability_ratio = min(sub / demand_ref, 1.0)
-            else:  # no physical stock anywhere under the source -> trace the supply
+            else:  # no physical stock anywhere under the source -> infer supply
                 needs |= move
+        if chained:
+            chained._ne_fill_supply_status(today)
         if needs:
-            needs._ne_fill_supply_status(today)
+            needs._ne_infer_supply_status(today)
 
     # ------------------------------------------------------------------
     # Supply tracing
@@ -107,7 +118,7 @@ class StockMove(models.Model):
         for move in self:
             supply = move.move_orig_ids.filtered(
                 lambda m: m.state not in ("done", "cancel")
-            )[:1]
+            )
             if supply:
                 code, label = move._ne_classify_supply_move(supply, today)
                 move.availability_status_code = code
@@ -127,26 +138,32 @@ class StockMove(models.Model):
         """
         self.ensure_one()
         need = self.date_deadline or self.date
-        move = supply
+        # Breadth-first walk over the WHOLE chain (all branches) down to its
+        # roots: return as soon as we hit something concrete (PO / MO / receipt);
+        # an internal transfer is only kept as a fallback if nothing concrete is
+        # found deeper.
+        frontier = supply
         seen = set()
         fallback = None
-        while move and move.id not in seen and len(seen) < 10:
-            seen.add(move.id)
-            if move.purchase_line_id:
-                return move.purchase_line_id._ne_po_line_status(today, need)
-            if move.production_id:
-                return move.production_id._ne_mo_status(today, need)
-            pt = move.picking_id.picking_type_id.code
-            if pt == "incoming":
-                return "reception", _("Reception needed")
-            if pt == "internal":
-                fallback = ("to_transfer", _("Internal transfer needed"))
-            deeper = move.move_orig_ids.filtered(
-                lambda m: m.state not in ("done", "cancel")
-            )[:1]
-            if not deeper:
-                break
-            move = deeper
+        while frontier and len(seen) < 100:
+            deeper = self.browse()
+            for move in frontier:
+                if move.id in seen:
+                    continue
+                seen.add(move.id)
+                if move.purchase_line_id:
+                    return move.purchase_line_id._ne_po_line_status(today, need)
+                if move.production_id:
+                    return move.production_id._ne_mo_status(today, need)
+                pt = move.picking_id.picking_type_id.code
+                if pt == "incoming":
+                    return "reception", _("Reception needed")
+                if pt == "internal":
+                    fallback = ("to_transfer", _("Internal transfer needed"))
+                deeper |= move.move_orig_ids.filtered(
+                    lambda m: m.state not in ("done", "cancel")
+                )
+            frontier = deeper
         return fallback or ("reception", _("Reception needed"))
 
     def _ne_infer_supply_status(self, today):
@@ -175,34 +192,43 @@ class StockMove(models.Model):
         for mo in mos:
             mo_by_product.setdefault(mo.product_id.id, mo)
 
-        buy_route = self.env.ref("purchase_stock.route_warehouse0_buy", raise_if_not_found=False)
-        mfg_route = self.env.ref("mrp.route_warehouse0_manufacture", raise_if_not_found=False)
-
         for move in self:
             product = move.product_id
             need = move.date_deadline or move.date
             rounding = product.uom_id.rounding or 0.01
-            # 1. Stock available somewhere else -> an internal transfer can fill it.
+            # 1. Free stock somewhere else -> an internal transfer can fill it.
             if not float_is_zero(free_by_product.get(product.id, 0.0), precision_rounding=rounding):
                 move.availability_status_code = "to_transfer"
                 move.availability_status_label = _("Internal transfer needed")
                 continue
-            # 2. Route-based.
-            routes = product.route_ids
-            is_manufacture = bool(product.bom_ids) and (not mfg_route or mfg_route in routes)
-            is_buy = buy_route and buy_route in routes
-            if is_manufacture and not (is_buy and product.id in po_by_product):
-                mo = mo_by_product.get(product.id)
-                if mo:
-                    code, label = mo._ne_mo_status(today, need)
-                else:
+            # 2. Is the demand actually covered by incoming supply? Odoo's
+            #    forecast_availability already allocates confirmed POs/MOs to this
+            #    move, so an open PO/MO that is fully spoken for by other demands
+            #    does NOT count -> we only claim reception/production when covered.
+            covered = float_compare(
+                move.forecast_availability, move.product_qty, precision_rounding=rounding
+            ) >= 0
+            # Route refs are unreliable here (custom routes), so detect a
+            # manufactured product by the presence of a real (non-kit) BoM.
+            is_manufacture = bool(product.bom_ids.filtered(lambda b: b.type == "normal"))
+            if is_manufacture:
+                if not covered:
                     code, label = "to_manufacture", _("Must be manufactured")
-            else:
-                pol = po_by_product.get(product.id)
-                if pol:
-                    code, label = pol._ne_po_line_status(today, need)
                 else:
+                    mo = mo_by_product.get(product.id)
+                    code, label = (
+                        mo._ne_mo_status(today, need) if mo
+                        else ("production", _("Production needed"))
+                    )
+            else:
+                if not covered:
                     code, label = "to_order", _("Must be ordered")
+                else:
+                    pol = po_by_product.get(product.id)
+                    code, label = (
+                        pol._ne_po_line_status(today, need) if pol
+                        else ("reception", _("Reception needed"))
+                    )
             move.availability_status_code = code
             move.availability_status_label = label
 
