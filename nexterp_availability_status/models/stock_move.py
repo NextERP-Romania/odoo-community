@@ -167,12 +167,12 @@ class StockMove(models.Model):
         return fallback or ("reception", _("Reception needed"))
 
     def _ne_infer_supply_status(self, today):
-        """No linked supply (MTS): infer from stock elsewhere / product route."""
+        """No linked supply and no stock under the source: infer from the product
+        route. An internal transfer is NOT suggested here - "Internal transfer
+        needed" is only reported when the move is actually linked to a transfer in
+        its chain, so a not-linked move with stock in another warehouse still
+        falls to Must be ordered / Must be manufactured."""
         products = self.product_id
-        # Batch: free stock (on hand - reserved) per product across the company.
-        free_by_product = {
-            p.id: p.free_qty for p in products
-        }
         # Batch: earliest open PO line per product.
         po_by_product = {}
         pols = self.env["purchase.order.line"].search(
@@ -196,15 +196,10 @@ class StockMove(models.Model):
             product = move.product_id
             need = move.date_deadline or move.date
             rounding = product.uom_id.rounding or 0.01
-            # 1. Free stock somewhere else -> an internal transfer can fill it.
-            if not float_is_zero(free_by_product.get(product.id, 0.0), precision_rounding=rounding):
-                move.availability_status_code = "to_transfer"
-                move.availability_status_label = _("Internal transfer needed")
-                continue
-            # 2. Is the demand actually covered by incoming supply? Odoo's
-            #    forecast_availability already allocates confirmed POs/MOs to this
-            #    move, so an open PO/MO that is fully spoken for by other demands
-            #    does NOT count -> we only claim reception/production when covered.
+            # Is the demand actually covered by incoming supply? Odoo's
+            # forecast_availability already allocates confirmed POs/MOs to this
+            # move, so an open PO/MO that is fully spoken for by other demands
+            # does NOT count -> we only claim reception/production when covered.
             covered = float_compare(
                 move.forecast_availability, move.product_qty, precision_rounding=rounding
             ) >= 0
