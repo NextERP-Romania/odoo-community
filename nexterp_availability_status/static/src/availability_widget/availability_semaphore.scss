@@ -9,6 +9,7 @@
     --ne-avail-green: #28a745;
     --ne-avail-amber: #f0ad4e;
     --ne-avail-red: #dc3545;
+    --ne-avail-blue: #2563eb;
     --ne-avail-empty: #d1d5db;
     --ne-avail-color: var(--ne-avail-empty);
     --ne-avail-fill: 0%;
@@ -43,18 +44,9 @@
         --ne-avail-color: var(--ne-avail-red);
     }
 
-    // Half amber / half green dot = "will be fine, but with a caveat" (stock is
-    // in another location, or production is late). Green label.
-    &.ne_avail_split {
-        --ne-avail-color: var(--ne-avail-green); // label reads green
-
-        .ne_avail_dot {
-            background: linear-gradient(
-                to right,
-                var(--ne-avail-amber) 50%,
-                var(--ne-avail-green) 50%
-            );
-        }
+    // Blue = stock exists in another location, a transfer must be created.
+    &.ne_avail_transfer {
+        --ne-avail-color: var(--ne-avail-blue);
     }
 
     // Half green = partially available: fill the dot up to --ne-avail-fill.

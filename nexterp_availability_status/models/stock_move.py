@@ -28,9 +28,8 @@ class StockMove(models.Model):
     # Main compute
     # ------------------------------------------------------------------
     @api.depends("state", "product_uom_qty", "quantity", "product_qty", "location_id",
-                 "move_orig_ids", "move_orig_ids.state", "date", "date_deadline")
+                 "move_orig_ids", "move_orig_ids.state")
     def _compute_availability_status(self):
-        today = fields.Date.context_today(self)
         # defaults
         self.availability_status_code = "none"
         self.availability_status_label = False
@@ -39,15 +38,12 @@ class StockMove(models.Model):
         relevant = self.filtered(
             lambda m: m.state not in ("cancel", "draft") and m._is_consuming()
         )
-        # Availability is about PHYSICAL STOCK EXISTING at the source, not about
-        # this move being reserved: reservations can be re-shuffled between moves,
-        # so what matters is that the on-hand quantity exists (reservations by
-        # other moves are ignored). Stock sitting in a sub-location of the source
-        # counts too - it is directly reservable - but we flag it so the user
-        # knows it is not in the source location itself. On-hand is read per
-        # (product, location, strict) and cached to stay a handful of queries.
+        # Availability is about PHYSICAL STOCK EXISTING, not about this move being
+        # reserved (reservations can be re-shuffled). On-hand is read per
+        # (product, location) and cached to stay a handful of queries.
         Quant = self.env["stock.quant"]
         onhand_cache = {}
+        internal_cache = {}
 
         def on_hand(product, location, strict):
             key = (product.id, location.id, strict)
@@ -57,9 +53,17 @@ class StockMove(models.Model):
                     ("location_id", "=", location.id) if strict
                     else ("location_id", "child_of", location.id)
                 )
-                quants = Quant.search(domain)
-                onhand_cache[key] = sum(quants.mapped("quantity"))
+                onhand_cache[key] = sum(Quant.search(domain).mapped("quantity"))
             return onhand_cache[key]
+
+        def total_internal(product):
+            if product.id not in internal_cache:
+                quants = Quant.search([
+                    ("product_id", "=", product.id),
+                    ("location_id.usage", "=", "internal"),
+                ])
+                internal_cache[product.id] = sum(quants.mapped("quantity"))
+            return internal_cache[product.id]
 
         chained = self.browse()
         needs = self.browse()
@@ -71,77 +75,66 @@ class StockMove(models.Model):
                 continue  # nothing to move on this line -> no light
             if move.state in ("done", "assigned"):
                 # completed or fully reserved -> available
-                move.availability_status_code = "available"
-                move.availability_status_label = _("Available")
-                move.availability_ratio = 1.0
+                move._ne_set("available", _("Available"), 1.0)
                 continue
             if product.type != "product":
                 # Consumables / services do not hold stock -> always available.
-                move.availability_status_code = "available"
-                move.availability_status_label = _("Available")
-                move.availability_ratio = 1.0
+                move._ne_set("available", _("Available"), 1.0)
                 continue
-            # Follow the reservation chain FIRST: a move linked to a specific
-            # supply (move_orig_ids) is fulfilled by THAT source, not by random
-            # stock, so its status must reflect the chain.
+            # 1. Reservation chain FIRST: a move linked to a specific supply
+            #    (move_orig_ids) is fulfilled by THAT source, not by random stock.
             if move.move_orig_ids.filtered(lambda m: m.state not in ("done", "cancel")):
                 chained |= move
                 continue
-            # No chain -> physical on-hand at the source (incl. sub-locations).
-            here = on_hand(product, move.location_id, strict=True)   # source itself
-            sub = on_hand(product, move.location_id, strict=False)   # incl. sub-locations
+            # 2. No chain -> physical on-hand under the source (incl. sub-locations).
+            here = on_hand(product, move.location_id, strict=True)
+            sub = on_hand(product, move.location_id, strict=False)
             if float_compare(here, demand_ref, precision_rounding=rounding) >= 0:
-                move.availability_status_code = "available"
-                move.availability_status_label = _("Available")
-                move.availability_ratio = 1.0
+                move._ne_set("available", _("Available"), 1.0)
             elif float_compare(sub, demand_ref, precision_rounding=rounding) >= 0:
-                move.availability_status_code = "available_sub"
-                move.availability_status_label = _("Available (sub-location)")
-                move.availability_ratio = 1.0
+                move._ne_set("available_sub", _("Available (sub-location)"), 1.0)
             elif sub > 0:
-                move.availability_status_code = "partial"
-                move.availability_status_label = _("Partially available")
-                move.availability_ratio = min(sub / demand_ref, 1.0)
-            else:  # no physical stock anywhere under the source -> infer supply
+                move._ne_set("partial", _("Partially available"), min(sub / demand_ref, 1.0))
+            elif float_compare(total_internal(product) - sub, 0.0, precision_rounding=rounding) > 0:
+                # 3. Stock exists in another (internal) location -> a transfer is
+                #    needed, but none is linked yet.
+                move._ne_set("must_transfer", _("Must be transfered"), 0.0)
+            else:  # 4. No stock anywhere -> decide by route (buy / manufacture).
                 needs |= move
         if chained:
-            chained._ne_fill_supply_status(today)
+            chained._ne_fill_supply_status()
         if needs:
-            needs._ne_infer_supply_status(today)
+            needs._ne_infer_supply_status()
+
+    def _ne_set(self, code, label, ratio):
+        self.availability_status_code = code
+        self.availability_status_label = label
+        self.availability_ratio = ratio
 
     # ------------------------------------------------------------------
-    # Supply tracing
+    # Supply tracing (chain)
     # ------------------------------------------------------------------
-    def _ne_fill_supply_status(self, today):
-        """For each not-available demand move, find where the replenishment is."""
+    def _ne_fill_supply_status(self):
+        """Classify moves that have an active reservation chain."""
         no_chain = self.browse()
         for move in self:
             supply = move.move_orig_ids.filtered(
                 lambda m: m.state not in ("done", "cancel")
             )
             if supply:
-                code, label = move._ne_classify_supply_move(supply, today)
-                move.availability_status_code = code
-                move.availability_status_label = label
+                code, label = move._ne_classify_supply_move(supply)
+                move._ne_set(code, label, 0.0)
             else:
                 no_chain |= move
         if no_chain:
-            no_chain._ne_infer_supply_status(today)
+            no_chain._ne_infer_supply_status()
 
-    def _ne_classify_supply_move(self, supply, today):
-        """Classify a linked supply by walking the chain to its real origin.
-
-        The immediate supply move may just be an internal step (e.g. input ->
-        stock) whose real driver is a PO, an MO or a receipt further upstream, so
-        we follow move_orig_ids until we hit something concrete. An internal
-        transfer with no deeper origin stays a transfer.
+    def _ne_classify_supply_move(self, supply):
+        """Walk the WHOLE chain (BFS over all branches) down to its roots and
+        classify by the real driver: a PO, an MO or a receipt. An internal
+        transfer is only kept as a fallback if nothing concrete is found deeper.
         """
         self.ensure_one()
-        need = self.date_deadline or self.date
-        # Breadth-first walk over the WHOLE chain (all branches) down to its
-        # roots: return as soon as we hit something concrete (PO / MO / receipt);
-        # an internal transfer is only kept as a fallback if nothing concrete is
-        # found deeper.
         frontier = supply
         seen = set()
         fallback = None
@@ -152,99 +145,33 @@ class StockMove(models.Model):
                     continue
                 seen.add(move.id)
                 if move.purchase_line_id:
-                    return move.purchase_line_id._ne_po_line_status(today, need)
+                    return move.purchase_line_id._ne_po_line_status()
                 if move.production_id:
-                    return move.production_id._ne_mo_status(today, need)
+                    return move.production_id._ne_mo_status()
                 pt = move.picking_id.picking_type_id.code
                 if pt == "incoming":
                     return "reception", _("Reception needed")
                 if pt == "internal":
-                    fallback = ("to_transfer", _("Internal transfer needed"))
+                    fallback = ("to_transfer", _("Transfer needed"))
                 deeper |= move.move_orig_ids.filtered(
                     lambda m: m.state not in ("done", "cancel")
                 )
             frontier = deeper
         return fallback or ("reception", _("Reception needed"))
 
-    def _ne_infer_supply_status(self, today):
-        """No linked supply and no stock under the source: infer from the product
-        route. An internal transfer is NOT suggested here - "Internal transfer
-        needed" is only reported when the move is actually linked to a transfer in
-        its chain, so a not-linked move with stock in another warehouse still
-        falls to Must be ordered / Must be manufactured."""
-        products = self.product_id
-        # Batch: earliest open PO line per product.
-        po_by_product = {}
-        pols = self.env["purchase.order.line"].search(
-            [("product_id", "in", products.ids),
-             ("order_id.state", "in", ("draft", "sent", "to approve", "purchase"))],
-            order="date_planned asc",
-        )
-        for pol in pols:
-            po_by_product.setdefault(pol.product_id.id, pol)
-        # Batch: earliest open MO per product.
-        mo_by_product = {}
-        mos = self.env["mrp.production"].search(
-            [("product_id", "in", products.ids),
-             ("state", "not in", ("done", "cancel"))],
-            order="date_start asc",
-        )
-        for mo in mos:
-            mo_by_product.setdefault(mo.product_id.id, mo)
-
+    # ------------------------------------------------------------------
+    # Route inference (no chain, no stock anywhere)
+    # ------------------------------------------------------------------
+    def _ne_infer_supply_status(self):
+        """No chain and no stock: a product with a real (non-kit) BoM must be
+        manufactured, everything else must be ordered. Route refs are unreliable
+        here (custom routes), so we key off the BoM."""
         for move in self:
             product = move.product_id
-            need = move.date_deadline or move.date
-            rounding = product.uom_id.rounding or 0.01
-            # Is the demand actually covered by incoming supply? Odoo's
-            # forecast_availability already allocates confirmed POs/MOs to this
-            # move, so an open PO/MO that is fully spoken for by other demands
-            # does NOT count -> we only claim reception/production when covered.
-            covered = float_compare(
-                move.forecast_availability, move.product_qty, precision_rounding=rounding
-            ) >= 0
-            # Route refs are unreliable here (custom routes), so detect a
-            # manufactured product by the presence of a real (non-kit) BoM.
-            is_manufacture = bool(product.bom_ids.filtered(lambda b: b.type == "normal"))
-            if is_manufacture:
-                if not covered:
-                    code, label = "to_manufacture", _("Must be manufactured")
-                else:
-                    mo = mo_by_product.get(product.id)
-                    code, label = (
-                        mo._ne_mo_status(today, need) if mo
-                        else ("production", _("Production needed"))
-                    )
+            if product.bom_ids.filtered(lambda b: b.type == "normal"):
+                move._ne_set("to_manufacture", _("Must be manufactured"), 0.0)
             else:
-                if not covered:
-                    code, label = "to_order", _("Must be ordered")
-                else:
-                    pol = po_by_product.get(product.id)
-                    code, label = (
-                        pol._ne_po_line_status(today, need) if pol
-                        else ("reception", _("Reception needed"))
-                    )
-            move.availability_status_code = code
-            move.availability_status_label = label
-
-    # ------------------------------------------------------------------
-    # Date helpers (used to flag late production)
-    # ------------------------------------------------------------------
-    @staticmethod
-    def _ne_to_date(value):
-        if not value:
-            return False
-        return value.date() if hasattr(value, "date") else value
-
-    @api.model
-    def _ne_is_late(self, expected, need, today):
-        exp = self._ne_to_date(expected)
-        if not exp:
-            return False
-        if exp < today:
-            return True
-        need_d = self._ne_to_date(need)
-        return bool(need_d and exp > need_d)
+                move._ne_set("to_order", _("Must be ordered"), 0.0)
 
     # ------------------------------------------------------------------
     # Aggregation helper (used by picking / MO / sale line)

@@ -27,12 +27,9 @@ class MrpProduction(models.Model):
             production.availability_status_label = label
             production.availability_ratio = ratio
 
-    def _ne_mo_status(self, today, need):
+    def _ne_mo_status(self):
         """Status of this MO seen as a supply for a downstream demand."""
         self.ensure_one()
         if self.state == "draft":
             return "mo_draft", _("Manufacturing not confirmed")
-        expected = self.date_finished or self.date_start
-        if self.env["stock.move"]._ne_is_late(expected, need, today):
-            return "mo_late", _("Production is late")
-        return "production", _("Production needed")
+        return "production", _("Manufacturing needed")

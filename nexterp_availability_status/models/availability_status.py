@@ -6,23 +6,20 @@ sale.order.line, purchase.order.line). Keeping it in one place guarantees the
 OWL widget colours everything consistently.
 """
 
-# code -> default (untranslated) short label. Concrete labels with "in X days"
-# are built at compute time; this is the fallback / selection text.
 STATUS_SELECTION = [
     ("available", "Available"),
     ("available_sub", "Available (sub-location)"),
     ("partial", "Partially available"),
-    # Buy route
-    ("to_order", "Must be ordered"),
-    ("po_draft", "Purchase not validated"),
+    # From the reservation chain (move_orig_ids)
     ("reception", "Reception needed"),
-    # Manufacture route
-    ("to_manufacture", "Must be manufactured"),
+    ("production", "Manufacturing needed"),
+    ("to_transfer", "Transfer needed"),
+    ("po_draft", "Purchase not confirmed"),
     ("mo_draft", "Manufacturing not confirmed"),
-    ("production", "Production needed"),
-    ("mo_late", "Production is late"),
-    # Internal transfer route
-    ("to_transfer", "Internal transfer needed"),
+    # No chain
+    ("must_transfer", "Must be transfered"),
+    ("to_manufacture", "Must be manufactured"),
+    ("to_order", "Must be ordered"),
     # Catch-all
     ("unavailable", "Unavailable"),
     ("none", "Not applicable"),
@@ -36,9 +33,9 @@ STATUS_SEVERITY = {
     "available_sub": 1,
     "partial": 2,
     "to_transfer": 3,
-    "reception": 4,
-    "production": 4,
-    "mo_late": 4,
+    "reception": 3,
+    "production": 3,
+    "must_transfer": 4,
     "po_draft": 5,
     "mo_draft": 5,
     "to_order": 6,

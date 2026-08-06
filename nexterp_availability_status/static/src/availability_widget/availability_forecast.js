@@ -8,10 +8,10 @@ const COLOR = {
     available: "available",
     available_sub: "available",
     partial: "partial",
-    to_transfer: "split",
-    mo_late: "split",
     reception: "waiting",
     production: "waiting",
+    to_transfer: "waiting",
+    must_transfer: "transfer",
     to_order: "unavailable",
     to_manufacture: "unavailable",
     po_draft: "unavailable",
@@ -50,15 +50,16 @@ export class AvailabilityForecastField extends ForecastWidgetField {
         const GREEN = "#28a745";
         const AMBER = "#f0ad4e";
         const RED = "#dc3545";
+        const BLUE = "#2563eb";
         const EMPTY = "#d1d5db";
         let background;
-        if (this.color === "split") {
-            background = `linear-gradient(to right, ${AMBER} 50%, ${GREEN} 50%)`;
-        } else if (this.color === "partial") {
+        if (this.color === "partial") {
             const pct = Math.round(this.statusRatio * 100);
             background = `linear-gradient(to right, ${GREEN} ${pct}%, ${EMPTY} ${pct}%)`;
         } else {
-            background = { available: GREEN, waiting: AMBER, unavailable: RED }[this.color] || EMPTY;
+            background = {
+                available: GREEN, waiting: AMBER, unavailable: RED, transfer: BLUE,
+            }[this.color] || EMPTY;
         }
         return (
             "display:inline-block;width:12px;height:12px;border-radius:50%;" +

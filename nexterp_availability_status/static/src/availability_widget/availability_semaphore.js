@@ -10,14 +10,13 @@ const COLOR = {
     available: "available",       // green
     available_sub: "available",   // green (label notes it is in a sub-location)
     partial: "partial",          // half green
-    // "split": half amber / half green dot = it will be fine (green) but with a
-    // caveat - stock is in another location, or production is running late.
-    to_transfer: "split",
-    mo_late: "split",
-    // amber: replenishment needed / in progress
+    // amber: replenishment in progress (linked supply chain)
     reception: "waiting",
     production: "waiting",
-    // red: blocking - nothing on the way / document not validated
+    to_transfer: "waiting",
+    // blue: stock exists in another location, a transfer must be created
+    must_transfer: "transfer",
+    // red: blocking - nothing on the way / document not confirmed
     to_order: "unavailable",
     to_manufacture: "unavailable",
     po_draft: "unavailable",
