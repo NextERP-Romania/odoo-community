@@ -25,9 +25,13 @@ class AccountMove(models.Model):
     @api.model
     def _l10n_ro_edi_fetch_invoices(self):
         """Synchronize bills/invoices from SPV"""
-        nb_days = self.env["ir.config_parameter"].sudo().get_param(
-            "l10n_ro_edi_nb_days_to_fetch"
-        ) or self.env.company.l10n_ro_download_einvoices_days or 1
+        nb_days = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("l10n_ro_edi_nb_days_to_fetch")
+            or self.env.company.l10n_ro_download_einvoices_days
+            or 1
+        )
         _logger.info(
             "Starting synchronization of sent invoices with SPV for the last %s days",
             nb_days,
