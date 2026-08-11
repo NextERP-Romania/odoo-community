@@ -16,6 +16,31 @@ NS_DOWNLOAD = {
 NS_SIGNATURE = {"ns": "http://www.w3.org/2000/09/xmldsig#"}
 
 
+def _safe_xml_fromstring(file_bytes):
+    """Parse XML bytes received from the SPV, working around invoices that
+    incorrectly declare ``xmlns:schemaLocation`` instead of
+    ``xsi:schemaLocation``. lxml treats the former as a namespace
+    declaration and rejects its (space-separated, two-URI) value as an
+    invalid URI, so the whole download fails to parse even though the
+    document is otherwise well-formed."""
+    try:
+        return etree.fromstring(file_bytes)
+    except etree.XMLSyntaxError:
+        if b"xmlns:schemaLocation=" not in file_bytes:
+            raise
+        fixed_bytes = file_bytes.replace(
+            b"xmlns:schemaLocation=", b"xsi:schemaLocation="
+        )
+        if b"xmlns:xsi=" not in fixed_bytes:
+            fixed_bytes = fixed_bytes.replace(
+                b"xsi:schemaLocation=",
+                b'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+                b"xsi:schemaLocation=",
+                1,
+            )
+        return etree.fromstring(fixed_bytes)
+
+
 def make_efactura_request(
     session, company, endpoint, params, data=None
 ) -> dict[str, str | bytes]:
@@ -149,7 +174,7 @@ def _request_ciusro_download_answer(company, key_download, session):
         with zipfile.ZipFile(io.BytesIO(result["content"])) as zip_ref:
             for file in zip_ref.infolist():
                 file_bytes = zip_ref.read(file)
-                root = etree.fromstring(file_bytes)
+                root = _safe_xml_fromstring(file_bytes)
 
                 # Extract the signature
                 if "semnatura" in file.filename:

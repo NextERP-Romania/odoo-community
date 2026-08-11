@@ -15,7 +15,7 @@ class ResCompany(models.Model):
         help="Add users to receive EDI Error messages",
     )
 
-    @api.constrains("l10n_ro_edi_residence", "l10n_ro_download_einvoices_days")
+    @api.constrains("l10n_ro_edi_residence")
     def _check_l10n_ro_edi_residence(self):
         for company in self:
             if company.l10n_ro_edi_residence < 0 or company.l10n_ro_edi_residence > 5:
