@@ -241,7 +241,7 @@ After a notification UIT has been obtained:
 Syncing the ANAF notifications list manually
 --------------------------------------------
 
-1. Go to **Inventory → Operations → eTransport notifications list**
+1. Go to **Inventory → eTransport → Notifications list**
    (``menu_l10n_ro_edi_stock_list_wizard``).
 2. Enter the **Number of days** (1–60) to look back.
 3. Click **Fetch** (``action_fetch``). The wizard retrieves the ANAF
@@ -253,8 +253,8 @@ Syncing the ANAF notifications list manually
 Querying transporter info (as transport operator)
 -------------------------------------------------
 
-1. Go to **Inventory → Operations → Notifications as transport
-   operator** (``menu_l10n_ro_edi_stock_transporter_info_wizard``).
+1. Go to **Inventory → eTransport → Transporters**
+   (``menu_l10n_ro_edi_stock_transporter_info_wizard``).
 2. Fill in **Transport operator VAT**, and optionally **Initial
    declarant VAT**, **Specific UIT**, or **Declarant reference**.
 3. Click **Fetch** (``action_fetch``). Each matching ANAF notification

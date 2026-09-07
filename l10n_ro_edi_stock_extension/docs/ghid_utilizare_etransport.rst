@@ -301,7 +301,7 @@ Lista loturilor are filtre după starea eTransport (eroare / trimis / validat)
 10.1 Listă notificări
 ---------------------
 
-Meniu: **Inventar → … → „eTransport notifications list”**. Interoghează ANAF
+Meniu: **Inventar → eTransport → „Notifications list”**. Interoghează ANAF
 pentru notificările din ultimele 1–60 de zile și le afișează (tip, stare, UIT,
 partener, transportator, vehicul, mesaje). Reconciliază automat după UIT cu
 transferurile/loturile din Odoo și loghează în chatter notificările cu erori.
@@ -317,7 +317,7 @@ Se configurează din setări (activare + număr de zile).
 10.3 Informații ca operator de transport
 -----------------------------------------
 
-Meniu: **Inventar → … → „Notifications as transport operator”**. Interoghează
+Meniu: **Inventar → eTransport → „Transporters”**. Interoghează
 ANAF pentru notificările în care compania figurează ca operator de transport
 (după CUI operator, opțional CUI declarant / UIT / referință).
 

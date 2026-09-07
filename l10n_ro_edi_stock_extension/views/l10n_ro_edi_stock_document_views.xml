@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!--
-        Main "eTransport" menu with three sub-menus:
+        "eTransport" section of the Inventory menu, with three sub-menus:
           - Documents (this file): read-only list of all ANAF events
             (NOT / COR / DEL / CON / MVH) with search & group-by.
           - Notifications list (list wizard).
           - Transporters info (transporter info wizard).
-        The root menu is declared here because this file is loaded before the
-        two wizard view files, which attach their menus under this root.
+        The section menu is declared here because this file is loaded before
+        the two wizard view files, which attach their menus under it.
     -->
     <menuitem
         id="menu_l10n_ro_edi_stock_etransport_root"
         name="eTransport"
-        web_icon="l10n_ro_edi_stock_extension,static/description/icon.png"
-        sequence="95"
+        parent="stock.menu_stock_root"
+        sequence="90"
         groups="stock.group_stock_user"
     />
 
