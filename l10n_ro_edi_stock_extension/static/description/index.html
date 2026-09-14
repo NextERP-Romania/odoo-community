@@ -229,14 +229,14 @@
 </ol>
 <h2>Syncing the ANAF notifications list manually</h2>
 <ol>
-<li>Go to <strong>Inventory → Operations → eTransport notifications list</strong> (<code>menu_l10n_ro_edi_stock_list_wizard</code>).</li>
+<li>Go to <strong>Inventory → eTransport → Notifications list</strong> (<code>menu_l10n_ro_edi_stock_list_wizard</code>).</li>
 <li>Enter the <strong>Number of days</strong> (1–60) to look back.</li>
 <li>Click <strong>Fetch</strong> (<code>action_fetch</code>). The wizard retrieves the ANAF LIST and displays all returned notifications as <code>l10n.ro.edi.stock.list.line</code> records.</li>
 <li>Click <strong>Reconcile</strong> to automatically match UITs to local transfers and log the result in each transfer's chatter.</li>
 </ol>
 <h2>Querying transporter info (as transport operator)</h2>
 <ol>
-<li>Go to <strong>Inventory → Operations → Notifications as transport operator</strong> (<code>menu_l10n_ro_edi_stock_transporter_info_wizard</code>).</li>
+<li>Go to <strong>Inventory → eTransport → Transporters</strong> (<code>menu_l10n_ro_edi_stock_transporter_info_wizard</code>).</li>
 <li>Fill in <strong>Transport operator VAT</strong>, and optionally <strong>Initial declarant VAT</strong>, <strong>Specific UIT</strong>, or <strong>Declarant reference</strong>.</li>
 <li>Click <strong>Fetch</strong> (<code>action_fetch</code>). Each matching ANAF notification appears as an <code>l10n.ro.edi.stock.transporter.info.line</code> row with UIT, vehicle numbers, start/end locations, and expiry date.</li>
 </ol>
