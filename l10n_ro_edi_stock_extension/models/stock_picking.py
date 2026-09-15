@@ -5,6 +5,7 @@ import re
 
 from odoo import api, fields, models
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
+from odoo.tools.translate import LazyTranslate
 
 from .etransport_constants import (
     EU_COUNTRY_CODES,
@@ -17,6 +18,11 @@ from .etransport_constants import (
 from .l10n_ro_edi_stock_document import EXTRA_DOCUMENT_STATES
 
 _logger = logging.getLogger(__name__)
+
+# Bound to the *base* module so the terms below resolve through
+# l10n_ro_edi_stock's catalog and therefore match the errors it emits,
+# whatever language the user runs in.
+_lt_base = LazyTranslate("l10n_ro_edi_stock")
 
 
 # Pattern for extracting the street number from the "street" field
@@ -82,6 +88,7 @@ class StockPicking(models.Model):
     @api.model
     def _l10n_ro_edi_stock_validate_data(self, data: dict):
         errors = super()._l10n_ro_edi_stock_validate_data(data=data)
+        errors = self._l10n_ro_edi_stock_drop_foreign_counterparty_error(errors, data)
 
         op_type = data.get("l10n_ro_edi_stock_operation_type")
         if not op_type:
@@ -160,6 +167,66 @@ class StockPicking(models.Model):
                 )
 
         return errors
+
+    @api.model
+    def _l10n_ro_edi_stock_base_foreign_location_error(self, location):
+        """Rebuild the exact error l10n_ro_edi_stock emits for a non-RO address.
+
+        ``str()`` is deliberate over ``self.env._()``: it makes LazyGettext
+        resolve the language from this frame, i.e. through the very same
+        fallback chain the base uses when it builds the term (env.lang, then
+        the request, then the user's language). ``env._`` would stop at
+        ``env.lang`` and silently produce an English string - and then the
+        comparison in ``_l10n_ro_edi_stock_drop_foreign_counterparty_error``
+        would never match. The module is pinned to the base one so the term is
+        looked up in its catalog.
+
+        See ``_l10n_ro_edi_stock_drop_foreign_counterparty_error``.
+        """
+        loc_group = str(
+            _lt_base("'Start Location'")
+            if location == "start"
+            else _lt_base("'End Location'")
+        )
+        return str(
+            _lt_base(
+                "Warehouse of %(location_group)s should be in Romania",
+                location_group=loc_group,
+            )
+        )
+
+    @api.model
+    def _l10n_ro_edi_stock_drop_foreign_counterparty_error(self, errors, data):
+        """Drop the base "should be in Romania" error on the counterparty side.
+
+        l10n_ro_edi_stock added that check inside the loop that resolves the
+        address to either the warehouse partner (our own side) or
+        ``data['partner_id']`` (the other side), so it fires on the
+        counterparty too. For an intra-EU / import / export operation the
+        counterparty is legitimately outside Romania - and this module's own
+        BR-004/005/006 validation already *requires* it to be - so keeping the
+        base error would make those notifications impossible to send.
+
+        The check is left untouched for our own warehouse side and for
+        national transports (operation 30), where it is correct.
+        """
+        op_type = data.get("l10n_ro_edi_stock_operation_type")
+        if not op_type or is_national(op_type):
+            return errors
+
+        match data["picking_type_id"].code:
+            case "outgoing":
+                counterparty = "end"
+            case "incoming":
+                counterparty = "start"
+            case _:
+                return errors
+
+        if data.get(f"l10n_ro_edi_stock_{counterparty}_loc_type") != "location":
+            return errors
+
+        spurious = self._l10n_ro_edi_stock_base_foreign_location_error(counterparty)
+        return [error for error in errors if error != spurious]
 
     @api.model
     def _l10n_ro_edi_stock_validate_goods_data(self, data):
@@ -265,18 +332,22 @@ class StockPicking(models.Model):
     # Allow sending the notification before the transfer is validated
     ################################################################################
 
+    # Transfer states the base already allows sending from; the remaining ones
+    # (bar 'cancel') are what this module adds.
+    _L10N_RO_EDI_STOCK_BASE_SEND_STATES = ("assigned", "done")
+
     @api.depends("l10n_ro_edi_stock_enable", "state", "l10n_ro_edi_stock_state")
     def _compute_l10n_ro_edi_stock_enable_send(self):
         # EXTENDS l10n_ro_edi_stock
-        # The base only allows sending once the picking is 'done'. ANAF must be
-        # notified *before* the goods are moved, so allow it on any non-draft,
-        # non-cancelled, not-yet-done transfer too (waiting/confirmed/assigned).
+        # The base allows sending from 'assigned' and 'done'. ANAF must be
+        # notified *before* the goods are moved, so allow the earlier states
+        # ('draft', 'waiting', 'confirmed') as well.
         res = super()._compute_l10n_ro_edi_stock_enable_send()
         for picking in self:
             if (
-                not picking.l10n_ro_edi_stock_enable_send
-                and picking.l10n_ro_edi_stock_enable
-                and picking.state not in ("cancel", "done")
+                picking.l10n_ro_edi_stock_enable
+                and picking.state
+                not in ("cancel", *self._L10N_RO_EDI_STOCK_BASE_SEND_STATES)
                 and picking.l10n_ro_edi_stock_state in (False, "stock_sending_failed")
                 and not picking._l10n_ro_edi_stock_get_last_document("stock_validated")
             ):

@@ -1,5 +1,7 @@
 # Copyright 2026 NextERP Romania SRL
 
+from odoo import _
+
 from odoo.addons.l10n_ro_edi_stock.models.etransport_api import ETransportAPI
 
 
@@ -26,7 +28,10 @@ class ETransportAPIExtra(ETransportAPI):
             )
         except (KeyError, ValueError, TypeError) as err:
             return {
-                "error": self.env._("Unexpected response from ANAF eTransport: %s", err)
+                # ``ETransportAPI`` is a plain class, not a model - there is no
+                # ``self.env`` here, so the module-level ``_`` is the only option.
+                # pylint: disable=prefer-env-translation
+                "error": _("Unexpected response from ANAF eTransport: %s", err)
             }
 
     def get_list(self, company_id, days=60, session=None):
