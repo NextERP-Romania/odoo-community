@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.config.settings.form.pos.multi.session</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <setting id="order_edit_tracking" position="after">
+                <setting
+                    id="pos_multi_session"
+                    help="Keep several sessions open at once on this register. They are then closed oldest first, so the cash balance carries over in the order the days happened."
+                >
+                    <field name="pos_multi_session" />
+                </setting>
+            </setting>
+        </field>
+    </record>
+</odoo>
