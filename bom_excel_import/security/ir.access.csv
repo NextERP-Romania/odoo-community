@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,operation
+access_bom_excel_import_wizard,bom.excel.import.wizard,model_bom_excel_import_wizard,mrp.group_mrp_user,crud

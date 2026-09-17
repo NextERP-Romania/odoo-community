@@ -30,7 +30,7 @@
         "stock",
     ],
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "wizard/bom_excel_import_wizard.xml",
         "views/menu.xml",
     ],

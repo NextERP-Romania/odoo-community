@@ -19,6 +19,8 @@
         "views/l10n_ro_edi_stock_document_views.xml",
     ],
     "auto_install": True,
-    "installable": True,
+    # Not installable on 20.0: depends on l10n_ro_edi_stock_batch (scos din Odoo in 20.0), which has no Odoo 20
+    # counterpart yet. Flip back once it is available.
+    "installable": False,
     "application": False,
 }

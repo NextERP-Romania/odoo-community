@@ -15,7 +15,7 @@
         "stock_account",
     ],
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "views/stock_inventory_line_report_view.xml",
         "views/stock_inventory_view.xml",
     ],

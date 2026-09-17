@@ -15,7 +15,7 @@
         "sale_stock",
     ],
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "data/etransport_templates.xml",
         "data/ir_cron.xml",
         "wizards/l10n_ro_edi_stock_action_wizard_views.xml",

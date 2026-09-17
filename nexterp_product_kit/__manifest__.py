@@ -15,7 +15,7 @@
         # views
         "views/product_product_kit_view.xml",
         # security
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
     ],
     "installable": True,
     "auto_install": False,

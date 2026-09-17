@@ -10,7 +10,7 @@
     "depends": ["account_fleet", "l10n_ro_nondeductible_vat"],
     "summary": "Manage vehicle costs, add categories for fuel and part, etc.",
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
         "data/fleet_service_type_data.xml",
         "views/fleet_view.xml",
         "views/stock_view.xml",

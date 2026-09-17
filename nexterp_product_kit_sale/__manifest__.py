@@ -15,7 +15,7 @@
         # views
         "views/sale_order_views.xml",
         # security
-        "security/ir.model.access.csv",
+        "security/ir.access.csv",
     ],
     "installable": True,
     "auto_install": False,
