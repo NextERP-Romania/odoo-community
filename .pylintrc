@@ -89,11 +89,14 @@ enable=anomalous-backslash-in-string,
     translation-unsupported-format,
     no-write-in-compute,
     # messages that do not cause the lint step to fail
-    # create-user-wo-reset-password and dangerous-filter-wo-user moved to the
-    # oca-checks-odoo-module hook; the py2-era checks (no-utf8-coding-comment,
-    # unnecessary-utf8-coding-comment, old-api7-method-defined), file-not-used,
-    # missing-manifest-dependency and missing-newline-extrafiles were dropped
-    # from pylint-odoo, and too-complex needs the pylint mccabe extension.
+    # create-user-wo-reset-password, dangerous-filter-wo-user and file-not-used
+    # moved to the oca-checks-odoo-module hook (the first two renamed with an
+    # xml- prefix, file-not-used only from v0.2 on, so it is not active while
+    # that hook is pinned to v0.1.6); the py2-era checks
+    # (no-utf8-coding-comment, unnecessary-utf8-coding-comment,
+    # old-api7-method-defined), missing-manifest-dependency and
+    # missing-newline-extrafiles were dropped from pylint-odoo, and too-complex
+    # needs the pylint mccabe extension.
     consider-merging-classes-inherited,
     deprecated-module,
     invalid-commit,
