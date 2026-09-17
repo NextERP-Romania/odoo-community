@@ -13,7 +13,6 @@ class StockMove(models.Model):
 
     vehicle_id = fields.Many2one(
         "fleet.vehicle",
-        string="Vehicle",
         copy=False,
     )
     refuel = fields.Boolean(copy=False)

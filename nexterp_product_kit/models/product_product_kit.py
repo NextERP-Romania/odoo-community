@@ -9,16 +9,12 @@ class ProductKit(models.Model):
     _name = "product.product.kit"
     _description = "Product Kits"
 
-    product_id = fields.Many2one(
-        "product.product", string="Product", required=True, index=True
-    )
+    product_id = fields.Many2one("product.product", required=True, index=True)
     categ_id = fields.Many2one(related="product_id.categ_id", store=True, index=True)
     product_template_id = fields.Many2one(
         "product.template", related="product_id.product_tmpl_id", store=True, index=True
     )
-    component_product_id = fields.Many2one(
-        "product.product", string="Component Product", required=True, index=True
-    )
+    component_product_id = fields.Many2one("product.product", required=True, index=True)
     product_qty = fields.Float("Quantity", default=1.0, required=True)
     product_price = fields.Float(compute="_compute_product_price", store=True)
     product_uom_id = fields.Many2one(
