@@ -1,11 +1,11 @@
 # Copyright (C) 2022 NextERP Romania SRL
 # License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/20.0/legal/licenses/licenses.html#).
 
 {
     "name": "NextERP - Allow Debt Recovery Invoice",
     "summary": """NextERP - Allow Debt Recovery Invoice""",
-    "version": "19.0.0.0.0",
+    "version": "20.0.0.0.0",
     "category": "Invoicing",
     "depends": ["account"],
     "data": [

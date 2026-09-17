@@ -1,6 +1,6 @@
 # Copyright (C) 2025 NextERP Romania SRL
 # License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/20.0/legal/licenses/licenses.html#).
 
 import base64
 import io

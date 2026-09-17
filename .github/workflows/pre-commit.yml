@@ -3,7 +3,7 @@ name: pre-commit
 on:
   pull_request:
     branches:
-      - "19.0*"
+      - "20.0*"
     paths-ignore:
       # Documentation-only commits (the nightly doc-refresh bot) must not
       # spin up a full CI run: nothing they touch can change behaviour.
@@ -13,7 +13,7 @@ on:
       - "**/i18n/*.pot"
   push:
     branches:
-      - "19.0"
+      - "20.0"
     paths-ignore:
       # Documentation-only commits (the nightly doc-refresh bot) must not
       # spin up a full CI run: nothing they touch can change behaviour.

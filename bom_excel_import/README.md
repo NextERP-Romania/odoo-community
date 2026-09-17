@@ -1,6 +1,6 @@
 # BOM Excel Import Module
 
-This Odoo 19.0 module allows importing Bills of Materials (BOMs) from Excel files using
+This Odoo 20.0 module allows importing Bills of Materials (BOMs) from Excel files using
 a unified wizard with a two-step process:
 
 1. **Import Operations and Workcenters** (automatically performed first)
@@ -65,7 +65,7 @@ Table              | Assembly   | 12       | Unit           | Screw          | A
 
 ## Requirements
 
-- Odoo 19.0
+- Odoo 20.0
 - Python library: `openpyxl` (for Excel file processing)
 
 ## Installation

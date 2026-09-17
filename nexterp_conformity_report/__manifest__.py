@@ -3,7 +3,7 @@
 {
     "name": "NextERP - Conformity Certificate",
     "summary": "NextERP - Conformity Certificate",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "category": "Special",

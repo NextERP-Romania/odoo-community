@@ -1,11 +1,11 @@
 # Copyright (C) 2022 NextERP Romania SRL
 # License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/20.0/legal/licenses/licenses.html#).
 
 {
     "name": "NextERP - Product Kit Sale",
     "summary": "NextERP - Product Kit Sale",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Sales",
     "depends": ["nexterp_product_kit", "sale"],
     "author": "NextERP Romania",

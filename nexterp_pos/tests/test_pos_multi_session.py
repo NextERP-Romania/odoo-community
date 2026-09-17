@@ -1,6 +1,6 @@
 # Copyright (C) 2026 NextERP Romania SRL
 # License AGPL-3.0 or later
-# (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/20.0/legal/licenses/licenses.html#).
 """Several days open on one register, closed oldest first.
 
 The cash of a register is a chain: each session opens where the one before it

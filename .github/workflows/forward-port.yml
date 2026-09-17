@@ -8,7 +8,7 @@ jobs:
   forwardport:
     if: >-
       github.event.pull_request.merged == true &&
-      github.event.pull_request.base.ref == '19.0'
+      github.event.pull_request.base.ref == '20.0'
     runs-on: ubuntu-latest
     permissions:
       contents: write

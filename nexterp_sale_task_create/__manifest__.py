@@ -1,11 +1,11 @@
 # Copyright (C) 2022 NextERP Romania SRL
 # License OPL-1.0 or later
-# (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
+# (https://www.odoo.com/documentation/user/20.0/legal/licenses/licenses.html#).
 
 {
     "name": "NextERP - Auto Create Sale Tasks",
     "summary": "NextERP - Auto Create Sale Tasks",
-    "version": "19.0.1.0.1",
+    "version": "20.0.1.0.1",
     "depends": ["sale_project"],
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",

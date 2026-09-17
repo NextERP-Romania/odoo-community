@@ -3,7 +3,7 @@
 {
     "name": "Romania - eTransport Extension",
     "summary": "Fixes and extensions for l10n_ro_edi_stock per ANAF eTransport v2.0.2",
-    "version": "19.0.1.2.0",
+    "version": "20.0.1.2.0",
     "category": "Accounting/Localizations/EDI",
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
