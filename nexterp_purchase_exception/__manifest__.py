@@ -15,7 +15,9 @@
     "data": [
         "views/purchase_view.xml",
     ],
-    "installable": True,
+    # Not installable on 20.0: depends on purchase_exception (OCA), which has no Odoo 20
+    # counterpart yet. Flip back once it is available.
+    "installable": False,
     "maintainers": ["feketemihai"],
     "development_status": "Mature",
 }
