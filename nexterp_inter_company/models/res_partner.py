@@ -34,7 +34,7 @@ class ResPartner(models.Model):
         here to avoid MemoryError on large databases.
         """
         if not column_exists(self.env.cr, "res_partner", "is_inter_company"):
-            create_column(self.env.cr, "res_partner", "is_inter_company", "boolean")
+            create_column(self.env.cr, "res_partner", "is_inter_company", "bool")
             # pylint: disable=no-search-all
             company_partners = self.env["res.company"].search([]).mapped("partner_id")
             # pylint: disable=E8103

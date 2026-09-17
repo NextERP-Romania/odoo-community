@@ -19,7 +19,7 @@ class AccountMoveLine(models.Model):
         here to avoid MemoryError on large databases.
         """
         if not column_exists(self.env.cr, "account_move", "is_inter_company"):
-            create_column(self.env.cr, "account_move", "is_inter_company", "boolean")
+            create_column(self.env.cr, "account_move", "is_inter_company", "bool")
             # pylint: disable=E8103
             self.env.cr.execute(
                 """
