@@ -625,11 +625,11 @@ class StockPicking(models.Model):
         """Return a consistent (quantity, codUnitateMasura) pair.
 
         The official module emitted ``move.product_qty`` (quantity converted
-        to the product base UoM) with the UNECE code of ``move.product_uom``,
+        to the product base UoM) with the UNECE code of ``move.uom_id``,
         which was inconsistent. Here we emit both the quantity and the UNECE
-        code in the same UoM (``move.product_uom``).
+        code in the same UoM (``move.uom_id``).
         """
-        uom = move.product_uom or move.product_id.uom_id
+        uom = move.uom_id or move.product_id.uom_id
         if move.state == "done" and "quantity" in move._fields:
             qty = move.quantity
         else:
@@ -643,7 +643,7 @@ class StockPicking(models.Model):
     def _l10n_ro_edi_stock_compute_net_weight(self, move):
         """Net weight = product weight * quantity in the product base UoM."""
         product = move.product_id
-        qty_base = move.product_uom._compute_quantity(
+        qty_base = move.uom_id._compute_quantity(
             move.quantity if move.state == "done" else move.product_uom_qty,
             product.uom_id,
         )

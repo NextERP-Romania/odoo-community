@@ -5,7 +5,18 @@
         <field name="model">fleet.vehicle</field>
         <field name="inherit_id" ref="fleet.fleet_vehicle_view_form" />
         <field name="arch" type="xml">
-            <field name="horsepower_tax" position="after">
+            <!-- Odoo 20 dropped horsepower_tax, which these used to follow, and
+                 gave the Tax Info page an empty Fiscality group for localizations
+                 to fill; it stays hidden until one claims it, the same way
+                 l10n_be_hr_payroll does for Belgium. -->
+            <group name="fiscality_group" position="attributes">
+                <attribute
+                    name="invisible"
+                    add="country_code != 'RO'"
+                    separator="and"
+                />
+            </group>
+            <group name="fiscality_first_group" position="inside">
                 <field name="owner_id" />
                 <field name="not_deductible" string="Not Deductible" />
                 <!-- <field name="non_deductible_percent" string="Non Deductible Percent" /> -->
@@ -18,7 +29,7 @@
                     invisible="not_deductible == False"
                     domain="[('l10n_ro_is_nondeductible','=',True)]"
                 />
-            </field>
+            </group>
         </field>
     </record>
     <record model='ir.ui.view' id='fleet_vehicle_log_contract_view_form'>

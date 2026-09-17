@@ -137,21 +137,25 @@
                 </td>
             </t>
         </xpath>
-        <xpath
-            expr="//td[@name='td_quantity_grouped']/div[@t-if='hide_details']/span[1]"
-            position="replace"
-        >
-            <t
-                t-if="o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund']"
-            >
-                <span>-1</span>
-            </t>
-            <t t-elif="o.company_id.print_invoice_tax_value">
-                <span>1</span>
-            </t>
-            <t t-else="">
-                <span>1.00</span>
-            </t>
+        <!-- Odoo 20 dropped the hide_details branch of this cell, which printed
+             a flat quantity of one unit; the cell now renders empty when the
+             composition is hidden. It is put back here, the sign and the
+             precision still following the company settings. -->
+        <xpath expr="//td[@name='td_quantity_grouped']/div" position="before">
+            <div t-if="hide_details">
+                <t
+                    t-if="o.company_id.print_show_refunds and o.move_type in ['out_refund', 'in_refund']"
+                >
+                    <span>-1</span>
+                </t>
+                <t t-elif="o.company_id.print_invoice_tax_value">
+                    <span>1</span>
+                </t>
+                <t t-else="">
+                    <span>1.00</span>
+                </t>
+                <span groups="uom.group_uom">Units</span>
+            </div>
         </xpath>
         <span t-out="grouped_line['quantity']" position="attributes">
             <attribute name="t-options">

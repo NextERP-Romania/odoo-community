@@ -5,15 +5,13 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='company_type']" position="after">
-                <div class="">
-                    <group class="">
-                        <field
-                            name="is_inter_company"
-                            invisible="company_type == 'person'"
-                        />
-                    </group>
-                </div>
+            <!-- Odoo 20 dropped company_type; what it used to say is now read
+                 on is_company, computed from the partner being its own
+                 commercial entity with a valid vat. The flag sits under the
+                 identifiers block, in the same group. -->
+            <xpath expr="//div[@name='identifiers']" position="after">
+                <field name="is_company" invisible="1" />
+                <field name="is_inter_company" invisible="not is_company" />
             </xpath>
         </field>
     </record>

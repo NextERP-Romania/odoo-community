@@ -192,7 +192,8 @@ class StockInventoryLine(models.Model):
         store=True,
     )
     quant_id = fields.Many2one("stock.quant")
-    product_uom_id = fields.Many2one(string="UoM", related="quant_id.product_uom_id")
+    # Odoo 20 renamed the uom field of the stock models to uom_id
+    product_uom_id = fields.Many2one(string="UoM", related="quant_id.uom_id")
     inventory_quantity = fields.Float(string="Counted Quantity")
     inventory_diff_quantity = fields.Float(string="Difference", readonly=True)
     quantity = fields.Float(string="On Hand Quantity", readonly=True)

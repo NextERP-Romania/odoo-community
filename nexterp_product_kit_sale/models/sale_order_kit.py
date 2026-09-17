@@ -19,6 +19,18 @@ class SaleOrderLineKit(models.Model):
         "invoice_line_id",
         copy=False,
     )
+    # Odoo 20 pinned an explicit relation table on sale.order.line, and a
+    # prototype heir inherits it as it stands: both models would then write the
+    # same table and columns, which the orm refuses. Given its own table, the
+    # same way invoice_lines above already is.
+    accrual_move_ids = fields.Many2many(
+        "account.move",
+        "sale_order_line_kit_accrual_move_rel",
+        "order_line_id",
+        "move_id",
+        string="Accrual Entries",
+        copy=False,
+    )
     product_document_ids = fields.Many2many(
         "product.document",
         "sale_order_line_kit_product_document_rel",

@@ -5,7 +5,10 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <setting id="order_edit_tracking" position="after">
+            <!-- Odoo 20 dropped the order_edit_tracking setting this used to
+                 sit after; the register session settings are the closest
+                 place left. -->
+            <setting id="multiple_employee_session" position="after">
                 <setting
                     id="pos_multi_session"
                     help="Keep several sessions open at once on this register. They are then closed oldest first, so the cash balance carries over in the order the days happened."

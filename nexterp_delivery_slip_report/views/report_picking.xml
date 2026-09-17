@@ -28,18 +28,18 @@
             expr="//span[@t-out='format_number(move.product_uom_qty)']"
             position="attributes"
         >
-            <!-- Replace line quantity with precision, round with line.product_uom precision -->
+            <!-- Replace line quantity with precision, round with line.uom_id precision -->
             <attribute name="t-options">
-                {'widget': 'float', 'precision': move.product_uom.report_precision} if o.company_id.delivery_slip_report_uom_precision else {}
+                {'widget': 'float', 'precision': move.uom_id.report_precision} if o.company_id.delivery_slip_report_uom_precision else {}
             </attribute>
         </xpath>
         <xpath
             expr="//span[@t-out='format_number(move.quantity)']"
             position="attributes"
         >
-            <!-- Replace line quantity with precision, round with line.product_uom precision -->
+            <!-- Replace line quantity with precision, round with line.uom_id precision -->
             <attribute name="t-options">
-                {'widget': 'float', 'precision': move.product_uom.report_precision} if o.company_id.delivery_slip_report_uom_precision else {}
+                {'widget': 'float', 'precision': move.uom_id.report_precision} if o.company_id.delivery_slip_report_uom_precision else {}
             </attribute>
         </xpath>
     </template>
@@ -69,7 +69,7 @@
             position="attributes"
         >
             <attribute name="t-options">
-                {'widget': 'float', 'precision': move_line.product_uom.report_precision} if o.company_id.delivery_slip_report_uom_precision else {}
+                {'widget': 'float', 'precision': move_line.uom_id.report_precision} if o.company_id.delivery_slip_report_uom_precision else {}
             </attribute>
         </xpath>
     </template>
@@ -78,7 +78,7 @@
         inherit_id="stock.stock_report_delivery_aggregated_move_lines"
     >
         <xpath
-            expr="//span[@t-esc=&quot;aggregated_lines[line]['description']&quot;]"
+            expr="//span[@t-out=&quot;aggregated_lines[line]['description']&quot;]"
             position="attributes"
         >
             <attribute

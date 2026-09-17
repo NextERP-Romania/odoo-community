@@ -13,7 +13,8 @@ class StockMoveLine(models.Model):
 
         for aggregated_move_line in agg_move_lines:
             line = agg_move_lines[aggregated_move_line]
-            line["report_precision"] = line["product_uom"].report_precision
+            # Odoo 20 renamed the uom key of the aggregated lines to uom_id
+            line["report_precision"] = line["uom_id"].report_precision
         return agg_move_lines
 
     def _get_aggregated_properties(self, move_line=False, move=False):

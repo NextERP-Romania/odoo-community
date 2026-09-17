@@ -64,14 +64,15 @@
         </field>
     </record>
 
-    <!-- The "Variants" smart button on a product template opens the
-         minimal `product_variant_easy_edit_view`, which has no notebook.
+    <!-- The "Variants" smart button on a product template opens the minimal
+         variant form, `product_product_view_form_normalized` since Odoo 20
+         dropped `product_variant_easy_edit_view`, and it has no notebook.
          Add the kit fields there so kit components are also editable
          from the per-variant easy form. -->
     <record id="product_variant_easy_edit_view_inherit_kit" model="ir.ui.view">
         <field name="name">product.product.view.form.easy.inherit.kit</field>
         <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_variant_easy_edit_view" />
+        <field name="inherit_id" ref="product.product_product_view_form_normalized" />
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
                 <group>
