@@ -58,7 +58,9 @@ class FleetLogReport(models.Model):
             5000000 + vls.id as id,
             vls.active as active,
             vls.amount as amount,
-            vls.date as date,
+            -- Odoo 20 split the service date into date_from and date_to;
+            -- date_from carries what `date` used to, the day of the service
+            vls.date_from as date,
             vls.product_id as product_id,
             vls.purchaser_id as purchaser_id,
             (vls.quantity + vls.liter) as quantity,
