@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">Romania - eTransport Batch Extension</h1>
         <p class="lead text-muted mb-3">Brings the l10n_ro_edi_stock_extension facilities to batch transfers</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.1.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.2.0</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Accounting/Localizations/EDI</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">LGPL-3</span>        </div>
       </div>
     </div>
@@ -179,7 +179,14 @@
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.0 (2026-06-23)</h2>
+      <h2>19.0.1.2.0 (2026-09-15)</h2>
+<ul>
+<li>Keep a picking sendable to eTransport while its batch is still in progress
+and has not been notified itself. <code>l10n_ro_edi_stock_batch</code> disables
+eTransport on every picking belonging to a batch, which defeated sending the
+notification before the goods move.</li>
+</ul>
+<h2>19.0.1.0.0 (2026-06-23)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

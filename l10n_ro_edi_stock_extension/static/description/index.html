@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">Romania - eTransport Extension</h1>
         <p class="lead text-muted mb-3">Fixes and extensions for l10n_ro_edi_stock per ANAF eTransport v2.0.2</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.1.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.2.0</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Accounting/Localizations/EDI</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">LGPL-3</span>        </div>
       </div>
     </div>
@@ -246,7 +246,19 @@
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.0 (2026-06-23)</h2>
+      <h2>19.0.1.2.0 (2026-09-15)</h2>
+<ul>
+<li>Drop the base <code>Warehouse of ... should be in Romania</code> error on the
+counterparty side of intra-EU / import / export operations, which
+<code>l10n_ro_edi_stock</code> started raising unconditionally and which made those
+notifications impossible to send.</li>
+<li>Fix <code>AttributeError</code> when the ANAF response has an unexpected shape:
+<code>ETransportAPI</code> is a plain class, so the module-level <code>_</code> has to be used
+instead of <code>self.env._</code>.</li>
+<li><code>_compute_l10n_ro_edi_stock_enable_send</code> now only widens the states the base
+does not already cover ('assigned' has been allowed upstream since 19.0).</li>
+</ul>
+<h2>19.0.1.0.0 (2026-06-23)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

@@ -1,0 +1,6 @@
+scenarios: []
+setup:
+  viewport:
+    width: 1440
+    height: 900
+  pause_ms_default: 500
