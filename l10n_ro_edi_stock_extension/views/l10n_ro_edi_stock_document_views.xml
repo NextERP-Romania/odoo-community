@@ -36,6 +36,7 @@
                 <field name="state" />
                 <field name="l10n_ro_edi_stock_uit" string="UIT" />
                 <field name="picking_id" optional="show" />
+                <field name="batch_id" optional="show" />
                 <field name="l10n_ro_edi_stock_load_id" optional="hide" />
                 <field name="l10n_ro_edi_stock_confirm_type" optional="hide" />
                 <field name="l10n_ro_edi_stock_modified_vehicle" optional="hide" />
@@ -60,6 +61,7 @@
                         </group>
                         <group>
                             <field name="picking_id" />
+                            <field name="batch_id" />
                             <field name="l10n_ro_edi_stock_confirm_type" />
                             <field name="l10n_ro_edi_stock_modified_vehicle" />
                             <field name="l10n_ro_edi_stock_modification_date" />
@@ -83,6 +85,7 @@
             <search string="eTransport Documents">
                 <field name="l10n_ro_edi_stock_uit" string="UIT" />
                 <field name="picking_id" />
+                <field name="batch_id" />
                 <field name="l10n_ro_edi_stock_load_id" string="Load ID" />
                 <separator />
                 <filter

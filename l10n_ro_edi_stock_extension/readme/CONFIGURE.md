@@ -20,3 +20,10 @@ Because `codTarifar` is now mandatory (the `00000000` fallback has been removed)
 ## 4. Verify address structure
 
 The module splits Romanian street addresses into `denumireStrada` + number/building details automatically via `_l10n_ro_edi_stock_split_street`. Confirm that partner addresses follow the format *"Street name number"* (e.g. *"Calea Victoriei 12-14"*) to ensure correct splitting.
+
+## 5. Batch transfers
+
+No dedicated configuration is needed. Batch transfers reuse the company-wide
+settings above; the **eTransport Price Source** field on the batch form
+defaults to the company default (`_l10n_ro_edi_stock_default_price_source`) and
+can be overridden per batch before sending the notification.

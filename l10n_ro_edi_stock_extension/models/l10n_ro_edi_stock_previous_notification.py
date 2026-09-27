@@ -13,6 +13,12 @@ class L10nRoEdiStockPreviousNotification(models.Model):
         ondelete="cascade",
         index=True,
     )
+    batch_id = fields.Many2one(
+        comodel_name="stock.picking.batch",
+        string="Batch Transfer",
+        ondelete="cascade",
+        index=True,
+    )
     uit = fields.Char(string="Previous UIT", size=16, required=True)
     remarks = fields.Char(size=200)
     declarant_ref = fields.Char(string="Declarant Reference", size=50)

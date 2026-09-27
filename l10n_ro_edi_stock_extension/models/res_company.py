@@ -73,28 +73,34 @@ class ResCompany(models.Model):
         )
         if not rows:
             return
+
+        # A UIT can sit either on a transfer or on a batch transfer, so both
+        # models are reconciled against the ANAF list.
         uits = [r.get("uit") for r in rows if r.get("uit")]
-        pickings_by_uit = {
-            p.l10n_ro_edi_stock_document_uit: p
-            for p in self.env["stock.picking"]
-            .sudo()
-            .search(
-                [
-                    ("company_id", "=", company.id),
-                    ("l10n_ro_edi_stock_document_uit", "in", uits),
-                ]
-            )
-        }
+        records_by_uit = {}
+        for model in ("stock.picking", "stock.picking.batch"):
+            for record in (
+                self.env[model]
+                .sudo()
+                .search(
+                    [
+                        ("company_id", "=", company.id),
+                        ("l10n_ro_edi_stock_document_uit", "in", uits),
+                    ]
+                )
+            ):
+                records_by_uit.setdefault(record.l10n_ro_edi_stock_document_uit, record)
+
         for row in rows:
-            picking = pickings_by_uit.get(row.get("uit"))
-            if not picking:
+            record = records_by_uit.get(row.get("uit"))
+            if not record:
                 continue
             if row.get("stare") == "ERR":
                 messages = "\n".join(
                     f"[{m.get('tip')}] {m.get('mesaj')}"
                     for m in (row.get("mesaje") or [])
                 )
-                picking._message_log(
+                record._message_log(
                     body=(
                         f"ANAF LIST returned errors for this notification:\n{messages}"
                     )

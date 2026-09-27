@@ -81,6 +81,15 @@ What this module provides
    ``l10n_ro_edi_stock_event_type`` (NOT / COR / DEL / CON / MVH) and
    ``l10n_ro_edi_stock_confirm_type`` (10 / 20 / 30) stored on
    ``l10n_ro_edi.document``.
+-  **Batch transfers** (``stock.picking.batch``): everything above
+   applies equally to a batch notification. Odoo 20.0 merged
+   ``l10n_ro_edi_stock_batch`` into ``l10n_ro_edi_stock``
+   (``stock_picking_batch`` itself became part of ``stock``), so the
+   batch support that used to live in a separate
+   ``l10n_ro_edi_stock_batch_extension`` module is now part of this one.
+   The batch record is injected as the ``_picking_record`` consumed by
+   the validation and XML template pipeline and implements the same
+   helper interface, so there is no duplicated logic.
 
 
 **Table of contents**
@@ -115,6 +124,10 @@ Key features
 -  **Transporter Info service** — query ANAF for all notifications where
    the company acts as transport operator, with full vehicle and route
    details.
+-  **Batch transfers included** — the same validation, price sources,
+   transport documents, UIT lifecycle actions and LIST reconciliation on
+   ``stock.picking.batch``, and a picking stays sendable while its batch
+   is still in progress and has not been notified itself.
 
 Configuration
 =============
@@ -164,6 +177,15 @@ number/building details automatically via
 ``_l10n_ro_edi_stock_split_street``. Confirm that partner addresses
 follow the format *"Street name number"* (e.g. *"Calea Victoriei
 12-14"*) to ensure correct splitting.
+
+5. Batch transfers
+------------------
+
+No dedicated configuration is needed. Batch transfers reuse the
+company-wide settings above; the **eTransport Price Source** field on
+the batch form defaults to the company default
+(``_l10n_ro_edi_stock_default_price_source``) and can be overridden per
+batch before sending the notification.
 
 Usage
 =====
@@ -261,11 +283,46 @@ Querying transporter info (as transport operator)
    appears as an ``l10n.ro.edi.stock.transporter.info.line`` row with
    UIT, vehicle numbers, start/end locations, and expiry date.
 
+Declaring a batch transfer
+--------------------------
+
+1. Go to **Inventory → Operations → Batch Transfers** and open the batch
+   you want to declare.
+2. Fill in the **eTransport** tab exactly as on a single transfer:
+   operation type and scope, vehicle, start/end locations, **eTransport
+   Price Source**, **Transport documents**, **Previous notifications**
+   and **Post-Outage Declaration**.
+3. Click **Send eTransport**. The batch data goes through the same ANAF
+   Schematron v2.0.2 validation as a single transfer and the returned
+   UIT is stored on the batch.
+4. **Delete notification**, **Confirm transport** and **Modify vehicle**
+   are available on the batch form once the UIT is validated, and the
+   ANAF response is logged in the batch chatter.
+
+A picking that belongs to a batch stays sendable on its own as long as
+the batch itself has not been notified and is not done — otherwise the
+batch notification is the authoritative one and the picking can no
+longer file a second UIT for the same goods. Batch UITs are reconciled
+by the LIST cron job alongside transfer UITs.
+
 Changelog
 =========
 
 Changelog
 =========
+
+20.0.1.3.0 (2026-09-26)
+-----------------------
+
+-  Merge ``l10n_ro_edi_stock_batch_extension`` into this module,
+   mirroring Odoo 20.0, where ``l10n_ro_edi_stock_batch`` was merged
+   into ``l10n_ro_edi_stock`` (``stock_picking_batch`` itself became
+   part of ``stock``). Batch transfer support is unchanged functionally.
+   A pre-migration script merges the old module into this one with
+   ``openupgradelib``
+   (``update_module_names(..., merge_modules=True)``), so its records
+   change owner instead of being dropped, and a post-migration script
+   uninstalls the old module should the merge not have run.
 
 19.0.1.2.0 (2026-09-15)
 -----------------------

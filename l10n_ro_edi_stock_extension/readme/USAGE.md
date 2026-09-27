@@ -53,3 +53,24 @@ After a notification UIT has been obtained:
 1. Go to **Inventory → eTransport → Transporters** (`menu_l10n_ro_edi_stock_transporter_info_wizard`).
 2. Fill in **Transport operator VAT**, and optionally **Initial declarant VAT**, **Specific UIT**, or **Declarant reference**.
 3. Click **Fetch** (`action_fetch`). Each matching ANAF notification appears as an `l10n.ro.edi.stock.transporter.info.line` row with UIT, vehicle numbers, start/end locations, and expiry date.
+
+## Declaring a batch transfer
+
+1. Go to **Inventory → Operations → Batch Transfers** and open the batch you
+   want to declare.
+2. Fill in the **eTransport** tab exactly as on a single transfer: operation
+   type and scope, vehicle, start/end locations, **eTransport Price Source**,
+   **Transport documents**, **Previous notifications** and **Post-Outage
+   Declaration**.
+3. Click **Send eTransport**. The batch data goes through the same ANAF
+   Schematron v2.0.2 validation as a single transfer and the returned UIT is
+   stored on the batch.
+4. **Delete notification**, **Confirm transport** and **Modify vehicle** are
+   available on the batch form once the UIT is validated, and the ANAF response
+   is logged in the batch chatter.
+
+A picking that belongs to a batch stays sendable on its own as long as the
+batch itself has not been notified and is not done — otherwise the batch
+notification is the authoritative one and the picking can no longer file a
+second UIT for the same goods. Batch UITs are reconciled by the LIST cron job
+alongside transfer UITs.
