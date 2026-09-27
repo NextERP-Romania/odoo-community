@@ -35,6 +35,27 @@ class ResCompany(models.Model):
         help="Enable the cron job calling the LIST service for reconciliation.",
     )
 
+    l10n_ro_edi_stock_carrier_check = fields.Selection(
+        selection=[
+            ("send", "When the notification is sent"),
+            ("validate", "When the transfer is validated"),
+        ],
+        default="send",
+        string="Delivery Carrier Required",
+        help="When Odoo asks for the delivery carrier of a transfer.\n\n"
+        "eTransport applies to goods of high fiscal risk carried on public "
+        "roads above the legal thresholds, and the carrier is data the "
+        "notification needs -- not the stock move. Asked for when the "
+        "notification is sent (the default), a shop can receive and deliver "
+        "goods that are never declared without a carrier being invented for "
+        "them, and the carrier is still demanded, in full, of every transfer "
+        "that does go to ANAF.\n\n"
+        "Asked for when the transfer is validated, this is Odoo's own "
+        "behaviour: every incoming and outgoing transfer of a Romanian "
+        "company needs a carrier before it can be validated, declared or "
+        "not.",
+    )
+
     @api.model
     def _l10n_ro_edi_stock_cron_list_sync(self):
         """Called by cron. Iterates RO companies with sync enabled and logs

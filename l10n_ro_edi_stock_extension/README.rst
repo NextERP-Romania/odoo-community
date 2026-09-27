@@ -148,7 +148,30 @@ Configuration
    -  Override per transfer when needed using the field on
       ``stock.picking``.
 
-2. Automatic LIST sync (cron)
+2. When the delivery carrier is asked for
+-----------------------------------------
+
+1. In the same **eTransport** section, **Delivery Carrier Required**
+   (``l10n_ro_edi_stock_carrier_check``):
+
+   -  *When the notification is sent* (the default) — a transfer is
+      validated without a carrier, and the carrier is demanded, with the
+      eTransport partner behind it, when the notification goes to ANAF.
+      This is what a company whose transfers are mostly below the
+      eTransport thresholds wants: no carrier is invented for goods
+      nobody declares.
+   -  *When the transfer is validated* — Odoo's own behaviour: every
+      incoming and outgoing transfer of a Romanian company needs a
+      carrier before it can be validated, declared or not.
+
+2. Either way the carrier needs an **eTransport partner**
+   (``l10n_ro_edi_stock_partner_id`` on the carrier) with a VAT number,
+   a city and a street, or the notification is refused.
+3. On the default setting, the carrier stays writable on a transfer that
+   is already done, for as long as a notification can still be sent for
+   it.
+
+3. Automatic LIST sync (cron)
 -----------------------------
 
 1. In the same settings page, tick **Automatic List Sync**
@@ -161,7 +184,7 @@ Configuration
    → Technical → Automation → Scheduled Actions** and edit the cron
    record.
 
-3. Verify NC8/HS codes on products
+4. Verify NC8/HS codes on products
 ----------------------------------
 
 Because ``codTarifar`` is now mandatory (the ``00000000`` fallback has
@@ -169,7 +192,7 @@ been removed), ensure every product that appears on eTransport-eligible
 transfers has a valid 4-, 6-, or 8-digit HS/NC8 code set on the product
 form before sending notifications.
 
-4. Verify address structure
+5. Verify address structure
 ---------------------------
 
 The module splits Romanian street addresses into ``denumireStrada`` +
@@ -178,7 +201,7 @@ number/building details automatically via
 follow the format *"Street name number"* (e.g. *"Calea Victoriei
 12-14"*) to ensure correct splitting.
 
-5. Batch transfers
+6. Batch transfers
 ------------------
 
 No dedicated configuration is needed. Batch transfers reuse the
@@ -310,6 +333,27 @@ Changelog
 
 Changelog
 =========
+
+20.0.1.4.0 (2026-09-27)
+-----------------------
+
+-  **The delivery carrier is asked for when the notification is sent,
+   not when the transfer is validated.** The base demands one on every
+   incoming and outgoing transfer of a Romanian company --
+   ``l10n_ro_edi_stock_enable`` is no narrower than "not internal, not
+   batched, company in Romania" -- so a shop receiving three cartons it
+   fetched itself could not validate its receipt. eTransport applies to
+   goods of high fiscal risk above the legal thresholds, and the carrier
+   is data the notification needs, so that is where it is now demanded,
+   in full: no carrier means one clear error at send time instead of
+   three complaints about a transport partner that is not there.
+   Companies that declare everything they move keep Odoo's behaviour
+   with **Delivery Carrier Required = When the transfer is validated**
+   in the eTransport settings.
+-  The carrier stays writable on a validated transfer for as long as a
+   notification can still be sent for it. Odoo locks the field once the
+   goods are done, which made sense only while the carrier had to be
+   there before that.
 
 20.0.1.3.0 (2026-09-26)
 -----------------------
