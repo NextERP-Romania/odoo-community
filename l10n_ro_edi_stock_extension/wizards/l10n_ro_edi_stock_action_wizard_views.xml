@@ -6,7 +6,8 @@
         <field name="arch" type="xml">
             <form string="eTransport notification action">
                 <group>
-                    <field name="picking_id" readonly="1" />
+                    <field name="picking_id" readonly="1" invisible="not picking_id" />
+                    <field name="batch_id" readonly="1" invisible="not batch_id" />
                     <field name="uit" readonly="1" />
                     <field name="action_type" />
                     <field name="remarks" />

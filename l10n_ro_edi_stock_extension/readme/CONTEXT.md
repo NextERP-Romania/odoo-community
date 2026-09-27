@@ -8,3 +8,7 @@
 - **Post-outage declaration flag** — `declPostAvarie` per OUG 41/2022 for submissions during ANAF system outages.
 - **Automatic LIST sync cron** — reconciles ANAF notification list with local transfers every 6 hours; manual wizard also available.
 - **Transporter Info service** — query ANAF for all notifications where the company acts as transport operator, with full vehicle and route details.
+- **Batch transfers included** — the same validation, price sources, transport
+  documents, UIT lifecycle actions and LIST reconciliation on
+  `stock.picking.batch`, and a picking stays sendable while its batch is still
+  in progress and has not been notified itself.

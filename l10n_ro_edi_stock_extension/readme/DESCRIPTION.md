@@ -24,3 +24,11 @@ The official module ships with several calculation bugs and missing features req
 - **LIST service sync** (`l10n.ro.edi.stock.list.wizard`): fetch and reconcile the ANAF notifications list for any date range (1–60 days); automatic reconciliation logs matched UITs in the transfer chatter. A scheduled cron job (`ir_cron_l10n_ro_edi_stock_list_sync`) runs every 6 hours.
 - **Transporter Info service** (`l10n.ro.edi.stock.transporter.info.wizard`): query ANAF for all notifications in which the company acts as transport operator, with full vehicle and location details.
 - **Extended document state tracking**: `l10n_ro_edi_stock_event_type` (NOT / COR / DEL / CON / MVH) and `l10n_ro_edi_stock_confirm_type` (10 / 20 / 30) stored on `l10n_ro_edi.document`.
+- **Batch transfers** (`stock.picking.batch`): everything above applies equally
+  to a batch notification. Odoo 20.0 merged `l10n_ro_edi_stock_batch` into
+  `l10n_ro_edi_stock` (`stock_picking_batch` itself became part of `stock`), so
+  the batch support that used to live in a separate
+  `l10n_ro_edi_stock_batch_extension` module is now part of this one. The batch
+  record is injected as the `_picking_record` consumed by the validation and
+  XML template pipeline and implements the same helper interface, so there is
+  no duplicated logic.

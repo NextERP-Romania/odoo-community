@@ -23,10 +23,15 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
     _name = "l10n.ro.edi.stock.action.wizard"
     _description = "eTransport UIT action wizard (delete / confirm / modify vehicle)"
 
+    # Exactly one of the two is set: the wizard acts either on a transfer or
+    # on a batch transfer (both carry their own UIT).
     picking_id = fields.Many2one(
         comodel_name="stock.picking",
         string="Transfer",
-        required=True,
+    )
+    batch_id = fields.Many2one(
+        comodel_name="stock.picking.batch",
+        string="Batch Transfer",
     )
     action_type = fields.Selection(
         selection=ACTION_TYPES,
@@ -59,17 +64,24 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
     def default_get(self, fields_list):
         defaults = super().default_get(fields_list)
         active_id = self.env.context.get("active_id")
-        if active_id and self.env.context.get("active_model") == "stock.picking":
-            picking = self.env["stock.picking"].browse(active_id)
-            defaults["picking_id"] = picking.id
-            defaults["uit"] = picking.l10n_ro_edi_stock_document_uit
-            defaults["new_vehicle_number"] = picking.l10n_ro_edi_stock_vehicle_number
-            defaults["trailer_1_number"] = picking.l10n_ro_edi_stock_trailer_1_number
-            defaults["trailer_2_number"] = picking.l10n_ro_edi_stock_trailer_2_number
+        active_model = self.env.context.get("active_model")
+        field_by_model = {
+            "stock.picking": "picking_id",
+            "stock.picking.batch": "batch_id",
+        }
+        if active_id and active_model in field_by_model:
+            record = self.env[active_model].browse(active_id)
+            defaults[field_by_model[active_model]] = record.id
+            defaults["uit"] = record.l10n_ro_edi_stock_document_uit
+            defaults["new_vehicle_number"] = record.l10n_ro_edi_stock_vehicle_number
+            defaults["trailer_1_number"] = record.l10n_ro_edi_stock_trailer_1_number
+            defaults["trailer_2_number"] = record.l10n_ro_edi_stock_trailer_2_number
         return defaults
 
     def action_execute(self):
         self.ensure_one()
+        if not self._l10n_ro_edi_stock_record():
+            raise UserError(self.env._("No transfer or batch transfer to act on."))
         if not self.uit:
             raise UserError(self.env._("The transfer has no validated UIT."))
         method = {
@@ -84,12 +96,16 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
             "ir.qweb"
         ]._render(template_xmlid, values={"data": data})
 
+    def _l10n_ro_edi_stock_record(self):
+        """The record the ANAF action applies to: a batch transfer or a transfer."""
+        return self.batch_id or self.picking_id
+
     def _common_data(self):
-        picking = self.picking_id
-        company = picking.company_id
+        record = self._l10n_ro_edi_stock_record()
+        company = record.company_id
         return {
             "codDeclarant": (company.vat or "").upper().replace("RO", ""),
-            "refDeclarant": (picking.name or "")[:50],
+            "refDeclarant": (record.name or "")[:50],
             "uit": self.uit,
             "remarks": (self.remarks or "")[:200] or None,
             "declPostAvarie": "D" if self.post_outage else None,
@@ -152,9 +168,9 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
                 "l10n_ro_edi_stock_modification_date": self.modification_date,
             },
         )
-        # Update the fields on the picking for history tracking
+        # Update the fields on the transfer / batch for history tracking
         if isinstance(result, dict) and not result.get("error"):
-            self.picking_id.write(
+            self._l10n_ro_edi_stock_record().write(
                 {
                     "l10n_ro_edi_stock_vehicle_number": self.new_vehicle_number,
                     "l10n_ro_edi_stock_trailer_1_number": self.trailer_1_number
@@ -166,8 +182,9 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         return result
 
     def _upload_and_log(self, raw_xml, event_type, new_state, extras=None):
+        record = self._l10n_ro_edi_stock_record()
         result = ETransportAPIExtra().upload_data(
-            company_id=self.picking_id.company_id,
+            company_id=record.company_id,
             data=raw_xml,
         )
         if "error" in result:
@@ -179,8 +196,11 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
                 )
             )
         content = result["content"]
+        link_field = (
+            "batch_id" if record._name == "stock.picking.batch" else "picking_id"
+        )
         values = {
-            "picking_id": self.picking_id.id,
+            link_field: record.id,
             "state": new_state,
             "l10n_ro_edi_stock_load_id": content["index_incarcare"],
             "l10n_ro_edi_stock_uit": self.uit,
@@ -190,7 +210,7 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         if extras:
             values.update(extras)
         self.env["l10n_ro_edi.document"].create(values)
-        self.picking_id._message_log(
+        record._message_log(
             body=self.env._(
                 "eTransport %(action)s sent successfully "
                 "(UIT: %(uit)s, load: %(load)s).",

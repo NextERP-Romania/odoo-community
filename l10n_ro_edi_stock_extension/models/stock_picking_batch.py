@@ -6,20 +6,15 @@ import markupsafe
 from odoo import api, fields, models
 from odoo.tools.float_utils import float_is_zero
 
-from odoo.addons.l10n_ro_edi_stock_extension.models.etransport_constants import (
-    is_national,
-    is_outgoing,
-)
-from odoo.addons.l10n_ro_edi_stock_extension.models.l10n_ro_edi_stock_document import (
-    EXTRA_DOCUMENT_STATES,
-)
+from .etransport_constants import is_national, is_outgoing
+from .l10n_ro_edi_stock_document import EXTRA_DOCUMENT_STATES
 
 
 class StockPickingBatch(models.Model):
     _inherit = "stock.picking.batch"
 
     # The base ``l10n_ro_edi_stock_state`` field copies ``document.state`` into a
-    # Selection limited to DOCUMENT_STATES. l10n_ro_edi_stock_extension adds extra
+    # Selection limited to DOCUMENT_STATES. this module adds extra
     # document states (deleted / confirmed / vehicle modified), so the batch
     # selection has to be widened too, otherwise the state compute raises
     # ``ValueError: Wrong value ... 'stock_vehicle_modified'``.
@@ -28,7 +23,7 @@ class StockPickingBatch(models.Model):
         ondelete={k: "set null" for k, _ in EXTRA_DOCUMENT_STATES},
     )
 
-    # Same configuration fields the extension adds on stock.picking, so the
+    # Same configuration fields this module adds on stock.picking, so the
     # batch eTransport notification benefits from the same facilities.
     l10n_ro_edi_stock_price_source = fields.Selection(
         selection=[
@@ -68,20 +63,21 @@ class StockPickingBatch(models.Model):
         return self.env.company.l10n_ro_edi_stock_default_price_source or "auto"
 
     ################################################################################
-    # Send override - route the batch through the extension's picking logic
+    # Send override - route the batch through the stock.picking logic
     ################################################################################
 
     def _l10n_ro_edi_stock_send_etransport_document(self, send_type: str):
-        # EXTENDS l10n_ro_edi_stock_batch
+        # EXTENDS l10n_ro_edi_stock
         # Expose this batch via the context so the stock.picking override
         # (injected into _l10n_ro_edi_stock_validate_data /
         # _l10n_ro_edi_stock_get_template_data) treats it as the
-        # ``_picking_record`` and applies all extension enrichments.
+        # ``_picking_record`` and applies all the enrichments below.
         self.ensure_one()
         # ``l10n_ro_edi_stock_xml_capture`` is a mutable side-channel: the
-        # extension's _l10n_ro_edi_stock_get_template_data stores the final
-        # template data into it so the amend correction XML can be re-rendered
-        # below (see _l10n_ro_edi_stock_create_document_stock_sent).
+        # stock.picking override of _l10n_ro_edi_stock_get_template_data
+        # stores the final template data into it so the amend correction XML
+        # can be re-rendered below (see
+        # _l10n_ro_edi_stock_create_document_stock_sent).
         return super(
             StockPickingBatch,
             self.with_context(
@@ -92,7 +88,7 @@ class StockPickingBatch(models.Model):
         )._l10n_ro_edi_stock_send_etransport_document(send_type=send_type)
 
     def _l10n_ro_edi_stock_create_document_stock_sent(self, values):
-        # EXTENDS l10n_ro_edi_stock_batch:
+        # EXTENDS l10n_ro_edi_stock:
         # 1) On amend, the base re-stores the original validated XML instead of
         #    the correction actually sent to ANAF (which contains <corectie>).
         #    Re-render the real correction from the captured template data so the
@@ -117,7 +113,7 @@ class StockPickingBatch(models.Model):
         return document
 
     def _l10n_ro_edi_stock_report_unhandled_document_state(self, state):
-        # EXTENDS l10n_ro_edi_stock_batch: persist a 'stock_sending_failed'
+        # EXTENDS l10n_ro_edi_stock: persist a 'stock_sending_failed'
         # document for an unrecognised ANAF status (the base only logs it while
         # the fetch routine deletes the 'stock_sent' document), so the batch does
         # not silently lose its eTransport state.
@@ -140,7 +136,7 @@ class StockPickingBatch(models.Model):
         return super()._l10n_ro_edi_stock_report_unhandled_document_state(state)
 
     ################################################################################
-    # Duck-typing: the extension's template/validation code calls these helpers on
+    # Duck-typing: this module's template/validation code calls these helpers on
     # the ``_picking_record``. The stateless ones simply delegate to stock.picking;
     # the record-dependent ones (value, address) are implemented for the batch.
     ################################################################################

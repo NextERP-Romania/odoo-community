@@ -81,6 +81,15 @@ What this module provides
    ``l10n_ro_edi_stock_event_type`` (NOT / COR / DEL / CON / MVH) and
    ``l10n_ro_edi_stock_confirm_type`` (10 / 20 / 30) stored on
    ``l10n_ro_edi.document``.
+-  **Batch transfers** (``stock.picking.batch``): everything above
+   applies equally to a batch notification. Odoo 20.0 merged
+   ``l10n_ro_edi_stock_batch`` into ``l10n_ro_edi_stock``
+   (``stock_picking_batch`` itself became part of ``stock``), so the
+   batch support that used to live in a separate
+   ``l10n_ro_edi_stock_batch_extension`` module is now part of this one.
+   The batch record is injected as the ``_picking_record`` consumed by
+   the validation and XML template pipeline and implements the same
+   helper interface, so there is no duplicated logic.
 
 
 **Table of contents**
@@ -115,6 +124,10 @@ Key features
 -  **Transporter Info service** — query ANAF for all notifications where
    the company acts as transport operator, with full vehicle and route
    details.
+-  **Batch transfers included** — the same validation, price sources,
+   transport documents, UIT lifecycle actions and LIST reconciliation on
+   ``stock.picking.batch``, and a picking stays sendable while its batch
+   is still in progress and has not been notified itself.
 
 Configuration
 =============
@@ -135,7 +148,30 @@ Configuration
    -  Override per transfer when needed using the field on
       ``stock.picking``.
 
-2. Automatic LIST sync (cron)
+2. When the delivery carrier is asked for
+-----------------------------------------
+
+1. In the same **eTransport** section, **Delivery Carrier Required**
+   (``l10n_ro_edi_stock_carrier_check``):
+
+   -  *When the notification is sent* (the default) — a transfer is
+      validated without a carrier, and the carrier is demanded, with the
+      eTransport partner behind it, when the notification goes to ANAF.
+      This is what a company whose transfers are mostly below the
+      eTransport thresholds wants: no carrier is invented for goods
+      nobody declares.
+   -  *When the transfer is validated* — Odoo's own behaviour: every
+      incoming and outgoing transfer of a Romanian company needs a
+      carrier before it can be validated, declared or not.
+
+2. Either way the carrier needs an **eTransport partner**
+   (``l10n_ro_edi_stock_partner_id`` on the carrier) with a VAT number,
+   a city and a street, or the notification is refused.
+3. On the default setting, the carrier stays writable on a transfer that
+   is already done, for as long as a notification can still be sent for
+   it.
+
+3. Automatic LIST sync (cron)
 -----------------------------
 
 1. In the same settings page, tick **Automatic List Sync**
@@ -148,7 +184,7 @@ Configuration
    → Technical → Automation → Scheduled Actions** and edit the cron
    record.
 
-3. Verify NC8/HS codes on products
+4. Verify NC8/HS codes on products
 ----------------------------------
 
 Because ``codTarifar`` is now mandatory (the ``00000000`` fallback has
@@ -156,7 +192,7 @@ been removed), ensure every product that appears on eTransport-eligible
 transfers has a valid 4-, 6-, or 8-digit HS/NC8 code set on the product
 form before sending notifications.
 
-4. Verify address structure
+5. Verify address structure
 ---------------------------
 
 The module splits Romanian street addresses into ``denumireStrada`` +
@@ -164,6 +200,15 @@ number/building details automatically via
 ``_l10n_ro_edi_stock_split_street``. Confirm that partner addresses
 follow the format *"Street name number"* (e.g. *"Calea Victoriei
 12-14"*) to ensure correct splitting.
+
+6. Batch transfers
+------------------
+
+No dedicated configuration is needed. Batch transfers reuse the
+company-wide settings above; the **eTransport Price Source** field on
+the batch form defaults to the company default
+(``_l10n_ro_edi_stock_default_price_source``) and can be overridden per
+batch before sending the notification.
 
 Usage
 =====
@@ -261,11 +306,67 @@ Querying transporter info (as transport operator)
    appears as an ``l10n.ro.edi.stock.transporter.info.line`` row with
    UIT, vehicle numbers, start/end locations, and expiry date.
 
+Declaring a batch transfer
+--------------------------
+
+1. Go to **Inventory → Operations → Batch Transfers** and open the batch
+   you want to declare.
+2. Fill in the **eTransport** tab exactly as on a single transfer:
+   operation type and scope, vehicle, start/end locations, **eTransport
+   Price Source**, **Transport documents**, **Previous notifications**
+   and **Post-Outage Declaration**.
+3. Click **Send eTransport**. The batch data goes through the same ANAF
+   Schematron v2.0.2 validation as a single transfer and the returned
+   UIT is stored on the batch.
+4. **Delete notification**, **Confirm transport** and **Modify vehicle**
+   are available on the batch form once the UIT is validated, and the
+   ANAF response is logged in the batch chatter.
+
+A picking that belongs to a batch stays sendable on its own as long as
+the batch itself has not been notified and is not done — otherwise the
+batch notification is the authoritative one and the picking can no
+longer file a second UIT for the same goods. Batch UITs are reconciled
+by the LIST cron job alongside transfer UITs.
+
 Changelog
 =========
 
 Changelog
 =========
+
+20.0.1.4.0 (2026-09-27)
+-----------------------
+
+-  **The delivery carrier is asked for when the notification is sent,
+   not when the transfer is validated.** The base demands one on every
+   incoming and outgoing transfer of a Romanian company --
+   ``l10n_ro_edi_stock_enable`` is no narrower than "not internal, not
+   batched, company in Romania" -- so a shop receiving three cartons it
+   fetched itself could not validate its receipt. eTransport applies to
+   goods of high fiscal risk above the legal thresholds, and the carrier
+   is data the notification needs, so that is where it is now demanded,
+   in full: no carrier means one clear error at send time instead of
+   three complaints about a transport partner that is not there.
+   Companies that declare everything they move keep Odoo's behaviour
+   with **Delivery Carrier Required = When the transfer is validated**
+   in the eTransport settings.
+-  The carrier stays writable on a validated transfer for as long as a
+   notification can still be sent for it. Odoo locks the field once the
+   goods are done, which made sense only while the carrier had to be
+   there before that.
+
+20.0.1.3.0 (2026-09-26)
+-----------------------
+
+-  Merge ``l10n_ro_edi_stock_batch_extension`` into this module,
+   mirroring Odoo 20.0, where ``l10n_ro_edi_stock_batch`` was merged
+   into ``l10n_ro_edi_stock`` (``stock_picking_batch`` itself became
+   part of ``stock``). Batch transfer support is unchanged functionally.
+   A pre-migration script merges the old module into this one with
+   ``openupgradelib``
+   (``update_module_names(..., merge_modules=True)``), so its records
+   change owner instead of being dropped, and a post-migration script
+   uninstalls the old module should the merge not have run.
 
 19.0.1.2.0 (2026-09-15)
 -----------------------

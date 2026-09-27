@@ -34,6 +34,17 @@
                 />
             </xpath>
 
+            <!-- The carrier is asked for when the notification is sent, which
+                 may well be after the goods have moved: leave it writable on a
+                 done transfer for as long as a notification can still go out.
+                 Odoo locks it on 'done' because it used to be demanded before
+                 that, and there was nothing left to fill in afterwards. -->
+            <xpath expr="//field[@name='carrier_id']" position="attributes">
+                <attribute
+                    name="readonly"
+                >state == 'cancel' or (state == 'done' and not l10n_ro_edi_stock_enable_send)</attribute>
+            </xpath>
+
             <!-- Price source in the eTransport tab -->
             <xpath
                 expr="//page[@name='etransport']//field[@name='l10n_ro_edi_stock_remarks']"

@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record
-        id="view_picking_batch_form_l10n_ro_edi_stock_batch_extension"
-        model="ir.ui.view"
-    >
-        <field
-            name="name"
-        >stock.picking.batch.form.l10n_ro_edi_stock_batch_extension</field>
+    <record id="view_picking_batch_form_l10n_ro_edi_stock_extension" model="ir.ui.view">
+        <field name="name">stock.picking.batch.form.l10n_ro_edi_stock_extension</field>
         <field name="model">stock.picking.batch</field>
-        <field
-            name="inherit_id"
-            ref="l10n_ro_edi_stock_batch.l10n_ro_edi_stock_view_batch_form"
-        />
+        <field name="inherit_id" ref="l10n_ro_edi_stock.stock_picking_batch_form" />
         <field name="arch" type="xml">
             <!-- DEL / CON / MVH buttons (visible when a validated UIT exists) -->
             <xpath
@@ -19,20 +11,20 @@
                 position="after"
             >
                 <button
-                    name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_delete)d"
+                    name="%(action_l10n_ro_edi_stock_action_wizard_delete)d"
                     string="Delete notification"
                     type="action"
                     invisible="l10n_ro_edi_stock_state != 'stock_validated'"
                     confirm="Are you sure you want to delete the UIT notification from ANAF?"
                 />
                 <button
-                    name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_confirm)d"
+                    name="%(action_l10n_ro_edi_stock_action_wizard_confirm)d"
                     string="Confirm transport"
                     type="action"
                     invisible="l10n_ro_edi_stock_state != 'stock_validated'"
                 />
                 <button
-                    name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_modify_vehicle)d"
+                    name="%(action_l10n_ro_edi_stock_action_wizard_modify_vehicle)d"
                     string="Modify vehicle"
                     type="action"
                     invisible="l10n_ro_edi_stock_state != 'stock_validated'"

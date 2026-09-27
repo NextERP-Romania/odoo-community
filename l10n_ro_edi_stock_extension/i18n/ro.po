@@ -56,6 +56,14 @@ msgid "Automatic List Sync"
 msgstr "Sincronizare automată a listei"
 
 #. module: l10n_ro_edi_stock_extension
+#: model:ir.model,name:l10n_ro_edi_stock_extension.model_stock_picking_batch
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_extension.field_l10n_ro_edi_stock_action_wizard__batch_id
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_extension.field_l10n_ro_edi_stock_document_line__batch_id
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_extension.field_l10n_ro_edi_stock_previous_notification__batch_id
+msgid "Batch Transfer"
+msgstr "Transfer în lot"
+
+#. module: l10n_ro_edi_stock_extension
 #: model:ir.model.fields.selection,name:l10n_ro_edi_stock_extension.selection__l10n_ro_edi_stock_document_line__document_type__10
 msgid "CMR"
 msgstr "CMR"

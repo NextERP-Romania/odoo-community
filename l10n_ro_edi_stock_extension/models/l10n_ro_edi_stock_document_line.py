@@ -15,6 +15,12 @@ class L10nRoEdiStockDocumentLine(models.Model):
         ondelete="cascade",
         index=True,
     )
+    batch_id = fields.Many2one(
+        comodel_name="stock.picking.batch",
+        string="Batch Transfer",
+        ondelete="cascade",
+        index=True,
+    )
     document_type = fields.Selection(
         selection=DOCUMENT_TYPES,
         required=True,

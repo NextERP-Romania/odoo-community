@@ -82,11 +82,50 @@ class StockPicking(models.Model):
     )
 
     ################################################################################
+    # When the delivery carrier is asked for
+    ################################################################################
+
+    @api.model
+    def _l10n_ro_edi_stock_validate_carrier_filter(self, picking):
+        # EXTENDS l10n_ro_edi_stock
+        # The base asks for a delivery carrier on *every* incoming and
+        # outgoing transfer of a Romanian company, at validation, whether the
+        # goods are declared to eTransport or not -- ``l10n_ro_edi_stock_enable``
+        # is nothing narrower than "not internal, not batched, company in RO".
+        # A shop receiving three cartons it carried itself has no carrier to
+        # name, and cannot validate its receipt.
+        #
+        # The carrier is data the *notification* needs, so by default it is
+        # asked for when the notification is sent, where it is checked in
+        # full (see ``_l10n_ro_edi_stock_validate_data``: the partner behind
+        # it needs a VAT number, a city and a street). A company that
+        # declares everything it moves can have Odoo's own behaviour back
+        # from the settings.
+        if picking.company_id.l10n_ro_edi_stock_carrier_check != "validate":
+            return False
+        return super()._l10n_ro_edi_stock_validate_carrier_filter(picking)
+
+    ################################################################################
     # Stricter validation per ANAF Schematron v2.0.2
     ################################################################################
 
     @api.model
     def _l10n_ro_edi_stock_validate_data(self, data: dict):
+        # A transfer with no carrier at all reads, in the base, as a carrier
+        # partner missing its VAT number, its city and its street -- three
+        # complaints about a partner that is not there. Said once and said
+        # plainly, and nothing else is worth reporting until it is answered:
+        # the carrier decides the transport partner the rest hangs off.
+        if not data.get("transport_partner_id"):
+            return [
+                self.env._(
+                    "The transfer has no delivery carrier, and eTransport "
+                    "needs one: the carrier carries the transport partner "
+                    "sent to ANAF. Set it on the transfer, and set the "
+                    "eTransport partner on the carrier itself."
+                )
+            ]
+        self._l10n_ro_edi_stock_inject_batch_record(data)
         errors = super()._l10n_ro_edi_stock_validate_data(data=data)
         errors = self._l10n_ro_edi_stock_drop_foreign_counterparty_error(errors, data)
 
@@ -354,9 +393,51 @@ class StockPicking(models.Model):
                 picking.l10n_ro_edi_stock_enable_send = True
         return res
 
+    @api.depends("batch_id.state", "batch_id.l10n_ro_edi_stock_state")
+    def _compute_l10n_ro_edi_stock_enable(self):
+        # EXTENDS l10n_ro_edi_stock
+        # The base disables eTransport on *any* picking that sits in a batch,
+        # so the notification can only ever go out on the batch itself - which
+        # the base only lets you send once the batch has left 'draft'. This
+        # module exists precisely to notify ANAF *before* the goods move, so a
+        # picking has to stay sendable while its batch is still in progress.
+        #
+        # Re-enable it, but only while the batch itself carries no eTransport
+        # document: as soon as the batch has been sent (or the batch is done)
+        # the batch notification is the authoritative one and the picking must
+        # not be able to file a second UIT for the same goods.
+        res = super()._compute_l10n_ro_edi_stock_enable()
+        for picking in self:
+            if (
+                not picking.l10n_ro_edi_stock_enable
+                and picking.batch_id
+                and picking.batch_id.state != "done"
+                and not picking.batch_id.l10n_ro_edi_stock_state
+                and picking.picking_type_code != "internal"
+                and picking.company_id.account_fiscal_country_id.code == "RO"
+            ):
+                picking.l10n_ro_edi_stock_enable = True
+        return res
+
     ################################################################################
     # Override template data computation
     ################################################################################
+
+    @api.model
+    def _l10n_ro_edi_stock_inject_batch_record(self, data):
+        """Make the batch send flow reuse the picking enrichments.
+
+        The batch flow reaches _l10n_ro_edi_stock_validate_data /
+        _l10n_ro_edi_stock_get_template_data through these @api.model entry
+        points on stock.picking. Those overrides only enrich the result when
+        ``data["_picking_record"]`` is set (through the picking-only context),
+        so inject the batch as that record: it gets the exact same stricter
+        validation and template enrichment as a picking, by duck-typing the
+        helpers in stock_picking_batch.py.
+        """
+        batch_id = self.env.context.get("l10n_ro_edi_stock_batch_id")
+        if batch_id and not data.get("_picking_record"):
+            data["_picking_record"] = self.env["stock.picking.batch"].browse(batch_id)
 
     def _l10n_ro_edi_stock_send_etransport_document(self, send_type: str):
         # Override: pass self via context so the override of
@@ -414,6 +495,7 @@ class StockPicking(models.Model):
         picking_id = self.env.context.get("l10n_ro_edi_stock_extension_picking")
         if picking_id:
             data["_picking_record"] = self.browse(picking_id)
+        self._l10n_ro_edi_stock_inject_batch_record(data)
         result = super()._l10n_ro_edi_stock_get_template_data(data=data)
         picking = data.get("_picking_record")
         if not picking:
@@ -421,6 +503,19 @@ class StockPicking(models.Model):
 
         template = result["data"]
         op_type = data["l10n_ro_edi_stock_operation_type"]
+
+        if picking._name == "stock.picking.batch":
+            # The base builder derives the 'PF' commercial partner code from
+            # ``self.l10n_ro_edi_stock_operation_type``, which is empty when the
+            # batch path calls this @api.model method on the model recordset.
+            # Re-derive it here from the data dict.
+            partner_node = template["notificare"]["partenerComercial"]
+            if (
+                not partner_node.get("cod")
+                and not data["partner_id"].commercial_partner_id.vat
+                and op_type == "30"
+            ):
+                partner_node["cod"] = "PF"
 
         # ------- bunuriTransportate: rebuild with correct sources -------
         goods = []
