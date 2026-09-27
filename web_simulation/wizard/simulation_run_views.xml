@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright (C) 2026 NextERP Romania SRL
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl-3.0). -->
+<odoo>
+    <record id="view_simulation_run_form" model="ir.ui.view">
+        <field name="name">web.simulation.run.form</field>
+        <field name="model">web.simulation.run</field>
+        <field name="arch" type="xml">
+            <form string="Simulate a Flow">
+                <field name="is_new" invisible="1" />
+                <field name="has_steps" invisible="1" />
+                <div class="alert alert-info" role="status" invisible="is_new">
+                    <field name="record_name" readonly="1" class="oe_inline" />
+                    <span>
+                        - the flow is rolled back in full at the end, so the
+                        document is left untouched.
+                    </span>
+                </div>
+                <div class="alert alert-info" role="status" invisible="not is_new">
+                    This document is not saved. It is created for the simulation
+                    only and rolled back with everything else: not even a draft
+                    is left behind.
+                </div>
+                <div class="alert alert-danger" role="alert" invisible="not error">
+                    <field name="error" readonly="1" class="oe_inline" />
+                </div>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    invisible="not pending_action"
+                >
+                    <span>
+                        The operation asked a question before doing the work.
+                        Answer it with one of its own buttons, listed first
+                        below.
+                    </span>
+                    <field name="pending_action" readonly="1" class="oe_inline" />
+                </div>
+                <separator string="The flow so far" invisible="not has_steps" />
+                <field
+                    name="step_ids"
+                    nolabel="1"
+                    readonly="1"
+                    invisible="not has_steps"
+                >
+                    <list
+                        create="false"
+                        delete="false"
+                        limit="200"
+                        string="The flow so far"
+                        decoration-danger="failed"
+                    >
+                        <field name="sequence" string="#" />
+                        <field name="label" />
+                        <field name="document" />
+                        <field name="failed" column_invisible="1" />
+                    </list>
+                </field>
+                <notebook invisible="not has_steps">
+                    <page string="Documents" name="documents">
+                        <field name="document_line_ids" readonly="1">
+                            <list create="false" delete="false" limit="200">
+                                <field name="model_description" />
+                                <field name="name" />
+                                <field name="state" />
+                                <!-- No total: an order and the bill made from
+                                     it would be counted twice. -->
+                                <field name="amount" />
+                            </list>
+                        </field>
+                    </page>
+                    <page string="Stock Moves" name="moves">
+                        <field name="move_line_ids" readonly="1">
+                            <list create="false" delete="false" limit="200">
+                                <field name="reference" />
+                                <field name="product_id" />
+                                <field name="location_id" />
+                                <field name="location_dest_id" />
+                                <field name="quantity" />
+                                <field name="uom_name" />
+                                <field name="value" sum="Total" />
+                            </list>
+                        </field>
+                    </page>
+                    <page string="Stock On Hand" name="quants">
+                        <div class="text-muted mb-2">
+                            The balance, so it includes what was already in
+                            stock; the change is what this flow moved.
+                        </div>
+                        <field name="quant_line_ids" readonly="1">
+                            <list create="false" delete="false" limit="200">
+                                <field name="product_id" />
+                                <field name="location_id" />
+                                <field name="lot_name" />
+                                <field name="quantity_before" />
+                                <field name="quantity_change" sum="Total" />
+                                <field name="quantity" />
+                                <field name="uom_name" />
+                                <field name="value" sum="Total" />
+                            </list>
+                        </field>
+                    </page>
+                    <page string="Accounting By Account" name="accounts">
+                        <div class="text-muted mb-2">
+                            Only posted entries are counted here. Draft lines are
+                            in the next tab, with their status.
+                        </div>
+                        <field name="account_summary_ids" readonly="1">
+                            <list create="false" delete="false" limit="200">
+                                <field name="account_id" />
+                                <field name="debit" sum="Total Debit" />
+                                <field name="credit" sum="Total Credit" />
+                                <field name="balance" sum="Balance" />
+                            </list>
+                        </field>
+                        <group>
+                            <group>
+                                <field name="total_debit" />
+                                <field name="total_credit" />
+                                <field name="is_balanced" string="Entries balance" />
+                            </group>
+                        </group>
+                    </page>
+                    <page string="Journal Items" name="account_lines">
+                        <field name="account_line_ids" readonly="1">
+                            <list create="false" delete="false" limit="200">
+                                <field name="move_name" />
+                                <field name="move_state" />
+                                <field name="date" />
+                                <field name="account_id" />
+                                <field name="partner_id" />
+                                <field name="name" />
+                                <field name="debit" sum="Total Debit" />
+                                <field name="credit" sum="Total Credit" />
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+                <separator string="Fill in a document" invisible="not has_steps" />
+                <field
+                    name="editable_ids"
+                    nolabel="1"
+                    readonly="1"
+                    invisible="not has_steps"
+                >
+                    <list create="false" delete="false" limit="200">
+                        <field name="label" />
+                        <field name="parent_label" />
+                        <field name="model_name" optional="hide" />
+                        <button
+                            name="action_edit"
+                            type="object"
+                            string="Fill In"
+                            class="btn-secondary"
+                        />
+                    </list>
+                </field>
+                <separator string="What can come next" />
+                <field name="option_ids" nolabel="1" readonly="1">
+                    <list create="false" delete="false" limit="200">
+                        <field name="document" />
+                        <field name="label" />
+                        <button
+                            name="action_add"
+                            type="object"
+                            string="Add Step"
+                            class="btn-primary"
+                        />
+                    </list>
+                </field>
+                <footer>
+                    <button
+                        name="action_undo"
+                        type="object"
+                        string="Undo Last Step"
+                        class="btn-secondary"
+                        invisible="not has_steps"
+                    />
+                    <button
+                        name="action_reset"
+                        type="object"
+                        string="Start Over"
+                        class="btn-secondary"
+                        invisible="not has_steps"
+                    />
+                    <button string="Close" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
