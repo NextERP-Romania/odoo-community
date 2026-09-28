@@ -19,6 +19,23 @@ This module is customize odoo for Utilben.
 .. contents::
    :local:
 
+Use Cases / Context
+===================
+
+Key features
+============
+
+-  **Hides the Reverse button** on credit note forms (``out_refund`` /
+   ``in_refund``) to prevent accidental double-reversal.
+-  **Hides the Create Invoice button** on credit note forms, keeping the
+   UI clean and reducing operator errors.
+-  **Zero configuration** — rules are applied automatically through view
+   inheritance on ``account.move`` after installation.
+-  **Standard invoice workflow unchanged** — buttons remain available on
+   regular customer invoices and vendor bills.
+-  **Lightweight dependency** — extends only the core ``account``
+   module; no additional localization or third-party modules required.
+
 Installation
 ============
 
@@ -30,6 +47,45 @@ To install this module, you need to:
 -  update the module list
 -  search for "NextERP - Account Edi UBL Move Date" in your addons
 -  install the module
+
+Usage
+=====
+
+Usage
+=====
+
+Hiding the Reverse and Create Invoice buttons on credit notes
+-------------------------------------------------------------
+
+Once the module is installed, the **Reverse** and **Create Invoice**
+action buttons are automatically hidden on ``account.move`` records that
+are credit notes (reversal entries). No manual steps are needed — the
+visibility rules are applied via view inheritance.
+
+Typical workflow
+~~~~~~~~~~~~~~~~
+
+1. Open **Accounting → Customers → Credit Notes** or **Accounting →
+   Vendors → Refunds**.
+2. Open any existing credit note (a move of type ``out_refund`` or
+   ``in_refund``).
+3. Notice that the **Reverse** and **Create Invoice** buttons that
+   normally appear in the form header are no longer visible, preventing
+   accidental double-reversal or re-invoicing of a credit note.
+
+The buttons remain fully visible on standard customer invoices and
+vendor bills, so the normal invoice workflow is unaffected.
+
+Changelog
+=========
+
+Changelog
+=========
+
+19.0.1.0.0 (2026-09-28)
+-----------------------
+
+-  *Changelog tracking starts at this release.*
 
 Bug Tracker
 ===========
