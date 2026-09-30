@@ -106,7 +106,7 @@ class StockMove(models.Model):
             "vehicle_id": self.vehicle_id.id,
             "service_type_id": subtype and subtype.id,
             "product_id": self.product_id.id,
-            "amount": -self.value,
+            "amount": self.value,
             "purchaser_id": self.create_uid.partner_id.id,
             "vendor_id": self.partner_id.id,
             "date": self.date,
@@ -114,12 +114,12 @@ class StockMove(models.Model):
         }
 
         if cost_type == "fuel":
-            sub_cost["liter"] = -self.quantity
+            sub_cost["liter"] = self.quantity
             sub_cost["service_type_id"] = self.fleet_service_type_id.id
         elif cost_type == "services":
             sub_cost["service_type_id"] = self.fleet_service_type_id.id
 
-        sub_cost["quantity"] = -self.quantity
+        sub_cost["quantity"] = self.quantity
         sub_cost["price_unit"] = self.price_unit
         sub_cost["stock_move_id"] = self.id
 
@@ -144,7 +144,7 @@ class StockMove(models.Model):
                         move.vehicle_id.tax_non_deductible
                     )
         res = super()._action_done(cancel_backorder=cancel_backorder)
-        for move in self:
+        for move in res:
             if (
                 move.vehicle_id
                 and not move.cost_ids
@@ -158,4 +158,15 @@ class StockMove(models.Model):
         for move in self:
             if move.vehicle_id and move.cost_ids:
                 move.cancel_vehicle_cost()
+        return res
+
+    def _l10n_ro_update_fifo_split_move_vals(
+        self, move, new_move_vals, fifo_item, fifo_quantity
+    ):
+        """Updates the move vals for a FIFO split move."""
+        res = super()._l10n_ro_update_fifo_split_move_vals(
+            move, new_move_vals, fifo_item, fifo_quantity
+        )
+        if move.vehicle_id:
+            new_move_vals["vehicle_id"] = move.vehicle_id.id
         return res
