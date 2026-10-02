@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_pos_closing_note_form" model="ir.ui.view">
+        <field name="name">l10n.ro.pos.closing.note.form</field>
+        <field name="model">l10n.ro.pos.closing.note</field>
+        <field name="arch" type="xml">
+            <form string="Explanatory Note">
+                <field name="session_id" invisible="1" />
+                <field name="currency_id" invisible="1" />
+                <p class="text-muted">
+                    State for each payment method why the amount counted at
+                    closing is not the amount the register recorded. What is
+                    written here is printed on the report of differences.
+                </p>
+                <field name="line_ids" nolabel="1">
+                    <list editable="bottom" create="0" delete="0">
+                        <field name="payment_method_id" readonly="1" />
+                        <field name="expected_amount" readonly="1" />
+                        <field name="counted_amount" readonly="1" />
+                        <field
+                            name="difference"
+                            readonly="1"
+                            decoration-danger="has_difference"
+                        />
+                        <field name="reason" />
+                        <field name="note" />
+                        <field name="has_difference" column_invisible="1" />
+                        <field name="currency_id" column_invisible="1" />
+                    </list>
+                </field>
+                <group>
+                    <group>
+                        <field name="surplus" />
+                        <field name="shortage" />
+                        <field name="difference" />
+                    </group>
+                </group>
+                <group string="Explanatory Note">
+                    <field
+                        name="note"
+                        nolabel="1"
+                        placeholder="For example: the order of 120 lei was cashed in on the card method while the money was taken in cash."
+                    />
+                </group>
+                <footer>
+                    <button
+                        name="action_save_and_print"
+                        type="object"
+                        string="Save and Print"
+                        class="btn-primary"
+                        data-hotkey="q"
+                    />
+                    <button
+                        name="action_save"
+                        type="object"
+                        string="Save"
+                        class="btn-secondary"
+                        data-hotkey="w"
+                    />
+                    <button
+                        string="Cancel"
+                        class="btn-secondary"
+                        special="cancel"
+                        data-hotkey="x"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

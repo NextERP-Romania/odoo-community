@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_pos_session_form" model="ir.ui.view">
+        <field name="name">pos.session.form.l10n.ro.closing</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_form" />
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button
+                    name="action_l10n_ro_closing_note"
+                    type="object"
+                    string="Explanatory Note"
+                    class="oe_highlight"
+                    invisible="not l10n_ro_has_closing_difference"
+                />
+                <button
+                    name="action_l10n_ro_print_closing_report"
+                    type="object"
+                    string="Report of Differences"
+                    invisible="not l10n_ro_has_closing_difference"
+                />
+            </header>
+            <!-- Core hides the notebook of a session with nothing to show in
+                 it; a session with differences has something to show. -->
+            <xpath expr="//notebook" position="attributes">
+                <attribute
+                    name="invisible"
+                >((not sale_move_count and not refund_move_count) or (sale_move_count == 1 and refund_move_count == 1)) and not l10n_ro_closing_line_ids</attribute>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page
+                    string="Closing Differences"
+                    name="l10n_ro_closing"
+                    invisible="not l10n_ro_closing_line_ids"
+                >
+                    <field
+                        name="l10n_ro_closing_line_ids"
+                        nolabel="1"
+                        readonly="1"
+                        context="{'list_view_ref': 'l10n_ro_pos_close.view_pos_closing_line_list'}"
+                    />
+                    <group>
+                        <group>
+                            <field name="l10n_ro_closing_surplus" />
+                            <field name="l10n_ro_closing_shortage" />
+                            <field name="l10n_ro_closing_difference" />
+                        </group>
+                    </group>
+                    <group
+                        string="Explanatory Note"
+                        invisible="not l10n_ro_closing_notes"
+                    >
+                        <field name="l10n_ro_closing_notes" nolabel="1" readonly="1" />
+                    </group>
+                </page>
+            </xpath>
+            <field name="name" position="after">
+                <field name="l10n_ro_has_closing_difference" invisible="1" />
+            </field>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,operation,domain
+access_pos_closing_line_user,l10n.ro.pos.closing.line user,l10n_ro_pos_close.model_l10n_ro_pos_closing_line,point_of_sale.group_pos_user,cru,
+access_pos_closing_line_manager,l10n.ro.pos.closing.line manager,l10n_ro_pos_close.model_l10n_ro_pos_closing_line,point_of_sale.group_pos_manager,crud,
+rule_pos_closing_line_multi_company,POS Closing Control Line multi-company,l10n_ro_pos_close.model_l10n_ro_pos_closing_line,,crud,"[('company_id', 'in', company_ids)]"
+access_pos_closing_note_user,l10n.ro.pos.closing.note user,l10n_ro_pos_close.model_l10n_ro_pos_closing_note,point_of_sale.group_pos_user,crud,
+access_pos_closing_note_line_user,l10n.ro.pos.closing.note.line user,l10n_ro_pos_close.model_l10n_ro_pos_closing_note_line,point_of_sale.group_pos_user,crud,

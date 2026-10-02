@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t
+        t-name="l10n_ro_pos_close.ClosePosPopup"
+        t-inherit="point_of_sale.ClosePosPopup"
+        t-inherit-mode="extension"
+    >
+        <!-- Right under the counts and above the notes: the cashier has just
+             typed the amount that does not match, and the note they are
+             asked for next is the one printed under these lines. -->
+        <xpath expr="//div[hasclass('notes-container')]" position="before">
+            <div
+                class="l10n-ro-closing-differences pt-3"
+                t-if="this.l10nRoMethodsWithDifference.length"
+            >
+                <label class="form-label">Differences found</label>
+                <div class="alert alert-warning py-2 mb-2" role="alert">
+                    State what happened: takings are often complete but
+                    recorded on another payment method, for instance cashed in
+                    on the card while the money was taken in cash. What is
+                    written here and in the closing note below is printed on
+                    the report of differences.
+                </div>
+                <t t-foreach="this.l10nRoMethodsWithDifference" t-as="pm" t-key="pm.id">
+                    <div
+                        class="l10n-ro-closing-difference d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-2"
+                    >
+                        <div class="text-nowrap flex-shrink-0" style="min-width: 9rem;">
+                            <span class="fw-bold" t-out="pm.name" />
+                            <span
+                                class="text-danger ms-1"
+                                t-out="this.pos.formatCurrency(this.getDifference(pm.id))"
+                            />
+                        </div>
+                        <select
+                            class="form-select w-auto"
+                            t-model.proxy="this.state.l10nRoExplanations[pm.id].reason"
+                        >
+                            <option value="">Cause...</option>
+                            <option
+                                value="wrong_method"
+                            >Takings recorded on another payment method</option>
+                            <option value="miscount">Counting error at closing</option>
+                            <option value="shortage">Takings missing</option>
+                            <option
+                                value="surplus"
+                            >Surplus without a known origin</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input
+                            type="text"
+                            class="form-control flex-grow-1"
+                            placeholder="Explanation printed on the report"
+                            t-model.proxy="this.state.l10nRoExplanations[pm.id].note"
+                        />
+                    </div>
+                </t>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

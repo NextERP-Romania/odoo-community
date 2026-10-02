@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_report_pos_session_closing" model="ir.actions.report">
+        <field name="name">Report of Differences</field>
+        <field name="model">pos.session</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ro_pos_close.report_pos_session_closing</field>
+        <field name="print_report_name">object.name</field>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_session" />
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_pos_session_closing_document">
+        <t t-call="web.external_layout">
+            <t t-set="lines" t-value="doc._l10n_ro_report_lines()" />
+            <div class="page">
+                <h4 class="text-center">
+                    Report of Differences at the Closing of the Point of Sale
+                    Session
+                </h4>
+                <div class="text-center mb-4">
+                    <span t-field="doc.name" />
+                </div>
+
+                <table class="table table-sm table-borderless" name="header_table">
+                    <tr>
+                        <td style="width: 30%;">
+                            <strong>Point of Sale</strong>
+                        </td>
+                        <td>
+                            <span t-field="doc.config_id" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Cashier</strong>
+                        </td>
+                        <td>
+                            <span t-field="doc.user_id" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Opened at</strong>
+                        </td>
+                        <td>
+                            <span t-field="doc.start_at" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Closed at</strong>
+                        </td>
+                        <td>
+                            <span t-field="doc.stop_at" />
+                        </td>
+                    </tr>
+                </table>
+
+                <p>
+                    At the closing of the session above, the amounts recorded by
+                    the point of sale on each payment method were compared with
+                    the amounts counted and declared by the cashier. The
+                    following were established.
+                </p>
+
+                <table class="table table-sm table-bordered" name="closing_table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">No.</th>
+                            <th>Payment Method</th>
+                            <th class="text-end">Recorded</th>
+                            <th class="text-end">Counted</th>
+                            <th class="text-end">Difference</th>
+                            <th>Cause and explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="seq" t-value="0" />
+                        <tr t-foreach="lines" t-as="line">
+                            <t t-set="seq" t-value="seq + 1" />
+                            <td class="text-center">
+                                <span t-out="seq" />
+                            </td>
+                            <td>
+                                <span t-field="line.payment_method_id" />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="line.expected_amount"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="line.counted_amount"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="line.difference"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td>
+                                <span t-if="line.reason" t-field="line.reason" />
+                                <span t-if="line.reason and line.note">-</span>
+                                <span t-if="line.note" t-field="line.note" />
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-end">
+                                <strong>Surplus</strong>
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="doc.l10n_ro_closing_surplus"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td />
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end">
+                                <strong>Shortage</strong>
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="doc.l10n_ro_closing_shortage"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td />
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end">
+                                <strong>Net difference</strong>
+                            </td>
+                            <td class="text-end">
+                                <strong>
+                                    <span
+                                        t-field="doc.l10n_ro_closing_difference"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </strong>
+                            </td>
+                            <td />
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <p t-if="doc._l10n_ro_is_balanced()">
+                    The surpluses cover the shortages in full: the takings of
+                    the session are complete, and the differences above are
+                    only amounts recorded on a payment method other than the
+                    one the money was received on.
+                </p>
+
+                <div t-if="doc.l10n_ro_closing_notes" class="mt-4">
+                    <h6>Explanatory note</h6>
+                    <span t-field="doc.l10n_ro_closing_notes" />
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-4">
+                        <p class="mb-0">Cashier</p>
+                        <p class="mb-0">
+                            <span t-field="doc.user_id" />
+                        </p>
+                        <p class="mt-4">.............................</p>
+                    </div>
+                    <div class="col-4">
+                        <p class="mb-0">Shop Manager</p>
+                        <p class="mt-4">.............................</p>
+                    </div>
+                    <div class="col-4">
+                        <p class="mb-0">Accountant</p>
+                        <p class="mt-4">.............................</p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_pos_session_closing">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t
+                    t-call="l10n_ro_pos_close.report_pos_session_closing_document"
+                    t-lang="doc.company_id.partner_id.lang"
+                />
+            </t>
+        </t>
+    </template>
+</odoo>
