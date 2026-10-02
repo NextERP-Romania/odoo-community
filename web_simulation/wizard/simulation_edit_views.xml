@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright (C) 2026 NextERP Romania SRL
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl-3.0). -->
+<odoo>
+    <record id="view_simulation_edit_form" model="ir.ui.view">
+        <field name="name">web.simulation.edit.form</field>
+        <field name="model">web.simulation.edit</field>
+        <field name="arch" type="xml">
+            <form string="Fill In">
+                <field name="has_many2many" invisible="1" />
+                <field name="has_selection" invisible="1" />
+                <div class="alert alert-info" role="status">
+                    <field name="record_label" readonly="1" class="oe_inline" />
+                    <span>
+                        - tick Change on what the flow should set. It becomes a
+                        step, applied before the next button on every replay.
+                    </span>
+                </div>
+                <field name="field_ids" nolabel="1">
+                    <list editable="bottom" create="false" delete="false" limit="200">
+                        <!-- Loaded so the value column can write to whichever
+                             one the row's type calls for. -->
+                        <field name="ttype" column_invisible="1" />
+                        <field name="comodel_id" column_invisible="1" />
+                        <field name="currency_id" column_invisible="1" />
+                        <field name="value_text" column_invisible="1" />
+                        <field name="value_integer" column_invisible="1" />
+                        <field name="value_float" column_invisible="1" />
+                        <field name="value_monetary" column_invisible="1" />
+                        <field name="value_boolean" column_invisible="1" />
+                        <field name="value_date" column_invisible="1" />
+                        <field name="value_datetime" column_invisible="1" />
+                        <field name="value_reference" column_invisible="1" />
+                        <field name="label" readonly="1" width="220px" />
+                        <field name="current" readonly="1" width="240px" />
+                        <field name="change" width="90px" />
+                        <field
+                            name="value_char"
+                            string="New Value"
+                            widget="simulation_value"
+                        />
+                        <field
+                            name="selection_hint"
+                            readonly="1"
+                            column_invisible="not parent.has_selection"
+                            invisible="ttype != 'selection'"
+                        />
+                        <field
+                            name="many2many_operation"
+                            column_invisible="not parent.has_many2many"
+                            invisible="ttype != 'many2many'"
+                        />
+                        <field name="name" readonly="1" optional="hide" />
+                    </list>
+                </field>
+                <footer>
+                    <button
+                        name="action_apply"
+                        type="object"
+                        string="Apply"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

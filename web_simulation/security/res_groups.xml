@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright (C) 2026 NextERP Romania SRL
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl-3.0). -->
+<odoo>
+    <record id="group_simulation" model="res.groups">
+        <field name="name">Simulate Operations</field>
+        <field
+            name="comment"
+        >Can run a document's buttons without saving anything, to see what they would produce.</field>
+        <field name="implied_by_ids" eval="[Command.link(ref('base.group_system'))]" />
+    </record>
+</odoo>

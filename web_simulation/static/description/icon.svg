@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E31E24"/>
+      <stop offset="55%" stop-color="#CC0C54"/>
+      <stop offset="100%" stop-color="#A81884"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+
+  <!-- decorative blobs, still readable at small sizes -->
+  <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
+  <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
+
+
+  <!-- run the document's button, then put everything back -->
+  <rect x="48" y="40" width="124" height="152" rx="16" fill="#ffffff" opacity="0.93"/>
+  <g fill="#CC0C54" opacity="0.45">
+    <rect x="68" y="68" width="84" height="11" rx="5.5"/>
+    <rect x="68" y="92" width="62" height="11" rx="5.5"/>
+    <rect x="68" y="116" width="74" height="11" rx="5.5"/>
+  </g>
+  <circle cx="176" cy="160" r="46" fill="#ffffff"/>
+  <path d="M166 140l32 20-32 20Z" fill="#CC0C54" opacity="0.7"/>
+  <!-- and put everything back -->
+  <g transform="translate(0,6)">
+    <path d="M74 150a28 28 0 1 1-26 38" fill="none" stroke="#ffffff" stroke-width="12"
+          stroke-linecap="round"/>
+    <path d="M78 134l-4 32-26-18Z" fill="#ffffff"/>
+  </g>
+
+</svg>
