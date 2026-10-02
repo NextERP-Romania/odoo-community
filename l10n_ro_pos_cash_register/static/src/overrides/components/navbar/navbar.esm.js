@@ -1,18 +1,10 @@
-/** One tap from the register to the cash register, and one tap back. */
-import {Navbar} from "@point_of_sale/app/components/navbar/navbar";
-import {patch} from "@web/core/utils/patch";
+/** The cash register, declared as one of the shop's desks. */
+import {registerArea} from "@pos_actions/app/areas";
+import {_t} from "@web/core/l10n/translation";
 
-patch(Navbar.prototype, {
-    openCashRegister() {
-        this.pos.navigate("CashRegisterScreen");
-    },
-
-    /** Core lights up Orders for every screen that is not a selling one.
-     *  This one is neither: its own button says where we are. */
-    get mainButton() {
-        if (this.pos.router.currentScreen() === "CashRegisterScreen") {
-            return "cash-register";
-        }
-        return super.mainButton;
-    },
+registerArea("cash_register", {
+    label: _t("Cash Register"),
+    icon: "account_balance_wallet",
+    sequence: 40,
+    screens: ["CashRegisterScreen"],
 });

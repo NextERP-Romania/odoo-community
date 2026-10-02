@@ -7,7 +7,7 @@
     "summary": "The sessions of a point of sale as a list at the till, and "
     "the cash register of each one printed from there or from the back "
     "office, on the Romanian register form",
-    "version": "20.0.1.0.0",
+    "version": "20.0.1.1.0",
     "license": "AGPL-3",
     "images": ["static/description/apps_icon.png"],
     "category": "Localization/Point of Sale",
@@ -15,6 +15,7 @@
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "depends": [
+        "pos_actions",
         "point_of_sale",
         "l10n_ro_account_bank_statement_report",
     ],
