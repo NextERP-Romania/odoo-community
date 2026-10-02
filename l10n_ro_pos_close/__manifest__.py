@@ -8,6 +8,7 @@
     "POS session and print the report that explains them",
     "version": "20.0.1.0.0",
     "license": "AGPL-3",
+    "images": ["static/description/apps_icon.png"],
     "category": "Localization/Point of Sale",
     "countries": ["ro"],
     "author": "NextERP Romania",

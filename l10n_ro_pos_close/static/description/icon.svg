@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E31E24"/>
+      <stop offset="55%" stop-color="#CC0C54"/>
+      <stop offset="100%" stop-color="#A81884"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+
+  <!-- decorative blobs, still readable at small sizes -->
+  <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
+  <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
+
+
+  <!-- the drawer counted at closing, and the gap it leaves -->
+  <path d="M44 120h168v56a18 18 0 0 1-18 18H62a18 18 0 0 1-18-18Z" fill="#ffffff" opacity="0.92"/>
+  <path d="M62 68h132l18 52H44Z" fill="#ffffff" opacity="0.6"/>
+  <rect x="108" y="140" width="40" height="12" rx="6" fill="#CC0C54" opacity="0.6"/>
+  <!-- what was counted against what was recorded -->
+  <g fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round"
+     stroke-linejoin="round">
+    <path d="M84 96V50"/><path d="M66 68l18-18 18 18"/>
+    <path d="M172 50v46"/><path d="M154 78l18 18 18-18"/>
+  </g>
+
+</svg>
