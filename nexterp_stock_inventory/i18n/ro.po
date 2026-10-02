@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0+e\n"
+"Project-Id-Version: Odoo Server 20.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-16 13:36+0000\n"
-"PO-Revision-Date: 2026-07-16 13:36+0000\n"
+"POT-Creation-Date: 2026-10-02 06:57+0000\n"
+"PO-Revision-Date: 2026-10-02 06:57+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,10 +16,50 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid ""
+"<span>No difference was found between the counted stock and the stock on "
+"hand.</span>"
+msgstr ""
+"<span>Nu au fost constatate diferențe între stocul faptic și cel "
+"scriptic.</span>"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "<strong>Appointing decision</strong>"
+msgstr "<strong>Decizia de numire</strong>"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "<strong>Drawn up on</strong>"
+msgstr "<strong>Încheiat astăzi</strong>"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "<strong>Locations</strong>"
+msgstr "<strong>Locații</strong>"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "<strong>Total</strong>"
+msgstr "<strong>Total</strong>"
+
+#. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__accounting_date
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__accounting_date
 msgid "Accounting Date"
 msgstr "Dată contabilă"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "All internal locations of the company"
+msgstr "Toate locațiile interne ale companiei"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields.selection,name:nexterp_stock_inventory.selection__l10n_ro_stock_inventory_commission__role__chairman
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Chairman"
+msgstr "Președinte"
 
 #. module: nexterp_stock_inventory
 #: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
@@ -33,6 +73,40 @@ msgid "Company"
 msgstr "Companie"
 
 #. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__conclusions
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
+msgid "Conclusions"
+msgstr "Concluzii"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Conclusions and proposals of the commission"
+msgstr "Concluziile și propunerile comisiei"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,help:nexterp_stock_inventory.field_l10n_ro_stock_inventory__conclusions
+msgid ""
+"Conclusions and proposals of the commission, printed at the end of the "
+"inventory report."
+msgstr ""
+"Concluziile și propunerile comisiei, tipărite la finalul procesului verbal "
+"de inventariere."
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
+msgid ""
+"Conclusions and proposals of the commission, printed at the end of the "
+"inventory report..."
+msgstr ""
+"Concluziile și propunerile comisiei, tipărite la finalul procesului verbal "
+"de inventariere..."
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Counted"
+msgstr "Faptic"
+
+#. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__inventory_quantity
 msgid "Counted Quantity"
 msgstr "Cantitate numărată"
@@ -44,25 +118,34 @@ msgstr "Creați primul ajustament de stoc"
 
 #. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__create_uid
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__create_uid
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__create_uid
 msgid "Created by"
 msgstr "Creat de"
 
 #. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__create_date
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__create_date
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__create_date
 msgid "Created on"
 msgstr "Creat în"
 
 #. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__currency_id
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__currency_id
 msgid "Currency"
 msgstr "Monedă"
 
 #. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__decision_number
+msgid "Decision Number"
+msgstr "Număr decizie"
+
+#. module: nexterp_stock_inventory
 #: model:ir.model.fields,help:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__product_uom_id
 msgid "Default unit of measure used for all stock operations."
-msgstr "Unitatea de măsură implicită utilizată pentru toate operațiunile de stoc."
+msgstr ""
+"Unitatea de măsură implicită utilizată pentru toate operațiunile de stoc."
 
 #. module: nexterp_stock_inventory
 #: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
@@ -71,11 +154,23 @@ msgstr "Diferență"
 
 #. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__inventory_diff_quantity
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
 msgid "Difference"
 msgstr "Diferență"
 
 #. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__difference_value
+msgid "Difference Value"
+msgstr "Valoare diferență"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Differences found"
+msgstr "Diferențe constatate"
+
+#. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__display_name
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__display_name
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__display_name
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_stock_quant__display_name
 msgid "Display Name"
@@ -101,16 +196,24 @@ msgstr "Generare linii de inventar"
 
 #. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__id
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__id
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__id
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_stock_quant__id
 msgid "ID"
 msgstr ""
 
 #. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__inventory_id
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__inventory_id
 #: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_line_search_view
 msgid "Inventory"
 msgstr "Inventar"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__commission_ids
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
+msgid "Inventory Commission"
+msgstr "Comisia de inventariere"
 
 #. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__inventory_diff_value
@@ -131,6 +234,13 @@ msgstr "Linii inventar"
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__inventory_lines_generated
 msgid "Inventory Lines Generated"
 msgstr "Linii inventar generate"
+
+#. module: nexterp_stock_inventory
+#: model:ir.actions.report,name:nexterp_stock_inventory.action_report_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Inventory Report"
+msgstr "Proces verbal de inventariere"
 
 #. module: nexterp_stock_inventory
 #: model:ir.actions.act_window,name:nexterp_stock_inventory.action_open_stock_inventory
@@ -155,18 +265,31 @@ msgid "Inventory Value"
 msgstr "Valoare inventar"
 
 #. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Inventory commission"
+msgstr "Comisia de inventariere"
+
+#. module: nexterp_stock_inventory
 #: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
 msgid "Inventory stock adjustments"
 msgstr "Ajustări stoc inventar"
 
 #. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__job_position
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Job Position"
+msgstr "Funcția"
+
+#. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__write_uid
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__write_uid
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__write_uid
 msgid "Last Updated by"
 msgstr "Ultima actualizare de"
 
 #. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__write_date
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__write_date
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__write_date
 msgid "Last Updated on"
 msgstr "Ultima actualizare în"
@@ -174,18 +297,52 @@ msgstr "Ultima actualizare în"
 #. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__location_ids
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__location_id
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
 msgid "Location"
 msgstr "Locație"
 
 #. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Lot/Serial"
+msgstr "Lot/Serie"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields.selection,name:nexterp_stock_inventory.selection__l10n_ro_stock_inventory_commission__role__member
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Member"
+msgstr "Membru"
+
+#. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__name
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__name
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
 msgid "Name"
 msgstr "Nume"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,help:nexterp_stock_inventory.field_l10n_ro_stock_inventory__difference_value
+msgid "Net value of the inventory differences: surpluses less shortages."
+msgstr "Valoarea netă a diferențelor de inventar: plusurile minus minusurile."
 
 #. module: nexterp_stock_inventory
 #: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
 msgid "New value"
 msgstr "Valoare nouă"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "No."
+msgstr "Nr."
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,help:nexterp_stock_inventory.field_l10n_ro_stock_inventory__decision_number
+msgid "Number of the decision appointing the inventory commission."
+msgstr "Numărul deciziei de numire a comisiei de inventariere."
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "On Hand"
+msgstr "Scriptic"
 
 #. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__quantity
@@ -198,8 +355,14 @@ msgid "Only one inventory line allowed per quant."
 msgstr "Este permisă o singură linie de inventar per poziție de stoc."
 
 #. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
+msgid "Print Inventory Report"
+msgstr "Tipărește procesul verbal"
+
+#. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__product_ids
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__product_id
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
 msgid "Product"
 msgstr "Produs"
 
@@ -209,14 +372,36 @@ msgid "Product Lot"
 msgstr "Lot produs"
 
 #. module: nexterp_stock_inventory
+#: model:ir.model,name:nexterp_stock_inventory.model_stock_quant
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__quant_id
 msgid "Quant"
 msgstr "Poziție de stoc"
 
 #. module: nexterp_stock_inventory
-#: model:ir.model,name:nexterp_stock_inventory.model_stock_quant
-msgid "Quants"
-msgstr "Poziții de stoc"
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Results by location"
+msgstr "Rezultate pe locație"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__role
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Role"
+msgstr "Calitatea"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__sequence
+msgid "Sequence"
+msgstr "Secvență"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Shortage"
+msgstr "Minus"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__shortage_value
+msgid "Shortage Value"
+msgstr "Valoare minus"
 
 #. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__standard_price
@@ -237,14 +422,69 @@ msgid "Stock Inventory"
 msgstr "Inventar stoc"
 
 #. module: nexterp_stock_inventory
+#: model:ir.model,name:nexterp_stock_inventory.model_l10n_ro_stock_inventory_commission
+msgid "Stock Inventory Commission Member"
+msgstr "Membru al comisiei de inventariere"
+
+#. module: nexterp_stock_inventory
 #: model:ir.model,name:nexterp_stock_inventory.model_l10n_ro_stock_inventory_line
 msgid "Stock Inventory Line"
 msgstr "Linie inventar stoc"
 
 #. module: nexterp_stock_inventory
+#: model:ir.model.fields.selection,name:nexterp_stock_inventory.selection__l10n_ro_stock_inventory_commission__role__stock_keeper
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Stock Keeper"
+msgstr "Gestionar"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Surplus"
+msgstr "Plus"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory__surplus_value
+msgid "Surplus Value"
+msgstr "Valoare plus"
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid ""
+"The inventory commission listed below counted the goods\n"
+"                    held at the locations above and established the results\n"
+"                    that follow."
+msgstr ""
+"Comisia de inventariere de mai jos a inventariat bunurile aflate în "
+"locațiile de mai sus și a constatat rezultatele care urmează."
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,help:nexterp_stock_inventory.field_l10n_ro_stock_inventory__shortage_value
+msgid ""
+"Total value of the negative differences (shortages), as a positive amount."
+msgstr ""
+"Valoarea totală a diferențelor negative (minusuri), exprimată ca sumă "
+"pozitivă."
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,help:nexterp_stock_inventory.field_l10n_ro_stock_inventory__surplus_value
+msgid "Total value of the positive differences (surpluses)."
+msgstr "Valoarea totală a diferențelor pozitive (plusuri)."
+
+#. module: nexterp_stock_inventory
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
+msgid "Unit Price"
+msgstr "Preț unitar"
+
+#. module: nexterp_stock_inventory
 #: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__product_uom_id
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.report_stock_inventory_document
 msgid "UoM"
 msgstr "UM"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,field_description:nexterp_stock_inventory.field_l10n_ro_stock_inventory_commission__user_id
+msgid "User"
+msgstr "Utilizator"
 
 #. module: nexterp_stock_inventory
 #: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
@@ -256,3 +496,23 @@ msgstr "Validare inventar"
 #: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
 msgid "Value"
 msgstr "Valoare"
+
+#. module: nexterp_stock_inventory
+#: model:ir.model.fields,help:nexterp_stock_inventory.field_l10n_ro_stock_inventory_line__inventory_diff_value
+msgid ""
+"Value of the difference, filled as soon as the quantity is counted and "
+"replaced by the value actually booked once the inventory is validated. A "
+"surplus is valued at the current cost, a shortage at the FIFO layers it "
+"consumes or at the standard / average price, so the figure does not move on "
+"validation."
+msgstr ""
+"Valoarea diferenței, completată imediat ce cantitatea e numărată și "
+"înlocuită cu valoarea efectiv înregistrată la validarea inventarului. Plusul"
+" se evaluează la costul curent, minusul la straturile FIFO pe care le "
+"consumă sau la prețul standard / mediu, deci cifra nu se schimbă la "
+"validare."
+
+#. module: nexterp_stock_inventory
+#: model:ir.actions.report,print_report_name:nexterp_stock_inventory.action_report_stock_inventory
+msgid "object.name"
+msgstr ""

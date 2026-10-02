@@ -7,7 +7,10 @@
 - **Counted-line model** — `l10n.ro.stock.inventory.line` carries the
   counted quantity, on-hand quantity, difference, standard price,
   current value, post-validation value and value difference, each
-  line linked to a `stock.quant`.
+  line linked to a `stock.quant`. `inventory_diff_value` is filled as
+  soon as the quantity is counted, valued the way the adjustment will
+  book it (FIFO layers, standard / average price, lot valuation), so it
+  does not change on validation.
 - **Quant uniqueness** — a Postgres constraint
   `unique(inventory_id, quant_id)` blocks the same quant from
   appearing twice on the same inventory.
@@ -24,6 +27,18 @@
   `l10n.ro.stock.inventory` per accounting date when quants are
   adjusted outside this workflow, so manual quant edits are still
   archived as inventory documents.
+- **Inventory report** — `Print Inventory Report` renders the
+  *proces verbal de inventariere* as a PDF: commission members and
+  their role, the appointing decision, a surplus / shortage summary
+  per location, the lines that show a difference and the signature
+  block.
+- **One valuation hook for the document** — the report draws every
+  figure through `line._report_diff_value()` and `_report_totals()`, so
+  a module carrying the goods at another value - a shop holding them at
+  shelf price - restates the whole document by overriding one method.
+- **Commission model** — `l10n.ro.stock.inventory.commission` holds one
+  member per line (optional user, name, job position and role:
+  chairman / member / stock keeper).
 - **Reporting** — a list / pivot / graph view on
   `l10n.ro.stock.inventory.line` filterable by inventory, product,
   lot, location and accounting date, with `quantity`,

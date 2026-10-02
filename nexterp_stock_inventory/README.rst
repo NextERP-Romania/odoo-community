@@ -32,6 +32,12 @@ this workflow (standard Odoo screens, third-party imports), an
 accounting date, so every stock adjustment ends up captured in a
 traceable document.
 
+A QWeb PDF report (*proces verbal de inventariere*) prints the document
+as the record required by the Romanian accounting rules: the commission
+appointed by decision, the counted locations, the surpluses and
+shortages summarised per location, the detail of every difference and
+the signature block.
+
 
 **Table of contents**
 
@@ -51,7 +57,10 @@ Key features
 -  **Counted-line model** — ``l10n.ro.stock.inventory.line`` carries the
    counted quantity, on-hand quantity, difference, standard price,
    current value, post-validation value and value difference, each line
-   linked to a ``stock.quant``.
+   linked to a ``stock.quant``. ``inventory_diff_value`` is filled as
+   soon as the quantity is counted, valued the way the adjustment will
+   book it (FIFO layers, standard / average price, lot valuation), so it
+   does not change on validation.
 -  **Quant uniqueness** — a Postgres constraint
    ``unique(inventory_id, quant_id)`` blocks the same quant from
    appearing twice on the same inventory.
@@ -68,6 +77,18 @@ Key features
    ``l10n.ro.stock.inventory`` per accounting date when quants are
    adjusted outside this workflow, so manual quant edits are still
    archived as inventory documents.
+-  **Inventory report** — ``Print Inventory Report`` renders the *proces
+   verbal de inventariere* as a PDF: commission members and their role,
+   the appointing decision, a surplus / shortage summary per location,
+   the lines that show a difference and the signature block.
+-  **One valuation hook for the document** — the report draws every
+   figure through ``line._report_diff_value()`` and
+   ``_report_totals()``, so a module carrying the goods at another value
+   - a shop holding them at shelf price - restates the whole document by
+   overriding one method.
+-  **Commission model** — ``l10n.ro.stock.inventory.commission`` holds
+   one member per line (optional user, name, job position and role:
+   chairman / member / stock keeper).
 -  **Reporting** — a list / pivot / graph view on
    ``l10n.ro.stock.inventory.line`` filterable by inventory, product,
    lot, location and accounting date, with ``quantity``,
@@ -223,7 +244,36 @@ Click **Validate Inventory**. The action:
    ``inventory_diff_value`` on each line, then locks the document with
    **State = Done**.
 
-5. Inverse capture from elsewhere
+5. Print the inventory report
+-----------------------------
+
+The *proces verbal de inventariere* is printed from the same form, with
+the **Print Inventory Report** button in the header or from the
+**Print** menu. Fill in the documentary data first:
+
+-  **Inventory Report** group — **Decision Number**, the decision
+   appointing the commission. The group also shows the read-only
+   **Surplus**, **Shortage** and **Difference** totals. The document is
+   dated by the **Accounting Date** of the inventory itself.
+-  **Inventory Commission** tab — one line per member: pick a **User**
+   to fill the name automatically or type it, then the **Job Position**
+   and the **Role** (Chairman, Member or Stock Keeper). The order of the
+   lines is the order they are printed in, and can be changed by drag
+   and drop.
+-  **Conclusions** tab — free text with the conclusions and proposals of
+   the commission, printed at the end of the report.
+
+The PDF lists only the lines whose counted quantity differs from the
+quantity on hand, valued the way the location carries them — at cost
+here, at shelf price where a module says otherwise. Each difference is
+valued in ``inventory_diff_value`` as soon as the quantity is counted,
+the same way the adjustment will book it: a surplus at the current cost,
+a shortage at the FIFO layers it consumes or at the standard / average
+price, with lot valuation honoured when the product uses it. The figure
+therefore does not change on validation, so the draft report and the
+final one show the same amounts.
+
+6. Inverse capture from elsewhere
 ---------------------------------
 
 When users adjust quants directly from **Inventory → Operations →
@@ -233,7 +283,7 @@ Physical Inventory** or via imports, the override on
 lines from the affected quants and validates it immediately. Those
 documents appear in the same list as user-created ones, marked **Done**.
 
-6. Reporting
+7. Reporting
 ------------
 
 Open **Inventory → Reporting → Inventory Stock Line Adjustments
@@ -246,6 +296,19 @@ Changelog
 
 Changelog
 =========
+
+20.0.1.1.0 (2026-10-02)
+-----------------------
+
+-  Add the printable inventory report (*proces verbal de inventariere*):
+   commission members, appointing decision, conclusions and a
+   ``Print Inventory Report`` button on the inventory form.
+-  Value the counted difference in ``inventory_diff_value`` as soon as
+   the quantity is entered, the way the adjustment will book it, through
+   the new ``_update_diff_values()`` hook on the inventory line.
+-  Draw the printed figures through ``_report_diff_value()`` and
+   ``_report_totals()``, so a module holding the goods at another value
+   can restate the document.
 
 19.0.1.0.0 (2026-05-25)
 -----------------------

@@ -4,6 +4,7 @@
 
 
 from odoo import api, fields, models
+from odoo.tools.float_utils import float_is_zero
 
 
 class StockInventory(models.Model):
@@ -40,6 +41,46 @@ class StockInventory(models.Model):
         ],
         default="draft",
     )
+    currency_id = fields.Many2one(
+        related="company_id.currency_id",
+        store=True,
+    )
+    # Data printed on the inventory report (Proces verbal de inventariere)
+    decision_number = fields.Char(
+        help="Number of the decision appointing the inventory commission.",
+    )
+    commission_ids = fields.One2many(
+        "l10n.ro.stock.inventory.commission",
+        "inventory_id",
+        string="Inventory Commission",
+    )
+    conclusions = fields.Text(
+        help="Conclusions and proposals of the commission, printed at the "
+        "end of the inventory report.",
+    )
+    surplus_value = fields.Monetary(
+        compute="_compute_difference_values",
+        help="Total value of the positive differences (surpluses).",
+    )
+    shortage_value = fields.Monetary(
+        compute="_compute_difference_values",
+        help="Total value of the negative differences (shortages), as a "
+        "positive amount.",
+    )
+    difference_value = fields.Monetary(
+        compute="_compute_difference_values",
+        help="Net value of the inventory differences: surpluses less shortages.",
+    )
+
+    @api.depends("inventory_line_ids.inventory_diff_value")
+    def _compute_difference_values(self):
+        for inventory in self:
+            values = inventory.inventory_line_ids.mapped("inventory_diff_value")
+            surplus = sum(value for value in values if value > 0)
+            shortage = -sum(value for value in values if value < 0)
+            inventory.surplus_value = surplus
+            inventory.shortage_value = shortage
+            inventory.difference_value = surplus - shortage
 
     @api.depends("accounting_date")
     def _compute_name(self):
@@ -60,11 +101,84 @@ class StockInventory(models.Model):
             line.value = quant.value
             line.quantity = quant.quantity
             line.inventory_diff_quantity = line.inventory_quantity - line.quantity
+            line._update_diff_values()
             quant.action_apply_inventory()
             line.inventory_value = quant.value
             line.inventory_diff_value = line.inventory_value - line.value
 
         inventory.state = "done"
+
+    def _report_lines(self):
+        """Lines with a difference, sorted the way they are printed.
+
+        The inventory report only lists the products whose counted quantity
+        differs from the quantity on hand; the lines that merely confirm the
+        stock are summarised by the totals.
+        """
+        self.ensure_one()
+        precision = self.env["decimal.precision"].precision_get("Product Unit")
+        lines = self.inventory_line_ids.filtered(
+            lambda line: not float_is_zero(
+                line.inventory_diff_quantity, precision_digits=precision
+            )
+        )
+        return lines.sorted(
+            lambda line: (
+                line.location_id.complete_name or "",
+                line.product_id.display_name or "",
+            )
+        )
+
+    def _report_summary_by_location(self):
+        """Per-location totals of the differences, for the report summary.
+
+        :return: list of dicts with the location, the surplus value, the
+            shortage value (positive) and the net difference.
+        """
+        self.ensure_one()
+        summary = {}
+        for line in self._report_lines():
+            values = summary.setdefault(
+                line.location_id,
+                {"location": line.location_id, "surplus": 0.0, "shortage": 0.0},
+            )
+            value = line._report_diff_value()
+            if value > 0:
+                values["surplus"] += value
+            else:
+                values["shortage"] -= value
+        for values in summary.values():
+            values["difference"] = values["surplus"] - values["shortage"]
+        return sorted(
+            summary.values(), key=lambda values: values["location"].complete_name or ""
+        )
+
+    def _report_totals(self):
+        """Surplus, shortage and net of the printed document.
+
+        Built from the printed value of each line rather than from the cost
+        totals of the form: a location that carries its goods at another
+        value - a shop holding them at shelf price - prints that value, and
+        the tables have to add up to what they show.
+        """
+        self.ensure_one()
+        surplus = shortage = 0.0
+        for line in self._report_lines():
+            value = line._report_diff_value()
+            if value > 0:
+                surplus += value
+            else:
+                shortage -= value
+        return {
+            "surplus": surplus,
+            "shortage": shortage,
+            "difference": surplus - shortage,
+        }
+
+    def action_print_inventory_report(self):
+        return self.env.ref(
+            "nexterp_stock_inventory.action_report_stock_inventory"
+        ).report_action(self)
 
     def action_generate_inventory_lines(self, quants=False):
         """
@@ -130,6 +244,7 @@ class StockInventory(models.Model):
                     - line.quant_id.quantity,
                 }
             )
+            line._update_diff_values()
         for quant in quants:
             if quant in inventory_quants:
                 # if the quant already has an inventory line, we skip it
@@ -151,7 +266,9 @@ class StockInventory(models.Model):
                     "standard_price": quant.product_id.standard_price,
                 }
             )
-        self.env["l10n.ro.stock.inventory.line"].create(inventory_line_vals)
+        new_lines = self.env["l10n.ro.stock.inventory.line"].create(inventory_line_vals)
+        for line in new_lines:
+            line._update_diff_values()
         inventory.inventory_lines_generated = True
         inventory_quants = inventory.inventory_line_ids.mapped("quant_id")
         inventory_quants_zero = inventory_quants.filtered(
@@ -200,7 +317,14 @@ class StockInventoryLine(models.Model):
     standard_price = fields.Float(readonly=True)
     value = fields.Monetary(readonly=True)
     inventory_value = fields.Monetary(readonly=True)
-    inventory_diff_value = fields.Monetary(readonly=True)
+    inventory_diff_value = fields.Monetary(
+        readonly=True,
+        help="Value of the difference, filled as soon as the quantity is "
+        "counted and replaced by the value actually booked once the "
+        "inventory is validated. A surplus is valued at the current cost, a "
+        "shortage at the FIFO layers it consumes or at the standard / "
+        "average price, so the figure does not move on validation.",
+    )
     location_id = fields.Many2one(
         "stock.location",
         domain="[('usage', '=', 'internal')]",
@@ -227,6 +351,64 @@ class StockInventoryLine(models.Model):
     #         "Only one inventory line per quant.",
     #     ),
     # ]
+
+    def _update_diff_values(self):
+        """Fill in the valuation of the counted difference.
+
+        Everything that values a difference goes through this one hook, so a
+        module carrying more than the cost - the retail markup and the
+        deferred VAT, for instance - fills its own columns at the same
+        moments: when the lines are generated, when the count is edited and
+        just before the adjustment is booked.
+        """
+        for line in self:
+            line.inventory_diff_value = line._get_diff_value()
+
+    def _get_diff_value(self):
+        """Value the counted difference the way the adjustment will book it.
+
+        This mirrors `stock.move._compute_value()`: a surplus comes in at the
+        current cost, a shortage goes out at the FIFO layers it consumes when
+        the product is costed that way, and at the standard / average price
+        otherwise. Lot valuation is honoured when the product uses it. The
+        estimate is therefore the amount the validation writes in
+        `inventory_diff_value`, so the report shows the same figure before
+        and after the inventory is validated.
+        """
+        self.ensure_one()
+        quantity = self.inventory_diff_quantity
+        if not quantity:
+            return 0.0
+        product = self.product_id
+        lot = self.product_lot_id if product.lot_valuated else self.env["stock.lot"]
+        if quantity < 0 and product.cost_method == "fifo":
+            if lot or not product.lot_valuated:
+                return -product._get_fifo_value(-quantity, lot=lot or None)
+        price = lot.standard_price if lot else product.standard_price
+        return quantity * price
+
+    def _report_diff_value(self):
+        """Value of the difference as the inventory report prints it.
+
+        The booked cost difference, unless the goods are carried at another
+        value - a shop holds them at shelf price, where the difference the
+        shop answers for is the one on 371 - in which case the document is
+        drawn at that value instead.
+        """
+        self.ensure_one()
+        return self.inventory_diff_value
+
+    def _report_unit_value(self):
+        """Unit value that makes the printed difference add up.
+
+        The standard price is the product's current cost, which under FIFO is
+        rarely what the consumed layers cost, so the report prints the unit
+        value implied by the difference instead.
+        """
+        self.ensure_one()
+        if self.inventory_diff_quantity:
+            return self._report_diff_value() / self.inventory_diff_quantity
+        return self.standard_price
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -274,4 +456,41 @@ class StockInventoryLine(models.Model):
                 quant.inventory_quantity = line.inventory_quantity
                 line.quantity = quant.quantity
                 line.inventory_diff_quantity = quant.inventory_diff_quantity
+                line._update_diff_values()
         return res
+
+
+class StockInventoryCommission(models.Model):
+    _name = "l10n.ro.stock.inventory.commission"
+    _description = "Stock Inventory Commission Member"
+    _order = "inventory_id, sequence, id"
+
+    inventory_id = fields.Many2one(
+        "l10n.ro.stock.inventory",
+        required=True,
+        ondelete="cascade",
+    )
+    sequence = fields.Integer(default=10)
+    user_id = fields.Many2one("res.users")
+    name = fields.Char(
+        compute="_compute_name",
+        store=True,
+        readonly=False,
+        required=True,
+    )
+    job_position = fields.Char()
+    role = fields.Selection(
+        selection=[
+            ("chairman", "Chairman"),
+            ("member", "Member"),
+            ("stock_keeper", "Stock Keeper"),
+        ],
+        default="member",
+        required=True,
+    )
+
+    @api.depends("user_id")
+    def _compute_name(self):
+        for member in self:
+            if member.user_id:
+                member.name = member.user_id.name

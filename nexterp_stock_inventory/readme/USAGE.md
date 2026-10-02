@@ -56,7 +56,35 @@ Click **Validate Inventory**. The action:
    `inventory_diff_value` on each line, then locks the document with
    **State = Done**.
 
-## 5. Inverse capture from elsewhere
+## 5. Print the inventory report
+
+The *proces verbal de inventariere* is printed from the same form, with
+the **Print Inventory Report** button in the header or from the
+**Print** menu. Fill in the documentary data first:
+
+- **Inventory Report** group — **Decision Number**, the decision
+  appointing the commission. The group also shows the read-only
+  **Surplus**, **Shortage** and **Difference** totals. The document is
+  dated by the **Accounting Date** of the inventory itself.
+- **Inventory Commission** tab — one line per member: pick a **User**
+  to fill the name automatically or type it, then the **Job Position**
+  and the **Role** (Chairman, Member or Stock Keeper). The order of the
+  lines is the order they are printed in, and can be changed by drag
+  and drop.
+- **Conclusions** tab — free text with the conclusions and proposals of
+  the commission, printed at the end of the report.
+
+The PDF lists only the lines whose counted quantity differs from the
+quantity on hand, valued the way the location carries them — at cost
+here, at shelf price where a module says otherwise. Each difference is valued in `inventory_diff_value`
+as soon as the quantity is counted, the same way the adjustment will
+book it: a surplus at the current cost, a shortage at the FIFO layers
+it consumes or at the standard / average price, with lot valuation
+honoured when the product uses it. The figure therefore does not change
+on validation, so the draft report and the final one show the same
+amounts.
+
+## 6. Inverse capture from elsewhere
 
 When users adjust quants directly from **Inventory → Operations →
 Physical Inventory** or via imports, the override on
@@ -66,7 +94,7 @@ lines from the affected quants and validates it immediately. Those
 documents appear in the same list as user-created ones, marked
 **Done**.
 
-## 6. Reporting
+## 7. Reporting
 
 Open **Inventory → Reporting → Inventory Stock Line Adjustments
 History** for a flat list of every counted line. The view supports

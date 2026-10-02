@@ -34,6 +34,12 @@
                         class="o_btn_validate"
                         groups="base.group_user"
                     />
+                    <button
+                        name="action_print_inventory_report"
+                        string="Print Inventory Report"
+                        type="object"
+                        groups="base.group_user"
+                    />
                     <field
                         name="state"
                         widget="statusbar"
@@ -61,6 +67,13 @@
                                 options="{'no_create': True}"
                                 readonly="state == 'done'"
                             />
+                        </group>
+                        <group string="Inventory Report">
+                            <field name="decision_number" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="surplus_value" />
+                            <field name="shortage_value" />
+                            <field name="difference_value" />
                         </group>
                     </group>
                     <notebook>
@@ -104,6 +117,26 @@
                                     <field name="inventory_diff_value" sum="Diff" />
                                 </list>
                             </field>
+                        </page>
+                        <page string="Inventory Commission">
+                            <field name="commission_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field
+                                        name="user_id"
+                                        options="{'no_create': True}"
+                                    />
+                                    <field name="name" />
+                                    <field name="job_position" />
+                                    <field name="role" />
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Conclusions">
+                            <field
+                                name="conclusions"
+                                placeholder="Conclusions and proposals of the commission, printed at the end of the inventory report..."
+                            />
                         </page>
                     </notebook>
                 </sheet>

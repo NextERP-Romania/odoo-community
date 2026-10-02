@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_report_stock_inventory" model="ir.actions.report">
+        <field name="name">Inventory Report</field>
+        <field name="model">l10n.ro.stock.inventory</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nexterp_stock_inventory.report_stock_inventory</field>
+        <field name="print_report_name">object.name</field>
+        <field name="binding_model_id" ref="model_l10n_ro_stock_inventory" />
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_stock_inventory_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <h4 class="text-center">Inventory Report</h4>
+                <div class="text-center mb-4">
+                    <span t-field="doc.name" />
+                </div>
+
+                <table class="table table-sm table-borderless" name="header_table">
+                    <tr>
+                        <td style="width: 30%;">
+                            <strong>Drawn up on</strong>
+                        </td>
+                        <td>
+                            <span t-field="doc.accounting_date" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Appointing decision</strong>
+                        </td>
+                        <td>
+                            <span t-field="doc.decision_number" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Locations</strong>
+                        </td>
+                        <td>
+                            <span
+                                t-if="doc.location_ids"
+                                t-out="', '.join(doc.location_ids.mapped('complete_name'))"
+                            />
+                            <span t-else="">All internal locations of the company</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <p>
+                    The inventory commission listed below counted the goods
+                    held at the locations above and established the results
+                    that follow.
+                </p>
+
+                <table
+                    class="table table-sm table-bordered"
+                    t-if="doc.commission_ids"
+                    name="commission_table"
+                >
+                    <thead>
+                        <tr>
+                            <th class="text-center">No.</th>
+                            <th>Name</th>
+                            <th>Job Position</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="seq" t-value="0" />
+                        <tr t-foreach="doc.commission_ids" t-as="member">
+                            <t t-set="seq" t-value="seq + 1" />
+                            <td class="text-center">
+                                <span t-out="seq" />
+                            </td>
+                            <td>
+                                <span t-field="member.name" />
+                            </td>
+                            <td>
+                                <span t-field="member.job_position" />
+                            </td>
+                            <td>
+                                <span t-field="member.role" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h6 class="mt-4">Results by location</h6>
+                <t t-set="summary" t-value="doc._report_summary_by_location()" />
+                <t t-set="totals" t-value="doc._report_totals()" />
+                <table class="table table-sm table-bordered" name="summary_table">
+                    <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th class="text-end">Surplus</th>
+                            <th class="text-end">Shortage</th>
+                            <th class="text-end">Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-if="not summary">
+                            <td colspan="4" class="text-center">
+                                <span
+                                >No difference was found between the counted stock and the stock on hand.</span>
+                            </td>
+                        </tr>
+                        <tr t-foreach="summary" t-as="group">
+                            <td>
+                                <span t-out="group['location'].complete_name" />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-out="group['surplus']"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-out="group['shortage']"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-out="group['difference']"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot t-if="summary">
+                        <tr>
+                            <td>
+                                <strong>Total</strong>
+                            </td>
+                            <td class="text-end">
+                                <strong
+                                    t-out="totals['surplus']"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <strong
+                                    t-out="totals['shortage']"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <strong
+                                    t-out="totals['difference']"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <t t-set="lines" t-value="doc._report_lines()" />
+                <t t-if="lines">
+                    <h6 class="mt-4">Differences found</h6>
+                    <table
+                        class="table table-sm table-bordered"
+                        name="difference_table"
+                    >
+                        <thead>
+                            <tr>
+                                <th class="text-center">No.</th>
+                                <th>Location</th>
+                                <th>Product</th>
+                                <th>Lot/Serial</th>
+                                <th class="text-center">UoM</th>
+                                <th class="text-end">On Hand</th>
+                                <th class="text-end">Counted</th>
+                                <th class="text-end">Difference</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Surplus</th>
+                                <th class="text-end">Shortage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="seq" t-value="0" />
+                            <tr t-foreach="lines" t-as="line">
+                                <t t-set="seq" t-value="seq + 1" />
+                                <t t-set="value" t-value="line._report_diff_value()" />
+                                <td class="text-center">
+                                    <span t-out="seq" />
+                                </td>
+                                <td>
+                                    <span t-out="line.location_id.complete_name" />
+                                </td>
+                                <td>
+                                    <span t-field="line.product_id" />
+                                </td>
+                                <td>
+                                    <span t-field="line.product_lot_id" />
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="line.product_uom_id" />
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.quantity" />
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.inventory_quantity" />
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.inventory_diff_quantity" />
+                                </td>
+                                <td class="text-end">
+                                    <span
+                                        t-out="line._report_unit_value()"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                                <td class="text-end">
+                                    <span
+                                        t-out="value &gt; 0 and value or 0"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                                <td class="text-end">
+                                    <span
+                                        t-out="value &lt; 0 and -value or 0"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="9" class="text-end">
+                                    <strong>Total</strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong
+                                        t-out="totals['surplus']"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                                <td class="text-end">
+                                    <strong
+                                        t-out="totals['shortage']"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </t>
+
+                <div t-if="doc.conclusions" class="mt-4">
+                    <h6>Conclusions and proposals of the commission</h6>
+                    <span t-field="doc.conclusions" />
+                </div>
+
+                <t t-if="doc.commission_ids">
+                    <h6 class="mt-5">Inventory commission</h6>
+                    <div class="row">
+                        <div
+                            class="col-4 mt-3"
+                            t-foreach="doc.commission_ids"
+                            t-as="member"
+                        >
+                            <p class="mb-0">
+                                <span t-field="member.role" />
+                            </p>
+                            <p class="mb-0">
+                                <span t-field="member.name" />
+                            </p>
+                            <p class="mt-4">.............................</p>
+                        </div>
+                    </div>
+                </t>
+                <div class="row mt-5" t-else="">
+                    <div class="col-4">
+                        <p>Chairman</p>
+                        <p class="mt-4">.............................</p>
+                    </div>
+                    <div class="col-4">
+                        <p>Member</p>
+                        <p class="mt-4">.............................</p>
+                    </div>
+                    <div class="col-4">
+                        <p>Stock Keeper</p>
+                        <p class="mt-4">.............................</p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_stock_inventory">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t
+                    t-call="nexterp_stock_inventory.report_stock_inventory_document"
+                    t-lang="doc.company_id.partner_id.lang"
+                />
+            </t>
+        </t>
+    </template>
+</odoo>

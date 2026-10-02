@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Stock Inventory",
     "summary": "Stock Inventory",
-    "version": "20.0.1.0.0",
+    "version": "20.0.1.1.0",
     "license": "AGPL-3",
     "images": ["static/description/apps_icon.png"],
     "category": "Generic Modules/Stock",
@@ -18,6 +18,7 @@
         "security/ir.access.csv",
         "views/stock_inventory_line_report_view.xml",
         "views/stock_inventory_view.xml",
+        "report/stock_inventory_report.xml",
     ],
     "installable": True,
     "maintainers": ["feketemihai"],

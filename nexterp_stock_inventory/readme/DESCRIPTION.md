@@ -18,3 +18,9 @@ this workflow (standard Odoo screens, third-party imports), an
 `l10n.ro.stock.inventory` is created automatically, grouped by
 accounting date, so every stock adjustment ends up captured in a
 traceable document.
+
+A QWeb PDF report (*proces verbal de inventariere*) prints the document
+as the record required by the Romanian accounting rules: the commission
+appointed by decision, the counted locations, the surpluses and
+shortages summarised per location, the detail of every difference and
+the signature block.
