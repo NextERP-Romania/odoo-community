@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record model="ir.ui.view" id="inventory_stock_form_view">
+        <field name="name">l10n.ro.stock.inventory.form.retail</field>
+        <field name="model">l10n.ro.stock.inventory</field>
+        <field
+            name="inherit_id"
+            ref="nexterp_stock_inventory.inventory_stock_form_view"
+        />
+        <field name="arch" type="xml">
+            <field name="difference_value" position="after">
+                <field name="l10n_ro_retail_markup_value" />
+                <field name="l10n_ro_retail_vat_value" />
+                <field name="l10n_ro_retail_value" />
+            </field>
+            <list position="inside">
+                <field name="l10n_ro_retail_price" optional="hide" />
+                <field
+                    name="l10n_ro_retail_markup_value"
+                    sum="Markup (378)"
+                    optional="show"
+                />
+                <field
+                    name="l10n_ro_retail_vat_value"
+                    sum="Deferred VAT (4428)"
+                    optional="show"
+                />
+                <field
+                    name="l10n_ro_retail_value"
+                    sum="Retail Value (371)"
+                    optional="show"
+                />
+            </list>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="inventory_stock_line_tree_view">
+        <field name="name">l10n.ro.stock.inventory.line.tree.retail</field>
+        <field name="model">l10n.ro.stock.inventory.line</field>
+        <field
+            name="inherit_id"
+            ref="nexterp_stock_inventory.inventory_stock_line_tree_view"
+        />
+        <field name="arch" type="xml">
+            <field name="inventory_diff_value" position="after">
+                <field name="l10n_ro_retail_price" optional="hide" />
+                <field name="l10n_ro_retail_markup_value" optional="show" />
+                <field name="l10n_ro_retail_vat_value" optional="show" />
+                <field name="l10n_ro_retail_value" optional="show" />
+            </field>
+        </field>
+    </record>
+</odoo>

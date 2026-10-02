@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="report_stock_inventory_document"
+        inherit_id="nexterp_stock_inventory.report_stock_inventory_document"
+    >
+        <xpath expr="//div[@t-if='doc.conclusions']" position="before">
+            <t t-set="retail_lines" t-value="doc._l10n_ro_retail_report_lines()" />
+            <t t-if="retail_lines">
+                <h6 class="mt-4">Differences at shelf price</h6>
+                <p>
+                    The goods below are held at shelf price, so the
+                    differences above are stated at the PVA. This is what
+                    each of them is made of: the cost, the commercial markup
+                    (378) and the deferred VAT (4428) released or loaded with
+                    it.
+                </p>
+                <table
+                    class="table table-sm table-bordered"
+                    name="retail_difference_table"
+                >
+                    <thead>
+                        <tr>
+                            <th class="text-center">No.</th>
+                            <th>Location</th>
+                            <th>Product</th>
+                            <th class="text-center">UoM</th>
+                            <th class="text-end">Difference</th>
+                            <th class="text-end">Shelf Price</th>
+                            <th class="text-end">Cost</th>
+                            <th class="text-end">Markup (378)</th>
+                            <th class="text-end">Deferred VAT (4428)</th>
+                            <th class="text-end">Retail Value (371)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="seq" t-value="0" />
+                        <t t-set="total_cost" t-value="0" />
+                        <t t-set="total_markup" t-value="0" />
+                        <t t-set="total_vat" t-value="0" />
+                        <t t-set="total_retail" t-value="0" />
+                        <tr t-foreach="retail_lines" t-as="line">
+                            <t t-set="seq" t-value="seq + 1" />
+                            <t
+                                t-set="total_cost"
+                                t-value="total_cost + line.inventory_diff_value"
+                            />
+                            <t
+                                t-set="total_markup"
+                                t-value="total_markup + line.l10n_ro_retail_markup_value"
+                            />
+                            <t
+                                t-set="total_vat"
+                                t-value="total_vat + line.l10n_ro_retail_vat_value"
+                            />
+                            <t
+                                t-set="total_retail"
+                                t-value="total_retail + line.l10n_ro_retail_value"
+                            />
+                            <td class="text-center">
+                                <span t-out="seq" />
+                            </td>
+                            <td>
+                                <span t-out="line.location_id.complete_name" />
+                            </td>
+                            <td>
+                                <span t-field="line.product_id" />
+                            </td>
+                            <td class="text-center">
+                                <span t-field="line.product_uom_id" />
+                            </td>
+                            <td class="text-end">
+                                <span t-field="line.inventory_diff_quantity" />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="line.l10n_ro_retail_price"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="line.inventory_diff_value"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="line.l10n_ro_retail_markup_value"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="line.l10n_ro_retail_vat_value"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    t-field="line.l10n_ro_retail_value"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" class="text-end">
+                                <strong>Total</strong>
+                            </td>
+                            <td class="text-end">
+                                <strong
+                                    t-out="total_cost"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <strong
+                                    t-out="total_markup"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <strong
+                                    t-out="total_vat"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                            <td class="text-end">
+                                <strong
+                                    t-out="total_retail"
+                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                />
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </t>
+        </xpath>
+    </template>
+</odoo>

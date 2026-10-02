@@ -1,0 +1,193 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_stock_inventory_retail
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 20.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-02 06:56+0000\n"
+"PO-Revision-Date: 2026-10-02 06:56+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nexterp_stock_inventory_retail
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "<strong>Total</strong>"
+msgstr "<strong>Total</strong>"
+
+#. module: nexterp_stock_inventory_retail
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "Cost"
+msgstr "Cost"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__l10n_ro_retail_vat_value
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.inventory_stock_form_view
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "Deferred VAT (4428)"
+msgstr "TVA neexigibilă (4428)"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory__l10n_ro_retail_vat_value
+msgid "Deferred VAT Difference (4428)"
+msgstr "Diferență TVA neexigibilă (4428)"
+
+#. module: nexterp_stock_inventory_retail
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "Difference"
+msgstr "Diferență"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,help:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__l10n_ro_retail_value
+msgid ""
+"Difference at shelf price: the cost difference plus the markup and the "
+"deferred VAT that go with it - what account 371 moves by."
+msgstr ""
+"Diferența la preț de vânzare: diferența de cost plus adaosul comercial și "
+"TVA neexigibilă aferente - cu cât se mișcă contul 371."
+
+#. module: nexterp_stock_inventory_retail
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "Differences at shelf price"
+msgstr "Diferențe la preț de vânzare"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory__display_name
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory__id
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__id
+msgid "ID"
+msgstr ""
+
+#. module: nexterp_stock_inventory_retail
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "Location"
+msgstr "Locație"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__l10n_ro_retail_markup_value
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.inventory_stock_form_view
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "Markup (378)"
+msgstr "Adaos comercial (378)"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory__l10n_ro_retail_markup_value
+msgid "Markup Difference (378)"
+msgstr "Diferență adaos comercial (378)"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,help:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory__l10n_ro_retail_value
+msgid ""
+"Net value of the differences at shelf price: the cost difference plus the "
+"markup and the deferred VAT that go with it."
+msgstr ""
+"Valoarea netă a diferențelor la preț de vânzare: diferența de cost plus "
+"adaosul comercial și TVA neexigibilă aferente."
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,help:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory__l10n_ro_retail_markup_value
+msgid ""
+"Net value the inventory differences put on, or take off, the commercial "
+"markup account."
+msgstr ""
+"Valoarea netă cu care diferențele de inventar încarcă sau descarcă contul de"
+" adaos comercial."
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,help:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory__l10n_ro_retail_vat_value
+msgid ""
+"Net value the inventory differences put on, or take off, the deferred VAT "
+"account."
+msgstr ""
+"Valoarea netă cu care diferențele de inventar încarcă sau descarcă contul de"
+" TVA neexigibilă."
+
+#. module: nexterp_stock_inventory_retail
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "No."
+msgstr "Nr."
+
+#. module: nexterp_stock_inventory_retail
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "Product"
+msgstr "Produs"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory__l10n_ro_retail_value
+msgid "Retail Difference (371)"
+msgstr "Diferență la preț de vânzare (371)"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__l10n_ro_retail_value
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.inventory_stock_form_view
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "Retail Value (371)"
+msgstr "Valoare la preț de vânzare (371)"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,help:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__l10n_ro_retail_markup_value
+msgid ""
+"Share of the difference that lands on the commercial markup account, filled "
+"together with the cost difference."
+msgstr ""
+"Partea din diferență care ajunge în contul de adaos comercial, completată "
+"odată cu diferența de cost."
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,help:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__l10n_ro_retail_vat_value
+msgid ""
+"Share of the difference that lands on the deferred VAT account, filled "
+"together with the cost difference."
+msgstr ""
+"Partea din diferență care ajunge în contul de TVA neexigibilă, completată "
+"odată cu diferența de cost."
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,field_description:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__l10n_ro_retail_price
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "Shelf Price"
+msgstr "Preț de vânzare"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model.fields,help:nexterp_stock_inventory_retail.field_l10n_ro_stock_inventory_line__l10n_ro_retail_price
+msgid ""
+"Shelf price (PVA, VAT included) the shop currently charges for one unit of "
+"this product."
+msgstr ""
+"Prețul de vânzare cu amănuntul (PVA, cu TVA inclus) practicat în prezent de "
+"magazin pentru o unitate din acest produs."
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model,name:nexterp_stock_inventory_retail.model_l10n_ro_stock_inventory
+msgid "Stock Inventory"
+msgstr "Inventar stoc"
+
+#. module: nexterp_stock_inventory_retail
+#: model:ir.model,name:nexterp_stock_inventory_retail.model_l10n_ro_stock_inventory_line
+msgid "Stock Inventory Line"
+msgstr "Linie inventar stoc"
+
+#. module: nexterp_stock_inventory_retail
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid ""
+"The goods below are held at shelf price, so the\n"
+"                    differences above are stated at the PVA. This is what\n"
+"                    each of them is made of: the cost, the commercial markup\n"
+"                    (378) and the deferred VAT (4428) released or loaded with\n"
+"                    it."
+msgstr "Bunurile de mai jos sunt ținute la preț de vânzare, deci diferențele de mai sus sunt exprimate la PVA. Iată din ce se compune fiecare: costul, adaosul comercial (378) și TVA neexigibilă (4428) descărcate sau încărcate odată cu el."
+
+#. module: nexterp_stock_inventory_retail
+#: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory_retail.report_stock_inventory_document
+msgid "UoM"
+msgstr "UM"
