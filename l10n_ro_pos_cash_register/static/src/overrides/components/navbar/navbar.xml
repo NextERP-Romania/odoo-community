@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t
+        t-name="l10n_ro_pos_cash_register.Navbar"
+        t-inherit="point_of_sale.Navbar"
+        t-inherit-mode="extension"
+    >
+        <!-- After the other desks a shop may have: the register is looked
+             at now and then, not all day, so it sits at the end. -->
+        <xpath expr="//div[hasclass('navbar-menu')]" position="inside">
+            <button
+                class="cash-register-button btn btn-lg btn-light lh-lg text-nowrap"
+                style="order: 40;"
+                t-att-class="{'active': this.pos.router.currentScreen() === 'CashRegisterScreen'}"
+                t-on-click="() => this.openCashRegister()"
+            >
+                <span t-if="!this.ui.isSmall">Cash Register</span>
+                <i
+                    t-else=""
+                    class="oi oi-fw oi-lg"
+                    data-icon="account_balance_wallet"
+                />
+            </button>
+        </xpath>
+    </t>
+
+</templates>

@@ -1,0 +1,156 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ro_pos_cash_register
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 20.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-02 16:48+0000\n"
+"PO-Revision-Date: 2026-10-02 16:48+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-python
+#: code:addons/l10n_ro_pos_cash_register/models/pos_session.py:0
+msgid ""
+"%(session)s kept no cash: it has no register to print. Only the sessions of "
+"a point of sale with cash control have one."
+msgstr "%(session)s nu a ținut numerar: nu are registru de tipărit. Doar sesiunile unui punct de vânzare cu control de numerar au unul."
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+#: code:addons/l10n_ro_pos_cash_register/static/src/overrides/components/navbar/navbar.xml:0
+#: model_terms:ir.ui.view,arch_db:l10n_ro_pos_cash_register.view_pos_session_form
+msgid "Cash Register"
+msgstr "Registru de casă"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Cashier"
+msgstr "Casier"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Closed"
+msgstr "Închisă"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Counted"
+msgstr "Numărat"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Difference"
+msgstr "Diferență"
+
+#. module: l10n_ro_pos_cash_register
+#: model:ir.model.fields,field_description:l10n_ro_pos_cash_register.field_pos_config__display_name
+#: model:ir.model.fields,field_description:l10n_ro_pos_cash_register.field_pos_session__display_name
+msgid "Display Name"
+msgstr "Nume Afișat"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Expected"
+msgstr "Scriptic"
+
+#. module: l10n_ro_pos_cash_register
+#: model:ir.model.fields,field_description:l10n_ro_pos_cash_register.field_pos_config__id
+#: model:ir.model.fields,field_description:l10n_ro_pos_cash_register.field_pos_session__id
+msgid "ID"
+msgstr ""
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Movements"
+msgstr "Mișcări"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Opened"
+msgstr "Deschisă"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Opening"
+msgstr "Sold inițial"
+
+#. module: l10n_ro_pos_cash_register
+#: model:ir.model,name:l10n_ro_pos_cash_register.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "Configurație Punct de vânzare"
+
+#. module: l10n_ro_pos_cash_register
+#: model:ir.model,name:l10n_ro_pos_cash_register.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Sesiune Punct de vânzare"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Reading the sessions..."
+msgstr "Se citesc sesiunile..."
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Register"
+msgstr "Casă"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Search sessions..."
+msgstr "Caută sesiuni..."
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "Session"
+msgstr "Sesiune"
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.esm.js:0
+msgid "The register could not be printed."
+msgstr "Registrul nu a putut fi tipărit."
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.esm.js:0
+msgid "The sessions could not be read."
+msgstr "Sesiunile nu au putut fi citite."
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "This point of sale has no session yet."
+msgstr "Acest punct de vânzare nu are încă nicio sesiune."
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.esm.js:0
+msgid "This session kept no cash, so it has no register."
+msgstr "Această sesiune nu a ținut numerar, deci nu are registru."
+
+#. module: l10n_ro_pos_cash_register
+#. odoo-javascript
+#: code:addons/l10n_ro_pos_cash_register/static/src/app/screens/cash_register_screen/cash_register_screen.xml:0
+msgid "no cash kept"
+msgstr "fără numerar"

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="l10n_ro_pos_cash_register.CashRegisterScreen">
+        <div class="cash-register-screen d-flex flex-column h-100 bg-view">
+            <div class="d-flex align-items-center gap-2 p-2 border-bottom">
+                <button class="btn btn-secondary" t-on-click="() => this.close()">
+                    <i class="oi oi-chevron-left me-1" />Register</button>
+                <h5 class="m-0 flex-grow-1">Cash Register</h5>
+                <input
+                    type="text"
+                    class="form-control"
+                    style="max-width: 18rem;"
+                    placeholder="Search sessions..."
+                    t-att-value="this.state.search"
+                    t-on-input="(ev) => this.state.search = ev.target.value"
+                />
+                <button
+                    class="btn btn-light"
+                    t-att-disabled="this.state.loading"
+                    t-on-click="() => this.load()"
+                >
+                    <i class="fa fa-refresh" />
+                </button>
+            </div>
+
+            <div class="flex-grow-1 overflow-auto p-2">
+                <div t-if="this.state.loading" class="text-center p-4 text-muted">
+                    Reading the sessions...
+                </div>
+                <div t-elif="!this.sessions.length" class="text-center p-4 text-muted">
+                    This point of sale has no session yet.
+                </div>
+                <table t-else="" class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Session</th>
+                            <th>Opened</th>
+                            <th>Closed</th>
+                            <th>Cashier</th>
+                            <th class="text-end">Opening</th>
+                            <th class="text-end">Movements</th>
+                            <th class="text-end">Expected</th>
+                            <th class="text-end">Counted</th>
+                            <th class="text-end">Difference</th>
+                            <th />
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="this.sessions" t-as="session" t-key="session.id">
+                            <td>
+                                <span t-out="session.name" />
+                                <span
+                                    t-if="session.state !== 'closed'"
+                                    class="badge text-bg-warning ms-1"
+                                    t-out="session.state"
+                                />
+                            </td>
+                            <td t-out="this.formatMoment(session.start_at)" />
+                            <td t-out="this.formatMoment(session.stop_at)" />
+                            <td t-out="session.user" />
+                            <t t-if="session.statement_id">
+                                <td
+                                    class="text-end"
+                                    t-out="this.formatCurrency(session.opening)"
+                                />
+                                <td
+                                    class="text-end"
+                                    t-out="this.formatCurrency(session.movements)"
+                                />
+                                <td
+                                    class="text-end"
+                                    t-out="this.formatCurrency(session.expected)"
+                                />
+                                <td
+                                    class="text-end"
+                                    t-out="this.formatCurrency(session.counted)"
+                                />
+                                <td
+                                    class="text-end"
+                                    t-att-class="session.balanced ? 'text-muted' : 'text-danger fw-bold'"
+                                    t-out="this.formatCurrency(session.difference)"
+                                />
+                            </t>
+                            <td
+                                t-else=""
+                                colspan="5"
+                                class="text-center text-muted"
+                            >no cash kept</td>
+                            <td class="text-end">
+                                <button
+                                    class="print-register btn btn-sm btn-primary text-nowrap"
+                                    t-att-disabled="!this.canPrint(session)"
+                                    t-on-click="() => this.print(session)"
+                                >Cash Register</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+</templates>
