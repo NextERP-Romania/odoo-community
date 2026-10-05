@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_partner_view_form" model="ir.ui.view">
+        <field name="name">res.partner.form.l10n.ro.edi.field.rules</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <!-- The tab only exists for the people allowed to maintain
+                     the mapping; an inherited view cannot carry the group on
+                     the record itself. -->
+                <page
+                    string="e-Factura XML"
+                    name="l10n_ro_edi_xml"
+                    groups="l10n_ro_edi_field_rules.group_l10n_ro_edi_xml_rule_manager"
+                >
+                    <group>
+                        <field name="l10n_ro_edi_profile_id" />
+                    </group>
+                    <separator string="Specific rules" />
+                    <p class="text-muted">
+                        These rules apply to this partner only and override the
+                        ones of the profile that write the same node.
+                    </p>
+                    <field name="l10n_ro_edi_xml_rule_ids" />
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>

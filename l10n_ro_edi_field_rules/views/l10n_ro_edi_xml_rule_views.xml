@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="l10n_ro_edi_xml_rule_view_list" model="ir.ui.view">
+        <field name="name">l10n_ro.edi.xml.rule.list</field>
+        <field name="model">l10n_ro.edi.xml.rule</field>
+        <field name="arch" type="xml">
+            <list string="XML rules" editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="field_key" />
+                <field name="scope" optional="show" />
+                <field name="xml_path" optional="hide" groups="base.group_system" />
+                <field name="attribute" optional="hide" groups="base.group_system" />
+                <field name="value_type" />
+                <field name="field_path" />
+                <field name="value_fixed" />
+                <field name="expression" groups="base.group_system" optional="hide" />
+                <field name="document_types" optional="show" />
+                <field name="overwrite" optional="hide" />
+                <field name="value_required" optional="hide" />
+                <field name="max_len" optional="hide" groups="base.group_system" />
+                <field name="note" optional="hide" />
+                <field name="field_help" column_invisible="1" />
+                <field name="active" column_invisible="1" />
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ro_edi_xml_rule_view_form" model="ir.ui.view">
+        <field name="name">l10n_ro.edi.xml.rule.form</field>
+        <field name="model">l10n_ro.edi.xml.rule</field>
+        <field name="arch" type="xml">
+            <form string="XML rule">
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="text-bg-danger"
+                        invisible="active"
+                    />
+                    <group>
+                        <group string="Node">
+                            <field name="field_key" />
+                            <field name="field_help" nolabel="1" colspan="2" />
+                            <field name="scope" readonly="field_key != 'custom'" />
+                            <field
+                                name="xml_path"
+                                readonly="field_key != 'custom'"
+                                groups="base.group_system"
+                            />
+                            <field
+                                name="attribute"
+                                readonly="field_key != 'custom'"
+                                groups="base.group_system"
+                            />
+                            <field name="max_len" groups="base.group_system" />
+                        </group>
+                        <group string="Value">
+                            <field name="value_type" />
+                            <field
+                                name="field_path"
+                                invisible="value_type != 'field'"
+                                required="value_type == 'field'"
+                            />
+                            <field
+                                name="value_fixed"
+                                invisible="value_type != 'fixed'"
+                                required="value_type == 'fixed'"
+                            />
+                            <field
+                                name="expression"
+                                invisible="value_type != 'expression'"
+                                required="value_type == 'expression'"
+                                groups="base.group_system"
+                            />
+                            <field name="document_types" />
+                            <field name="overwrite" />
+                            <field name="value_required" />
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="note" nolabel="1" />
+                    </group>
+                    <group invisible="1">
+                        <field name="active" />
+                        <field name="sequence" />
+                        <field name="profile_id" />
+                        <field name="partner_id" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

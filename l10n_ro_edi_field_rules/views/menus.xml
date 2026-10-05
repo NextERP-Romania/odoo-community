@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="l10n_ro_edi_xml_profile_menu"
+        name="e-Factura XML profiles"
+        parent="account.menu_finance_configuration"
+        action="l10n_ro_edi_xml_profile_action"
+        groups="l10n_ro_edi_field_rules.group_l10n_ro_edi_xml_rule_manager"
+        sequence="95"
+    />
+</odoo>
