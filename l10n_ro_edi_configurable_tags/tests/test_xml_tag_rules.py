@@ -19,7 +19,7 @@ class TestXmlFieldRules(TestROEdiCommon):
         # Maintaining the mapping is a group of its own, and expressions and
         # raw XML paths are reserved to the technical users on top of it.
         cls.env.user.group_ids += cls.env.ref(
-            "l10n_ro_edi_field_rules.group_l10n_ro_edi_xml_rule_manager"
+            "l10n_ro_edi_configurable_tags.group_l10n_ro_edi_xml_rule_manager"
         ) | cls.env.ref("base.group_system")
         cls.product = cls.env["product.product"].create(
             {
@@ -211,7 +211,7 @@ class TestXmlFieldRules(TestROEdiCommon):
                         [
                             self.env.ref("base.group_user").id,
                             self.env.ref(
-                                "l10n_ro_edi_field_rules."
+                                "l10n_ro_edi_configurable_tags."
                                 "group_l10n_ro_edi_xml_rule_manager"
                             ).id,
                         ]

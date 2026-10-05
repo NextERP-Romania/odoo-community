@@ -1,6 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_l10n_ro_edi_xml_profile_user,l10n_ro.edi.xml.profile user,model_l10n_ro_edi_xml_profile,base.group_user,1,0,0,0
-access_l10n_ro_edi_xml_profile_manager,l10n_ro.edi.xml.profile manager,model_l10n_ro_edi_xml_profile,l10n_ro_edi_field_rules.group_l10n_ro_edi_xml_rule_manager,1,1,1,1
-access_l10n_ro_edi_xml_rule_user,l10n_ro.edi.xml.rule user,model_l10n_ro_edi_xml_rule,base.group_user,1,0,0,0
-access_l10n_ro_edi_xml_rule_manager,l10n_ro.edi.xml.rule manager,model_l10n_ro_edi_xml_rule,l10n_ro_edi_field_rules.group_l10n_ro_edi_xml_rule_manager,1,1,1,1
-access_l10n_ro_edi_xml_profile_import,l10n_ro.edi.xml.profile.import,model_l10n_ro_edi_xml_profile_import,l10n_ro_edi_field_rules.group_l10n_ro_edi_xml_rule_manager,1,1,1,1

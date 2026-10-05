@@ -1,4 +1,4 @@
-# Romania - E-invoicing Field Rules per Partner
+# Romania - E-invoicing Configurable Tags
 
 Fills CIUS-RO (e-Factura) XML nodes differently for each partner, from the
 interface, without a new module per customer.

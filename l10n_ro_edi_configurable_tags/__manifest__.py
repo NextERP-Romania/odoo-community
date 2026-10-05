@@ -2,16 +2,16 @@
 # License LGPL-3
 {
     "author": "NextERP Romania",
-    "name": "Romania - E-invoicing Field Rules per Partner",
+    "name": "Romania - E-invoicing Configurable Tags",
     "version": "19.0.1.0.0",
     "category": "Accounting/Localizations/EDI",
-    "summary": "Fill CIUS-RO XML nodes differently for each partner",
+    "summary": "Configure per partner which CIUS-RO XML tags are filled, and with what",
     "website": "https://www.nexterp.ro",
     "depends": [
         "l10n_ro_edi_extension",
     ],
     "data": [
-        "security/l10n_ro_edi_field_rules_groups.xml",
+        "security/l10n_ro_edi_configurable_tags_groups.xml",
         "security/ir.model.access.csv",
         "views/l10n_ro_edi_xml_rule_views.xml",
         "views/l10n_ro_edi_xml_profile_views.xml",
