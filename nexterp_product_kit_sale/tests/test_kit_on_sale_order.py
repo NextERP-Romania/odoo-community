@@ -152,12 +152,16 @@ class TestKitOnSaleOrder(TransactionCase):
 
     def test_an_order_without_a_pricelist_still_prices_the_components(self):
         """Not every database has pricelists turned on."""
+        # `pricelist_id` is computed from the partner, so leaving it out would
+        # pick up whatever default the database happens to carry.
         order = self.env["sale.order"].create(
+            {"partner_id": self.partner.id, "pricelist_id": False}
+        )
+        order.write(
             {
-                "partner_id": self.partner.id,
                 "order_line": [
                     Command.create({"product_id": self.kit.id, "product_uom_qty": 1})
-                ],
+                ]
             }
         )
         self.assertFalse(order.pricelist_id)
