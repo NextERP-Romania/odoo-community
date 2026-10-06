@@ -9,13 +9,21 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     @api.onchange("pricelist_id")
-    def _onchange_pricelist_id_show_update_prices(self):
-        res = super()._onchange_pricelist_id_show_update_prices()
+    def _onchange_pricelist_id_recompute_prices(self):
+        """Who decides whether the prices follow the pricelist.
+
+        On Odoo 20 core recomputes on its own as soon as the pricelist
+        changes. This module exists so that the decision is the company's:
+        with the setting off nothing moves, with it on the prices are
+        recomputed and the quotation says so in its chatter.
+        """
+        if not self.company_id.sale_auto_update_price:
+            return None
+        res = super()._onchange_pricelist_id_recompute_prices()
         if (
             self.order_line
             and self.pricelist_id
             and self._origin.pricelist_id != self.pricelist_id
-            and self.company_id.sale_auto_update_price
         ):
             self.with_context(force_price_recomputation=True)._recompute_prices()
             if self._origin.id:

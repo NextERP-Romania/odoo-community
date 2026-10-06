@@ -21,7 +21,9 @@
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "support": "odooapps@nexterp.ro",
-    "installable": True,
+    # Nu se instaleaza pe 20.0: cere `l10n_ro_nondeductible_vat`, care inca n-a ajuns pe
+    # seria asta in l10n-romania. De reactivat cand apare acolo.
+    "installable": False,
     "auto_install": False,
     "development_status": "Mature",
     "maintainers": ["feketemihai"],

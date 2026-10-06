@@ -49,6 +49,14 @@ class StockMove(models.Model):
 
         subtype = _getSubType([("category", "=", "service")])
         for rec in self:
+            # Fara vehicul nu e o cheltuiala de flota, deci nu are de ce sa
+            # ceara un tip de serviciu. Compute-ul e stocat si ruleaza pentru
+            # TOATE miscarile de stoc: fara garda asta, instalarea pe o baza
+            # care are deja miscari se oprea cu "Tip cheltuiala piese
+            # inexistent".
+            if not rec.vehicle_id:
+                rec.fleet_service_type_id = False
+                continue
             if rec.refuel:
                 subtype = _getSubType(
                     [
@@ -64,7 +72,7 @@ class StockMove(models.Model):
                             "Tip cheltuiala combustibil inexistent."
                             "Adaugati unul in Configurari/Tipuri de servicii "
                             "<Combustibil>\nEroare la %s",
-                            rec.name,
+                            rec.display_name,
                         )
                     )
             else:
@@ -82,7 +90,7 @@ class StockMove(models.Model):
                             "Tip cheltuiala piese inexistent."
                             "Adaugati unul in Configurari/Tipuri de servicii "
                             "<Piese>\nEroare la %s",
-                            rec.name,
+                            rec.display_name,
                         )
                     )
             rec.fleet_service_type_id = subtype

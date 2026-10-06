@@ -2,7 +2,6 @@
 # License OPL-1.0 or later
 # (https://www.odoo.com/documentation/user/20.0/legal/licenses/licenses.html#).
 
-import base64
 import io
 import logging
 from collections import defaultdict
@@ -78,7 +77,7 @@ class BomExcelImportWizard(models.TransientModel):
 
         # Validate file format
         try:
-            file_data = base64.b64decode(self.excel_file)
+            file_data = bytes(self.excel_file)
             file_like = io.BytesIO(file_data)
             workbook = openpyxl.load_workbook(file_like, data_only=True)
 
@@ -114,7 +113,7 @@ class BomExcelImportWizard(models.TransientModel):
         """Import operations and workcenters from Excel file - Step 1"""
         try:
             # Decode the binary file
-            file_data = base64.b64decode(self.excel_file)
+            file_data = bytes(self.excel_file)
             file_like = io.BytesIO(file_data)
 
             # Load workbook
@@ -154,7 +153,7 @@ class BomExcelImportWizard(models.TransientModel):
         """Import BOMs from Excel file - Step 2"""
         try:
             # Decode the binary file
-            file_data = base64.b64decode(self.excel_file)
+            file_data = bytes(self.excel_file)
             file_like = io.BytesIO(file_data)
 
             # Load workbook
@@ -166,7 +165,8 @@ class BomExcelImportWizard(models.TransientModel):
 
             # Update the results
             self.bom_import_log = results["log"]
-            self.boms_created = results["boms_created"]
+            # `boms_created` is the first pass's count; the second pass only
+            # fills the bills, so it must not reset the summary to zero.
             self.bom_lines_created = results["bom_lines_created"]
             self.total_errors += results["errors"]
             self.bom_completed = True
@@ -646,7 +646,8 @@ class BomExcelImportWizard(models.TransientModel):
                         "bom_id": bom.id,
                         "product_id": comp_product_id,
                         "product_qty": comp_data["quantity"],
-                        "product_uom_id": product_uom_id,
+                        # Pe Odoo 20 campul se numeste `uom_id`.
+                        "uom_id": product_uom_id,
                     }
 
                     if operation_id:
@@ -685,7 +686,6 @@ class BomExcelImportWizard(models.TransientModel):
 
         return {
             "log": "\n".join(log_lines),
-            "boms_created": 0,  # BOMs were created in step 1
             "bom_lines_created": created_bom_lines,
             "errors": errors,
         }

@@ -10,13 +10,19 @@ class AccountMove(models.Model):
 
     def unlink(self):
         for move in self:
-            highest_name = move._get_last_sequence()
-            if (
-                move.highest_name == highest_name
-                and move.company_id.account_allow_delete_last_invoice
-            ):
-                if move.name and move.name >= highest_name:
-                    move.name = "/"
-                    move.posted_before = False
-                    move.state = "draft"
+            if not move.company_id.account_allow_delete_last_invoice:
+                continue
+            # `highest_name` is the last number issued BEFORE this move, so
+            # when the two agree this move is the last one of its sequence and
+            # its number can go back. Both are normalised to "" because the
+            # first move of a sequence has `highest_name` False while
+            # `_get_last_sequence()` returns None -- and `False == None` is
+            # False, which used to leave that one number burned.
+            last_name = move._get_last_sequence() or ""
+            if (move.highest_name or "") != last_name:
+                continue
+            if move.name and move.name >= last_name:
+                move.name = "/"
+                move.posted_before = False
+                move.state = "draft"
         return super().unlink()
