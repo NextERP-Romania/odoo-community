@@ -122,28 +122,25 @@ jobs:
           path: "l10n-romania"
           fetch-depth: 1
 
-      - name: Clone OCA purchase-workflow
-        run: |
-          git clone --quiet --depth=1 --branch 19.0 \
-              https://github.com/OCA/purchase-workflow.git purchase-workflow
-
-      # `nexterp_conformity_report` -> `l10n_ro_stock_picking_comment_template`
-      # (l10n-romania) -> `base_comment_template`, care sta aici.
-      - name: Clone OCA reporting-engine
-        run: |
-          git clone --quiet --depth=1 --branch 19.0 \
-              https://github.com/OCA/reporting-engine.git reporting-engine
-
-      # `purchase_exception` -> `base_exception`.
-      - name: Clone OCA server-tools
-        run: |
-          git clone --quiet --depth=1 --branch 19.0 \
-              https://github.com/OCA/server-tools.git server-tools
+      # Dependintele OCA vin din agregatul nostru, nu din cate un clone pe
+      # repo OCA: acolo sunt exact versiunile pe care le rulam in dezvoltare si
+      # in productie, nu HEAD-ul fiecarui proiect, care se misca sub noi.
+      # De aici ies `purchase_exception` (+ `base_exception`) si
+      # `base_comment_template`, cerut prin l10n-romania de
+      # `nexterp_conformity_report`.
+      - name: Check out addons_oca
+        uses: actions/checkout@v3
+        with:
+          repository: "NextERP-Romania/addons_oca"
+          token: ${{ secrets.ODOO_REPO_TOKEN }}
+          ref: "19.0"
+          path: "addons_oca"
+          fetch-depth: 1
 
       - name: Set up environment variables
         run: |
           echo "$(grep -v "addons_path" ${ODOO_RC})" > ${ODOO_RC}
-          echo "addons_path=/opt/odoo/addons,.,${PWD}/l10n-romania,${PWD}/purchase-workflow,${PWD}/reporting-engine,${PWD}/server-tools" >> ${ODOO_RC}
+          echo "addons_path=/opt/odoo/addons,.,${PWD}/l10n-romania,${PWD}/addons_oca" >> ${ODOO_RC}
           cat ${ODOO_RC}
           # Generat de pre-commit, deci exista doar daca vreun modul cere
           # ceva din afara Odoo.
