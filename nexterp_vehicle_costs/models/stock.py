@@ -65,7 +65,7 @@ class StockMove(models.Model):
                             "Tip cheltuiala combustibil inexistent."
                             "Adaugati unul in Configurari/Tipuri de servicii "
                             "<Combustibil>\nEroare la %s",
-                            rec.name,
+                            rec.display_name,
                         )
                     )
             else:
@@ -83,7 +83,7 @@ class StockMove(models.Model):
                             "Tip cheltuiala piese inexistent."
                             "Adaugati unul in Configurari/Tipuri de servicii "
                             "<Piese>\nEroare la %s",
-                            rec.name,
+                            rec.display_name,
                         )
                     )
             rec.fleet_service_type_id = subtype
