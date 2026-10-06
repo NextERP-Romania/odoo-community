@@ -20,12 +20,7 @@ class PosSession(models.Model):
         others = self.filtered(lambda s: not s.config_id.pos_multi_session)
         return super(PosSession, others)._check_pos_config()
 
-    def _validate_session(
-        self,
-        balancing_account=False,
-        amount_to_balance=0,
-        bank_payment_method_diffs=None,
-    ):
+    def _validate_session_accounting(self):
         """Hand the closed drawer on to the sessions still open behind it.
 
         Core sets a session's opening balance from the previous session when
@@ -36,11 +31,10 @@ class PosSession(models.Model):
         end balance of whatever session precedes it -- which is zero while an
         earlier one is still open, and becomes real as the chain closes down.
         """
-        res = super()._validate_session(
-            balancing_account=balancing_account,
-            amount_to_balance=amount_to_balance,
-            bank_payment_method_diffs=bank_payment_method_diffs,
-        )
+        # Pe Odoo 20 `_validate_session` s-a redenumit
+        # `_validate_session_accounting` si nu mai primeste argumente: e
+        # singura cale de inchidere a sesiunii.
+        res = super()._validate_session_accounting()
         if not self.config_id.pos_multi_session:
             return res
         later_sessions = self.search(
@@ -60,9 +54,24 @@ class PosSession(models.Model):
                 order="start_at desc",
                 limit=1,
             )
-            session.cash_register_balance_start = (
-                previous_session.cash_register_balance_end_real
+            # Pe Odoo 20 soldul casei nu mai sta pe sesiune, ci pe extrasul ei:
+            # `pos.session.bank_statement_id` -> `balance_start`/`balance_end_real`.
+            # Acolo `balance_end_real` e CALCULAT din `balance_start`, deci o
+            # sesiune inca deschisa ar raporta un sold pe care nu l-a numarat
+            # nimeni. Luam cifra doar de la o sesiune inchisa; cat timp una
+            # dinainte e deschisa, nu exista inca nimic real de preluat.
+            if not session.bank_statement_id:
+                continue
+            # `self` e sesiunea care se inchide acum: starea ei devine
+            # `closed` abia dupa metoda asta, dar soldul ei e deja numarat.
+            previous_closed = (
+                previous_session == self or previous_session.state == "closed"
             )
+            if previous_closed and previous_session.bank_statement_id:
+                balance = previous_session.bank_statement_id.balance_end_real
+            else:
+                balance = 0.0
+            session.bank_statement_id.balance_start = balance
         return res
 
     def open_frontend_cb(self):

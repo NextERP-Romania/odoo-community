@@ -30,6 +30,26 @@ class TestPosMultiSession(CommonPosTest):
         session.state = state
         return session
 
+    def _drawer(self, session):
+        """The session's cash statement, created if the session has none.
+
+        On Odoo 20 the drawer balances live on `account.bank.statement`, not on
+        `pos.session`: core opens one when the cash control does.
+        """
+        if not session.bank_statement_id:
+            cash_method = session.config_id._get_cash_payment_method()
+            session.sudo().bank_statement_id = (
+                self.env["account.bank.statement"]
+                .sudo()
+                .create(
+                    {
+                        "journal_id": cash_method.journal_id.id,
+                        "name": f"Casa {session.name}",
+                    }
+                )
+            )
+        return session.bank_statement_id
+
     # -- which session the register is on --------------------------------
 
     def test_the_current_session_is_the_oldest_open_one(self):
@@ -93,25 +113,27 @@ class TestPosMultiSession(CommonPosTest):
         first = self._session(1)
         second = self._session(2)
         third = self._session(3)
-        first.cash_register_balance_end_real = 500.0
-        first._validate_session()
+        self._drawer(first).balance_end_real = 500.0
+        self._drawer(second)
+        self._drawer(third)
+        first._validate_session_accounting()
         second.invalidate_recordset()
         third.invalidate_recordset()
         # The second starts where the first ended; the third still has an open
         # session in front of it, so it has nothing real to start from yet.
-        self.assertEqual(second.cash_register_balance_start, 500.0)
-        self.assertEqual(third.cash_register_balance_start, 0.0)
+        self.assertEqual(second.bank_statement_id.balance_start, 500.0)
+        self.assertEqual(third.bank_statement_id.balance_start, 0.0)
 
     def test_a_register_without_the_setting_rebuilds_nothing(self):
         first = self._session(1)
         second = self._session(2)
         # Both exist; now the register goes back to one session at a time.
         self.config.pos_multi_session = False
-        second.cash_register_balance_start = 42.0
-        first.cash_register_balance_end_real = 500.0
-        first._validate_session()
+        self._drawer(second).balance_start = 42.0
+        self._drawer(first).balance_end_real = 500.0
+        first._validate_session_accounting()
         second.invalidate_recordset()
-        self.assertEqual(second.cash_register_balance_start, 42.0)
+        self.assertEqual(second.bank_statement_id.balance_start, 42.0)
 
     # -- the opening time -------------------------------------------------
 
