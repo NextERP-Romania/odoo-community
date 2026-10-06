@@ -63,17 +63,14 @@ jobs:
               fi
           done
   test:
-    # Rulat pe runnerele self-hosted de pe serverul de runbot. Repo-ul e
-    # privat, deci nu exista pull request din fork-uri straine -- singurul caz
-    # in care un runner self-hosted ar executa cod nerevizuit.
-    runs-on: [self-hosted, nexterp]
+    # Spre deosebire de celelalte repo-uri ale noastre, asta e PUBLIC, iar
+    # GitHub nu da joburi din repo-uri publice runnerelor self-hosted (un pull
+    # request dintr-un fork ar insemna cod strain pe serverul nostru). Deci
+    # rulam pe runnerele GitHub, si cache-ul merge prin `actions/cache` in loc
+    # de volumul local de pe serverul de runbot.
+    runs-on: ubuntu-latest
     container:
       image: ${{ matrix.container }}
-      # Cache pe disc local, nu prin actions/cache: runnerele sunt ale noastre
-      # si impart acelasi demon docker, deci sabloanele de baza se citesc de pe
-      # disc in loc sa urce si sa coboare prin reteaua GitHub.
-      volumes:
-        - ci_cache:/ci-cache
     name: ${{ matrix.name }}
     strategy:
       fail-fast: false
@@ -207,6 +204,11 @@ jobs:
         with:
           path: deps.dump
           key: ${{ steps.depdb.outputs.key }}
+      - name: Restore the full template
+        uses: actions/cache@v4
+        with:
+          path: .ci-cache
+          key: ${{ steps.depdb.outputs.fullkey }}
       # Instalarea celor 36 de module ale noastre, cu date demo, dureaza circa
       # 20 de minute -- adica aproape toata rularea, testele propriu-zise fiind
       # de ordinul secundelor. Asa ca o facem o singura data si pastram
@@ -218,7 +220,8 @@ jobs:
           set -o pipefail
           oca_wait_for_postgres
 
-          CACHE=/ci-cache
+          CACHE="${GITHUB_WORKSPACE}/.ci-cache"
+          mkdir -p "${CACHE}"
           FULL="${CACHE}/${{ steps.depdb.outputs.fullkey }}.dump"
           STAMP="${CACHE}/${{ steps.depdb.outputs.fullkey }}.commit"
           OURS=$(find "${ADDONS_DIR}" -maxdepth 1 -mindepth 1 -type d \
@@ -280,7 +283,8 @@ jobs:
         if: github.event_name != 'pull_request'
         shell: bash
         run: |
-          CACHE=/ci-cache
+          CACHE="${GITHUB_WORKSPACE}/.ci-cache"
+          mkdir -p "${CACHE}"
           if ! touch "${CACHE}/.writable" 2>/dev/null; then
               echo "::warning::${CACHE} nu e accesibil la scriere; sablonul nu se salveaza."
               exit 0
