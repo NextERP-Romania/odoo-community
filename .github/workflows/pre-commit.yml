@@ -9,8 +9,6 @@ on:
       # spin up a full CI run: nothing they touch can change behaviour.
       - "**/static/description/**"
       - "**/README.rst"
-      - "**/i18n/*.po"
-      - "**/i18n/*.pot"
   push:
     branches:
       - "20.0"
@@ -19,8 +17,6 @@ on:
       # spin up a full CI run: nothing they touch can change behaviour.
       - "**/static/description/**"
       - "**/README.rst"
-      - "**/i18n/*.po"
-      - "**/i18n/*.pot"
 
 # A new push on top of a PR cancels the in-flight run; pushes to the
 # protected branch are left alone so the branch always has a final result.

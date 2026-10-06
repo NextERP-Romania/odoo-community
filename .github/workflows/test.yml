@@ -1,0 +1,319 @@
+name: tests
+
+on:
+  pull_request:
+    branches:
+      - "20.0*"
+    paths-ignore:
+      # Documentation-only commits (the nightly doc-refresh bot) must not
+      # spin up a full CI run: nothing they touch can change behaviour.
+      - "**/static/description/**"
+      - "**/README.rst"
+      # Regenerat de pre-commit la fiecare bump de versiune.
+      - "README.md"
+  push:
+    branches:
+      - "20.0"
+    paths-ignore:
+      # Documentation-only commits (the nightly doc-refresh bot) must not
+      # spin up a full CI run: nothing they touch can change behaviour.
+      - "**/static/description/**"
+      - "**/README.rst"
+      # Regenerat de pre-commit la fiecare bump de versiune.
+      - "README.md"
+  # Pornire manuala: singurul mod de a masura sablonul din cache pe un branch
+  # de lucru, unde `push` nu declanseaza nimic.
+  workflow_dispatch:
+  # O rulare saptamanala pe tot repo-ul: pe pull request se testeaza doar
+  # modulele atinse, deci asta e singura care le trece pe toate.
+  schedule:
+    - cron: "0 3 * * 1"
+
+# O rulare noua pe acelasi branch o opreste pe cea in curs.
+#
+# Pe push asta era pana acum oprit, ca fiecare commit sa aiba rezultatul lui.
+# In practica nu-l avea oricum: cand se merge-uiesc mai multe pull request-uri
+# unul dupa altul, GitHub anuleaza rularile *in asteptare* din acelasi grup si
+# o lasa doar pe ultima -- deci commit-urile din mijloc erau deja fara
+# rezultat, iar ultima astepta degeaba sa se termine prima. La trei merge-uri
+# succesive au iesit 18 minute de asteptare cu sapte runnere libere.
+#
+# Cum fiecare push contine si ce era inainte, rezultatul care conteaza e al
+# varfului de branch, si ala se obtine acum imediat.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unreleased-deps:
+    runs-on: ubuntu-latest
+    name: Detect unreleased dependencies
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          for reqfile in requirements.txt test-requirements.txt ; do
+              if [ -f ${reqfile} ] ; then
+                  result=0
+                  # reject non-comment lines that contain a / (i.e. URLs, relative paths)
+                  grep "^[^#].*/" ${reqfile} || result=$?
+                  if [ $result -eq 0 ] ; then
+                      echo "Unreleased dependencies found in ${reqfile}."
+                      exit 1
+                  fi
+              fi
+          done
+  test:
+    # Rulat pe runnerele self-hosted de pe serverul de runbot. Repo-ul e
+    # privat, deci nu exista pull request din fork-uri straine -- singurul caz
+    # in care un runner self-hosted ar executa cod nerevizuit.
+    runs-on: [self-hosted, nexterp]
+    container:
+      image: ${{ matrix.container }}
+      # Cache pe disc local, nu prin actions/cache: runnerele sunt ale noastre
+      # si impart acelasi demon docker, deci sabloanele de baza se citesc de pe
+      # disc in loc sa urce si sa coboare prin reteaua GitHub.
+      volumes:
+        - ci_cache:/ci-cache
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - container: ghcr.io/oca/oca-ci/py3.12-odoo20.0:latest
+            name: test with Odoo
+            makepot: "true"
+    services:
+      postgres:
+        image: postgres:16
+        # Datele pe tmpfs: bazele de test sunt de unica folosinta, deci
+        # durabilitatea nu are valoare, iar testele Odoo scriu mult. Serviciile
+        # din Actions nu permit suprascrierea comenzii (deci nu putem da
+        # `-c fsync=off`), dar accepta optiuni de `docker create`.
+        options: >-
+          --tmpfs /var/lib/postgresql/data:rw,size=6g
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+          POSTGRES_DB: odoo
+        # Fara mapare de port pe gazda: jobul ruleaza in container, pe aceeasi
+        # retea, si ajunge la serviciu pe nume (PGHOST=postgres). Cu opt runnere
+        # pe aceeasi masina, doua joburi simultane nu pot lega amandoua 5432 --
+        # al doilea pica cu "driver failed programming external connectivity".
+    steps:
+      - name: Check out repositories
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          # addons_to_test.py diffs against the pull request's base.
+          fetch-depth: 0
+
+      - name: Clone custom oca-ci
+        run: |
+          git clone --depth=1 https://github.com/NextERP-Romania/oca-ci.git oca-ci
+          echo "PATH=$PWD/oca-ci/bin:$PATH" >> $GITHUB_ENV
+
+      # Modulele de aici se sprijina pe l10n-romania si pe `purchase_exception`
+      # de la OCA. Nu le copiem langa ale noastre: raman dependinte, pe
+      # addons_path, deci se instaleaza o data in baza de dependinte si
+      # testele lor nu se amestecă cu ale noastre.
+      - name: Check out l10n-romania
+        uses: actions/checkout@v3
+        with:
+          repository: "NextERP-Romania/l10n-romania"
+          token: ${{ secrets.ODOO_REPO_TOKEN }}
+          ref: "20.0"
+          path: "l10n-romania"
+          fetch-depth: 1
+
+      - name: Clone OCA purchase-workflow
+        run: |
+          git clone --quiet --depth=1 --branch 20.0 \
+              https://github.com/OCA/purchase-workflow.git purchase-workflow
+
+      - name: Set up environment variables
+        run: |
+          echo "$(grep -v "addons_path" ${ODOO_RC})" > ${ODOO_RC}
+          echo "addons_path=/opt/odoo/addons,.,${PWD}/l10n-romania,${PWD}/purchase-workflow" >> ${ODOO_RC}
+          cat ${ODOO_RC}
+          # Generat de pre-commit, deci exista doar daca vreun modul cere
+          # ceva din afara Odoo.
+          if [ -f requirements.txt ]; then
+              pip install -r requirements.txt
+          fi
+
+      - name: Ensure demo data is loaded
+        run: |
+          if grep -q '^with_demo' ${ODOO_RC}; then
+            sed -i 's/^with_demo.*/with_demo = True/' ${ODOO_RC}
+          else
+            echo 'with_demo = True' >> ${ODOO_RC}
+          fi
+          cat ${ODOO_RC}
+
+      - name: Check development status
+        # Cu configuratia de Odoo in mana, manifestoo gaseste si modulele
+        # enterprise de care depindem; altfel ar sti doar de nucleu si ar
+        # raporta ca lipsesc `documents`, `sale_subscription` si celelalte.
+        run: |
+          manifestoo -d . \
+              --addons-path-from-odoo-cfg "${ODOO_RC}" \
+              check-dev-status --default-dev-status=Beta
+      # On a pull request, test the addons it touches plus everything that
+      # depends on them, rather than all 36. A full run is ~17 minutes and
+      # most pull requests move one or two addons. Anything outside an addon
+      # (this workflow, requirements) selects nothing, which
+      # oca_list_addons_to_test reads as "all of them".
+      - name: Select addons to test
+        if: github.event_name == 'pull_request'
+        run: |
+          # The container user does not own the checkout, and git refuses to
+          # read a repository it considers someone else's.
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          git fetch --no-tags origin \
+              "+refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}" || true
+          BASE="origin/${{ github.base_ref }}"
+          INCLUDE=$(python3 .github/scripts/addons_to_test.py "${BASE}" HEAD)
+          if [ "${{ github.event_name }}" = "pull_request" ] || [ -n "${INCLUDE}" ]; then
+              echo "Testing only: ${INCLUDE}"
+              echo "INCLUDE=${INCLUDE}" >> $GITHUB_ENV
+          else
+              echo "Change reaches outside the addons: testing everything."
+          fi
+      # oca_init_test_database builds the whole database from scratch every
+      # run, ~158s. Most of that is Odoo core, enterprise and OCA addons we
+      # only depend on: they move when the image or requirements move, not
+      # when we push. Build that part once and cache it -- the dump is 10 MB,
+      # 1s to write and 11s to restore against this repo's database.
+      - name: Fingerprint the dependency database
+        id: depdb
+        shell: bash
+        run: |
+          DEPS=$(python3 .github/scripts/dependency_addons.py)
+          echo "deps=${DEPS}" >> $GITHUB_OUTPUT
+          # The image tag is ``latest`` and moves, so the key carries the week
+          # as well: a stale core cannot outlive it by more than seven days.
+          FINGERPRINT=$(printf '%s|%s|%s' \
+              "${DEPS}" \
+              "$(sha256sum requirements.txt | cut -d' ' -f1)" \
+              "$($(which odoo) --version)" | sha256sum | cut -d' ' -f1)
+          echo "key=depdb-v1-${FINGERPRINT:0:16}-$(date +%G-%V)" >> $GITHUB_OUTPUT
+          # Sablonul complet (dependinte + toate modulele noastre) e legat de
+          # aceeasi amprenta, plus branch-ul: fiecare serie isi are sablonul ei.
+          echo "fullkey=full-v1-${FINGERPRINT:0:16}-${GITHUB_BASE_REF:-${GITHUB_REF_NAME}}-$(date +%G-%V)" \
+              | tr '/' '-' >> $GITHUB_OUTPUT
+      - name: Restore the dependency database
+        id: depdb-cache
+        uses: actions/cache@v4
+        with:
+          path: deps.dump
+          key: ${{ steps.depdb.outputs.key }}
+      # Instalarea celor 36 de module ale noastre, cu date demo, dureaza circa
+      # 20 de minute -- adica aproape toata rularea, testele propriu-zise fiind
+      # de ordinul secundelor. Asa ca o facem o singura data si pastram
+      # rezultatul: un sablon complet pe discul runnerelor, actualizat doar cu
+      # modulele care s-au schimbat de la ultima constructie.
+      - name: Initialize test db
+        shell: bash
+        run: |
+          set -o pipefail
+          oca_wait_for_postgres
+
+          CACHE=/ci-cache
+          FULL="${CACHE}/${{ steps.depdb.outputs.fullkey }}.dump"
+          STAMP="${CACHE}/${{ steps.depdb.outputs.fullkey }}.commit"
+          OURS=$(find "${ADDONS_DIR}" -maxdepth 1 -mindepth 1 -type d \
+              -exec test -f '{}/__manifest__.py' \; -printf '%f\n' \
+              | tr '\n' ',' | sed 's/,$//')
+
+          if [ -r "${FULL}" ]; then
+              BASE=$(cat "${STAMP}" 2>/dev/null || true)
+              echo "Sablon complet gasit (construit la ${BASE:-necunoscut})."
+              pg_restore --no-owner --dbname="${PGDATABASE}" "${FULL}"
+              # Ce s-a schimbat de atunci. Daca nu stim de unde vine sablonul
+              # sau commit-ul lipseste din checkout, reactualizam tot: mai lent,
+              # dar niciodata gresit.
+              if [ -n "${BASE}" ] && git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+                  CHANGED=$(python3 .github/scripts/addons_to_test.py "${BASE}" HEAD)
+              else
+                  CHANGED="${OURS}"
+              fi
+              if [ -n "${CHANGED}" ]; then
+                  echo "Aduc la zi: ${CHANGED}"
+                  # `-i` si `-u` impreuna: modulele noi se instaleaza, cele deja
+                  # instalate se actualizeaza; fiecare optiune le ignora pe
+                  # celelalte, deci lista poate fi aceeasi.
+                  unbuffer $(which odoo) \
+                      -d ${PGDATABASE} \
+                      -i "${CHANGED}" -u "${CHANGED}" \
+                      --http-interface=127.0.0.1 \
+                      --stop-after-init \
+                      --skip-auto-install | oca_checklog_odoo
+              else
+                  echo "Niciun modul schimbat fata de sablon."
+              fi
+          else
+              echo "Fara sablon complet: il construiesc de la zero."
+              if [ -f deps.dump ]; then
+                  echo "Restoring the dependency database."
+                  pg_restore --no-owner --dbname="${PGDATABASE}" deps.dump
+              else
+                  echo "Building the dependency database: ${{ steps.depdb.outputs.deps }}"
+                  unbuffer $(which odoo) \
+                      -d ${PGDATABASE} \
+                      -i "${{ steps.depdb.outputs.deps }}" \
+                      --http-interface=127.0.0.1 \
+                      --stop-after-init \
+                      --skip-auto-install | oca_checklog_odoo
+                  pg_dump --format=custom --compress=3 --file=deps.dump "${PGDATABASE}"
+              fi
+              unbuffer $(which odoo) \
+                  -d ${PGDATABASE} \
+                  -i "${OURS}" \
+                  --http-interface=127.0.0.1 \
+                  --stop-after-init \
+                  --skip-auto-install | oca_checklog_odoo
+          fi
+
+      # Sablonul se rescrie doar pe push pe branch-ul seriei: un pull request
+      # nu trebuie sa lase in cache starea modulelor lui.
+      - name: Refresh the cached template
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          CACHE=/ci-cache
+          if ! touch "${CACHE}/.writable" 2>/dev/null; then
+              echo "::warning::${CACHE} nu e accesibil la scriere; sablonul nu se salveaza."
+              exit 0
+          fi
+          FULL="${CACHE}/${{ steps.depdb.outputs.fullkey }}.dump"
+          TMP="${FULL}.$$"
+          # Scriem alaturi si mutam la final: `mv` e atomic, deci o rulare
+          # paralela citeste ori sablonul vechi intreg, ori pe cel nou, niciodata
+          # un fisier pe jumatate scris.
+          pg_dump --format=custom --compress=3 --file="${TMP}" "${PGDATABASE}"
+          mv -f "${TMP}" "${FULL}"
+          echo "${GITHUB_SHA}" > "${CACHE}/${{ steps.depdb.outputs.fullkey }}.commit"
+          ls -lh "${FULL}"
+          # Cheile poarta saptamana in ele, deci sabloanele vechi nu se mai
+          # cauta niciodata; le scoatem ca sa nu creasca la nesfarsit.
+          find "${CACHE}" -maxdepth 1 -name '*.dump' -mtime +14 -delete 2>/dev/null || true
+          find "${CACHE}" -maxdepth 1 -name '*.commit' -mtime +14 -delete 2>/dev/null || true
+      # ``oca_run_tests`` always runs under coverage, which costs about 63%
+      # in wall clock and whose report this repository sends nowhere, so the
+      # tests are run directly instead.
+      - name: Run tests
+        # pipefail is not a POSIX sh option, and the default shell here is
+        # ``sh -e``.
+        shell: bash
+        run: |
+          # oca_checklog_odoo is a plain cat unless OCA_ENABLE_CHECKLOG_ODOO
+          # is set, so the pipeline reports its status, not odoo's. Without
+          # pipefail this step goes green with failing tests -- oca_run_tests
+          # sets it for the same reason.
+          set -o pipefail
+          unbuffer $(which odoo) \
+              -d ${PGDATABASE} \
+              -u "$(oca_list_addons_to_test)" \
+              --test-enable \
+              --http-interface=127.0.0.1 \
+              --stop-after-init | oca_checklog_odoo
