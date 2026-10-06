@@ -11,8 +11,6 @@ on:
       - "**/README.rst"
       # Regenerat de pre-commit la fiecare bump de versiune.
       - "README.md"
-      - "**/i18n/*.po"
-      - "**/i18n/*.pot"
   push:
     branches:
       - "19.0"
@@ -23,8 +21,6 @@ on:
       - "**/README.rst"
       # Regenerat de pre-commit la fiecare bump de versiune.
       - "README.md"
-      - "**/i18n/*.po"
-      - "**/i18n/*.pot"
   # Pornire manuala: singurul mod de a masura sablonul din cache pe un branch
   # de lucru, unde `push` nu declanseaza nimic.
   workflow_dispatch:
