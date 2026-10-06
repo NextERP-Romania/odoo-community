@@ -127,10 +127,17 @@ jobs:
           git clone --quiet --depth=1 --branch 19.0 \
               https://github.com/OCA/purchase-workflow.git purchase-workflow
 
+      # `nexterp_conformity_report` -> `l10n_ro_stock_picking_comment_template`
+      # (l10n-romania) -> `base_comment_template`, care sta aici.
+      - name: Clone OCA reporting-engine
+        run: |
+          git clone --quiet --depth=1 --branch 19.0 \
+              https://github.com/OCA/reporting-engine.git reporting-engine
+
       - name: Set up environment variables
         run: |
           echo "$(grep -v "addons_path" ${ODOO_RC})" > ${ODOO_RC}
-          echo "addons_path=/opt/odoo/addons,.,${PWD}/l10n-romania,${PWD}/purchase-workflow" >> ${ODOO_RC}
+          echo "addons_path=/opt/odoo/addons,.,${PWD}/l10n-romania,${PWD}/purchase-workflow,${PWD}/reporting-engine" >> ${ODOO_RC}
           cat ${ODOO_RC}
           # Generat de pre-commit, deci exista doar daca vreun modul cere
           # ceva din afara Odoo.
