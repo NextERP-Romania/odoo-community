@@ -1,6 +1,7 @@
 exclude: |
   (?x)
   # NOT INSTALLABLE ADDONS
+  ^l10n_ro_edi_extension/|
   ^mrp_subcontracting_price/|
   ^nexterp_conformity_report/|
   ^nexterp_purchase_exception/|
