@@ -61,6 +61,11 @@ class SaleOrderLineKit(models.Model):
         if line.id or line._origin.id:
             vals.update({"sale_line_id": line.id or line._origin.id})
 
+        # The component's own sales price, which is what the line is worth
+        # when the order carries no pricelist. It has to be in `vals` either
+        # way: the tax figures below read it, and a missing key used to raise
+        # KeyError on any database without pricelists.
+        vals["price_unit"] = product.lst_price
         if order.pricelist_id and order.partner_id:
             # Take the unit price from the component product's pricelist
             # entry, NOT from the parent SO line (which is the kit-as-a-whole

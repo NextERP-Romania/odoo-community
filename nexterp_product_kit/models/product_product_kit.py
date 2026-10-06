@@ -33,7 +33,10 @@ class ProductKit(models.Model):
                 f" - {kit_line.component_product_id.name}"
             )
 
-    @api.depends("component_product_id", "product_qty")
+    # The component's own sales price has to be in here, otherwise the stored
+    # value stays at what it was when the line was written and the kit keeps
+    # selling at yesterday's price.
+    @api.depends("component_product_id.lst_price", "product_qty")
     def _compute_product_price(self):
         for kit_line in self:
             kit_line.product_price = (
