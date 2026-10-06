@@ -134,10 +134,16 @@ jobs:
           git clone --quiet --depth=1 --branch 19.0 \
               https://github.com/OCA/reporting-engine.git reporting-engine
 
+      # `purchase_exception` -> `base_exception`.
+      - name: Clone OCA server-tools
+        run: |
+          git clone --quiet --depth=1 --branch 19.0 \
+              https://github.com/OCA/server-tools.git server-tools
+
       - name: Set up environment variables
         run: |
           echo "$(grep -v "addons_path" ${ODOO_RC})" > ${ODOO_RC}
-          echo "addons_path=/opt/odoo/addons,.,${PWD}/l10n-romania,${PWD}/purchase-workflow,${PWD}/reporting-engine" >> ${ODOO_RC}
+          echo "addons_path=/opt/odoo/addons,.,${PWD}/l10n-romania,${PWD}/purchase-workflow,${PWD}/reporting-engine,${PWD}/server-tools" >> ${ODOO_RC}
           cat ${ODOO_RC}
           # Generat de pre-commit, deci exista doar daca vreun modul cere
           # ceva din afara Odoo.
