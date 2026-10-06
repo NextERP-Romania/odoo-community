@@ -14,7 +14,9 @@
         "l10n_ro_stock_account",
         "mrp_subcontracting_purchase",
     ],
-    "installable": True,
+    # Nu se instaleaza pe 20.0: cere `l10n_ro_stock_account`, care inca n-a ajuns pe
+    # seria asta in l10n-romania. De reactivat cand apare acolo.
+    "installable": False,
     "auto_install": False,
     "application": False,
 }

@@ -19,7 +19,9 @@
         "views/stock_inventory_view.xml",
         "report/stock_inventory_report.xml",
     ],
-    "installable": True,
+    # Nu se instaleaza pe 20.0: cere `l10n_ro_stock_account_retail`, care inca n-a ajuns pe
+    # seria asta in l10n-romania. De reactivat cand apare acolo.
+    "installable": False,
     "auto_install": True,
     "maintainers": ["feketemihai"],
 }
