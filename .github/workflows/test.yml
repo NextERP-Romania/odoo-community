@@ -322,10 +322,12 @@ jobs:
           # pipefail this step goes green with failing tests -- oca_run_tests
           # sets it for the same reason.
           set -o pipefail
-          # Coverage doar pe rularea saptamanala: instrumentarea costa circa
-          # 63% din timp, iar raportul nu se citeste la fiecare push. O data
-          # pe saptamana ajunge la Codecov.
-          if [ "${{ github.event_name }}" = "schedule" ]; then
+          # Coverage pe rularea saptamanala si pe pornirea manuala:
+          # instrumentarea costa circa 63% din timp, iar raportul nu se
+          # citeste la fiecare push. Amandoua trec tot repo-ul, deci
+          # procentul urcat la Codecov e al intregului addons dir.
+          if [ "${{ github.event_name }}" = "schedule" ] \
+              || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
               oca_run_tests
           else
               unbuffer $(which odoo) \
@@ -341,19 +343,23 @@ jobs:
       # cu cel tiparit in log.
       - name: Generate coverage report
         if: github.event_name == 'schedule'
+          || github.event_name == 'workflow_dispatch'
         run: |
           coverage xml -o coverage.xml
           coverage report --skip-covered
       - name: Archive coverage report
         if: github.event_name == 'schedule'
+          || github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-xml
           path: coverage.xml
-      # O rulare partiala masoara doar modulele atinse, deci incarcarea ei
-      # s-ar citi ca si cum toate celelalte si-au pierdut acoperirea.
+      # O rulare partiala (pull request) masoara doar modulele atinse, deci
+      # incarcarea ei s-ar citi ca si cum toate celelalte si-au pierdut
+      # acoperirea. Urcam doar rularile care trec tot repo-ul.
       - uses: codecov/codecov-action@v4
         if: github.event_name == 'schedule'
+          || github.event_name == 'workflow_dispatch'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
