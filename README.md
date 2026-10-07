@@ -4,6 +4,8 @@
 
 odoo-community
 
+[![codecov](https://codecov.io/gh/NextERP-Romania/odoo-community/branch/19.0/graph/badge.svg)](https://codecov.io/gh/NextERP-Romania/odoo-community/branch/19.0)
+
 <!-- /!\ do not modify below this line -->
 
 <!-- prettier-ignore-start -->
