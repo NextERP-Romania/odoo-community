@@ -325,9 +325,39 @@ jobs:
           # pipefail this step goes green with failing tests -- oca_run_tests
           # sets it for the same reason.
           set -o pipefail
-          unbuffer $(which odoo) \
-              -d ${PGDATABASE} \
-              -u "$(oca_list_addons_to_test)" \
-              --test-enable \
-              --http-interface=127.0.0.1 \
-              --stop-after-init | oca_checklog_odoo
+          # Coverage doar pe rularea saptamanala: instrumentarea costa circa
+          # 63% din timp, iar raportul nu se citeste la fiecare push. O data
+          # pe saptamana ajunge la Codecov.
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+              oca_run_tests
+          else
+              unbuffer $(which odoo) \
+                  -d ${PGDATABASE} \
+                  -u "$(oca_list_addons_to_test)" \
+                  --test-enable \
+                  --http-interface=127.0.0.1 \
+                  --stop-after-init | oca_checklog_odoo
+          fi
+
+      # ``oca_run_tests`` lasa in urma doar fisierul brut ``.coverage``.
+      # Generam raportul aici si il predam explicit, ca numarul sa fie acelasi
+      # cu cel tiparit in log.
+      - name: Generate coverage report
+        if: github.event_name == 'schedule'
+        run: |
+          coverage xml -o coverage.xml
+          coverage report --skip-covered
+      - name: Archive coverage report
+        if: github.event_name == 'schedule'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+      # O rulare partiala masoara doar modulele atinse, deci incarcarea ei
+      # s-ar citi ca si cum toate celelalte si-au pierdut acoperirea.
+      - uses: codecov/codecov-action@v4
+        if: github.event_name == 'schedule'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          disable_search: true
