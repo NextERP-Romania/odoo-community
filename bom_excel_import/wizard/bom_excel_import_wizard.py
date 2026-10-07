@@ -166,7 +166,8 @@ class BomExcelImportWizard(models.TransientModel):
 
             # Update the results
             self.bom_import_log = results["log"]
-            self.boms_created = results["boms_created"]
+            # `boms_created` is the first pass's count; the second pass only
+            # fills the bills, so it must not reset the summary to zero.
             self.bom_lines_created = results["bom_lines_created"]
             self.total_errors += results["errors"]
             self.bom_completed = True
@@ -685,7 +686,6 @@ class BomExcelImportWizard(models.TransientModel):
 
         return {
             "log": "\n".join(log_lines),
-            "boms_created": 0,  # BOMs were created in step 1
             "bom_lines_created": created_bom_lines,
             "errors": errors,
         }

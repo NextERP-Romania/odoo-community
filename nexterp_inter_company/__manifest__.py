@@ -7,7 +7,7 @@
     "summary": """
         This module helps to identify if a record is inter
         company transaction or not.""",
-    "version": "19.0.0.0.0",
+    "version": "19.0.0.0.1",
     "category": "Base",
     "depends": ["base"],
     "author": "NextERP Romania",
