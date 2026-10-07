@@ -1,0 +1,26 @@
+# `oca_run_tests` masoara cu `coverage run --include './*'`, adica tot ce sta
+# sub radacina workspace-ului. Jobul de teste cloneaza acolo si cod strain, iar
+# acela -- aproape deloc exercitat de testele noastre -- ar intra in raport si
+# ar trage procentul in jos fata de ce masoara `coverage report` pe addon-urile
+# noastre.
+#
+# `omit` de aici se aplica si cand `--include` e dat in linia de comanda, deci
+# e de ajuns sa enumeram arborii straini ca sa scopam si `coverage run`, si
+# `coverage xml` inapoi la codul nostru.
+#
+# Intrarile tests/demo/migrations oglindesc lista `ignore` din codecov.yml, ca
+# procentul tiparit in log sa fie acelasi cu cel raportat de Codecov.
+[run]
+branch = True
+omit =
+    oca-ci/*
+    l10n-romania/*
+    addons_oca/*
+    enterprise/*
+    */tests/*
+    */demo/*
+    */migrations/*
+    setup.py
+
+[report]
+precision = 2
