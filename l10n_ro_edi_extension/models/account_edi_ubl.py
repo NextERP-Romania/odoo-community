@@ -162,6 +162,11 @@ class AccountEdiXmlUBLRO(models.AbstractModel):
     def _add_invoice_header_nodes(self, document_node, vals):
         res = super()._add_invoice_header_nodes(document_node, vals)
 
+        # CIUS-RO always requires CreditNoteTypeCode 381, even for
+        # self-billing credit notes (upstream sets 261 in that case).
+        if vals["document_type"] == "credit_note":
+            document_node["cbc:CreditNoteTypeCode"] = {"_text": 381}
+
         # BT-22 — split the invoice note into repeated cbc:Note tags
         # (max 300 chars each, BR-RO-L300).
         invoice = vals["invoice"]
