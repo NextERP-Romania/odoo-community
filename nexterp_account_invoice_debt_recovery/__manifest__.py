@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Allow Debt Recovery Invoice",
     "summary": """NextERP - Allow Debt Recovery Invoice""",
-    "version": "19.0.0.0.0",
+    "version": "19.0.0.0.1",
     "category": "Invoicing",
     "depends": ["account"],
     "data": [
