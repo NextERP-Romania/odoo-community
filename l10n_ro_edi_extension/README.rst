@@ -138,6 +138,25 @@ Ensure the ANAF OAuth credentials are configured as required by the base
 on those credentials to submit outgoing invoices and pull inbound SPV
 messages.
 
+4. Self-invoices issued by customers (optional)
+-----------------------------------------------
+
+For every customer who issues self-invoices in your name, create a sale
+journal in **Accounting → Configuration → Journals** with:
+
+================================================ =======================
+Field                                            Value
+================================================ =======================
+**Type**                                         Sales
+**Ro Sequence Type** (``l10n_ro_sequence_type``) Customer Auto Invoicing
+**Ro Partner** (``l10n_ro_partner_id``)          the customer
+================================================ =======================
+
+The fields come from the Romanian accounting module
+(``l10n_ro_account_enterprise``). Without it, or without a journal for
+the customer, the self-invoices are created as drafts in the first sale
+journal.
+
 Usage
 =====
 
@@ -180,6 +199,29 @@ Receiving supplier bills from SPV
 3. Open the generated draft bill, verify the lines, and confirm as
    usual.
 
+Receiving self-invoices issued by customers in your name
+--------------------------------------------------------
+
+Some customers issue the invoice themselves, in your name, and upload it
+to the SPV (*autofactura*). In the SPV it carries your company as
+supplier and the customer as buyer, so it is a sale, not a bill.
+
+1. Both SPV synchronizations recognise it from the XML: the supplier is
+   your company and the buyer is somebody else. A document listed as
+   sent counts only when it also carries the self-billing type code 389.
+2. It becomes a customer invoice, never a vendor bill:
+
+   -  in the sale journal of type **Customer Auto Invoicing** set up for
+      that customer, it keeps the number the customer gave it and is
+      posted;
+   -  without such a journal, it is created as a draft in the first sale
+      journal.
+
+3. The invoice is marked as validated in the SPV, so it is never sent to
+   ANAF again.
+4. In **SPV Messages** these messages are ticked **Self-Invoice**;
+   **Create Invoice** creates them the same way.
+
 Monitoring EDI errors
 ---------------------
 
@@ -194,6 +236,13 @@ Changelog
 
 Changelog
 =========
+
+19.0.1.1.0 (2026-10-22)
+-----------------------
+
+-  Self-invoices issued by customers in the company's name are taken
+   from the SPV as customer invoices, posted in the customer's
+   self-invoicing journal or left in draft in the first sale journal.
 
 19.0.1.0.1 (2026-05-28)
 -----------------------
