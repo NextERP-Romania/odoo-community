@@ -476,6 +476,14 @@ class StockPicking(models.Model):
                 locatie["numar"] = street_parts["numar"]
             if partner.street2:
                 locatie["alteInfo"] = partner.street2
+            # ANAF Str* types have minLength 1: an empty string (e.g. a blanked
+            # street2) would render as alteInfo="" and fail XSD validation, so
+            # drop blank values and let QWeb omit the attribute.
+            locatie = {
+                k: v
+                for k, v in locatie.items()
+                if not (isinstance(v, str) and not v.strip())
+            }
             loc_entry["locatie"] = locatie
 
         # ------- declPostAvarie -------
