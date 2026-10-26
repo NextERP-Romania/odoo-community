@@ -7,6 +7,18 @@ from odoo import models
 class AccountEdiXmlUBLRO(models.AbstractModel):
     _inherit = "account.edi.xml.ubl_ro"
 
+    def _add_invoice_header_nodes(self, document_node, vals):
+        res = super()._add_invoice_header_nodes(document_node, vals)
+        # CIUS-RO always requires CreditNoteTypeCode 381, also on the
+        # self-billing credit notes we issue in a supplier's name (upstream
+        # sets 261 in that case).
+        if (
+            vals["document_type"] == "credit_note"
+            and vals.get("process_type") == "selfbilling"
+        ):
+            document_node["cbc:CreditNoteTypeCode"] = {"_text": 381}
+        return res
+
     def _import_retrieve_customer(self, collected_values):
         # A self-invoice is imported for a customer already found by its VAT:
         # keep it, even when its VAT is stored without the RO prefix, which

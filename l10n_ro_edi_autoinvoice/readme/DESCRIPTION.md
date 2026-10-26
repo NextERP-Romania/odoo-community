@@ -6,3 +6,5 @@ Such an invoice is uploaded by the customer, but it carries your company as supp
 - It becomes a customer invoice. In the customer's self-invoicing journal it keeps the number the customer gave it and is posted; without such a journal it is a draft in the first sale journal.
 - It is marked as validated in the SPV, so it is never sent to ANAF again, and a later synchronization does not duplicate it.
 - Both synchronizations take it in: the `l10n_ro_edi` one and the SPV messages of `l10n_ro_message_spv`.
+
+It also covers the other direction, the self-invoices you issue in your suppliers' name: their credit notes go to the SPV with `CreditNoteTypeCode` 381, the only one CIUS-RO accepts, instead of the 261 Odoo sets on self-billing credit notes.

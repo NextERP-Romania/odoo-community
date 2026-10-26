@@ -31,6 +31,11 @@ it as a bill.
 -  Both synchronizations take it in: the ``l10n_ro_edi`` one and the SPV
    messages of ``l10n_ro_message_spv``.
 
+It also covers the other direction, the self-invoices you issue in your
+suppliers' name: their credit notes go to the SPV with
+``CreditNoteTypeCode`` 381, the only one CIUS-RO accepts, instead of the
+261 Odoo sets on self-billing credit notes.
+
 
 **Table of contents**
 
@@ -51,11 +56,15 @@ Field                                            Value
 **Ro Partner** (``l10n_ro_partner_id``)          the customer
 ================================================ =======================
 
-The fields are in the **Ro Auto Invoicing** group of the journal form.
-The module adds them itself, so ``l10n_ro_account_enterprise`` is not
-needed; when it is installed, its own group shows them instead. Without
-a journal for the customer, its self-invoices are created as drafts in
-the first sale journal.
+For the self-invoices you issue in a supplier's name, the purchase
+journal works the same way, with **Supplier Auto Invoicing** and the
+supplier as **Ro Partner**.
+
+The fields are in the **Ro Auto Invoicing** group of the journal form,
+on sale and purchase journals. The module adds them itself, so
+``l10n_ro_account_enterprise`` is not needed; when it is installed, its
+own group shows them instead. Without a journal for the customer, its
+self-invoices are created as drafts in the first sale journal.
 
 Usage
 =====
@@ -79,7 +88,9 @@ Changelog
 
 -  First version: self-invoices issued by customers in the company's
    name, taken in from the SPV as customer invoices, with the
-   self-invoicing fields on the journal.
+   self-invoicing fields on sale and purchase journals;
+   ``CreditNoteTypeCode`` 381 on the self-billing credit notes issued in
+   a supplier's name (moved from ``l10n_ro_edi_extension``).
 
 Bug Tracker
 ===========

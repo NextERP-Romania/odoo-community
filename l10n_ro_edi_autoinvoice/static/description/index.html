@@ -388,6 +388,10 @@ again, and a later synchronization does not duplicate it.</li>
 <li>Both synchronizations take it in: the <tt class="docutils literal">l10n_ro_edi</tt> one and the SPV
 messages of <tt class="docutils literal">l10n_ro_message_spv</tt>.</li>
 </ul>
+<p>It also covers the other direction, the self-invoices you issue in your
+suppliers’ name: their credit notes go to the SPV with
+<tt class="docutils literal">CreditNoteTypeCode</tt> 381, the only one CIUS-RO accepts, instead of the
+261 Odoo sets on self-billing credit notes.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -426,11 +430,14 @@ journal in <strong>Accounting → Configuration → Journals</strong> with:</p>
 </tr>
 </tbody>
 </table>
-<p>The fields are in the <strong>Ro Auto Invoicing</strong> group of the journal form.
-The module adds them itself, so <tt class="docutils literal">l10n_ro_account_enterprise</tt> is not
-needed; when it is installed, its own group shows them instead. Without
-a journal for the customer, its self-invoices are created as drafts in
-the first sale journal.</p>
+<p>For the self-invoices you issue in a supplier’s name, the purchase
+journal works the same way, with <strong>Supplier Auto Invoicing</strong> and the
+supplier as <strong>Ro Partner</strong>.</p>
+<p>The fields are in the <strong>Ro Auto Invoicing</strong> group of the journal form,
+on sale and purchase journals. The module adds them itself, so
+<tt class="docutils literal">l10n_ro_account_enterprise</tt> is not needed; when it is installed, its
+own group shows them instead. Without a journal for the customer, its
+self-invoices are created as drafts in the first sale journal.</p>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-2">Usage</a></h1>
@@ -453,7 +460,9 @@ journal for the customer, or the error that stopped the posting.</li>
 <ul class="simple">
 <li>First version: self-invoices issued by customers in the company’s
 name, taken in from the SPV as customer invoices, with the
-self-invoicing fields on the journal.</li>
+self-invoicing fields on sale and purchase journals;
+<tt class="docutils literal">CreditNoteTypeCode</tt> 381 on the self-billing credit notes issued in
+a supplier’s name (moved from <tt class="docutils literal">l10n_ro_edi_extension</tt>).</li>
 </ul>
 </div>
 </div>

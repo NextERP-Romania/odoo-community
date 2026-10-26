@@ -7,12 +7,15 @@
         <field name="inherit_id" ref="account.view_account_journal_form" />
         <field name="arch" type="xml">
             <xpath expr="//group[@name='group_email_alias']" position="after">
-                <group string="Ro Auto Invoicing" invisible="type != 'sale'">
+                <group
+                    string="Ro Auto Invoicing"
+                    invisible="type not in ('sale', 'purchase')"
+                >
                     <field name="l10n_ro_sequence_type" />
                     <field
                         name="l10n_ro_partner_id"
-                        invisible="l10n_ro_sequence_type != 'autoinv1'"
-                        required="l10n_ro_sequence_type == 'autoinv1'"
+                        invisible="l10n_ro_sequence_type == 'normal'"
+                        required="l10n_ro_sequence_type != 'normal'"
                     />
                 </group>
             </xpath>

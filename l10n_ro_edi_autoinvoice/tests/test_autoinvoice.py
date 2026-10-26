@@ -10,6 +10,9 @@ invoice, never a vendor bill.
 
 from unittest.mock import patch
 
+from lxml import etree
+
+from odoo import Command
 from odoo.tests import tagged
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
@@ -241,3 +244,36 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
         arch = self.env["account.journal"].get_view(view_type="form")["arch"]
         self.assertEqual(arch.count('name="l10n_ro_partner_id"'), 1)
         self.assertEqual(arch.count('name="l10n_ro_sequence_type"'), 1)
+
+    # ------------------------------------------------------------------
+    # Autofacturi emise de noi in numele furnizorului
+    # ------------------------------------------------------------------
+    def test_a_self_billing_credit_note_keeps_type_code_381(self):
+        """CIUS-RO accepts only 381; Odoo puts 261 on self-billing ones."""
+        supplier = self.customer
+        refund = self.env["account.move"].create(
+            {
+                "move_type": "in_refund",
+                "partner_id": supplier.id,
+                "invoice_date": "2026-10-01",
+                "invoice_line_ids": [
+                    Command.create(
+                        {"name": "Delivery services", "quantity": 1, "price_unit": 100}
+                    )
+                ],
+            }
+        )
+        refund.action_post()
+        ubl = self.env["account.edi.xml.ubl_ro"]
+        config_vals = type(ubl)._add_invoice_config_vals
+
+        def selfbilling_config_vals(builder, vals):
+            config_vals(builder, vals)
+            vals["process_type"] = "selfbilling"
+
+        with patch.object(
+            type(ubl), "_add_invoice_config_vals", selfbilling_config_vals
+        ):
+            xml, _errors = ubl._export_invoice(refund)
+        tree = etree.fromstring(xml)
+        self.assertEqual(tree.findtext("./{*}CreditNoteTypeCode"), "381")
