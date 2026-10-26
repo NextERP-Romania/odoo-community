@@ -238,7 +238,7 @@ class AccountEdiXmlUBLRO(models.AbstractModel):
             self._ro_apply_path(document_node, path, max_len)
 
         for party_key in (
-            "cac:AccountingSupplierParty",
+            "cac:AccountingSupplierPartydeci a",
             "cac:AccountingCustomerParty",
             "cac:PayeeParty",
             "cac:TaxRepresentativeParty",

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--
+        Customer credit notes of companies with "Credit Notes as Invoice 380"
+        are printed as storno invoices: invoice title, negative quantities and
+        amounts, positive unit price and a reference to the reversed invoice.
+        The original nodes are kept (hidden with t-if) so other modules can
+        still inherit them.
+    -->
+    <template
+        id="report_invoice_document_storno"
+        inherit_id="account.report_invoice_document"
+    >
+        <xpath expr="//t[@t-set='layout_document_title']" position="before">
+            <t t-set="l10n_ro_storno" t-value="o._l10n_ro_is_storno_report()" />
+        </xpath>
+
+        <!-- Title -->
+        <xpath expr="//t[@name='credit_note_title']" position="attributes">
+            <attribute name="t-if">not l10n_ro_storno</attribute>
+        </xpath>
+        <xpath expr="//t[@name='credit_note_title']" position="after">
+            <t t-if="l10n_ro_storno" name="storno_invoice_title">Invoice</t>
+        </xpath>
+        <xpath expr="//t[@name='draft_credit_note_title']" position="attributes">
+            <attribute name="t-if">not l10n_ro_storno</attribute>
+        </xpath>
+        <xpath expr="//t[@name='draft_credit_note_title']" position="after">
+            <t t-if="l10n_ro_storno" name="storno_draft_invoice_title">Draft Invoice</t>
+        </xpath>
+
+        <!-- Date label -->
+        <xpath
+            expr="//div[@name='invoice_date']/t[@t-elif=&quot;o.move_type == 'out_refund'&quot;]"
+            position="attributes"
+        >
+            <attribute
+                name="t-elif"
+            >o.move_type == 'out_refund' and not l10n_ro_storno</attribute>
+        </xpath>
+        <xpath
+            expr="//div[@name='invoice_date']/t[@t-elif=&quot;o.move_type == 'out_refund' and not l10n_ro_storno&quot;]"
+            position="after"
+        >
+            <t t-elif="l10n_ro_storno">
+                <strong>Invoice Date</strong>
+            </t>
+        </xpath>
+
+        <!-- Reference to the reversed invoice -->
+        <xpath expr="//div[@id='informations']" position="after">
+            <p
+                t-if="l10n_ro_storno and o.reversed_entry_id"
+                name="l10n_ro_storno_reference"
+                class="mb-4"
+            >
+                <strong>Reversal of invoice</strong>
+                <span t-field="o.reversed_entry_id.name">INV/2026/00001</span>
+                <t t-if="o.reversed_entry_id.invoice_date">
+                    <span>dated</span>
+                    <span t-field="o.reversed_entry_id.invoice_date">2026-10-01</span>
+                </t>
+            </p>
+        </xpath>
+
+        <!-- Product lines: negative quantity and amount, positive unit price -->
+        <xpath
+            expr="//td[@name='td_quantity']/span[@t-field='line.quantity']"
+            position="attributes"
+        >
+            <attribute name="t-if">not l10n_ro_storno</attribute>
+        </xpath>
+        <xpath
+            expr="//td[@name='td_quantity']/span[@t-field='line.quantity']"
+            position="after"
+        >
+            <span
+                t-if="l10n_ro_storno"
+                t-out="-line.quantity"
+                t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"
+                class="text-nowrap"
+            >-3.00</span>
+        </xpath>
+        <xpath
+            expr="//td[@name='td_subtotal']/span[@t-field='line.price_subtotal']"
+            position="attributes"
+        >
+            <attribute
+                name="t-if"
+            >not hide_prices and o.company_price_include == 'tax_excluded' and not l10n_ro_storno</attribute>
+        </xpath>
+        <xpath
+            expr="//td[@name='td_subtotal']/span[@t-field='line.price_total']"
+            position="attributes"
+        >
+            <attribute
+                name="t-if"
+            >not hide_prices and o.company_price_include == 'tax_included' and not l10n_ro_storno</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_subtotal']" position="inside">
+            <span
+                t-if="not hide_prices and l10n_ro_storno"
+                t-out="-(line.price_subtotal if o.company_price_include == 'tax_excluded' else line.price_total)"
+                t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"
+                class="text-nowrap"
+            >-27.00</span>
+        </xpath>
+
+        <!-- Section subtotals -->
+        <xpath expr="//td[@name='line_name_td']" position="before">
+            <t
+                t-if="l10n_ro_storno"
+                t-set="section_subtotal"
+                t-value="-section_subtotal"
+            />
+        </xpath>
+
+        <!-- Collapsed sections (grouped lines) -->
+        <xpath
+            expr="//td[@name='account_invoice_line_name_grouped_desktop']/.."
+            position="before"
+        >
+            <t
+                t-if="l10n_ro_storno"
+                t-set="grouped_line"
+                t-value="o._l10n_ro_storno_negate(grouped_line)"
+            />
+        </xpath>
+
+        <!-- Totals -->
+        <xpath
+            expr="//t[@t-call='account.document_tax_totals']/t[@t-set='tax_totals']"
+            position="attributes"
+        >
+            <attribute name="t-value">o._l10n_ro_report_tax_totals()</attribute>
+        </xpath>
+        <xpath
+            expr="//t[@t-call='account.document_tax_totals_company_currency_template']/preceding-sibling::t[@t-set='tax_totals']"
+            position="attributes"
+        >
+            <attribute name="t-value">o._l10n_ro_report_tax_totals()</attribute>
+        </xpath>
+
+        <!-- Payments and amount due -->
+        <xpath expr="//t[@t-set='payments_vals']" position="after">
+            <t
+                t-if="l10n_ro_storno"
+                t-set="payments_vals"
+                t-value="o._l10n_ro_storno_negate(payments_vals)"
+            />
+        </xpath>
+        <xpath expr="//span[@t-field='o.amount_residual']" position="attributes">
+            <attribute name="t-if">not l10n_ro_storno</attribute>
+        </xpath>
+        <xpath expr="//span[@t-field='o.amount_residual']" position="after">
+            <span
+                t-if="l10n_ro_storno"
+                t-out="-o.amount_residual"
+                t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"
+            >-11.05</span>
+        </xpath>
+    </template>
+</odoo>
