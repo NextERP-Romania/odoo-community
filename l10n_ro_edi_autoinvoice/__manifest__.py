@@ -14,6 +14,7 @@
         "l10n_ro_message_spv",
     ],
     "data": [
+        "views/account_journal_views.xml",
         "views/message_spv_views.xml",
     ],
     "installable": True,

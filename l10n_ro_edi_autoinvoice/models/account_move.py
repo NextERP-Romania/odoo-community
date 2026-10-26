@@ -126,18 +126,14 @@ class AccountMove(models.Model):
         """Return ``(journal, dedicated)``.
 
         The dedicated journal is the sale journal of sequence type
-        ``autoinv1`` configured for the customer. The fields come from the RO
-        accounting modules, which this one does not depend on: without them,
-        or without a journal for this customer, the first sale journal is
-        used and the invoice is left in draft."""
+        ``autoinv1`` configured for the customer. Without one, the first sale
+        journal is used and the invoice is left in draft."""
         journal_obj = self.env["account.journal"]
         company_domain = [
             *journal_obj._check_company_domain(company),
             ("type", "=", "sale"),
         ]
-        if partner and {"l10n_ro_partner_id", "l10n_ro_sequence_type"} <= set(
-            journal_obj._fields
-        ):
+        if partner:
             journal = journal_obj.search(
                 [
                     *company_domain,

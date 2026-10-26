@@ -95,14 +95,8 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
             }
         )
         cls.move_obj = cls.env["account.move"]
-        cls.has_journal_fields = {
-            "l10n_ro_partner_id",
-            "l10n_ro_sequence_type",
-        } <= set(cls.env["account.journal"]._fields)
 
     def _autoinvoice_journal(self):
-        if not self.has_journal_fields:
-            self.skipTest("The RO journal fields are not installed.")
         return self.env["account.journal"].create(
             {
                 "name": "Autofacturi Customer",
@@ -238,3 +232,12 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
         self._sync(sent=[self._message(make_xml(), index="5000000002")])
         move = self.move_obj.search([("l10n_ro_edi_index", "=", "5000000002")])
         self.assertEqual(move.move_type, "out_invoice")
+
+    # ------------------------------------------------------------------
+    # Configurarea jurnalului
+    # ------------------------------------------------------------------
+    def test_the_journal_form_shows_the_fields_once(self):
+        """Ours or l10n_ro_account_enterprise's, never both."""
+        arch = self.env["account.journal"].get_view(view_type="form")["arch"]
+        self.assertEqual(arch.count('name="l10n_ro_partner_id"'), 1)
+        self.assertEqual(arch.count('name="l10n_ro_sequence_type"'), 1)

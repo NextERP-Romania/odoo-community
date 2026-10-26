@@ -51,10 +51,11 @@ Field                                            Value
 **Ro Partner** (``l10n_ro_partner_id``)          the customer
 ================================================ =======================
 
-The fields come from the Romanian accounting module
-(``l10n_ro_account_enterprise``), which this module does not require.
-Without it, or without a journal for the customer, the self-invoices are
-created as drafts in the first sale journal.
+The fields are in the **Ro Auto Invoicing** group of the journal form.
+The module adds them itself, so ``l10n_ro_account_enterprise`` is not
+needed; when it is installed, its own group shows them instead. Without
+a journal for the customer, its self-invoices are created as drafts in
+the first sale journal.
 
 Usage
 =====
@@ -77,7 +78,8 @@ Changelog
 -----------------------
 
 -  First version: self-invoices issued by customers in the company's
-   name, taken in from the SPV as customer invoices.
+   name, taken in from the SPV as customer invoices, with the
+   self-invoicing fields on the journal.
 
 Bug Tracker
 ===========
