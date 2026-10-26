@@ -20,17 +20,6 @@ Once the module is installed and configured, the cron job **Romania - Send Invoi
 2. For each new message, `_l10n_ro_edi_process_bill_messages` creates a draft `account.move` (vendor bill) in **Accounting → Vendors → Bills** if the bill does not already exist.
 3. Open the generated draft bill, verify the lines, and confirm as usual.
 
-## Receiving self-invoices issued by customers in your name
-
-Some customers issue the invoice themselves, in your name, and upload it to the SPV (*autofactura*). In the SPV it carries your company as supplier and the customer as buyer, so it is a sale, not a bill.
-
-1. Both SPV synchronizations recognise it from the XML: the supplier is your company and the buyer is somebody else. A document listed as sent counts only when it also carries the self-billing type code 389.
-2. It becomes a customer invoice, never a vendor bill:
-   - in the sale journal of type **Customer Auto Invoicing** set up for that customer, it keeps the number the customer gave it and is posted;
-   - without such a journal, it is created as a draft in the first sale journal.
-3. The invoice is marked as validated in the SPV, so it is never sent to ANAF again.
-4. In **SPV Messages** these messages are ticked **Self-Invoice**; **Create Invoice** creates them the same way.
-
 ## Monitoring EDI errors
 
 - Users listed in **EDI Error Notify Users** (see CONFIGURE) automatically receive Odoo internal messages when a submission to ANAF fails.
