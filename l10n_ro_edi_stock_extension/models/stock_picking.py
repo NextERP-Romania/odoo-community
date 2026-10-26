@@ -15,6 +15,15 @@ from .etransport_constants import (
     is_outgoing,
     needs_goods_full_data,
 )
+from .etransport_errors import (
+    EMPTY,
+    INVALID,
+    MISSING,
+    TOO_LONG,
+    guess_attribute,
+    locate_element,
+    parse_xsd_errors,
+)
 from .l10n_ro_edi_stock_document import EXTRA_DOCUMENT_STATES
 
 _logger = logging.getLogger(__name__)
@@ -728,3 +737,180 @@ class StockPicking(models.Model):
             "denumireStrada": (denumire or street.strip())[:100],
             "numar": nr[:20] if nr else None,
         }
+
+    ################################################################################
+    # Readable ANAF schema errors
+    ################################################################################
+
+    def _l10n_ro_edi_stock_create_document_stock_sending_failed(self, values):
+        # EXTENDS l10n_ro_edi_stock: ANAF rejects a file that breaks the XSD with
+        # the raw Xerces text (line/column, cvc-* code), which tells the user
+        # nothing. Rewrite it as "which record, which field, what is wrong",
+        # keeping the original text underneath for support.
+        message = values.get("message")
+        if message and "cvc-" in message and values.get("raw_xml"):
+            explained = self._l10n_ro_edi_stock_explain_xsd_errors(
+                message, values["raw_xml"]
+            )
+            if explained:
+                values = dict(values, message=explained)
+        return super()._l10n_ro_edi_stock_create_document_stock_sending_failed(values)
+
+    def _l10n_ro_edi_stock_explain_xsd_errors(self, message, raw_xml):
+        self.ensure_one()
+        # Xerces often reports one problem twice at the same position (the
+        # facet, then cvc-attribute.3 naming the attribute): merge them.
+        grouped = {}
+        for error in parse_xsd_errors(message):
+            merged = grouped.setdefault((error["line"], error["col"]), dict(error))
+            for key in ("attribute", "element", "value", "max_length"):
+                if merged[key] is None:
+                    merged[key] = error[key]
+            if merged["kind"] in (None, INVALID) and error["kind"]:
+                merged["kind"] = error["kind"]
+
+        lines = []
+        for error in grouped.values():
+            if not error["kind"]:
+                continue
+            element = locate_element(raw_xml, error["line"])
+            attribute = guess_attribute(error, element)
+            where, field = self._l10n_ro_edi_stock_xsd_error_target(element, attribute)
+            lines.append(self._l10n_ro_edi_stock_xsd_error_text(error, where, field))
+        if not lines:
+            return None
+        return "\n".join(
+            [*lines, "", self.env._("ANAF message: %(message)s", message=message)]
+        )
+
+    def _l10n_ro_edi_stock_xsd_error_text(self, error, where, field):
+        params = {"where": where, "field": field, "value": error["value"]}
+        if error["kind"] == EMPTY:
+            return self.env._(
+                '%(where)s: "%(field)s" is empty. Fill it in, or clear it '
+                "completely if it is not needed.",
+                **params,
+            )
+        if error["kind"] == MISSING:
+            return self.env._('%(where)s: "%(field)s" is not filled in.', **params)
+        if error["kind"] == TOO_LONG and error["max_length"]:
+            return self.env._(
+                '%(where)s: "%(field)s" is too long (%(value)s). ANAF accepts '
+                "at most %(max)s characters.",
+                max=error["max_length"],
+                **params,
+            )
+        return self.env._(
+            '%(where)s: "%(field)s" has a value ANAF does not accept: %(value)s.',
+            **params,
+        )
+
+    def _l10n_ro_edi_stock_xsd_error_target(self, element, attribute):
+        """(where, field label) of the record and field behind an attribute of
+        the generated XML. Falls back to the XML names when not mapped."""
+        self.ensure_one()
+
+        def label(model, fname):
+            field = self.env[model]._fields.get(fname) if model and fname else None
+            if field:
+                return field._description_string(self.env)
+            return attribute or self.env._("a value")
+
+        if element is None:
+            return self.name, label(None, None)
+        tag = element["tag"]
+
+        if tag == "locatie":
+            loc_kind = "start" if element["parent"] == "locStartTraseuRutier" else "end"
+            partner = self._l10n_ro_edi_stock_resolve_address_partner(
+                loc_kind, self.l10n_ro_edi_stock_operation_type
+            )
+            fname = {
+                "codJudet": "state_id",
+                "denumireLocalitate": "city",
+                "denumireStrada": "street",
+                "numar": "street",
+                "codPostal": "zip",
+                "alteInfo": "street2",
+            }.get(attribute)
+            if loc_kind == "start":
+                where = self.env._(
+                    "Start address (%(partner)s)", partner=partner.display_name
+                )
+            else:
+                where = self.env._(
+                    "Destination address (%(partner)s)", partner=partner.display_name
+                )
+            return where, label("res.partner", fname)
+
+        if tag == "partenerComercial":
+            partner = self.partner_id.commercial_partner_id
+            fname = {"codTara": "country_id", "denumire": "name", "cod": "vat"}.get(
+                attribute
+            )
+            return (
+                self.env._("Commercial partner %(partner)s", partner=partner.name),
+                label("res.partner", fname),
+            )
+
+        if tag == "dateTransport":
+            carrier_fname = {
+                "codTaraOrgTransport": "country_id",
+                "codOrgTransport": "vat",
+                "denumireOrgTransport": "name",
+            }.get(attribute)
+            if carrier_fname:
+                carrier = self.carrier_id.l10n_ro_edi_stock_partner_id
+                return (
+                    self.env._(
+                        "Transport company %(partner)s (delivery method %(carrier)s)",
+                        partner=carrier.name,
+                        carrier=self.carrier_id.name,
+                    ),
+                    label("res.partner", carrier_fname),
+                )
+            fname = {
+                "nrVehicul": "l10n_ro_edi_stock_vehicle_number",
+                "nrRemorca1": "l10n_ro_edi_stock_trailer_1_number",
+                "nrRemorca2": "l10n_ro_edi_stock_trailer_2_number",
+                "dataTransport": "scheduled_date",
+            }.get(attribute)
+            return (
+                self.env._("Transfer %(name)s", name=self.name),
+                label("stock.picking", fname),
+            )
+
+        if tag == "bunuriTransportate":
+            moves = self.move_ids
+            move = moves[element["index"]] if element["index"] < len(moves) else None
+            model, fname = {
+                "codTarifar": ("product.product", "intrastat_code_id"),
+                "denumireMarfa": ("product.product", "name"),
+                "cantitate": ("stock.move", "quantity"),
+                "codUnitateMasura": ("stock.move", "product_uom"),
+                "greutateNeta": ("product.product", "weight"),
+                "greutateBruta": ("product.product", "weight"),
+                "valoareLeiFaraTva": (
+                    "stock.picking",
+                    "l10n_ro_edi_stock_price_source",
+                ),
+            }.get(attribute, (None, None))
+            product = move.product_id.display_name if move else attribute
+            return (
+                self.env._(
+                    "Product %(product)s (line %(line)s)",
+                    product=product,
+                    line=element["index"] + 1,
+                ),
+                label(model, fname),
+            )
+
+        if tag == "documenteTransport":
+            return (
+                self.env._("Transport document %(line)s", line=element["index"] + 1),
+                label(None, None),
+            )
+
+        return self.env._("eTransport file, element %(tag)s", tag=tag), label(
+            None, None
+        )
