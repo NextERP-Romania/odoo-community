@@ -983,3 +983,87 @@ msgstr "Asistent informații transportator eTransport"
 #: model:ir.actions.server,name:l10n_ro_edi_stock_extension.ir_cron_l10n_ro_edi_stock_list_sync_ir_actions_server
 msgid "eTransport: ANAF notifications list sync"
 msgstr "eTransport: Sincronizare listă notificări ANAF"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "ANAF message: %(message)s"
+msgstr "Mesajul ANAF: %(message)s"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "%(where)s: \"%(field)s\" is empty. Fill it in, or clear it completely if it is not needed."
+msgstr "%(where)s: „%(field)s” este gol. Completați-l sau ștergeți-l complet dacă nu e necesar."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "%(where)s: \"%(field)s\" is not filled in."
+msgstr "%(where)s: „%(field)s” nu este completat."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "%(where)s: \"%(field)s\" is too long (%(value)s). ANAF accepts at most %(max)s characters."
+msgstr "%(where)s: „%(field)s” este prea lung (%(value)s). ANAF acceptă cel mult %(max)s caractere."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "%(where)s: \"%(field)s\" has a value ANAF does not accept: %(value)s."
+msgstr "%(where)s: „%(field)s” are o valoare pe care ANAF nu o acceptă: %(value)s."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "a value"
+msgstr "o valoare"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "Start address (%(partner)s)"
+msgstr "Adresa de plecare (%(partner)s)"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "Destination address (%(partner)s)"
+msgstr "Adresa de destinație (%(partner)s)"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "Commercial partner %(partner)s"
+msgstr "Partenerul comercial %(partner)s"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "Transport company %(partner)s (delivery method %(carrier)s)"
+msgstr "Transportatorul %(partner)s (metoda de livrare %(carrier)s)"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "Transfer %(name)s"
+msgstr "Transferul %(name)s"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "Product %(product)s (line %(line)s)"
+msgstr "Produsul %(product)s (linia %(line)s)"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "Transport document %(line)s"
+msgstr "Documentul de transport %(line)s"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "eTransport file, element %(tag)s"
+msgstr "Fișierul eTransport, elementul %(tag)s"
