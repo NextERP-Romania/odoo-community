@@ -248,13 +248,11 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
     # ------------------------------------------------------------------
     # Autofacturi emise de noi in numele furnizorului
     # ------------------------------------------------------------------
-    def test_a_self_billing_credit_note_keeps_type_code_381(self):
-        """CIUS-RO accepts only 381; Odoo puts 261 on self-billing ones."""
-        supplier = self.customer
-        refund = self.env["account.move"].create(
+    def _export_vendor_document(self, move_type):
+        move = self.env["account.move"].create(
             {
-                "move_type": "in_refund",
-                "partner_id": supplier.id,
+                "move_type": move_type,
+                "partner_id": self.customer.id,
                 "invoice_date": "2026-10-01",
                 "invoice_line_ids": [
                     Command.create(
@@ -263,17 +261,93 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
                 ],
             }
         )
-        refund.action_post()
-        ubl = self.env["account.edi.xml.ubl_ro"]
-        config_vals = type(ubl)._add_invoice_config_vals
+        move.action_post()
+        xml, _errors = self.env["account.edi.xml.ubl_ro"]._export_invoice(move)
+        return etree.fromstring(xml)
 
-        def selfbilling_config_vals(builder, vals):
-            config_vals(builder, vals)
-            vals["process_type"] = "selfbilling"
+    def test_a_self_invoice_we_issue_has_type_code_389(self):
+        tree = self._export_vendor_document("in_invoice")
+        self.assertEqual(tree.findtext("./{*}InvoiceTypeCode"), "389")
 
-        with patch.object(
-            type(ubl), "_add_invoice_config_vals", selfbilling_config_vals
-        ):
-            xml, _errors = ubl._export_invoice(refund)
-        tree = etree.fromstring(xml)
+    def test_a_self_billing_credit_note_has_type_code_381(self):
+        """CIUS-RO accepts only 381; Odoo puts 261 on self-billing ones."""
+        tree = self._export_vendor_document("in_refund")
         self.assertEqual(tree.findtext("./{*}CreditNoteTypeCode"), "381")
+
+    def _supplier_autoinvoice(self, move_type="in_invoice"):
+        journal = self.env["account.journal"].create(
+            {
+                "name": "Autofacturi Supplier",
+                "code": "AFS",
+                "type": "purchase",
+                "company_id": self.company.id,
+                "l10n_ro_sequence_type": "autoinv2",
+                "l10n_ro_partner_id": self.customer.id,
+            }
+        )
+        move = self.env["account.move"].create(
+            {
+                "move_type": move_type,
+                "journal_id": journal.id,
+                "partner_id": self.customer.id,
+                "invoice_date": "2026-10-01",
+                "invoice_line_ids": [
+                    Command.create(
+                        {"name": "Delivery services", "quantity": 1, "price_unit": 100}
+                    )
+                ],
+            }
+        )
+        move.action_post()
+        return move
+
+    def _send(self, move, content):
+        calls = []
+
+        def fake_request(session, company, endpoint, params, data=None):
+            calls.append({"endpoint": endpoint, "params": params})
+            return {"content": content}
+
+        with patch(
+            "odoo.addons.l10n_ro_edi_autoinvoice.models.account_move."
+            "make_efactura_request",
+            side_effect=fake_request,
+        ):
+            errors = move._l10n_ro_edi_send_invoice(b"<Invoice/>")
+        return calls, errors
+
+    def test_a_self_invoice_we_issue_is_uploaded_as_autofactura(self):
+        move = self._supplier_autoinvoice()
+        self.assertTrue(move.is_l10n_ro_autoinvoice())
+        calls, errors = self._send(
+            move, b'<header ExecutionStatus="0" index_incarcare="5000000009"/>'
+        )
+        self.assertFalse(errors)
+        self.assertEqual(
+            calls[0]["params"],
+            {"standard": "UBL", "cif": "12345674", "autofactura": "DA"},
+        )
+        self.assertEqual(move.l10n_ro_edi_index, "5000000009")
+        self.assertEqual(move.l10n_ro_edi_state, "invoice_sent")
+
+    def test_a_self_billing_credit_note_is_uploaded_as_cn(self):
+        move = self._supplier_autoinvoice("in_refund")
+        calls, _errors = self._send(
+            move, b'<header ExecutionStatus="0" index_incarcare="5000000010"/>'
+        )
+        self.assertEqual(calls[0]["params"]["standard"], "CN")
+
+    def test_the_spv_refusal_reason_is_kept(self):
+        move = self._supplier_autoinvoice()
+        _calls, errors = self._send(
+            move,
+            b'<header ExecutionStatus="1"><Errors errorMessage="CIF invalid"/>'
+            b"</header>",
+        )
+        self.assertEqual(errors, ["CIF invalid"])
+
+    def test_a_plain_vendor_bill_is_not_a_self_invoice(self):
+        bill = self.env["account.move"].create(
+            {"move_type": "in_invoice", "partner_id": self.customer.id}
+        )
+        self.assertFalse(bill.is_l10n_ro_autoinvoice())

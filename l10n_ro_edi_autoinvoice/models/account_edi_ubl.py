@@ -9,13 +9,10 @@ class AccountEdiXmlUBLRO(models.AbstractModel):
 
     def _add_invoice_header_nodes(self, document_node, vals):
         res = super()._add_invoice_header_nodes(document_node, vals)
-        # CIUS-RO always requires CreditNoteTypeCode 381, also on the
-        # self-billing credit notes we issue in a supplier's name (upstream
-        # sets 261 in that case).
-        if (
-            vals["document_type"] == "credit_note"
-            and vals.get("process_type") == "selfbilling"
-        ):
+        # Odoo exports every vendor refund as a self-billing credit note,
+        # with CreditNoteTypeCode 261. CIUS-RO accepts only 381, also on the
+        # self-billing credit notes we issue in a supplier's name.
+        if self._is_document(vals, "self_credit_note"):
             document_node["cbc:CreditNoteTypeCode"] = {"_text": 381}
         return res
 

@@ -32,9 +32,16 @@ it as a bill.
    messages of ``l10n_ro_message_spv``.
 
 It also covers the other direction, the self-invoices you issue in your
-suppliers' name: their credit notes go to the SPV with
-``CreditNoteTypeCode`` 381, the only one CIUS-RO accepts, instead of the
-261 Odoo sets on self-billing credit notes.
+suppliers' name (a vendor bill or refund on a **Supplier Auto
+Invoicing** journal):
+
+-  they are uploaded to the SPV with ``autofactura=DA``, without which
+   ANAF refuses a document whose supplier is not the uploader, with
+   ``standard=UBL`` for invoices and ``CN`` only for credit notes, and
+   with ANAF's own refusal reason kept in the chatter;
+-  their credit notes carry ``CreditNoteTypeCode`` 381, the only one
+   CIUS-RO accepts, instead of the 261 Odoo sets on self-billing credit
+   notes. The invoices already carry 389.
 
 
 **Table of contents**
@@ -79,6 +86,10 @@ in as they arrive.
 3. A self-invoice posted in the customer's journal carries the
    customer's number. One left in draft says why in its chatter: no
    journal for the customer, or the error that stopped the posting.
+4. A self-invoice you issue in a supplier's name is posted on the
+   supplier's **Supplier Auto Invoicing** purchase journal and sent to
+   ANAF like any invoice (**Send & Print** or the send cron); it goes up
+   as *autofactura*.
 
 Changelog
 =========
@@ -88,9 +99,11 @@ Changelog
 
 -  First version: self-invoices issued by customers in the company's
    name, taken in from the SPV as customer invoices, with the
-   self-invoicing fields on sale and purchase journals;
-   ``CreditNoteTypeCode`` 381 on the self-billing credit notes issued in
-   a supplier's name (moved from ``l10n_ro_edi_extension``).
+   self-invoicing fields on sale and purchase journals; the
+   self-invoices issued in a supplier's name are uploaded with
+   ``autofactura=DA`` (moved from ``account_invoice_delivery_sheet``)
+   and their credit notes carry ``CreditNoteTypeCode`` 381 (moved from
+   ``l10n_ro_edi_extension``).
 
 Bug Tracker
 ===========

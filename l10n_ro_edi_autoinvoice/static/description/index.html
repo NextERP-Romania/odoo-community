@@ -389,9 +389,17 @@ again, and a later synchronization does not duplicate it.</li>
 messages of <tt class="docutils literal">l10n_ro_message_spv</tt>.</li>
 </ul>
 <p>It also covers the other direction, the self-invoices you issue in your
-suppliers’ name: their credit notes go to the SPV with
-<tt class="docutils literal">CreditNoteTypeCode</tt> 381, the only one CIUS-RO accepts, instead of the
-261 Odoo sets on self-billing credit notes.</p>
+suppliers’ name (a vendor bill or refund on a <strong>Supplier Auto
+Invoicing</strong> journal):</p>
+<ul class="simple">
+<li>they are uploaded to the SPV with <tt class="docutils literal">autofactura=DA</tt>, without which
+ANAF refuses a document whose supplier is not the uploader, with
+<tt class="docutils literal">standard=UBL</tt> for invoices and <tt class="docutils literal">CN</tt> only for credit notes, and
+with ANAF’s own refusal reason kept in the chatter;</li>
+<li>their credit notes carry <tt class="docutils literal">CreditNoteTypeCode</tt> 381, the only one
+CIUS-RO accepts, instead of the 261 Odoo sets on self-billing credit
+notes. The invoices already carry 389.</li>
+</ul>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -451,6 +459,10 @@ Invoice</strong> creates them the same way.</li>
 <li>A self-invoice posted in the customer’s journal carries the
 customer’s number. One left in draft says why in its chatter: no
 journal for the customer, or the error that stopped the posting.</li>
+<li>A self-invoice you issue in a supplier’s name is posted on the
+supplier’s <strong>Supplier Auto Invoicing</strong> purchase journal and sent to
+ANAF like any invoice (<strong>Send &amp; Print</strong> or the send cron); it goes up
+as <em>autofactura</em>.</li>
 </ol>
 </div>
 <div class="section" id="changelog">
@@ -460,9 +472,11 @@ journal for the customer, or the error that stopped the posting.</li>
 <ul class="simple">
 <li>First version: self-invoices issued by customers in the company’s
 name, taken in from the SPV as customer invoices, with the
-self-invoicing fields on sale and purchase journals;
-<tt class="docutils literal">CreditNoteTypeCode</tt> 381 on the self-billing credit notes issued in
-a supplier’s name (moved from <tt class="docutils literal">l10n_ro_edi_extension</tt>).</li>
+self-invoicing fields on sale and purchase journals; the
+self-invoices issued in a supplier’s name are uploaded with
+<tt class="docutils literal">autofactura=DA</tt> (moved from <tt class="docutils literal">account_invoice_delivery_sheet</tt>)
+and their credit notes carry <tt class="docutils literal">CreditNoteTypeCode</tt> 381 (moved from
+<tt class="docutils literal">l10n_ro_edi_extension</tt>).</li>
 </ul>
 </div>
 </div>

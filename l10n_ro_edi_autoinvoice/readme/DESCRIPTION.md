@@ -7,4 +7,7 @@ Such an invoice is uploaded by the customer, but it carries your company as supp
 - It is marked as validated in the SPV, so it is never sent to ANAF again, and a later synchronization does not duplicate it.
 - Both synchronizations take it in: the `l10n_ro_edi` one and the SPV messages of `l10n_ro_message_spv`.
 
-It also covers the other direction, the self-invoices you issue in your suppliers' name: their credit notes go to the SPV with `CreditNoteTypeCode` 381, the only one CIUS-RO accepts, instead of the 261 Odoo sets on self-billing credit notes.
+It also covers the other direction, the self-invoices you issue in your suppliers' name (a vendor bill or refund on a **Supplier Auto Invoicing** journal):
+
+- they are uploaded to the SPV with `autofactura=DA`, without which ANAF refuses a document whose supplier is not the uploader, with `standard=UBL` for invoices and `CN` only for credit notes, and with ANAF's own refusal reason kept in the chatter;
+- their credit notes carry `CreditNoteTypeCode` 381, the only one CIUS-RO accepts, instead of the 261 Odoo sets on self-billing credit notes. The invoices already carry 389.
