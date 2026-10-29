@@ -20,5 +20,6 @@
         "views/stock_inventory_view.xml",
     ],
     "installable": True,
+    "development_status": "Mature",
     "maintainers": ["feketemihai"],
 }

@@ -20,6 +20,7 @@
     ],
     "depends": ["account"],
     "installable": True,
+    "development_status": "Mature",
     "auto_install": False,
     "application": False,
 }

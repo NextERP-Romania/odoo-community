@@ -12,7 +12,7 @@
     "data": [],
     "auto_install": False,
     "installable": True,
-    "development_status": "Beta",
+    "development_status": "Mature",
     "license": "AGPL-3",
     "images": ["static/description/apps_icon.png"],
 }
