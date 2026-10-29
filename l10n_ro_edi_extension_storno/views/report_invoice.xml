@@ -20,13 +20,16 @@
             <attribute name="t-if">not l10n_ro_storno</attribute>
         </xpath>
         <xpath expr="//t[@name='credit_note_title']" position="after">
-            <t t-if="l10n_ro_storno" name="storno_invoice_title">Invoice</t>
+            <t t-if="l10n_ro_storno" name="storno_invoice_title">Reversed Invoice</t>
         </xpath>
         <xpath expr="//t[@name='draft_credit_note_title']" position="attributes">
             <attribute name="t-if">not l10n_ro_storno</attribute>
         </xpath>
         <xpath expr="//t[@name='draft_credit_note_title']" position="after">
-            <t t-if="l10n_ro_storno" name="storno_draft_invoice_title">Draft Invoice</t>
+            <t
+                t-if="l10n_ro_storno"
+                name="storno_draft_invoice_title"
+            >Draft Reversed Invoice</t>
         </xpath>
 
         <!-- Date label -->
