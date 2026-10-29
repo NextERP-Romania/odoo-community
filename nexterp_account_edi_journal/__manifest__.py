@@ -17,6 +17,7 @@
     ],
     "depends": ["l10n_ro_edi"],
     "installable": True,
+    "development_status": "Mature",
     "auto_install": False,
     "application": False,
 }

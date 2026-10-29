@@ -17,5 +17,6 @@
     "license": "LGPL-3",
     "images": ["static/description/apps_icon.png"],
     "installable": True,
+    "development_status": "Production/Stable",
     "auto_install": True,
 }
