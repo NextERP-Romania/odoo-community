@@ -44,12 +44,12 @@ msgstr ""
 
 #. module: l10n_ro_edi_extension_storno
 #: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.report_invoice_document_storno
-msgid "Reversed Invoice"
+msgid "Storno Invoice"
 msgstr "Factură storno"
 
 #. module: l10n_ro_edi_extension_storno
 #: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.report_invoice_document_storno
-msgid "Draft Reversed Invoice"
+msgid "Draft Storno Invoice"
 msgstr "Factură storno ciornă"
 
 #. module: l10n_ro_edi_extension_storno

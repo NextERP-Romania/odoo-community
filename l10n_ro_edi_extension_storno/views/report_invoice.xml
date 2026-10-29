@@ -20,7 +20,7 @@
             <attribute name="t-if">not l10n_ro_storno</attribute>
         </xpath>
         <xpath expr="//t[@name='credit_note_title']" position="after">
-            <t t-if="l10n_ro_storno" name="storno_invoice_title">Reversed Invoice</t>
+            <t t-if="l10n_ro_storno" name="storno_invoice_title">Storno Invoice</t>
         </xpath>
         <xpath expr="//t[@name='draft_credit_note_title']" position="attributes">
             <attribute name="t-if">not l10n_ro_storno</attribute>
@@ -29,7 +29,7 @@
             <t
                 t-if="l10n_ro_storno"
                 name="storno_draft_invoice_title"
-            >Draft Reversed Invoice</t>
+            >Draft Storno Invoice</t>
         </xpath>
 
         <!-- Date label -->
@@ -57,7 +57,7 @@
                 name="l10n_ro_storno_reference"
                 class="mb-4"
             >
-                <strong>Reversal of invoice</strong>
+                <strong>Storno of invoice</strong>
                 <span t-field="o.reversed_entry_id.name">INV/2026/00001</span>
                 <t t-if="o.reversed_entry_id.invoice_date">
                     <span>dated</span>
