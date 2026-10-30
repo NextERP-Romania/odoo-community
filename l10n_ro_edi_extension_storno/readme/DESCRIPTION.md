@@ -1,0 +1,24 @@
+# Romania - E-invoicing Storno Credit Notes
+
+Sends customer credit notes (`out_refund`) to ANAF e-Factura / SPV as a
+**storno invoice**: UBL `Invoice` with `InvoiceTypeCode` **380** and negative
+values, instead of a `CreditNote` 381 with positive values.
+
+## What this module provides
+
+- **Company setting** `l10n_ro_credit_note_einvoice` ("Send Credit Notes as
+  Invoice 380 with negative values"). The behaviour applies only to companies
+  where it is enabled; all others keep the standard 381 credit note.
+- **Invoice 380 instead of CreditNote 381** — root `<Invoice>`,
+  `cac:InvoiceLine` and `cbc:InvoicedQuantity`.
+- **Negative quantities and amounts** — lines, allowances/charges, VAT totals
+  and all `LegalMonetaryTotal` amounts. The item net price (BT-146) stays
+  positive (BR-27).
+- **Reference to the original invoice** — BT-25 (number) and BT-26 (issue
+  date) in `cac:BillingReference`, taken from the reversed invoice.
+- **No DocumentTypeCode 50** on the embedded PDF, since that code is only
+  allowed on a CreditNote (UBL-SR-43).
+- **Printed PDF as a storno invoice** — "Storno Invoice" title and "Invoice
+  Date" instead of "Credit Note", a "Storno of invoice … dated …" line, negative
+  quantities, line amounts, taxes, totals, payments and amount due; the unit
+  price stays positive.

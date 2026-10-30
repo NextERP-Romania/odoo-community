@@ -1,0 +1,68 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ro_edi_extension_storno
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ro_edi_extension_storno
+#: model:ir.model.fields,field_description:l10n_ro_edi_extension_storno.field_res_company__l10n_ro_credit_note_einvoice
+msgid "Credit Note on e-invoice"
+msgstr "Notă de credit ca factură storno în e-Factura"
+
+#. module: l10n_ro_edi_extension_storno
+#: model:ir.model.fields,field_description:l10n_ro_edi_extension_storno.field_res_config_settings__l10n_ro_credit_note_einvoice
+msgid "Credit Note on e-invoice."
+msgstr "Notă de credit ca factură storno în e-Factura."
+
+#. module: l10n_ro_edi_extension_storno
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.res_config_settings_form_inherit_l10n_ro_edi_storno
+msgid "Credit Notes as Invoice 380"
+msgstr "Note de credit ca factură 380"
+
+#. module: l10n_ro_edi_extension_storno
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.res_config_settings_form_inherit_l10n_ro_edi_storno
+msgid "Send customer credit notes to ANAF as storno invoices."
+msgstr "Trimite notele de credit către clienți la ANAF ca facturi storno."
+
+#. module: l10n_ro_edi_extension_storno
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.res_config_settings_form_inherit_l10n_ro_edi_storno
+msgid ""
+"Send customer credit notes to e-Factura as Invoice 380 with negative values "
+"and a reference to the original invoice, instead of Credit Note 381"
+msgstr ""
+"Trimite notele de credit către clienți în e-Factura ca factură 380 cu valori "
+"negative și referință la factura inițială, în loc de notă de credit 381"
+
+#. module: l10n_ro_edi_extension_storno
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.report_invoice_document_storno
+msgid "Storno Invoice"
+msgstr "Factură storno"
+
+#. module: l10n_ro_edi_extension_storno
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.report_invoice_document_storno
+msgid "Draft Storno Invoice"
+msgstr "Factură storno ciornă"
+
+#. module: l10n_ro_edi_extension_storno
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.report_invoice_document_storno
+msgid "<strong>Invoice Date</strong>"
+msgstr "<strong>Data facturii</strong>"
+
+#. module: l10n_ro_edi_extension_storno
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.report_invoice_document_storno
+msgid "<strong>Storno of invoice</strong>"
+msgstr "<strong>Stornare factura</strong>"
+
+#. module: l10n_ro_edi_extension_storno
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.report_invoice_document_storno
+msgid "<span>dated</span>"
+msgstr "<span>din</span>"
