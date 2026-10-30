@@ -17,6 +17,17 @@ class AccountMove(models.Model):
             and self.company_id.l10n_ro_credit_note_einvoice
         )
 
+    def _l10n_ro_report_quantity_signed(self):
+        """The quantity is already printed negative by
+        ``nexterp_account_invoice_report`` (refunds shown with sign)."""
+        self.ensure_one()
+        company = self.company_id
+        return bool(
+            "print_show_refunds" in company._fields
+            and company.print_show_refunds
+            and company.print_invoice_tax_value
+        )
+
     def _l10n_ro_storno_negate(self, values):
         """Copy of ``values`` with every numeric ``*amount*``, ``quantity``,
         ``price_subtotal`` and ``price_total`` negated, walking nested dicts

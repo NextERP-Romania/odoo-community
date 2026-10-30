@@ -66,24 +66,30 @@
             </p>
         </xpath>
 
-        <!-- Product lines: negative quantity and amount, positive unit price -->
-        <xpath
-            expr="//td[@name='td_quantity']/span[@t-field='line.quantity']"
-            position="attributes"
-        >
-            <attribute name="t-if">not l10n_ro_storno</attribute>
+        <!--
+            Product lines: a minus sign in front of the quantity, whichever
+            module prints it; the unit of measure stays. The marker is empty
+            and the sign comes from CSS (::before on the next span), so no
+            space is left between the sign and the number.
+        -->
+        <xpath expr="//t[@t-set='layout_document_title']" position="before">
+            <t
+                t-set="l10n_ro_storno_quantity_sign"
+                t-value="l10n_ro_storno and not o._l10n_ro_report_quantity_signed()"
+            />
         </xpath>
-        <xpath
-            expr="//td[@name='td_quantity']/span[@t-field='line.quantity']"
-            position="after"
-        >
+        <xpath expr="//table[@name='invoice_line_table']" position="before">
+            <style t-if="l10n_ro_storno_quantity_sign">
+                .o_l10n_ro_storno_quantity_sign + span::before { content: "-"; }
+            </style>
+        </xpath>
+        <xpath expr="//td[@name='td_quantity']/*[1]" position="before">
             <span
-                t-if="l10n_ro_storno"
-                t-out="-line.quantity"
-                t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"
-                class="text-nowrap"
-            >-3.00</span>
+                t-if="l10n_ro_storno_quantity_sign and line.quantity"
+                class="o_l10n_ro_storno_quantity_sign"
+            />
         </xpath>
+        <!-- Product lines: negative amount, positive unit price -->
         <xpath
             expr="//td[@name='td_subtotal']/span[@t-field='line.price_subtotal']"
             position="attributes"

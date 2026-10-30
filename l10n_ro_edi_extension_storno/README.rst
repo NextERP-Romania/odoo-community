@@ -36,10 +36,10 @@ What this module provides
    invoice.
 -  **No DocumentTypeCode 50** on the embedded PDF, since that code is
    only allowed on a CreditNote (UBL-SR-43).
--  **Printed PDF as a storno invoice** — "Invoice" title and "Invoice
-   Date" instead of "Credit Note", a "Reversal of invoice … dated …"
-   line, negative quantities, line amounts, taxes, totals, payments and
-   amount due; the unit price stays positive.
+-  **Printed PDF as a storno invoice** — "Storno Invoice" title and
+   "Invoice Date" instead of "Credit Note", a "Storno of invoice … dated
+   …" line, negative quantities, line amounts, taxes, totals, payments
+   and amount due; the unit price stays positive.
 
 
 **Table of contents**

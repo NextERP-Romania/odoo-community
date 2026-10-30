@@ -59,7 +59,7 @@ msgstr "<strong>Data facturii</strong>"
 
 #. module: l10n_ro_edi_extension_storno
 #: model_terms:ir.ui.view,arch_db:l10n_ro_edi_extension_storno.report_invoice_document_storno
-msgid "<strong>Reversal of invoice</strong>"
+msgid "<strong>Storno of invoice</strong>"
 msgstr "<strong>Stornare factura</strong>"
 
 #. module: l10n_ro_edi_extension_storno

@@ -9,6 +9,8 @@ item price (BR-27) and a reference to the reversed invoice (BT-25 / BT-26).
 With the setting off, the standard ``CreditNote`` 381 is left untouched.
 """
 
+from unittest.mock import patch
+
 from lxml import etree
 
 from odoo import Command
@@ -255,12 +257,34 @@ class TestStornoExport(AccountTestInvoicingCommon):
             html = html.replace(char, "")
         return html.replace("\xa0", " ")
 
+    def _quantity_cell(self, html):
+        """Spans of the first quantity cell as (class, text) pairs. The
+        minus sign is drawn by CSS on the span after the sign marker."""
+        cell = etree.HTML(html).xpath("//td[@name='td_quantity']")[0]
+        return [
+            (span.get("class", ""), "".join(span.itertext()).strip())
+            for span in cell.xpath("span")
+        ]
+
+    def _assert_quantity(self, html, signed):
+        spans = self._quantity_cell(html)
+        markers = [i for i, (cls, _t) in enumerate(spans) if "storno" in cls]
+        if signed:
+            # A single marker, right before the quantity.
+            self.assertEqual(markers, [0])
+            self.assertRegex(spans[1][1], r"^4\.0+$")
+        else:
+            self.assertEqual(markers, [])
+        # Only one quantity is printed.
+        self.assertEqual(len([t for _c, t in spans if t and t[0] in "-0123456789"]), 1)
+
     def test_pdf_setting_off_keeps_credit_note(self):
         self.company.l10n_ro_credit_note_einvoice = False
         html = self._render_html(self._reverse(quantity=4))
 
         self.assertIn("Credit Note", html)
-        self.assertNotIn("Reversal of invoice", html)
+        self.assertNotIn("Storno of invoice", html)
+        self._assert_quantity(html, signed=False)
         self.assertNotIn("-400.00", html)
         self.assertNotIn("-484.00", html)
 
@@ -270,19 +294,40 @@ class TestStornoExport(AccountTestInvoicingCommon):
 
         self.assertNotIn("Credit Note", html)
         self.assertIn("Invoice Date", html)
-        self.assertIn("Reversal of invoice", html)
+        self.assertIn("Storno of invoice", html)
         self.assertIn(self.invoice.name, html)
-        for amount in ("-4.00", "-400.00", "-84.00", "-484.00"):
+        self._assert_quantity(html, signed=True)
+        for amount in ("-400.00", "-84.00", "-484.00"):
             self.assertIn(amount, html)
         # The unit price stays positive.
         self.assertIn("100.00", html)
         self.assertNotIn("-100.00", html)
 
+    def test_pdf_zero_quantity_has_no_sign(self):
+        self.company.l10n_ro_credit_note_einvoice = True
+        refund = self._reverse(quantity=4)
+        refund.button_draft()
+        refund.invoice_line_ids.quantity = 0
+        html = self._render_html(refund)
+
+        spans = self._quantity_cell(html)
+        self.assertFalse([cls for cls, _t in spans if "storno" in cls])
+
+    def test_pdf_quantity_signed_by_another_module_is_not_signed_twice(self):
+        self.company.l10n_ro_credit_note_einvoice = True
+        refund = self._reverse(quantity=4)
+        with patch.object(
+            type(refund), "_l10n_ro_report_quantity_signed", return_value=True
+        ):
+            html = self._render_html(refund)
+
+        self._assert_quantity(html, signed=False)
+
     def test_pdf_customer_invoice_is_not_changed(self):
         self.company.l10n_ro_credit_note_einvoice = True
         html = self._render_html(self.invoice)
 
-        self.assertNotIn("Reversal of invoice", html)
+        self.assertNotIn("Storno of invoice", html)
         self.assertIn("1,210.00", html)
         self.assertNotIn("-1,210.00", html)
 
