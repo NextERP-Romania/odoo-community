@@ -1,7 +1,7 @@
 # Copyright (C) 2026 NextERP Romania
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 # Same definitions as l10n_ro_account_enterprise, so the fields merge cleanly
 # when both modules are installed.
@@ -34,3 +34,7 @@ class AccountJournal(models.Model):
         )
         if view and view.active == bool(other_view):
             view.sudo().active = not other_view
+
+    @api.onchange("l10n_ro_sequence_type")
+    def onchange_l10n_ro_sequence_type(self):
+        self.is_self_billing = self.l10n_ro_sequence_type in ("autoinv1", "autoinv2")

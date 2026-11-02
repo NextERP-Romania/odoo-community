@@ -8,6 +8,8 @@ customer as buyer. It is a sale of ours, so it must become a customer
 invoice, never a vendor bill.
 """
 
+import io
+import zipfile
 from unittest.mock import patch
 
 from lxml import etree
@@ -88,7 +90,13 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.company_data["company"]
-        cls.company.write({"vat": COMPANY_VAT, "l10n_ro_edi_access_token": "token"})
+        cls.company.write(
+            {
+                "vat": COMPANY_VAT,
+                "l10n_ro_edi_access_token": "token",
+                "l10n_ro_create_customer_autoinvoice": True,
+            }
+        )
         cls.customer = cls.env["res.partner"].create(
             {
                 "name": "Customer",
@@ -237,6 +245,184 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
         self.assertEqual(move.move_type, "out_invoice")
 
     # ------------------------------------------------------------------
+    # Mesajul SPV al unei autofacturi aduse de "Synchronize with ANAF"
+    # ------------------------------------------------------------------
+    def _zip(self, xml, index="5000000001"):
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as zip_file:
+            zip_file.writestr(f"{index}.xml", xml)
+            zip_file.writestr(f"semnatura_{index}.xml", b"<sig/>")
+        return buffer.getvalue()
+
+    def _spv_message(self, zip_content=None, index="5000000001"):
+        """The message as SPV Refresh creates it for a self-invoice: ANAF
+        lists it without cif_emitent, so it keeps the company CIF."""
+        message = self.env["l10n.ro.message.spv"].create(
+            {
+                "name": "3000000001",
+                "request_id": index,
+                "message_type": "in_invoice",
+                "cif": "12345674",
+                "company_id": self.company.id,
+            }
+        )
+        if zip_content:
+            attachment = self.env["ir.attachment"].create(
+                {
+                    "name": f"{index}.zip",
+                    "raw": zip_content,
+                    "mimetype": "application/zip",
+                }
+            )
+            message.write({"attachment_id": attachment.id, "state": "downloaded"})
+        return message
+
+    def _get_invoice(self, message, download=None):
+        """Run Get Invoice, with ANAF answering the ZIP download by
+        ``download``."""
+        with patch.object(
+            type(self.env["l10n_ro_edi.document"]),
+            "_request_ciusro_download_zip",
+            return_value=download or {"error": "no download expected"},
+        ) as download_zip:
+            message.get_invoice_from_move()
+        return download_zip
+
+    def test_get_invoice_links_the_message_to_the_self_invoice(self):
+        """The message keeps the company as partner, so the standard
+        matching alone would not link it: Get Invoice gives it the customer
+        of the self-invoice first."""
+        self._autoinvoice_journal()
+        self._sync(received=[self._message(make_xml())])
+        message = self._spv_message(self._zip(make_xml()))
+        download_zip = self._get_invoice(message)
+        download_zip.assert_not_called()
+        self.assertRecordValues(
+            message,
+            [
+                {
+                    "invoice_id": self.move_obj.search(
+                        [("l10n_ro_edi_index", "=", "5000000001")]
+                    ).id,
+                    "partner_id": self.customer.id,
+                    "l10n_ro_is_autoinvoice": True,
+                    "message_type": "out_invoice",
+                    "cif": "18547290",
+                }
+            ],
+        )
+
+    def test_get_invoice_downloads_the_missing_zip(self):
+        """Get Invoice fills in the message without a separate Download."""
+        self._autoinvoice_journal()
+        self._sync(received=[self._message(make_xml())])
+        message = self._spv_message()
+        download_zip = self._get_invoice(
+            message, download={"content": self._zip(make_xml())}
+        )
+        download_zip.assert_called_once()
+        self.assertTrue(message.attachment_id)
+        self.assertRecordValues(
+            message,
+            [
+                {
+                    "invoice_id": self.move_obj.search(
+                        [("l10n_ro_edi_index", "=", "5000000001")]
+                    ).id,
+                    "partner_id": self.customer.id,
+                    "l10n_ro_is_autoinvoice": True,
+                    "cif": "18547290",
+                    "ref": "AF-0001",
+                    "invoice_amount": 121.0,
+                }
+            ],
+        )
+
+    def test_get_invoice_takes_the_customer_from_the_invoice_without_a_zip(self):
+        """The download fails: the customer comes from the invoice."""
+        self._autoinvoice_journal()
+        self._sync(received=[self._message(make_xml())])
+        message = self._spv_message()
+        download_zip = self._get_invoice(
+            message, download={"error": "Limita de descarcari"}
+        )
+        download_zip.assert_called_once()
+        self.assertFalse(message.attachment_id)
+        self.assertRecordValues(
+            message,
+            [
+                {
+                    "invoice_id": self.move_obj.search(
+                        [("l10n_ro_edi_index", "=", "5000000001")]
+                    ).id,
+                    "partner_id": self.customer.id,
+                    "l10n_ro_is_autoinvoice": True,
+                    "cif": self.customer.l10n_ro_vat_number,
+                }
+            ],
+        )
+
+    def test_get_invoice_marks_only_invoices_of_a_self_invoicing_journal(self):
+        """Without the customer journal the self-invoice is a draft in the
+        first sale journal: its message is linked only once its XML is read
+        and it gets the customer from there."""
+        self._sync(received=[self._message(make_xml())])
+        message = self._spv_message(self._zip(make_xml()))
+        self._get_invoice(message)
+        self.assertRecordValues(
+            message,
+            [
+                {
+                    "invoice_id": False,
+                    "l10n_ro_is_autoinvoice": False,
+                    "cif": "12345674",
+                }
+            ],
+        )
+        message.get_xml_fom_zip()
+        self._get_invoice(message)
+        self.assertRecordValues(
+            message,
+            [
+                {
+                    "invoice_id": self.move_obj.search(
+                        [("l10n_ro_edi_index", "=", "5000000001")]
+                    ).id,
+                    "l10n_ro_is_autoinvoice": True,
+                    "cif": "18547290",
+                }
+            ],
+        )
+
+    def test_create_invoice_takes_in_the_self_invoice_as_a_customer_invoice(self):
+        journal = self._autoinvoice_journal()
+        message = self._spv_message(self._zip(make_xml()))
+        message.get_xml_fom_zip()
+        self.assertRecordValues(
+            message,
+            [
+                {
+                    "l10n_ro_is_autoinvoice": True,
+                    "message_type": "out_invoice",
+                    "cif": "18547290",
+                }
+            ],
+        )
+        message.create_invoice()
+        self.assertRecordValues(
+            message.invoice_id,
+            [
+                {
+                    "move_type": "out_invoice",
+                    "journal_id": journal.id,
+                    "partner_id": self.customer.id,
+                    "name": "AF-0001",
+                    "l10n_ro_edi_download": "3000000001",
+                }
+            ],
+        )
+
+    # ------------------------------------------------------------------
     # Configurarea jurnalului
     # ------------------------------------------------------------------
     def test_the_journal_form_shows_the_fields_once(self):
@@ -351,3 +537,79 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
             {"move_type": "in_invoice", "partner_id": self.customer.id}
         )
         self.assertFalse(bill.is_l10n_ro_autoinvoice())
+
+    def _sync_own_supplier_autoinvoice(self):
+        """Upload a supplier self-invoice, then get it back from the SPV as a
+        received bill (FACTURA PRIMITA) before it is validated."""
+        move = self._supplier_autoinvoice()
+        self._send(move, b'<header ExecutionStatus="0" index_incarcare="5000000011"/>')
+        xml = make_xml(number=move.name, supplier=CUSTOMER_VAT, customer=COMPANY_VAT)
+        self._sync(received=[self._message(xml, index="5000000011")])
+        return move
+
+    def test_our_supplier_self_invoice_received_back_is_not_duplicated(self):
+        move = self._sync_own_supplier_autoinvoice()
+        bills = self.move_obj.search(
+            [
+                ("company_id", "=", self.company.id),
+                ("move_type", "=", "in_invoice"),
+                ("l10n_ro_edi_index", "=", "5000000011"),
+            ]
+        )
+        self.assertEqual(bills, move)
+
+    # ------------------------------------------------------------------
+    # Fara bifa "Create Customer Self-Invoices" pe companie
+    # ------------------------------------------------------------------
+    def _disable_customer_autoinvoices(self):
+        self.company.l10n_ro_create_customer_autoinvoice = False
+
+    def test_without_the_setting_a_received_self_invoice_is_not_taken_in(self):
+        """It is neither a customer invoice nor a vendor bill."""
+        self._disable_customer_autoinvoices()
+        self._autoinvoice_journal()
+        self._sync(received=[self._message(make_xml())])
+        self.assertFalse(
+            self.move_obj.search([("l10n_ro_edi_index", "=", "5000000001")])
+        )
+
+    def test_without_the_setting_a_self_invoice_listed_as_sent_is_skipped(self):
+        self._disable_customer_autoinvoices()
+        self._sync(sent=[self._message(make_xml(), index="5000000002")])
+        self.assertFalse(
+            self.move_obj.search([("l10n_ro_edi_index", "=", "5000000002")])
+        )
+
+    def test_without_the_setting_create_invoice_still_takes_in_the_self_invoice(
+        self,
+    ):
+        """The setting only drives the synchronization: Create Invoice on
+        the SPV message still makes a customer invoice, never a vendor bill."""
+        self._disable_customer_autoinvoices()
+        journal = self._autoinvoice_journal()
+        message = self._spv_message(self._zip(make_xml()))
+        message.get_xml_fom_zip()
+        self.assertTrue(message.l10n_ro_is_autoinvoice)
+        message.create_invoice()
+        self.assertRecordValues(
+            message.invoice_id,
+            [
+                {
+                    "move_type": "out_invoice",
+                    "journal_id": journal.id,
+                    "partner_id": self.customer.id,
+                }
+            ],
+        )
+
+    def test_without_the_setting_our_supplier_self_invoice_is_not_duplicated(self):
+        self._disable_customer_autoinvoices()
+        move = self._sync_own_supplier_autoinvoice()
+        bills = self.move_obj.search(
+            [
+                ("company_id", "=", self.company.id),
+                ("move_type", "=", "in_invoice"),
+                ("l10n_ro_edi_index", "=", "5000000011"),
+            ]
+        )
+        self.assertEqual(bills, move)

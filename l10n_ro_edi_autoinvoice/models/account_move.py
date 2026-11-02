@@ -40,19 +40,41 @@ class AccountMove(models.Model):
     @api.model
     def _l10n_ro_edi_split_autoinvoice_messages(self, messages, received):
         """Process the self-invoices among ``messages`` and return the rest."""
-        autoinvoices, kept = [], []
+        autoinvoices, kept, autovendorbills = [], [], []
         for message in messages:
             if self._l10n_ro_edi_is_autoinvoice_message(message, received):
                 autoinvoices.append(message)
+            elif received and self._l10n_ro_edi_is_autovendorbill_message(message):
+                autovendorbills.append(message)
             else:
                 kept.append(message)
-        if autoinvoices:
+        if autoinvoices and self.env.company.l10n_ro_create_customer_autoinvoice:
             self._l10n_ro_edi_process_autoinvoice_messages(autoinvoices)
         return kept
 
     @api.model
     def _l10n_ro_edi_clean_vat(self, vat):
         return re.sub(r"^RO", "", (vat or "").replace(" ", "").upper())
+
+    @api.model
+    def _l10n_ro_edi_is_autovendorbill_message(self, message):
+        answer = message.get("answer") or {}
+        invoice = answer.get("invoice") or {}
+        if "error" in answer or "error" in invoice:
+            return False
+
+        company = self.env.company
+        move_obj = self.with_company(company)
+
+        existing_bill = move_obj.search(
+            [
+                ("company_id", "=", company.id),
+                ("l10n_ro_edi_index", "=", message["id_solicitare"])
+            ],
+            limit=1,
+        )
+
+        return bool(existing_bill)
 
     @api.model
     def _l10n_ro_edi_autoinvoice_customer_vat(self, company, xml_bytes, received=True):

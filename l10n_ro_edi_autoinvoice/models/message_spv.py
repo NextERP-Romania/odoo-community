@@ -48,6 +48,67 @@ class MessageSPV(models.Model):
             )
         return res
 
+    def get_invoice_from_move(self):
+        """
+        ANAF lists a self-invoice without cif_emitent, so until its XML is
+        read (get_xml_fom_zip) the message keeps the CIF of the company and
+        the company as partner. The standard matching links a message only to
+        an invoice of the same partner, so it would never link it to the
+        self-invoice "Synchronize with ANAF" already took in for the customer.
+        Before that matching, mark the messages of an invoice of a customer
+        self-invoicing journal (autoinv1), found by its SPV index or download
+        id, and give them the customer: from the XML, downloading the ZIP if
+        it is missing, or else from the invoice.
+        """
+        received_types = ("in_invoice", "in_receipt")
+        messages = self.filtered(
+            lambda m: not m.invoice_id
+            and not m.l10n_ro_is_autoinvoice
+            and m.message_type in (*received_types, "out_invoice", "out_receipt")
+        )
+        if messages:
+            autoinvoices = self.env["account.move"].search(
+                [
+                    ("company_id", "in", messages.company_id.ids),
+                    ("journal_id.l10n_ro_sequence_type", "=", "autoinv1"),
+                    ("state", "!=", "cancel"),
+                    "|",
+                    ("l10n_ro_edi_index", "in", messages.mapped("request_id")),
+                    ("l10n_ro_edi_download", "in", messages.mapped("name")),
+                ]
+            )
+            for message in messages:
+                invoice = autoinvoices.filtered(
+                    lambda i, m=message: i.company_id == m.company_id
+                    and (
+                        i.l10n_ro_edi_index == m.request_id
+                        or i.l10n_ro_edi_download == m.name
+                    )
+                )[:1]
+                if not invoice:
+                    continue
+                if not message.attachment_id:
+                    # Get the ZIP now, so the message gets its data (ref,
+                    # amount, ZIP) without a separate Download; reading its
+                    # XML (get_xml_fom_zip) also marks it as a self-invoice.
+                    message.download_from_spv()
+                if message.l10n_ro_is_autoinvoice:
+                    continue
+                # No XML (the download failed, the error is on the message):
+                # the customer comes from the invoice.
+                customer = invoice.commercial_partner_id
+                message.write(
+                    {
+                        "l10n_ro_is_autoinvoice": True,
+                        "message_type": "out_receipt"
+                        if message.message_type in ("in_receipt", "out_receipt")
+                        else "out_invoice",
+                        "cif": customer.l10n_ro_vat_number,
+                        "partner_id": customer.id,
+                    }
+                )
+        return super().get_invoice_from_move()
+
     def create_invoice(self):
         autoinvoices = self.filtered(
             lambda m: m.l10n_ro_is_autoinvoice and not m.invoice_id
