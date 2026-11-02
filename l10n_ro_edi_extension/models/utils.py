@@ -310,8 +310,11 @@ def _request_ciusro_synchronize_invoices_pagination(company, session, nb_days=1)
                     )
                 )
         else:
-            msg_content = json.loads(result["content"])
-            if eroare := msg_content.get("eroare"):
+            if result.get("content"):
+                msg_content = json.loads(result["content"])
+                if eroare := msg_content.get("eroare"):
+                    errors.append(eroare)
+            elif eroare := result.get("error"):
                 errors.append(eroare)
         messages += page_messages
         if pagina < numar_total_pagini:

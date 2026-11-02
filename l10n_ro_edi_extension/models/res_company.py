@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class ResCompany(models.Model):
@@ -22,3 +23,34 @@ class ResCompany(models.Model):
                 raise models.ValidationError(
                     self.env._("The period of residence must be between 0 and 5.")
                 )
+
+    def _cron_l10n_ro_edi_synchronize_invoices(self):
+        """
+        The standard synchronization cron only handles companies with an
+        OAuth client (client_id, client_secret, refresh token). Also run it
+        for companies that have an access token but no client_id, logging any
+        UserError per company the way the standard cron does.
+        """
+        res = super()._cron_l10n_ro_edi_synchronize_invoices()
+
+        ro_companies = (
+            self.env["res.company"]
+            .sudo()
+            .search(
+                [
+                    ("l10n_ro_edi_access_token", "!=", False),
+                    ("l10n_ro_edi_client_id", "=", False),
+                ]
+            )
+        )
+        for company in ro_companies:
+            try:
+                self.env["account.move"].with_company(
+                    company
+                )._l10n_ro_edi_fetch_invoices()
+            except UserError as e:
+                self._l10n_ro_edi_log_message(
+                    message=f"{company.id}\n{e}",
+                    func="_cron_l10n_ro_edi_synchronize_invoices",
+                )
+        return res
