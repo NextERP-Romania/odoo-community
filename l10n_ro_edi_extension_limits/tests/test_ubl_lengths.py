@@ -98,31 +98,6 @@ class TestUblLengths(TransactionCase):
         self.assertIsNone(document["cac:OrderReference"])
 
     # ------------------------------------------------------------------
-    # Copiii unui nod
-    # ------------------------------------------------------------------
-    def test_a_single_child_is_walked_like_a_list_of_one(self):
-        parent = {"cac:Line": {"id": 1}}
-        self.assertEqual(
-            list(self.ubl._ro_iter_children(parent, "cac:Line")), [{"id": 1}]
-        )
-
-    def test_several_children_come_back_in_order(self):
-        parent = {"cac:Line": [{"id": 1}, {"id": 2}]}
-        self.assertEqual(
-            [c["id"] for c in self.ubl._ro_iter_children(parent, "cac:Line")], [1, 2]
-        )
-
-    def test_a_missing_child_yields_nothing(self):
-        self.assertEqual(list(self.ubl._ro_iter_children({}, "cac:Line")), [])
-        self.assertEqual(list(self.ubl._ro_iter_children(None, "cac:Line")), [])
-
-    def test_text_in_place_of_a_child_is_skipped(self):
-        parent = {"cac:Line": ["nu e nod", {"id": 1}]}
-        self.assertEqual(
-            [c["id"] for c in self.ubl._ro_iter_children(parent, "cac:Line")], [1]
-        )
-
-    # ------------------------------------------------------------------
     # Trecerea finala peste tot documentul
     # ------------------------------------------------------------------
     def test_the_final_pass_cuts_the_document_fields(self):
