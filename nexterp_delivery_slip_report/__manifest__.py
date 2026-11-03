@@ -19,6 +19,7 @@
     ],
     "depends": ["stock", "nexterp_account_invoice_report"],
     "installable": True,
+    "development_status": "Mature",
     "auto_install": False,
     "application": False,
 }

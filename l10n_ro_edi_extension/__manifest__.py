@@ -1,7 +1,7 @@
 {
     "author": "NextERP Romania",
     "name": "Romania - E-invoicing Extension",
-    "version": "19.0.1.0.3",
+    "version": "19.0.1.0.4",
     "category": "Accounting/Localizations/EDI",
     "summary": "E-Invoice implementation for Romania",
     "website": "https://www.nexterp.ro",
@@ -17,5 +17,6 @@
     "license": "LGPL-3",
     "images": ["static/description/apps_icon.png"],
     "installable": True,
+    "development_status": "Production/Stable",
     "auto_install": True,
 }

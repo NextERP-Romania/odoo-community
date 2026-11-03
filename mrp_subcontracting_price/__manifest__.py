@@ -15,6 +15,7 @@
         "mrp_subcontracting_purchase",
     ],
     "installable": True,
+    "development_status": "Mature",
     "auto_install": False,
     "application": False,
 }

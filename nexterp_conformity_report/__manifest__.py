@@ -11,6 +11,7 @@
     "data": ["report/certificat_conformitate.xml"],
     "auto_install": False,
     "installable": True,
+    "development_status": "Beta",
     "license": "AGPL-3",
     "images": ["static/description/apps_icon.png"],
 }
