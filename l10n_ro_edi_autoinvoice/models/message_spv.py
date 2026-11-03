@@ -52,13 +52,15 @@ class MessageSPV(models.Model):
         """
         ANAF lists a self-invoice without cif_emitent, so until its XML is
         read (get_xml_fom_zip) the message keeps the CIF of the company and
-        the company as partner. The standard matching links a message only to
-        an invoice of the same partner, so it would never link it to the
-        self-invoice "Synchronize with ANAF" already took in for the customer.
-        Before that matching, mark the messages of an invoice of a customer
+        the company as partner. The standard matching links it to the
+        self-invoice "Synchronize with ANAF" already took in, by its SPV
+        index, but leaves it as a received message of the company. Before
+        that matching, mark the messages of an invoice of a customer
         self-invoicing journal (autoinv1), found by its SPV index or download
         id, and give them the customer: from the XML, downloading the ZIP if
-        it is missing, or else from the invoice.
+        it is missing, or else from the invoice. A self-invoice left in draft
+        in another sale journal is still linked by the standard matching, but
+        its message is not marked.
         """
         received_types = ("in_invoice", "in_receipt")
         messages = self.filtered(

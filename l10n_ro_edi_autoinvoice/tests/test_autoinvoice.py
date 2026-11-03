@@ -364,23 +364,12 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
 
     def test_get_invoice_marks_only_invoices_of_a_self_invoicing_journal(self):
         """Without the customer journal the self-invoice is a draft in the
-        first sale journal: its message is linked only once its XML is read
-        and it gets the customer from there."""
+        first sale journal: the standard matching links its message by the
+        SPV index, but the message is not marked and keeps the company CIF."""
         self._sync(received=[self._message(make_xml())])
         message = self._spv_message(self._zip(make_xml()))
-        self._get_invoice(message)
-        self.assertRecordValues(
-            message,
-            [
-                {
-                    "invoice_id": False,
-                    "l10n_ro_is_autoinvoice": False,
-                    "cif": "12345674",
-                }
-            ],
-        )
-        message.get_xml_fom_zip()
-        self._get_invoice(message)
+        download_zip = self._get_invoice(message)
+        download_zip.assert_not_called()
         self.assertRecordValues(
             message,
             [
@@ -388,8 +377,9 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
                     "invoice_id": self.move_obj.search(
                         [("l10n_ro_edi_index", "=", "5000000001")]
                     ).id,
-                    "l10n_ro_is_autoinvoice": True,
-                    "cif": "18547290",
+                    "l10n_ro_is_autoinvoice": False,
+                    "message_type": "in_invoice",
+                    "cif": "12345674",
                 }
             ],
         )

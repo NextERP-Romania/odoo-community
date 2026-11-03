@@ -69,7 +69,7 @@ class AccountMove(models.Model):
         existing_bill = move_obj.search(
             [
                 ("company_id", "=", company.id),
-                ("l10n_ro_edi_index", "=", message["id_solicitare"])
+                ("l10n_ro_edi_index", "=", message["id_solicitare"]),
             ],
             limit=1,
         )
