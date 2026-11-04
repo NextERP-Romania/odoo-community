@@ -6,7 +6,12 @@
         <field name="inherit_id" ref="account.view_account_journal_form" />
         <field name="arch" type="xml">
             <field name="currency_id" position="after">
-                <field name="l10n_ro_edi_send_enabled" />
+                <!-- Doar documentele care pleaca in e-Factura: facturile de
+                     vanzare si autofacturile emise pe jurnale de achizitie -->
+                <field
+                    name="l10n_ro_edi_send_enabled"
+                    invisible="type != 'sale' and not (type == 'purchase' and is_self_billing)"
+                />
             </field>
         </field>
     </record>
