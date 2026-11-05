@@ -619,3 +619,15 @@ msgstr "Virtual disponibil la data"
 #: model:ir.model.fields,field_description:nexterp_product_kit_sale.field_sale_order_line_kit__warehouse_id
 msgid "Warehouse"
 msgstr "Depozit"
+
+#. module: nexterp_product_kit_sale
+#. odoo-python
+#: code:addons/nexterp_product_kit_sale/models/sale_order_kit.py:0
+msgid "The kit detail lines of a confirmed or invoiced sales order can no longer be changed: they set the price of the kit line the customer was billed for."
+msgstr "Liniile de detaliu ale kitului unei comenzi de vânzare confirmate sau facturate nu mai pot fi modificate: ele stabilesc prețul liniei de kit facturate clientului."
+
+#. module: nexterp_product_kit_sale
+#. odoo-python
+#: code:addons/nexterp_product_kit_sale/models/sale_order.py:0
+msgid "The kit %(kit)s on confirmed order %(order)s cannot change product, unit or quantity: its detail lines would no longer match. Cancel the order and quote the change again."
+msgstr "Kitul %(kit)s de pe comanda confirmată %(order)s nu își poate schimba produsul, unitatea sau cantitatea: liniile de detaliu nu ar mai corespunde. Anulați comanda și refaceți oferta cu modificarea."
