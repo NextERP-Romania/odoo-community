@@ -229,3 +229,13 @@ msgstr "Endpoint necunoscut."
 #: code:addons/l10n_ro_edi_extension/models/utils.py:0
 msgid "You reached the limit of requests. Please try again later."
 msgstr "Ați atins limita de cereri. Vă rugăm să încercați din nou mai târziu."
+
+#. module: l10n_ro_edi_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_extension/models/account_move.py:0
+msgid ""
+"The invoice %(name)s was sent to the SPV (e-Factura) and can no longer be "
+"reset to draft or cancelled. Issue a credit note instead."
+msgstr ""
+"Factura %(name)s a fost trimisă în SPV (e-Factura) și nu mai poate fi "
+"readusă în ciornă sau anulată. Emiteți o factură de stornare."
