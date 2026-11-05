@@ -1067,3 +1067,39 @@ msgstr "Documentul de transport %(line)s"
 #: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
 msgid "eTransport file, element %(tag)s"
 msgstr "Fișierul eTransport, elementul %(tag)s"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "%(record)s cannot be %(action)s: its eTransport notification (UIT %(uit)s) is registered at ANAF. Delete the notification first."
+msgstr "%(record)s nu poate fi %(action)s: notificarea sa eTransport (UIT %(uit)s) este înregistrată la ANAF. Ștergeți mai întâi notificarea."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "The eTransport data of %(record)s cannot be changed while ANAF is processing its notification. Fetch the status first."
+msgstr "Datele eTransport ale %(record)s nu pot fi modificate cât timp ANAF procesează notificarea. Preluați mai întâi starea."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "deleted"
+msgstr "șters"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "cancelled"
+msgstr "anulat"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
+msgid "%(record)s has no eTransport notification validated by ANAF, so it cannot be deleted, confirmed or have its vehicle changed."
+msgstr "%(record)s nu are o notificare eTransport validată de ANAF, deci nu i se poate trimite ștergerea, confirmarea sau schimbarea vehiculului."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
+msgid "UIT %(uit)s is not the current eTransport notification of %(record)s."
+msgstr "UIT-ul %(uit)s nu este notificarea eTransport curentă a %(record)s."

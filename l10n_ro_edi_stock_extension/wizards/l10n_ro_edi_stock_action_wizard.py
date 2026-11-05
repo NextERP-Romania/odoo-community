@@ -8,6 +8,10 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 from ..models.etransport_api_extra import ETransportAPIExtra
+from ..models.l10n_ro_edi_stock_document import (
+    UIT_ACTION_STATES,
+    l10n_ro_edi_stock_effective_document,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -68,10 +72,42 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
             defaults["trailer_2_number"] = picking.l10n_ro_edi_stock_trailer_2_number
         return defaults
 
+    def _get_etransport_record(self):
+        """The transfer (or batch, see l10n_ro_edi_stock_batch_extension) the
+        action is about."""
+        return self.picking_id
+
+    def _check_uit_state(self):
+        """ANAF only accepts a deletion, a confirmation or a vehicle change on
+        a notification it validated (a vehicle change keeps it validated)."""
+        record = self._get_etransport_record()
+        document = l10n_ro_edi_stock_effective_document(
+            record.l10n_ro_edi_stock_document_ids
+        )
+        if document.state not in UIT_ACTION_STATES:
+            raise UserError(
+                self.env._(
+                    "%(record)s has no eTransport notification validated by "
+                    "ANAF, so it cannot be deleted, confirmed or have its "
+                    "vehicle changed.",
+                    record=record.display_name,
+                )
+            )
+        if document.l10n_ro_edi_stock_uit != self.uit:
+            raise UserError(
+                self.env._(
+                    "UIT %(uit)s is not the current eTransport notification of "
+                    "%(record)s.",
+                    uit=self.uit,
+                    record=record.display_name,
+                )
+            )
+
     def action_execute(self):
         self.ensure_one()
         if not self.uit:
             raise UserError(self.env._("The transfer has no validated UIT."))
+        self._check_uit_state()
         method = {
             "delete": self._send_delete,
             "confirm": self._send_confirm,
