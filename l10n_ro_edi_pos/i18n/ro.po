@@ -48,3 +48,13 @@ msgstr ""
 "comenzile POS ale facturii; se pune de mână pentru o factură emisă ulterior, "
 "din back-office, pentru o vânzare deja pe bon. O astfel de factură pleacă în "
 "e-Factura cu codul 751: vânzarea și TVA-ul ei au fost declarate pe bon."
+
+#. module: l10n_ro_edi_pos
+#. odoo-python
+#: code:addons/l10n_ro_edi_pos/models/account_move.py:0
+msgid ""
+"The fiscal receipt number of %(name)s can only be changed while the invoice "
+"is a draft not sent to the SPV."
+msgstr ""
+"Numărul bonului fiscal al facturii %(name)s se poate modifica doar cât timp "
+"factura este în ciornă și nu a fost trimisă în SPV."

@@ -18,15 +18,20 @@ class AccountMoveLine(models.Model):
         Create compute stored field is_inter_company
         here to avoid MemoryError on large databases.
         """
-        if not column_exists(self.env.cr, "account_move", "is_inter_company"):
-            create_column(self.env.cr, "account_move", "is_inter_company", "boolean")
-            # pylint: disable=E8103
-            self.env.cr.execute(
-                """
-                UPDATE account_move_line aml
-                SET is_inter_company = am.is_inter_company
-                FROM account_move am
-                WHERE aml.move_id = am.id;
-                """,
-            )
+        cr = self.env.cr
+        if not column_exists(cr, "account_move_line", "is_inter_company"):
+            create_column(cr, "account_move_line", "is_inter_company", "boolean")
+            if column_exists(cr, "account_move", "is_inter_company"):
+                # pylint: disable=E8103
+                cr.execute(
+                    """
+                    UPDATE account_move_line aml
+                    SET is_inter_company = am.is_inter_company
+                    FROM account_move am
+                    WHERE aml.move_id = am.id;
+                    """,
+                )
+            else:
+                # pylint: disable=E8103
+                cr.execute("UPDATE account_move_line SET is_inter_company = FALSE;")
         return super()._auto_init()

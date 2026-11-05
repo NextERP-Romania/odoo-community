@@ -3,6 +3,7 @@
 # (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class AccountMove(models.Model):
@@ -31,3 +32,24 @@ class AccountMove(models.Model):
                 move.l10n_ro_fiscal_receipt_number = ", ".join(numbers)
             elif not move.l10n_ro_fiscal_receipt_number:
                 move.l10n_ro_fiscal_receipt_number = False
+
+    def write(self, vals):
+        # The number decides the e-Factura type code (751): once the invoice
+        # is posted or in the SPV it is fixed. The recompute from the point of
+        # sale orders does not go through ``write`` and stays allowed.
+        if "l10n_ro_fiscal_receipt_number" in vals:
+            new = vals["l10n_ro_fiscal_receipt_number"] or False
+            for move in self:
+                if (move.l10n_ro_fiscal_receipt_number or False) != new and (
+                    move.state != "draft"
+                    or move.l10n_ro_edi_state in ("invoice_sent", "invoice_validated")
+                ):
+                    raise UserError(
+                        self.env._(
+                            "The fiscal receipt number of %(name)s can only be"
+                            " changed while the invoice is a draft not sent to"
+                            " the SPV.",
+                            name=move.display_name,
+                        )
+                    )
+        return super().write(vals)

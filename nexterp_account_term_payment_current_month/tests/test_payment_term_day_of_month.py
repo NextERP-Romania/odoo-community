@@ -72,3 +72,10 @@ class TestDayOfTheMonthTerm(TransactionCase):
         )
         move.action_post()
         self.assertEqual(move.invoice_date_due, date(2026, 3, 10))
+
+    def test_uninstall_falls_back_to_days_after_and_keeps_the_term(self):
+        """The value going away (uninstall) must not delete the term lines,
+        and so the invoices' payment terms: it falls back to the default."""
+        field = self.env["account.payment.term.line"]._fields["delay_type"]
+        self.assertEqual(field.ondelete["day_of_the_month"], "set default")
+        self.assertEqual(field.default(self.line), "days_after")

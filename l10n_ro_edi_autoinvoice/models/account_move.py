@@ -16,6 +16,54 @@ from odoo.addons.l10n_ro_edi.models.utils import make_efactura_request
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    def _l10n_ro_edi_is_imported_autoinvoice(self):
+        """A customer self-invoice taken in from the SPV and not yet posted.
+
+        It already carries the ``invoice_validated`` document of the SPV (it is
+        a legal invoice issued in our name), so it must not disappear nor be
+        numbered in one of our own sequences."""
+        self.ensure_one()
+        return (
+            self.state == "draft"
+            and self.move_type in ("out_invoice", "out_refund")
+            and bool(self.l10n_ro_edi_index)
+            and self.l10n_ro_edi_state == "invoice_validated"
+        )
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_l10n_ro_imported_autoinvoice(self):
+        for move in self:
+            if move._l10n_ro_edi_is_imported_autoinvoice():
+                raise UserError(
+                    self.env._(
+                        "The self-invoice %(name)s was validated in the SPV and"
+                        " cannot be deleted. Move it to the customer's"
+                        " self-invoicing journal and post it.",
+                        name=move.ref or move.display_name,
+                    )
+                )
+
+    def _post(self, soft=True):
+        for move in self:
+            if not move._l10n_ro_edi_is_imported_autoinvoice():
+                continue
+            journal = move.journal_id
+            if journal.l10n_ro_sequence_type != "autoinv1":
+                raise UserError(
+                    self.env._(
+                        "The self-invoice %(name)s was issued by the customer"
+                        " and keeps the customer's number: post it in a sale"
+                        " journal of type Customer Auto Invoicing, not in"
+                        " %(journal)s.",
+                        name=move.ref or move.display_name,
+                        journal=journal.display_name,
+                    )
+                )
+            # The legal number is the one the customer gave the document.
+            if move.ref and move.name != move.ref:
+                move.name = move.ref
+        return super()._post(soft=soft)
+
     @api.model
     def _l10n_ro_edi_process_invoice_accepted_messages(
         self, sent_invoices_accepted_messages
@@ -244,9 +292,7 @@ class AccountMove(models.Model):
             )
             return move
 
-        # The legal number is the one the customer gave the document.
-        if move.ref and move.name in (False, "/"):
-            move.name = move.ref
+        # The legal number (the customer's) is set by ``_post``.
         try:
             with self.env.cr.savepoint():
                 move.action_post()

@@ -5,7 +5,7 @@
 {
     "name": "NextERP POS",
     "summary": "Keep several sessions open on one register and close them oldest first",
-    "version": "19.0.3.0.0",
+    "version": "19.0.3.1.0",
     "license": "AGPL-3",
     "images": ["static/description/apps_icon.png"],
     "category": "Generic Modules/Point of Sale",

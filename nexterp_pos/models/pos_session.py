@@ -35,6 +35,10 @@ class PosSession(models.Model):
         moment it closes. Rebuild it here, oldest first, each from the real
         end balance of whatever session precedes it -- which is zero while an
         earlier one is still open, and becomes real as the chain closes down.
+
+        Only the sessions still waiting for their opening cash control are
+        rebuilt: once a cashier has counted and confirmed the opening cash,
+        that figure is theirs and is never overwritten.
         """
         res = super()._validate_session(
             balancing_account=balancing_account,
@@ -46,7 +50,7 @@ class PosSession(models.Model):
         later_sessions = self.search(
             [
                 ("config_id", "=", self.config_id.id),
-                ("state", "!=", "closed"),
+                ("state", "=", "opening_control"),
                 ("start_at", ">", self.start_at),
             ],
             order="start_at asc",

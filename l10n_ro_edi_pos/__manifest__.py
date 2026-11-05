@@ -1,7 +1,7 @@
 {
     "author": "NextERP Romania",
     "name": "Romania - E-invoicing Invoices Issued for a Fiscal Receipt",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.1.0",
     "category": "Accounting/Localizations/EDI",
     "summary": "An invoice issued for a sale already on a fiscal receipt goes "
     "to ANAF with type code 751",

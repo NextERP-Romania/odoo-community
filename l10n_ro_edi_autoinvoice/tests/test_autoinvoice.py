@@ -15,6 +15,7 @@ from unittest.mock import patch
 from lxml import etree
 
 from odoo import Command
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
@@ -221,6 +222,54 @@ class TestAutoinvoice(AccountTestInvoicingCommon):
                 }
             ],
         )
+
+    def _draft_autoinvoice(self):
+        self._sync(received=[self._message(make_xml())])
+        move = self.move_obj.search([("l10n_ro_edi_index", "=", "5000000001")])
+        self.assertEqual(move.state, "draft")
+        return move
+
+    def test_a_draft_self_invoice_validated_in_the_spv_cannot_be_deleted(self):
+        move = self._draft_autoinvoice()
+        with self.assertRaises(UserError):
+            move.unlink()
+        self.assertTrue(move.exists())
+
+    def test_a_draft_self_invoice_is_not_posted_in_our_own_sequence(self):
+        move = self._draft_autoinvoice()
+        with self.assertRaises(UserError):
+            move.action_post()
+        self.assertEqual(move.state, "draft")
+
+    def test_moved_to_the_customer_journal_it_posts_with_the_customer_number(self):
+        move = self._draft_autoinvoice()
+        journal = self._autoinvoice_journal()
+        move.journal_id = journal
+        move.action_post()
+        self.assertRecordValues(
+            move, [{"state": "posted", "name": move.ref, "journal_id": journal.id}]
+        )
+        self.assertTrue(move.ref)
+
+    def test_the_self_invoicing_fields_lock_once_the_journal_has_entries(self):
+        journal = self._autoinvoice_journal()
+        self._sync(received=[self._message(make_xml())])
+        with self.assertRaises(UserError):
+            journal.l10n_ro_sequence_type = "normal"
+        with self.assertRaises(UserError):
+            journal.l10n_ro_partner_id = self.partner_a
+        # Writing the same values is harmless.
+        journal.write(
+            {
+                "l10n_ro_sequence_type": "autoinv1",
+                "l10n_ro_partner_id": self.customer.id,
+            }
+        )
+
+    def test_the_self_invoicing_fields_stay_free_on_an_unused_journal(self):
+        journal = self._autoinvoice_journal()
+        journal.l10n_ro_sequence_type = "normal"
+        self.assertEqual(journal.l10n_ro_sequence_type, "normal")
 
     def test_it_never_becomes_a_vendor_bill(self):
         self._sync(received=[self._message(make_xml())])
