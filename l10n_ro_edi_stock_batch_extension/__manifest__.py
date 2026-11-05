@@ -14,6 +14,7 @@
         "l10n_ro_edi_stock_extension",
     ],
     "data": [
+        "data/ir_cron.xml",
         "wizards/l10n_ro_edi_stock_action_wizard_views.xml",
         "views/stock_picking_batch_views.xml",
         "views/l10n_ro_edi_stock_document_views.xml",

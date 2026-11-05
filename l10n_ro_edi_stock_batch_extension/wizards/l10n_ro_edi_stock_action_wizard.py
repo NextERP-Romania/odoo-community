@@ -7,6 +7,9 @@ from odoo.exceptions import UserError
 from odoo.addons.l10n_ro_edi_stock_extension.models.etransport_api_extra import (
     ETransportAPIExtra,
 )
+from odoo.addons.l10n_ro_edi_stock_extension.models.l10n_ro_edi_stock_document import (
+    PENDING_ACTION_STATE,
+)
 
 
 class L10nRoEdiStockActionWizard(models.TransientModel):
@@ -68,7 +71,7 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         content = result["content"]
         values = {
             "batch_id": self.batch_id.id,
-            "state": new_state,
+            "state": PENDING_ACTION_STATE,
             "l10n_ro_edi_stock_load_id": content["index_incarcare"],
             "l10n_ro_edi_stock_uit": self.uit,
             "l10n_ro_edi_stock_event_type": event_type,
@@ -79,27 +82,11 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         self.env["l10n_ro_edi.document"].create(values)
         self.batch_id._message_log(
             body=self.env._(
-                "eTransport %(action)s sent successfully "
-                "(UIT: %(uit)s, load: %(load)s).",
+                "eTransport %(action)s uploaded to ANAF "
+                "(UIT: %(uit)s, load: %(load)s); fetch its status.",
                 action=event_type,
                 uit=self.uit,
                 load=content["index_incarcare"],
             ),
         )
         return {"type": "ir.actions.act_window_close"}
-
-    def _send_modify_vehicle(self):
-        result = super()._send_modify_vehicle()
-        # super() writes the new vehicle numbers back on picking_id (empty for a
-        # batch, so a no-op); mirror that write on the batch record.
-        if self.batch_id and isinstance(result, dict) and not result.get("error"):
-            self.batch_id.write(
-                {
-                    "l10n_ro_edi_stock_vehicle_number": self.new_vehicle_number,
-                    "l10n_ro_edi_stock_trailer_1_number": self.trailer_1_number
-                    or False,
-                    "l10n_ro_edi_stock_trailer_2_number": self.trailer_2_number
-                    or False,
-                }
-            )
-        return result

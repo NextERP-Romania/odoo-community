@@ -146,3 +146,46 @@ class TestBatchEtransportIntegrity(EtransportIntegrityCommon):
         self.assertEqual(first.state, "done")
         self.assertNotEqual(first.batch_id, batch)
         self.assertEqual(second.batch_id, batch)
+
+    def test_a_batch_deletion_waiting_or_refused_keeps_the_batch(self):
+        batch = self._validate(self._batch())
+        self._wizard(batch, "delete", answer=None)
+        self.assertTrue(batch.l10n_ro_edi_stock_enable_fetch)
+        with self.assertRaises(UserError):
+            batch.action_cancel()
+        self._fetch(batch, "nok")
+        self.assertEqual(batch.l10n_ro_edi_stock_state, "stock_sending_failed")
+        with self.assertRaises(UserError):
+            batch.action_cancel()
+        with self.assertRaises(UserError):
+            batch.picking_ids[0].batch_id = False
+        self.assertTrue(batch.l10n_ro_edi_stock_enable_uit_action)
+        self._fetch(batch)  # nothing waiting any more
+        self._wizard(batch, "delete")
+        self.assertEqual(batch.l10n_ro_edi_stock_state, "stock_deleted")
+        batch.picking_ids[0].batch_id = False
+        batch.action_cancel()
+        self.assertEqual(batch.state, "cancel")
+
+    def test_a_batch_vehicle_change_applies_once_accepted(self):
+        batch = self._validate(self._batch())
+        self._wizard(batch, "modify_vehicle", answer=None, new_vehicle_number="TM01NEW")
+        self.assertFalse(batch.l10n_ro_edi_stock_vehicle_number)
+        self._fetch(batch, "nok")
+        self.assertFalse(batch.l10n_ro_edi_stock_vehicle_number)
+        self._wizard(batch, "modify_vehicle", new_vehicle_number="TM01NEW")
+        self.assertEqual(batch.l10n_ro_edi_stock_vehicle_number, "TM01NEW")
+
+    def test_a_batch_confirmation_refused_then_accepted(self):
+        batch = self._validate(self._batch())
+        self._wizard(batch, "confirm", answer="nok", confirmation_type="10")
+        self.assertTrue(batch.l10n_ro_edi_stock_enable_uit_action)
+        self._wizard(batch, "confirm", confirmation_type="10")
+        self.assertEqual(batch.l10n_ro_edi_stock_state, "stock_confirmed")
+
+    def test_the_cron_fetches_waiting_batch_actions(self):
+        batch = self._validate(self._batch())
+        self._wizard(batch, "confirm", answer=None, confirmation_type="10")
+        with patch(_REQUEST, side_effect=_anaf):
+            self.env["stock.picking.batch"]._l10n_ro_edi_stock_cron_fetch_status()
+        self.assertEqual(batch.l10n_ro_edi_stock_state, "stock_confirmed")

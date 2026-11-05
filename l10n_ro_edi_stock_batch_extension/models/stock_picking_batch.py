@@ -13,6 +13,7 @@ from odoo.addons.l10n_ro_edi_stock_extension.models.etransport_constants import 
 )
 from odoo.addons.l10n_ro_edi_stock_extension.models.l10n_ro_edi_stock_document import (
     EXTRA_DOCUMENT_STATES,
+    RECORD_STATE_ONDELETE,
 )
 
 # Context key set by the stock flows that legitimately take a transfer out of
@@ -31,7 +32,7 @@ class StockPickingBatch(models.Model):
     # ``ValueError: Wrong value ... 'stock_vehicle_modified'``.
     l10n_ro_edi_stock_state = fields.Selection(
         selection_add=EXTRA_DOCUMENT_STATES,
-        ondelete={k: "set null" for k, _ in EXTRA_DOCUMENT_STATES},
+        ondelete=RECORD_STATE_ONDELETE,
     )
 
     # Same configuration fields the extension adds on stock.picking, so the
@@ -111,6 +112,25 @@ class StockPickingBatch(models.Model):
         if self._l10n_ro_edi_stock_live_uit_document():
             return False
         return super()._is_picking_auto_mergeable(picking)
+
+    @api.depends("company_id", "state", "l10n_ro_edi_stock_state")
+    def _compute_l10n_ro_edi_stock_enable_fetch(self):
+        # EXTENDS: a deletion / confirmation / vehicle change waits for its
+        # ANAF processing status the same way a notification does.
+        res = super()._compute_l10n_ro_edi_stock_enable_fetch()
+        for record in self:
+            if (
+                record.l10n_ro_edi_stock_enable
+                and record.l10n_ro_edi_stock_state == "stock_action_sent"
+            ):
+                record.l10n_ro_edi_stock_enable_fetch = True
+        return res
+
+    def _l10n_ro_edi_stock_fetch_document_status(self):
+        # EXTENDS: also fetch the status of pending DEL / CON / MVH uploads
+        res = super()._l10n_ro_edi_stock_fetch_document_status()
+        self._l10n_ro_edi_stock_fetch_pending_actions()
+        return res
 
     @api.depends("l10n_ro_edi_stock_state")
     def _compute_l10n_ro_edi_stock_enable_amend(self):

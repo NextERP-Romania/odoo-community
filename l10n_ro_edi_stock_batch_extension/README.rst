@@ -180,6 +180,11 @@ Changelog
 -  While ANAF processes the batch notification its eTransport data,
    transport documents and previous notifications are frozen on the
    server too.
+-  Deletions, confirmations and vehicle changes of a batch notification
+   wait for ANAF's processing status like those of a transfer (Fetch
+   Status button, or the new, inactive by default, "eTransport: fetch
+   ANAF status of batch transfers" scheduled action); a pending or
+   refused deletion keeps the batch guarded.
 
 19.0.1.2.0 (2026-09-15)
 -----------------------
