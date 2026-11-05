@@ -14,6 +14,8 @@ from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import Form, TransactionCase
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 
 class FleetCommon(TransactionCase):
     @classmethod
@@ -279,3 +281,46 @@ class TestVehicleCostFlow(FleetCommon):
         cost.amount = 60.0
         cost.unlink()
         self.assertFalse(cost.exists())
+
+
+@tagged("post_install", "-at_install")
+class TestVehicleCostFromBill(AccountTestInvoicingCommon):
+    """A vendor bill line on a vehicle is a vehicle cost while the bill is."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env.user.group_ids |= cls.env.ref("fleet.fleet_group_manager")
+        brand = cls.env["fleet.vehicle.model.brand"].create({"name": "Dacia"})
+        model = cls.env["fleet.vehicle.model"].create(
+            {"name": "Logan", "brand_id": brand.id}
+        )
+        cls.vehicle = cls.env["fleet.vehicle"].create({"model_id": model.id})
+
+    def _bill(self):
+        bill = self.init_invoice("in_invoice", amounts=[100.0], post=False)
+        bill.invoice_line_ids.vehicle_id = self.vehicle
+        bill.action_post()
+        return bill
+
+    def test_posting_the_bill_books_the_vehicle_cost(self):
+        bill = self._bill()
+        services = bill.invoice_line_ids.vehicle_log_service_ids
+        self.assertEqual(len(services), 1)
+        self.assertEqual(services.vehicle_id, self.vehicle)
+
+    def test_cancelling_the_bill_drops_the_vehicle_cost(self):
+        bill = self._bill()
+        services = bill.invoice_line_ids.vehicle_log_service_ids
+        bill.button_draft()
+        bill.button_cancel()
+        self.assertEqual(bill.state, "cancel")
+        self.assertFalse(services.exists())
+
+    def test_a_bill_posted_again_books_the_cost_again(self):
+        bill = self._bill()
+        bill.button_draft()
+        bill.button_cancel()
+        bill.button_draft()
+        bill.action_post()
+        self.assertEqual(len(bill.invoice_line_ids.vehicle_log_service_ids), 1)

@@ -203,6 +203,13 @@ Changelog
    ``"Contract"`` instead of ``"contract"``).
 -  Uninstalling the module turns the fuel and parts service types into
    plain services instead of deleting them together with their costs.
+-  Cancelling a vendor bill removes the vehicle service costs made from
+   its lines when it was posted (posting it again makes them anew).
+-  Removed code that could never run: a ``stock.move.action_cancel``
+   override (there is no such method), a bill-line cost cancellation on
+   fields that do not exist, and the unused vehicle cost counters on
+   journal entries.
+-  Romanian translation added.
 
 19.0.1.0.1 (2026-08-21)
 -----------------------

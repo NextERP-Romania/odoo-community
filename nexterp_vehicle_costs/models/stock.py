@@ -156,10 +156,6 @@ class StockMove(models.Model):
 
         model.create(sub_cost)
 
-    def cancel_vehicle_cost(self):
-        for s in self.cost_ids:
-            s.unlink()
-
     def _action_done(self, cancel_backorder=False):
         for move in self:
             if (
@@ -189,13 +185,6 @@ class StockMove(models.Model):
             ):
                 # goods coming back from the vehicle: the cost is reversed
                 move.create_vehicle_cost(origin=move.origin_returned_move_id)
-        return res
-
-    def action_cancel(self):
-        res = super().action_cancel()
-        for move in self:
-            if move.vehicle_id and move.cost_ids:
-                move.cancel_vehicle_cost()
         return res
 
     def _l10n_ro_update_fifo_split_move_vals(
