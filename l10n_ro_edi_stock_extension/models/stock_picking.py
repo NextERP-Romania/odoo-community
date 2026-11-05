@@ -24,7 +24,10 @@ from .etransport_errors import (
     locate_element,
     parse_xsd_errors,
 )
-from .l10n_ro_edi_stock_document import EXTRA_DOCUMENT_STATES
+from .l10n_ro_edi_stock_document import (
+    EXTRA_DOCUMENT_STATES,
+    RECORD_STATE_ONDELETE,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -52,7 +55,7 @@ class StockPicking(models.Model):
     # ``ValueError: Wrong value ... 'stock_vehicle_modified'``.
     l10n_ro_edi_stock_state = fields.Selection(
         selection_add=EXTRA_DOCUMENT_STATES,
-        ondelete={k: "set null" for k, _ in EXTRA_DOCUMENT_STATES},
+        ondelete=RECORD_STATE_ONDELETE,
     )
 
     # Configurable price source per transfer
@@ -128,6 +131,25 @@ class StockPicking(models.Model):
     def action_cancel(self):
         self._l10n_ro_edi_stock_check_no_live_uit(self.env._("cancelled"))
         return super().action_cancel()
+
+    @api.depends("company_id", "state", "l10n_ro_edi_stock_state")
+    def _compute_l10n_ro_edi_stock_enable_fetch(self):
+        # EXTENDS: a deletion / confirmation / vehicle change waits for its
+        # ANAF processing status the same way a notification does.
+        res = super()._compute_l10n_ro_edi_stock_enable_fetch()
+        for record in self:
+            if (
+                record.l10n_ro_edi_stock_enable
+                and record.l10n_ro_edi_stock_state == "stock_action_sent"
+            ):
+                record.l10n_ro_edi_stock_enable_fetch = True
+        return res
+
+    def _l10n_ro_edi_stock_fetch_document_status(self):
+        # EXTENDS: also fetch the status of pending DEL / CON / MVH uploads
+        res = super()._l10n_ro_edi_stock_fetch_document_status()
+        self._l10n_ro_edi_stock_fetch_pending_actions()
+        return res
 
     @api.depends("l10n_ro_edi_stock_state")
     def _compute_l10n_ro_edi_stock_enable_amend(self):

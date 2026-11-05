@@ -9,4 +9,13 @@
         <field name="interval_type">hours</field>
         <field name="active" eval="False" />
     </record>
+    <record id="ir_cron_l10n_ro_edi_stock_fetch_status" model="ir.cron">
+        <field name="name">eTransport: fetch ANAF status of transfers</field>
+        <field name="model_id" ref="stock.model_stock_picking" />
+        <field name="state">code</field>
+        <field name="code">model._l10n_ro_edi_stock_cron_fetch_status()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="False" />
+    </record>
 </odoo>

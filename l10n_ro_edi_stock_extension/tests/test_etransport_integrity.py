@@ -16,16 +16,29 @@ from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
+from ..models.l10n_ro_edi_stock_document import _document_state_ondelete
+
 _REQUEST = (
     "odoo.addons.l10n_ro_edi_stock.models.etransport_api.ETransportAPI."
     "_make_etransport_request"
 )
 
 
-def _anaf(company, endpoint, method, session=None, data=None):
-    if endpoint.startswith("stareMesaj"):
-        return {"content": {"stare": "ok"}}
-    return {"content": {"index_incarcare": "42", "UIT": "UIT0000000000001"}}
+def _anaf_answering(stare="ok", errors=None):
+    """A mocked ANAF: uploads get a load index, status calls get ``stare``."""
+
+    def answer(company, endpoint, method, session=None, data=None):
+        if endpoint.startswith("stareMesaj"):
+            content = {"stare": stare}
+            if errors:
+                content["Errors"] = [{"errorMessage": error} for error in errors]
+            return {"content": content}
+        return {"content": {"index_incarcare": "42", "UIT": "UIT0000000000001"}}
+
+    return answer
+
+
+_anaf = _anaf_answering()
 
 
 class EtransportIntegrityCommon(TransactionCase):
@@ -94,14 +107,24 @@ class EtransportIntegrityCommon(TransactionCase):
         self.assertEqual(record.l10n_ro_edi_stock_state, "stock_validated")
         return record
 
-    def _wizard(self, record, action_type, **vals):
+    def _wizard(self, record, action_type, answer="ok", **vals):
+        """Send the action, then fetch ANAF's answer to it (``answer=None``
+        leaves it waiting)."""
         wizard = (
             self.env["l10n.ro.edi.stock.action.wizard"]
             .with_context(active_id=record.id, active_model=record._name)
             .create({"action_type": action_type, **vals})
         )
         with patch(_REQUEST, side_effect=_anaf):
-            return wizard.action_execute()
+            result = wizard.action_execute()
+        self.assertEqual(record.l10n_ro_edi_stock_state, "stock_action_sent")
+        if answer:
+            self._fetch(record, answer)
+        return result
+
+    def _fetch(self, record, answer="ok", errors=None):
+        with patch(_REQUEST, side_effect=_anaf_answering(answer, errors)):
+            record.action_l10n_ro_edi_stock_fetch_status()
 
 
 @tagged("post_install", "-at_install")
@@ -251,3 +274,112 @@ class TestEtransportPickingIntegrity(EtransportIntegrityCommon):
         with self.assertRaises(UserError):
             self._wizard(picking, "delete", uit="UIT0000000000099")
         self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_validated")
+
+    # ------------------------------------------------------------------
+    # Raspunsul ANAF la stergere / confirmare / schimbare vehicul
+    # ------------------------------------------------------------------
+    def test_a_deletion_waiting_for_anaf_still_holds_the_transfer(self):
+        picking = self._validate(self._picking())
+        self._wizard(picking, "delete", answer=None)
+        self.assertTrue(picking.l10n_ro_edi_stock_enable_fetch)
+        self.assertFalse(picking.l10n_ro_edi_stock_enable_uit_action)
+        with self.assertRaises(UserError):
+            picking.action_cancel()
+        with self.assertRaises(UserError):
+            picking.unlink()
+        with self.assertRaises(UserError):
+            self._wizard(picking, "confirm", confirmation_type="10")
+        self._fetch(picking, "in prelucrare")
+        self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_action_sent")
+        self._fetch(picking, "ok")
+        self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_deleted")
+        picking.action_cancel()
+        self.assertEqual(picking.state, "cancel")
+
+    def test_a_refused_deletion_leaves_the_uit_live(self):
+        picking = self._validate(self._picking())
+        self._wizard(picking, "delete", answer="nok")
+        document = picking.l10n_ro_edi_stock_document_ids.sorted()[0]
+        self.assertEqual(document.state, "stock_sending_failed")
+        self.assertEqual(document.l10n_ro_edi_stock_event_type, "DEL")
+        self.assertIn("nok", document.message)
+        with self.assertRaises(UserError):
+            picking.action_cancel()
+        # the validated notification is still there: the deletion can be retried
+        self.assertTrue(picking.l10n_ro_edi_stock_enable_uit_action)
+        self._wizard(picking, "delete")
+        picking.action_cancel()
+        self.assertEqual(picking.state, "cancel")
+
+    def test_anaf_error_details_are_kept_on_the_document(self):
+        picking = self._validate(self._picking())
+        self._wizard(picking, "confirm", answer=None, confirmation_type="10")
+        self._fetch(picking, "XML cu erori nepreluat de sistem", ["UIT inexistent"])
+        document = picking.l10n_ro_edi_stock_document_ids.sorted()[0]
+        self.assertEqual(document.state, "stock_sending_failed")
+        self.assertIn("UIT inexistent", document.message)
+        self.assertTrue(picking.l10n_ro_edi_stock_enable_uit_action)
+
+    def test_an_unreachable_anaf_leaves_the_action_waiting(self):
+        picking = self._validate(self._picking())
+        self._wizard(picking, "delete", answer=None)
+        with patch(_REQUEST, return_value={"error": "timeout"}):
+            picking.action_l10n_ro_edi_stock_fetch_status()
+        self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_action_sent")
+
+    def test_a_confirmation_accepted_and_refused(self):
+        picking = self._validate(self._picking())
+        self._wizard(picking, "confirm", answer="nok", confirmation_type="10")
+        self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_sending_failed")
+        self._wizard(picking, "confirm", confirmation_type="20")
+        self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_confirmed")
+        confirmation = picking.l10n_ro_edi_stock_document_ids.sorted()[0]
+        self.assertEqual(confirmation.l10n_ro_edi_stock_confirm_type, "20")
+
+    def test_the_vehicle_changes_only_once_anaf_accepts_it(self):
+        picking = self._validate(self._picking())
+        picking.l10n_ro_edi_stock_vehicle_number = "TM00OLD"
+        self._wizard(
+            picking,
+            "modify_vehicle",
+            answer=None,
+            new_vehicle_number="TM01NEW",
+            trailer_1_number="TM02REM",
+        )
+        self.assertEqual(picking.l10n_ro_edi_stock_vehicle_number, "TM00OLD")
+        self._fetch(picking, "nok")
+        self.assertEqual(picking.l10n_ro_edi_stock_vehicle_number, "TM00OLD")
+        self.assertTrue(picking.l10n_ro_edi_stock_enable_uit_action)
+        self._wizard(
+            picking,
+            "modify_vehicle",
+            new_vehicle_number="TM01NEW",
+            trailer_1_number="TM02REM",
+        )
+        self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_vehicle_modified")
+        self.assertEqual(picking.l10n_ro_edi_stock_vehicle_number, "TM01NEW")
+        self.assertEqual(picking.l10n_ro_edi_stock_trailer_1_number, "TM02REM")
+
+    def test_the_cron_fetches_waiting_actions(self):
+        picking = self._validate(self._picking())
+        self._wizard(picking, "delete", answer=None)
+        with patch(_REQUEST, side_effect=_anaf):
+            self.env["stock.picking"]._l10n_ro_edi_stock_cron_fetch_status()
+        self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_deleted")
+
+    # ------------------------------------------------------------------
+    # Dezinstalarea pastreaza urma trimisa la ANAF
+    # ------------------------------------------------------------------
+    def test_uninstalling_keeps_the_action_documents(self):
+        picking = self._validate(self._picking())
+        self._wizard(picking, "modify_vehicle", new_vehicle_number="TM01NEW")
+        self._wizard(picking, "delete")
+        deletion, change = picking.l10n_ro_edi_stock_document_ids.sorted()[:2]
+        _document_state_ondelete("stock_deleted")(deletion)
+        self.assertEqual(deletion.state, "stock_sending_failed")
+        self.assertIn("stock_deleted / DEL", deletion.message)
+        self.assertEqual(
+            _document_state_ondelete("stock_vehicle_modified"),
+            "set stock_validated",
+        )
+        self.assertTrue(change.exists())
