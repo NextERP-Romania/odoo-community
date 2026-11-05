@@ -120,3 +120,41 @@ class TestDebtRecovery(AccountTestInvoicingCommon):
             .create({})
             .account_allow_debt_recovery_invoice
         )
+
+    def test_uninstall_resets_the_payment_state_and_keeps_the_invoice(self):
+        """When the selection value disappears (uninstall), the invoice must
+        survive and fall back to its standard payment state."""
+        self.company.account_allow_debt_recovery_invoice = True
+        invoice = self._invoice()
+        invoice.action_mark_as_debt_recovery()
+        field = self.env["account.move"]._fields["payment_state"]
+        handler = field.ondelete["debt_recovery"]
+        self.assertTrue(callable(handler))
+        handler(invoice)
+        self.assertTrue(invoice.exists())
+        self.assertEqual(invoice.payment_state, "not_paid")
+
+    def test_flow_invoice_into_recovery_then_paid(self):
+        """Posted invoice -> handed over -> notes and case data kept while
+        it is in recovery -> paid -> recovery closed, the journal entry
+        untouched."""
+        self.company.account_allow_debt_recovery_invoice = True
+        invoice = self._invoice()
+        self.assertEqual(invoice.state, "posted")
+        self.assertEqual(invoice.amount_residual, invoice.amount_total)
+        invoice.action_mark_as_debt_recovery()
+        invoice.write({"debt_state": "lawyer", "debt_recovery_text": "Nota"})
+        invoice.message_post(body="Predat avocatului")
+        self.assertEqual(invoice.payment_state, "debt_recovery")
+        self._pay(invoice)
+        self.assertRecordValues(
+            invoice,
+            [
+                {
+                    "state": "posted",
+                    "payment_state": "paid",
+                    "debt_recovery_done": True,
+                    "amount_residual": 0.0,
+                }
+            ],
+        )
