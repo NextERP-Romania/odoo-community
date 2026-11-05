@@ -9,6 +9,7 @@
                 <field
                     name="l10n_ro_fiscal_receipt_number"
                     invisible="move_type != 'out_invoice'"
+                    readonly="state != 'draft'"
                 />
             </xpath>
         </field>

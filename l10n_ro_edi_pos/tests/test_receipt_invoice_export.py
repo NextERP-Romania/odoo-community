@@ -11,6 +11,7 @@ type code 751. Any other invoice keeps 380.
 from lxml import etree
 
 from odoo import Command
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
@@ -95,3 +96,50 @@ class TestReceiptInvoiceExport(AccountTestInvoicingCommon):
     def test_a_credit_note_keeps_its_own_type_code(self):
         refund = self._invoice(receipt="0000042", move_type="out_refund")
         self.assertEqual(self._type_code(refund, "cbc:CreditNoteTypeCode"), "381")
+
+    def test_the_receipt_number_is_fixed_once_posted(self):
+        move = self._invoice(receipt="0000042")
+        with self.assertRaises(UserError):
+            move.l10n_ro_fiscal_receipt_number = "0000043"
+        with self.assertRaises(UserError):
+            move.l10n_ro_fiscal_receipt_number = False
+        # Writing the same value is harmless.
+        move.l10n_ro_fiscal_receipt_number = "0000042"
+        self.assertEqual(self._type_code(move), "751")
+
+    def test_the_receipt_number_is_free_on_a_draft(self):
+        move = self._invoice(receipt="0000042")
+        move.button_draft()
+        move.l10n_ro_fiscal_receipt_number = "0000043"
+        self.assertEqual(move.l10n_ro_fiscal_receipt_number, "0000043")
+
+    def test_flow_receipt_invoice_draft_to_posted(self):
+        """Set on the draft, fixed on the posted invoice, sent as 751; the
+        chatter and the other non-fiscal fields stay writable."""
+        move = self.env["account.move"].create(
+            {
+                "move_type": "out_invoice",
+                "partner_id": self.partner_ro.id,
+                "invoice_date": "2026-11-05",
+                "invoice_line_ids": [
+                    Command.create(
+                        {
+                            "product_id": self.product_a.id,
+                            "quantity": 1,
+                            "price_unit": 100.0,
+                            "tax_ids": [Command.set(self.tax_21.ids)],
+                        }
+                    )
+                ],
+            }
+        )
+        move.l10n_ro_fiscal_receipt_number = "0000042"
+        move.action_post()
+        self.assertEqual(move.state, "posted")
+        self.assertEqual(move.amount_total, 121.0)
+        with self.assertRaises(UserError):
+            move.l10n_ro_fiscal_receipt_number = "0000099"
+        self.assertEqual(move.l10n_ro_fiscal_receipt_number, "0000042")
+        move.message_post(body="Nota")
+        move.narration = "Observatie"
+        self.assertEqual(self._type_code(move), "751")
