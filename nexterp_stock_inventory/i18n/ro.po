@@ -256,3 +256,33 @@ msgstr "Validare inventar"
 #: model_terms:ir.ui.view,arch_db:nexterp_stock_inventory.inventory_stock_form_view
 msgid "Value"
 msgstr "Valoare"
+
+#. module: nexterp_stock_inventory
+#. odoo-python
+#: code:addons/nexterp_stock_inventory/models/stock_inventory.py:0
+msgid "A validated inventory can no longer be changed: its count has already been written into the stock."
+msgstr "Un inventar validat nu mai poate fi modificat: numărătoarea lui a fost deja înregistrată în stoc."
+
+#. module: nexterp_stock_inventory
+#. odoo-python
+#: code:addons/nexterp_stock_inventory/models/stock_inventory.py:0
+msgid "A validated inventory cannot be deleted: it is the document behind the stock adjustments it generated."
+msgstr "Un inventar validat nu poate fi șters: este documentul care stă la baza ajustărilor de stoc generate."
+
+#. module: nexterp_stock_inventory
+#. odoo-python
+#: code:addons/nexterp_stock_inventory/models/stock_inventory.py:0
+msgid "Product %(product)s is tracked by lot/serial number: the inventory line needs one."
+msgstr "Produsul %(product)s este urmărit pe lot/număr de serie: linia de inventar trebuie să aibă unul."
+
+#. module: nexterp_stock_inventory
+#. odoo-python
+#: code:addons/nexterp_stock_inventory/models/stock_inventory.py:0
+msgid "The lines of a validated inventory can no longer be changed."
+msgstr "Liniile unui inventar validat nu mai pot fi modificate."
+
+#. module: nexterp_stock_inventory
+#. odoo-python
+#: code:addons/nexterp_stock_inventory/models/stock_inventory.py:0
+msgid "The location, product and lot of an inventory line come from the quant it counts and cannot be changed; delete the line and add a new one instead."
+msgstr "Locația, produsul și lotul unei linii de inventar vin din cantitatea de stoc pe care o numără și nu pot fi modificate; ștergeți linia și adăugați una nouă."

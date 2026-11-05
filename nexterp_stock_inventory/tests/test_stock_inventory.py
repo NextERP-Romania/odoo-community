@@ -8,6 +8,7 @@ line per quant that keeps both the book quantity and the counted one -- and
 the value before and after, which is what goes into the accounts.
 """
 
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 
 from odoo.addons.stock_account.tests.common import TestStockValuationCommon
@@ -247,3 +248,215 @@ class TestStockInventory(TestStockValuationCommon):
         self.assertEqual(line.value, 100.0)
         self.assertEqual(line.inventory_value, 70.0)
         self.assertEqual(line.inventory_diff_value, -30.0)
+
+    # ------------------------------------------------------------------
+    # Documentul validat ramane cum a fost validat
+    # ------------------------------------------------------------------
+    def _validated_inventory(self):
+        self._stock(self.product1, 10)
+        inventory = self._inventory()
+        inventory.action_generate_inventory_lines()
+        self._line_for(inventory, self.product1).inventory_quantity = 8
+        inventory.action_validate_inventory()
+        return inventory
+
+    def test_a_validated_inventory_cannot_be_validated_again(self):
+        inventory = self._validated_inventory()
+        with self.assertRaises(UserError):
+            inventory.action_validate_inventory()
+        self.assertEqual(
+            self.env["stock.quant"]._get_available_quantity(
+                self.product1, self.stock_location
+            ),
+            8,
+        )
+
+    def test_a_validated_inventory_cannot_be_regenerated_or_cleared(self):
+        inventory = self._validated_inventory()
+        with self.assertRaises(UserError):
+            inventory.action_generate_inventory_lines()
+        with self.assertRaises(UserError):
+            inventory.action_clear_inventory_lines()
+
+    def test_the_count_of_a_validated_inventory_cannot_be_changed(self):
+        inventory = self._validated_inventory()
+        line = self._line_for(inventory, self.product1)
+        with self.assertRaises(UserError):
+            line.inventory_quantity = 3
+        with self.assertRaises(UserError):
+            self.env["l10n.ro.stock.inventory.line"].create(
+                {
+                    "inventory_id": inventory.id,
+                    "location_id": self.stock_location.id,
+                    "product_id": self.product2.id,
+                    "inventory_quantity": 5,
+                }
+            )
+        with self.assertRaises(UserError):
+            inventory.accounting_date = "2026-04-30"
+        with self.assertRaises(UserError):
+            inventory.state = "draft"
+
+    def test_a_validated_inventory_and_its_lines_cannot_be_deleted(self):
+        inventory = self._validated_inventory()
+        with self.assertRaises(UserError):
+            inventory.inventory_line_ids.unlink()
+        with self.assertRaises(UserError):
+            inventory.unlink()
+
+    def test_a_draft_inventory_can_be_deleted_with_its_lines(self):
+        self._stock(self.product1, 10)
+        inventory = self._inventory()
+        inventory.action_generate_inventory_lines()
+        lines = inventory.inventory_line_ids
+        inventory.unlink()
+        self.assertFalse(lines.exists())
+
+    def test_a_counted_line_keeps_its_quant(self):
+        self._stock(self.product1, 10)
+        inventory = self._inventory()
+        inventory.action_generate_inventory_lines()
+        line = self._line_for(inventory, self.product1)
+        with self.assertRaises(UserError):
+            line.product_id = self.product2
+
+    def test_goods_moved_after_the_count_do_not_block_validation(self):
+        """Odoo would open its conflict wizard and apply nothing; the document
+        applies the counted quantity and only then is marked done."""
+        self._stock(self.product1, 10)
+        inventory = self._inventory()
+        inventory.action_generate_inventory_lines()
+        self._line_for(inventory, self.product1).inventory_quantity = 8
+        self._stock(self.product1, 5)
+        self.assertTrue(self._line_for(inventory, self.product1).quant_id.is_outdated)
+        inventory.action_validate_inventory()
+        self.assertEqual(inventory.state, "done")
+        line = self._line_for(inventory, self.product1)
+        self.assertEqual(line.quantity, 15)
+        self.assertEqual(line.inventory_diff_quantity, -7)
+        self.assertEqual(
+            self.env["stock.quant"]._get_available_quantity(
+                self.product1, self.stock_location
+            ),
+            8,
+        )
+
+    def test_an_outdated_quant_adjustment_leaves_no_document_until_settled(self):
+        self._stock(self.product1, 10)
+        quant = self.env["stock.quant"].search(
+            [
+                ("product_id", "=", self.product1.id),
+                ("location_id", "=", self.stock_location.id),
+            ]
+        )
+        quant.with_context(inventory_mode=True).inventory_quantity = 7
+        self.assertEqual(quant.inventory_diff_quantity, -3)
+        self._stock(self.product1, 5)
+        self.assertTrue(quant.is_outdated)
+        res = quant.with_context(inventory_mode=True).action_apply_inventory()
+        self.assertEqual(res["res_model"], "stock.inventory.conflict")
+        self.assertFalse(self.Inventory.search([]))
+        wizard = (
+            self.env["stock.inventory.conflict"]
+            .with_context(**res["context"])
+            .create({})
+        )
+        # in the UI the wizard runs in a new request, with a fresh cache
+        self.env.invalidate_all()
+        wizard.action_keep_counted_quantity()
+        inventories = self.Inventory.search([])
+        self.assertEqual(len(inventories), 1)
+        self.assertEqual(inventories.state, "done")
+        self.assertEqual(quant.quantity, 7)
+
+    # ------------------------------------------------------------------
+    # Fluxul complet
+    # ------------------------------------------------------------------
+    def test_flow_count_validate_books_the_inventory_moves(self):
+        self._stock(self.product1, 10)
+        self._stock(self.product2, 4)
+        inventory = self._inventory()
+        inventory.action_generate_inventory_lines()
+        self._line_for(inventory, self.product1).inventory_quantity = 8
+        self._line_for(inventory, self.product2).inventory_quantity = 6
+        inventory.action_validate_inventory()
+        self.assertEqual(inventory.state, "done")
+        self.assertEqual(set(inventory.inventory_line_ids.mapped("state")), {"done"})
+        moves = self.env["stock.move"].search(
+            [
+                ("product_id", "in", (self.product1 | self.product2).ids),
+                ("is_inventory", "=", True),
+            ]
+        )
+        self.assertEqual(set(moves.mapped("state")), {"done"})
+        out_move = moves.filtered(lambda m: m.product_id == self.product1)
+        in_move = moves.filtered(lambda m: m.product_id == self.product2)
+        self.assertEqual(out_move.quantity, 2)
+        self.assertEqual(out_move.location_id, self.stock_location)
+        self.assertEqual(out_move.location_dest_id.usage, "inventory")
+        self.assertEqual(in_move.quantity, 2)
+        self.assertEqual(in_move.location_dest_id, self.stock_location)
+        self.assertEqual(
+            sum(inventory.inventory_line_ids.mapped("inventory_diff_value")), -10.0
+        )
+
+    def test_flow_validated_lines_keep_their_unit(self):
+        inventory = self._validated_inventory()
+        self.assertEqual(
+            self._line_for(inventory, self.product1).product_uom_id,
+            self.product1.uom_id,
+        )
+
+    def test_flow_draft_lines_stay_editable_and_deletable(self):
+        self._stock(self.product1, 10)
+        self._stock(self.product2, 4)
+        inventory = self._inventory()
+        inventory.action_generate_inventory_lines()
+        line = self._line_for(inventory, self.product2)
+        line.inventory_quantity = 1
+        self.assertEqual(line.inventory_diff_quantity, -3)
+        line.unlink()
+        inventory.accounting_date = "2026-04-30"
+        inventory.action_validate_inventory()
+        self.assertEqual(inventory.inventory_line_ids.product_id, self.product1)
+        self.assertEqual(
+            self.env["stock.quant"]._get_available_quantity(
+                self.product2, self.stock_location
+            ),
+            4,
+        )
+
+    def test_flow_tracked_goods_need_a_lot_to_be_counted_in(self):
+        tracked = self.env["product.product"].create(
+            {
+                "name": "Produs cu lot",
+                "is_storable": True,
+                "tracking": "lot",
+                "categ_id": self.category.id,
+                "standard_price": 2.0,
+            }
+        )
+        inventory = self._inventory()
+        with self.assertRaises(ValidationError):
+            self.env["l10n.ro.stock.inventory.line"].create(
+                {
+                    "inventory_id": inventory.id,
+                    "location_id": self.stock_location.id,
+                    "product_id": tracked.id,
+                    "inventory_quantity": 5,
+                }
+            )
+        lot = self.env["stock.lot"].create({"name": "L001", "product_id": tracked.id})
+        line = self.env["l10n.ro.stock.inventory.line"].create(
+            {
+                "inventory_id": inventory.id,
+                "location_id": self.stock_location.id,
+                "product_id": tracked.id,
+                "product_lot_id": lot.id,
+                "inventory_quantity": 5,
+            }
+        )
+        inventory.inventory_lines_generated = True
+        inventory.action_validate_inventory()
+        self.assertEqual(line.quant_id.lot_id, lot)
+        self.assertEqual(line.quant_id.quantity, 5)

@@ -49,7 +49,13 @@ class StockQuant(models.Model):
                 * The inventory is marked as 'done'.
         """
         if self.env.context.get("nexterp_skip_inventory"):
-            return super().action_apply_inventory()
+            return super().action_apply_inventory(date=date)
+        if self.filtered("is_outdated"):
+            # Odoo answers with the conflict wizard and applies nothing; the
+            # wizard calls this method again once the conflict is settled, and
+            # the inventory document is made then.
+            return super().action_apply_inventory(date=date)
+        self = self.with_context(nexterp_inventory_from_quant=True)
         InventoryObject = self.env["l10n.ro.stock.inventory"]
         inventories = self.env["l10n.ro.stock.inventory"]
         for accounting_date in list(set(self.mapped("accounting_date"))):
@@ -72,7 +78,11 @@ class StockQuant(models.Model):
             inventory.action_generate_inventory_lines(quants=quants)
             inventories |= inventory
 
-        res = super().action_apply_inventory()
+        res = super().action_apply_inventory(date=date)
+        if isinstance(res, dict):
+            # nothing was applied: do not leave half-made documents behind
+            inventories.unlink()
+            return res
 
         for inventory in inventories:
             for line in inventory.inventory_line_ids:
