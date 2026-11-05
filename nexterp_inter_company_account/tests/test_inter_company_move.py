@@ -57,3 +57,15 @@ class TestInterCompanyMove(AccountTestInvoicingCommon):
         invoice.partner_id = self.sister.partner_id
         self.assertTrue(invoice.is_inter_company)
         self.assertTrue(all(invoice.line_ids.mapped("is_inter_company")))
+
+    def test_the_line_column_is_stored_in_the_line_table(self):
+        """The column pre-created at install is the one of the lines, so the
+        ORM does not have to compute it on a large database."""
+        invoice = self._invoice(self.sister.partner_id)
+        self.env.flush_all()
+        self.env.cr.execute(
+            "SELECT bool_and(is_inter_company) FROM account_move_line"
+            " WHERE move_id = %s",
+            (invoice.id,),
+        )
+        self.assertTrue(self.env.cr.fetchone()[0])
