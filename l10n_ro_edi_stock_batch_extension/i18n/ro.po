@@ -201,3 +201,21 @@ msgstr "Notificare anterioară eTransport (operațiunile 60/70)"
 #: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_l10n_ro_edi_stock_document_line
 msgid "eTransport transport document line"
 msgstr "Linie document transport eTransport"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "The transfers of batch %(batch)s cannot be changed: its eTransport notification (UIT %(uit)s) is registered at ANAF for exactly these goods. Delete the notification first."
+msgstr "Transferurile lotului %(batch)s nu pot fi modificate: notificarea sa eTransport (UIT %(uit)s) este înregistrată la ANAF exact pentru aceste bunuri. Ștergeți mai întâi notificarea."
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "deleted"
+msgstr "șters"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "cancelled"
+msgstr "anulat"

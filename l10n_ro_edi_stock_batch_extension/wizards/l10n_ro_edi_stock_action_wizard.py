@@ -32,6 +32,9 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
             defaults["trailer_2_number"] = batch.l10n_ro_edi_stock_trailer_2_number
         return defaults
 
+    def _get_etransport_record(self):
+        return self.batch_id or super()._get_etransport_record()
+
     def _common_data(self):
         if not self.batch_id:
             return super()._common_data()
