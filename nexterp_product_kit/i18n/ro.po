@@ -130,3 +130,15 @@ msgstr "Cantitate"
 #: model:ir.model.fields,field_description:nexterp_product_kit.field_product_product_kit__product_uom_id
 msgid "Unit"
 msgstr "Unitate de măsură"
+
+#. module: nexterp_product_kit
+#. odoo-python
+#: code:addons/nexterp_product_kit/models/product_product_kit.py:0
+msgid "The quantity of component %(component)s in kit %(kit)s must be greater than zero."
+msgstr "Cantitatea componentei %(component)s din kitul %(kit)s trebuie să fie mai mare decât zero."
+
+#. module: nexterp_product_kit
+#. odoo-python
+#: code:addons/nexterp_product_kit/models/product_product_kit.py:0
+msgid "Kit %(kit)s cannot contain itself, directly or through one of its components."
+msgstr "Kitul %(kit)s nu se poate conține pe sine, direct sau printr-una dintre componente."

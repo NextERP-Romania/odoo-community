@@ -11,3 +11,8 @@ class L10nRoEdiStockDocumentLine(models.Model):
         ondelete="cascade",
         index=True,
     )
+
+    def _l10n_ro_edi_stock_check_parents_not_sent(self):
+        res = super()._l10n_ro_edi_stock_check_parents_not_sent()
+        self.batch_id._l10n_ro_edi_stock_check_not_sent()
+        return res

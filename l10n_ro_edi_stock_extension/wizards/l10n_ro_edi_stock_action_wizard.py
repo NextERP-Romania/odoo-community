@@ -8,6 +8,11 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 from ..models.etransport_api_extra import ETransportAPIExtra
+from ..models.l10n_ro_edi_stock_document import (
+    PENDING_ACTION_STATE,
+    UIT_ACTION_STATES,
+    l10n_ro_edi_stock_effective_document,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -68,10 +73,42 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
             defaults["trailer_2_number"] = picking.l10n_ro_edi_stock_trailer_2_number
         return defaults
 
+    def _get_etransport_record(self):
+        """The transfer (or batch, see l10n_ro_edi_stock_batch_extension) the
+        action is about."""
+        return self.picking_id
+
+    def _check_uit_state(self):
+        """ANAF only accepts a deletion, a confirmation or a vehicle change on
+        a notification it validated (a vehicle change keeps it validated)."""
+        record = self._get_etransport_record()
+        document = l10n_ro_edi_stock_effective_document(
+            record.l10n_ro_edi_stock_document_ids
+        )
+        if document.state not in UIT_ACTION_STATES:
+            raise UserError(
+                self.env._(
+                    "%(record)s has no eTransport notification validated by "
+                    "ANAF, so it cannot be deleted, confirmed or have its "
+                    "vehicle changed.",
+                    record=record.display_name,
+                )
+            )
+        if document.l10n_ro_edi_stock_uit != self.uit:
+            raise UserError(
+                self.env._(
+                    "UIT %(uit)s is not the current eTransport notification of "
+                    "%(record)s.",
+                    uit=self.uit,
+                    record=record.display_name,
+                )
+            )
+
     def action_execute(self):
         self.ensure_one()
         if not self.uit:
             raise UserError(self.env._("The transfer has no validated UIT."))
+        self._check_uit_state()
         method = {
             "delete": self._send_delete,
             "confirm": self._send_confirm,
@@ -143,29 +180,24 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
             "l10n_ro_edi_stock_extension.l10n_ro_template_etransport_modify_vehicle",
             data,
         )
-        result = self._upload_and_log(
+        # The new vehicle is written on the transfer once ANAF accepted the
+        # change (see _l10n_ro_edi_stock_apply_accepted_action).
+        return self._upload_and_log(
             raw_xml,
             event_type="MVH",
             new_state="stock_vehicle_modified",
             extras={
                 "l10n_ro_edi_stock_modified_vehicle": self.new_vehicle_number,
+                "l10n_ro_edi_stock_modified_trailer_1": self.trailer_1_number,
+                "l10n_ro_edi_stock_modified_trailer_2": self.trailer_2_number,
                 "l10n_ro_edi_stock_modification_date": self.modification_date,
             },
         )
-        # Update the fields on the picking for history tracking
-        if isinstance(result, dict) and not result.get("error"):
-            self.picking_id.write(
-                {
-                    "l10n_ro_edi_stock_vehicle_number": self.new_vehicle_number,
-                    "l10n_ro_edi_stock_trailer_1_number": self.trailer_1_number
-                    or False,
-                    "l10n_ro_edi_stock_trailer_2_number": self.trailer_2_number
-                    or False,
-                }
-            )
-        return result
 
     def _upload_and_log(self, raw_xml, event_type, new_state, extras=None):
+        """Upload the action. ANAF only answers with a load index here: the
+        document waits in ``stock_action_sent`` until its processing status is
+        fetched, and only then reaches ``new_state``."""
         result = ETransportAPIExtra().upload_data(
             company_id=self.picking_id.company_id,
             data=raw_xml,
@@ -181,7 +213,7 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         content = result["content"]
         values = {
             "picking_id": self.picking_id.id,
-            "state": new_state,
+            "state": PENDING_ACTION_STATE,
             "l10n_ro_edi_stock_load_id": content["index_incarcare"],
             "l10n_ro_edi_stock_uit": self.uit,
             "l10n_ro_edi_stock_event_type": event_type,
@@ -192,8 +224,8 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         self.env["l10n_ro_edi.document"].create(values)
         self.picking_id._message_log(
             body=self.env._(
-                "eTransport %(action)s sent successfully "
-                "(UIT: %(uit)s, load: %(load)s).",
+                "eTransport %(action)s uploaded to ANAF "
+                "(UIT: %(uit)s, load: %(load)s); fetch its status.",
                 action=event_type,
                 uit=self.uit,
                 load=content["index_incarcare"],

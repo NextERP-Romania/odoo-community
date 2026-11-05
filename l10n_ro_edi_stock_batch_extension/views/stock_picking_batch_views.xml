@@ -13,29 +13,30 @@
             ref="l10n_ro_edi_stock_batch.l10n_ro_edi_stock_view_batch_form"
         />
         <field name="arch" type="xml">
-            <!-- DEL / CON / MVH buttons (visible when a validated UIT exists) -->
+            <!-- DEL / CON / MVH buttons (visible while ANAF holds a validated UIT and no action is pending) -->
             <xpath
                 expr="//button[@name='action_l10n_ro_edi_stock_fetch_status']"
                 position="after"
             >
+                <field name="l10n_ro_edi_stock_enable_uit_action" invisible="1" />
                 <button
                     name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_delete)d"
                     string="Delete notification"
                     type="action"
-                    invisible="l10n_ro_edi_stock_state != 'stock_validated'"
+                    invisible="not l10n_ro_edi_stock_enable_uit_action"
                     confirm="Are you sure you want to delete the UIT notification from ANAF?"
                 />
                 <button
                     name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_confirm)d"
                     string="Confirm transport"
                     type="action"
-                    invisible="l10n_ro_edi_stock_state != 'stock_validated'"
+                    invisible="not l10n_ro_edi_stock_enable_uit_action"
                 />
                 <button
                     name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_modify_vehicle)d"
                     string="Modify vehicle"
                     type="action"
-                    invisible="l10n_ro_edi_stock_state != 'stock_validated'"
+                    invisible="not l10n_ro_edi_stock_enable_uit_action"
                 />
             </xpath>
 

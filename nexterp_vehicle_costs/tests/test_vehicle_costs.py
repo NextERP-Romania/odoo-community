@@ -14,6 +14,8 @@ from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import Form, TransactionCase
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
 
 class FleetCommon(TransactionCase):
     @classmethod
@@ -169,3 +171,156 @@ class TestVehicleContract(FleetCommon):
         owner = self.env["res.partner"].create({"name": "Proprietar"})
         self.vehicle.owner_id = owner
         self.assertEqual(self._contract().owner_id, owner)
+
+
+@tagged("post_install", "-at_install")
+class TestVehicleCostFlow(FleetCommon):
+    """Goods issued to a vehicle become its cost and stay tied to the move."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.vehicle = cls._vehicle()
+        cls.other_vehicle = cls._vehicle()
+        cls.env["fleet.service.type"].create({"name": "Reparare", "category": "parts"})
+        cls.product = cls.env["product.product"].create(
+            {"name": "Filtru ulei", "is_storable": True, "standard_price": 5.0}
+        )
+        cls.stock = cls.env.ref("stock.stock_location_stock")
+        cls.consume = cls.env["stock.location"].create(
+            {
+                "name": "Consum flota",
+                "usage": "consume",
+                "location_id": cls.stock.location_id.id,
+            }
+        )
+        cls.env["stock.quant"]._update_available_quantity(cls.product, cls.stock, 10)
+
+    def _done_move(self, src, dest, qty, **vals):
+        move = self.env["stock.move"].create(
+            {
+                "product_id": self.product.id,
+                "product_uom_qty": qty,
+                "location_id": src.id,
+                "location_dest_id": dest.id,
+                **vals,
+            }
+        )
+        move._action_confirm()
+        move._action_assign()
+        move.quantity = qty
+        move.picked = True
+        move._action_done()
+        self.assertEqual(move.state, "done")
+        return move
+
+    def _issue(self, qty=4):
+        return self._done_move(
+            self.stock, self.consume, qty, vehicle_id=self.vehicle.id
+        )
+
+    def test_flow_issuing_goods_to_a_vehicle_books_its_cost(self):
+        move = self._issue()
+        cost = move.cost_ids
+        self.assertEqual(len(cost), 1)
+        self.assertEqual(cost.vehicle_id, self.vehicle)
+        self.assertEqual(cost.product_id, self.product)
+        self.assertEqual(cost.quantity, 4)
+        self.assertEqual(cost.amount, abs(move.value))
+        self.assertEqual(cost.service_type_id.category, "parts")
+
+    def test_flow_returning_the_goods_reverses_the_cost(self):
+        move = self._issue()
+        back = self._done_move(
+            self.consume, self.stock, 4, origin_returned_move_id=move.id
+        )
+        self.assertEqual(back.cost_ids.vehicle_id, self.vehicle)
+        self.assertEqual(back.cost_ids.quantity, -4)
+        self.assertEqual(back.cost_ids.amount, -abs(back.value))
+        self.assertEqual(sum((move.cost_ids | back.cost_ids).mapped("quantity")), 0)
+
+    def test_the_vehicle_of_a_booked_move_cannot_be_changed(self):
+        move = self._issue()
+        with self.assertRaises(UserError):
+            move.vehicle_id = self.other_vehicle
+        with self.assertRaises(UserError):
+            move.refuel = True
+        self.assertEqual(move.vehicle_id, self.vehicle)
+        self.assertEqual(move.cost_ids.vehicle_id, self.vehicle)
+
+    def test_a_cost_booked_from_a_done_move_follows_it(self):
+        move = self._issue()
+        cost = move.cost_ids
+        amount = cost.amount
+        with self.assertRaises(UserError):
+            cost.amount = 1.0
+        with self.assertRaises(UserError):
+            cost.vehicle_id = self.other_vehicle
+        with self.assertRaises(UserError):
+            cost.unlink()
+        self.assertEqual(cost.amount, amount)
+        cost.notes = "Schimb filtru la 120.000 km"
+        self.assertEqual(cost.notes, "Schimb filtru la 120.000 km")
+
+    def test_a_move_not_done_yet_keeps_its_vehicle_editable(self):
+        move = self._move(self.vehicle)
+        move.vehicle_id = self.other_vehicle
+        self.assertEqual(move.vehicle_id, self.other_vehicle)
+        self.assertFalse(move.cost_ids)
+
+    def test_a_cost_typed_by_hand_stays_editable(self):
+        cost = self.env["fleet.vehicle.log.services"].create(
+            {
+                "vehicle_id": self.vehicle.id,
+                "service_type_id": self.env["fleet.service.type"]
+                .search([("category", "=", "parts")], limit=1)
+                .id,
+                "amount": 50.0,
+            }
+        )
+        cost.amount = 60.0
+        cost.unlink()
+        self.assertFalse(cost.exists())
+
+
+@tagged("post_install", "-at_install")
+class TestVehicleCostFromBill(AccountTestInvoicingCommon):
+    """A vendor bill line on a vehicle is a vehicle cost while the bill is."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env.user.group_ids |= cls.env.ref("fleet.fleet_group_manager")
+        brand = cls.env["fleet.vehicle.model.brand"].create({"name": "Dacia"})
+        model = cls.env["fleet.vehicle.model"].create(
+            {"name": "Logan", "brand_id": brand.id}
+        )
+        cls.vehicle = cls.env["fleet.vehicle"].create({"model_id": model.id})
+
+    def _bill(self):
+        bill = self.init_invoice("in_invoice", amounts=[100.0], post=False)
+        bill.invoice_line_ids.vehicle_id = self.vehicle
+        bill.action_post()
+        return bill
+
+    def test_posting_the_bill_books_the_vehicle_cost(self):
+        bill = self._bill()
+        services = bill.invoice_line_ids.vehicle_log_service_ids
+        self.assertEqual(len(services), 1)
+        self.assertEqual(services.vehicle_id, self.vehicle)
+
+    def test_cancelling_the_bill_drops_the_vehicle_cost(self):
+        bill = self._bill()
+        services = bill.invoice_line_ids.vehicle_log_service_ids
+        bill.button_draft()
+        bill.button_cancel()
+        self.assertEqual(bill.state, "cancel")
+        self.assertFalse(services.exists())
+
+    def test_a_bill_posted_again_books_the_cost_again(self):
+        bill = self._bill()
+        bill.button_draft()
+        bill.button_cancel()
+        bill.button_draft()
+        bill.action_post()
+        self.assertEqual(len(bill.invoice_line_ids.vehicle_log_service_ids), 1)

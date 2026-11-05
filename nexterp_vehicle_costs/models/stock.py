@@ -96,14 +96,37 @@ class StockMove(models.Model):
                     )
             rec.fleet_service_type_id = subtype
 
-    def create_vehicle_cost(self):
-        self.ensure_one()
-        subtype = self.fleet_service_type_id
+    def write(self, vals):
+        if "vehicle_id" in vals or "refuel" in vals:
+            for move in self.filtered(lambda m: m.state == "done" and m.cost_ids):
+                if vals.get("vehicle_id", move.vehicle_id.id) != move.vehicle_id.id or (
+                    "refuel" in vals and bool(vals["refuel"]) != move.refuel
+                ):
+                    raise UserError(
+                        self.env._(
+                            "The vehicle of done move %(move)s cannot be changed: "
+                            "its cost is already booked on vehicle %(vehicle)s.",
+                            move=move.display_name,
+                            vehicle=move.vehicle_id.display_name,
+                        )
+                    )
+        return super().write(vals)
 
-        if self.fleet_service_type_id.category == "Contract":
+    def create_vehicle_cost(self, origin=None):
+        """Book the move as a vehicle cost.
+
+        :param origin: the move this one returns; the return is booked on the
+            origin's vehicle and type as a negative cost.
+        """
+        self.ensure_one()
+        source = origin or self
+        sign = -1 if origin else 1
+        subtype = source.fleet_service_type_id
+
+        if subtype.category == "contract":
             cost_type = "contract"
             model = self.env["fleet.vehicle.log.contract"]
-        elif self.fleet_service_type_id.name == "Realimentare":
+        elif subtype.name == "Realimentare":
             cost_type = "fuel"
             model = self.env["fleet.vehicle.log.services"]
         else:
@@ -111,10 +134,10 @@ class StockMove(models.Model):
             model = self.env["fleet.vehicle.log.services"]
 
         sub_cost = {
-            "vehicle_id": self.vehicle_id.id,
+            "vehicle_id": source.vehicle_id.id,
             "service_type_id": subtype and subtype.id,
             "product_id": self.product_id.id,
-            "amount": self.value,
+            "amount": sign * abs(self.value),
             "purchaser_id": self.create_uid.partner_id.id,
             "vendor_id": self.partner_id.id,
             "date": self.date,
@@ -122,20 +145,16 @@ class StockMove(models.Model):
         }
 
         if cost_type == "fuel":
-            sub_cost["liter"] = self.quantity
-            sub_cost["service_type_id"] = self.fleet_service_type_id.id
+            sub_cost["liter"] = sign * self.quantity
+            sub_cost["service_type_id"] = subtype.id
         elif cost_type == "services":
-            sub_cost["service_type_id"] = self.fleet_service_type_id.id
+            sub_cost["service_type_id"] = subtype.id
 
-        sub_cost["quantity"] = self.quantity
+        sub_cost["quantity"] = sign * self.quantity
         sub_cost["price_unit"] = self.price_unit
         sub_cost["stock_move_id"] = self.id
 
         model.create(sub_cost)
-
-    def cancel_vehicle_cost(self):
-        for s in self.cost_ids:
-            s.unlink()
 
     def _action_done(self, cancel_backorder=False):
         for move in self:
@@ -159,13 +178,13 @@ class StockMove(models.Model):
                 and move.location_dest_id.usage in ["consume", "usage_giving"]
             ):
                 move.create_vehicle_cost()
-        return res
-
-    def action_cancel(self):
-        res = super().action_cancel()
-        for move in self:
-            if move.vehicle_id and move.cost_ids:
-                move.cancel_vehicle_cost()
+            elif (
+                not move.cost_ids
+                and move.origin_returned_move_id.cost_ids
+                and move.location_id.usage in ["consume", "usage_giving"]
+            ):
+                # goods coming back from the vehicle: the cost is reversed
+                move.create_vehicle_cost(origin=move.origin_returned_move_id)
         return res
 
     def _l10n_ro_update_fifo_split_move_vals(

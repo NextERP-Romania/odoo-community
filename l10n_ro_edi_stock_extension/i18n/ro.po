@@ -896,9 +896,11 @@ msgstr "eTransport"
 #. odoo-python
 #: code:addons/l10n_ro_edi_stock_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
 msgid ""
-"eTransport %(action)s sent successfully (UIT: %(uit)s, load: %(load)s)."
+"eTransport %(action)s uploaded to ANAF (UIT: %(uit)s, load: %(load)s); fetch "
+"its status."
 msgstr ""
-"eTransport %(action)s trimis cu succes (UIT: %(uit)s, încărcare: %(load)s)."
+"eTransport %(action)s încărcat la ANAF (UIT: %(uit)s, încărcare: %(load)s); "
+"preluați starea."
 
 #. module: l10n_ro_edi_stock_extension
 #: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_extension.view_l10n_ro_edi_stock_document_form
@@ -1067,3 +1069,107 @@ msgstr "Documentul de transport %(line)s"
 #: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
 msgid "eTransport file, element %(tag)s"
 msgstr "Fișierul eTransport, elementul %(tag)s"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "%(record)s cannot be %(action)s: its eTransport notification (UIT %(uit)s) is registered at ANAF. Delete the notification first."
+msgstr "%(record)s nu poate fi %(action)s: notificarea sa eTransport (UIT %(uit)s) este înregistrată la ANAF. Ștergeți mai întâi notificarea."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "The eTransport data of %(record)s cannot be changed while ANAF is processing its notification. Fetch the status first."
+msgstr "Datele eTransport ale %(record)s nu pot fi modificate cât timp ANAF procesează notificarea. Preluați mai întâi starea."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "deleted"
+msgstr "șters"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/stock_picking.py:0
+msgid "cancelled"
+msgstr "anulat"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
+msgid "%(record)s has no eTransport notification validated by ANAF, so it cannot be deleted, confirmed or have its vehicle changed."
+msgstr "%(record)s nu are o notificare eTransport validată de ANAF, deci nu i se poate trimite ștergerea, confirmarea sau schimbarea vehiculului."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
+msgid "UIT %(uit)s is not the current eTransport notification of %(record)s."
+msgstr "UIT-ul %(uit)s nu este notificarea eTransport curentă a %(record)s."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "Romanian access token not found. Please generate or fill it in the settings."
+msgstr "Tokenul de acces românesc nu a fost găsit. Generați-l sau completați-l în setări."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "eTransport %(action)s status could not be fetched (load %(load)s): %(err)s"
+msgstr "Starea eTransport %(action)s nu a putut fi preluată (încărcare %(load)s): %(err)s"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "XML contains errors."
+msgstr "XML-ul conține erori."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "ANAF refused the %(action)s (status: %(state)s)."
+msgstr "ANAF a respins %(action)s (stare: %(state)s)."
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "eTransport %(action)s refused by ANAF (UIT: %(uit)s): %(message)s"
+msgstr "eTransport %(action)s respins de ANAF (UIT: %(uit)s): %(message)s"
+
+#. module: l10n_ro_edi_stock_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_extension/models/l10n_ro_edi_stock_integrity.py:0
+msgid "eTransport %(action)s accepted by ANAF (UIT: %(uit)s)."
+msgstr "eTransport %(action)s acceptat de ANAF (UIT: %(uit)s)."
+
+#. module: l10n_ro_edi_stock_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_extension.selection__l10n_ro_edi_document__state__stock_action_sent
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_extension.selection__stock_picking__l10n_ro_edi_stock_state__stock_action_sent
+msgid "Action Sent"
+msgstr "Acțiune trimisă"
+
+#. module: l10n_ro_edi_stock_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_extension.field_l10n_ro_edi_stock_integrity_mixin__l10n_ro_edi_stock_enable_uit_action
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_extension.field_stock_picking__l10n_ro_edi_stock_enable_uit_action
+msgid "eTransport Action Allowed"
+msgstr "Acțiune eTransport permisă"
+
+#. module: l10n_ro_edi_stock_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_extension.field_l10n_ro_edi_document__l10n_ro_edi_stock_modified_trailer_1
+msgid "Modified Trailer 1"
+msgstr "Remorcă 1 modificată"
+
+#. module: l10n_ro_edi_stock_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_extension.field_l10n_ro_edi_document__l10n_ro_edi_stock_modified_trailer_2
+msgid "Modified Trailer 2"
+msgstr "Remorcă 2 modificată"
+
+#. module: l10n_ro_edi_stock_extension
+#: model:ir.model,name:l10n_ro_edi_stock_extension.model_l10n_ro_edi_stock_integrity_mixin
+msgid "eTransport notification integrity"
+msgstr "Integritate notificare eTransport"
+
+#. module: l10n_ro_edi_stock_extension
+#: model:ir.actions.server,name:l10n_ro_edi_stock_extension.ir_cron_l10n_ro_edi_stock_fetch_status_ir_actions_server
+msgid "eTransport: fetch ANAF status of transfers"
+msgstr "eTransport: preluare stare ANAF pentru transferuri"

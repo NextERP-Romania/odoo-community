@@ -4,6 +4,7 @@ import base64
 import markupsafe
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_is_zero
 
 from odoo.addons.l10n_ro_edi_stock_extension.models.etransport_constants import (
@@ -12,11 +13,17 @@ from odoo.addons.l10n_ro_edi_stock_extension.models.etransport_constants import 
 )
 from odoo.addons.l10n_ro_edi_stock_extension.models.l10n_ro_edi_stock_document import (
     EXTRA_DOCUMENT_STATES,
+    RECORD_STATE_ONDELETE,
 )
+
+# Context key set by the stock flows that legitimately take a transfer out of
+# a batch (validation with backorders, cancellation of a transfer).
+BATCH_DETACH_CTX = "l10n_ro_edi_stock_batch_detach"
 
 
 class StockPickingBatch(models.Model):
-    _inherit = "stock.picking.batch"
+    _name = "stock.picking.batch"
+    _inherit = ["stock.picking.batch", "l10n.ro.edi.stock.integrity.mixin"]
 
     # The base ``l10n_ro_edi_stock_state`` field copies ``document.state`` into a
     # Selection limited to DOCUMENT_STATES. l10n_ro_edi_stock_extension adds extra
@@ -25,7 +32,7 @@ class StockPickingBatch(models.Model):
     # ``ValueError: Wrong value ... 'stock_vehicle_modified'``.
     l10n_ro_edi_stock_state = fields.Selection(
         selection_add=EXTRA_DOCUMENT_STATES,
-        ondelete={k: "set null" for k, _ in EXTRA_DOCUMENT_STATES},
+        ondelete=RECORD_STATE_ONDELETE,
     )
 
     # Same configuration fields the extension adds on stock.picking, so the
@@ -62,6 +69,82 @@ class StockPickingBatch(models.Model):
         help="OUG 41/2022 art. 8 par. 1^3 - declaration allowed until the end "
         "of the next working day after the ANAF system is restored.",
     )
+
+    ################################################################################
+    # Integrity: a batch with a live UIT stays until ANAF is told otherwise
+    ################################################################################
+
+    def _l10n_ro_edi_stock_check_transfers_locked(self):
+        if self.env.context.get(BATCH_DETACH_CTX):
+            return
+        for batch in self:
+            document = batch._l10n_ro_edi_stock_live_uit_document()
+            if document:
+                raise UserError(
+                    self.env._(
+                        "The transfers of batch %(batch)s cannot be changed: its "
+                        "eTransport notification (UIT %(uit)s) is registered at "
+                        "ANAF for exactly these goods. Delete the notification "
+                        "first.",
+                        batch=batch.display_name,
+                        uit=document.l10n_ro_edi_stock_uit,
+                    )
+                )
+
+    def write(self, vals):
+        if "picking_ids" in vals:
+            self._l10n_ro_edi_stock_check_transfers_locked()
+        locked = self.env["stock.picking"]._L10N_RO_EDI_STOCK_SENT_LOCKED_FIELDS
+        if locked.intersection(vals):
+            self._l10n_ro_edi_stock_check_not_sent()
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_l10n_ro_edi_stock_live_uit(self):
+        self._l10n_ro_edi_stock_check_no_live_uit(self.env._("deleted"))
+
+    def action_cancel(self):
+        self._l10n_ro_edi_stock_check_no_live_uit(self.env._("cancelled"))
+        return super().action_cancel()
+
+    def _is_picking_auto_mergeable(self, picking):
+        # never slip a new transfer into goods already declared to ANAF
+        if self._l10n_ro_edi_stock_live_uit_document():
+            return False
+        return super()._is_picking_auto_mergeable(picking)
+
+    @api.depends("company_id", "state", "l10n_ro_edi_stock_state")
+    def _compute_l10n_ro_edi_stock_enable_fetch(self):
+        # EXTENDS: a deletion / confirmation / vehicle change waits for its
+        # ANAF processing status the same way a notification does.
+        res = super()._compute_l10n_ro_edi_stock_enable_fetch()
+        for record in self:
+            if (
+                record.l10n_ro_edi_stock_enable
+                and record.l10n_ro_edi_stock_state == "stock_action_sent"
+            ):
+                record.l10n_ro_edi_stock_enable_fetch = True
+        return res
+
+    def _l10n_ro_edi_stock_fetch_document_status(self):
+        # EXTENDS: also fetch the status of pending DEL / CON / MVH uploads
+        res = super()._l10n_ro_edi_stock_fetch_document_status()
+        self._l10n_ro_edi_stock_fetch_pending_actions()
+        return res
+
+    @api.depends("l10n_ro_edi_stock_state")
+    def _compute_l10n_ro_edi_stock_enable_amend(self):
+        # EXTENDS l10n_ro_edi_stock_batch: a vehicle change keeps the
+        # notification validated, so it can still be corrected.
+        res = super()._compute_l10n_ro_edi_stock_enable_amend()
+        for batch in self:
+            if (
+                batch.l10n_ro_edi_stock_enable
+                and batch.l10n_ro_edi_stock_state == "stock_vehicle_modified"
+                and batch._l10n_ro_edi_stock_get_last_document("stock_validated")
+            ):
+                batch.l10n_ro_edi_stock_enable_amend = True
+        return res
 
     @api.model
     def _l10n_ro_edi_stock_default_price_source(self):

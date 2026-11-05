@@ -48,7 +48,12 @@
         <field name="name">l10n.ro.edi.stock.document.form</field>
         <field name="model">l10n_ro_edi.document</field>
         <field name="arch" type="xml">
-            <form string="eTransport Document" create="false" edit="false">
+            <form
+                string="eTransport Document"
+                create="false"
+                edit="false"
+                delete="false"
+            >
                 <sheet>
                     <group>
                         <group>

@@ -8,6 +8,7 @@ the sum of its components, so changing a component moves the kit with it.
 """
 
 from odoo import Command
+from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -184,3 +185,43 @@ class TestKitOnPricelist(TransactionCase):
 
     def test_a_plain_product_is_priced_the_usual_way(self):
         self.assertEqual(self._price(self.frame), 60.0)
+
+    # ------------------------------------------------------------------
+    # Ce nu poate fi un kit
+    # ------------------------------------------------------------------
+    def _kit_line(self, kit, component, qty=1.0):
+        return self.env["product.product.kit"].create(
+            {
+                "product_id": kit.id,
+                "component_product_id": component.id,
+                "product_qty": qty,
+            }
+        )
+
+    def test_a_component_needs_a_positive_quantity(self):
+        with self.assertRaises(ValidationError):
+            self._kit_line(self.kit, self.frame, qty=0)
+        with self.assertRaises(ValidationError):
+            self._kit_line(self.kit, self.frame, qty=-1)
+        line = self.kit.kit_product_ids[0]
+        with self.assertRaises(ValidationError):
+            line.product_qty = 0
+
+    def test_a_kit_cannot_contain_itself(self):
+        with self.assertRaises(ValidationError):
+            self._kit_line(self.kit, self.kit)
+
+    def test_a_kit_cannot_contain_itself_through_a_component(self):
+        box = self.env["product.product"].create(
+            {"name": "Cutie cadou", "type": "consu", "list_price": 5.0}
+        )
+        self._kit_line(box, self.kit)
+        with self.assertRaises(ValidationError):
+            self._kit_line(self.kit, box)
+
+    def test_a_kit_can_be_a_component_of_another_kit(self):
+        box = self.env["product.product"].create(
+            {"name": "Cutie cadou", "type": "consu", "list_price": 5.0}
+        )
+        self._kit_line(box, self.kit)
+        self.assertEqual(box.kit_product_ids.component_product_id, self.kit)

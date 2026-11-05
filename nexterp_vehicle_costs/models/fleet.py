@@ -7,6 +7,7 @@
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 _FUEL = "fuel"
 _PARTS = "parts"
@@ -49,12 +50,53 @@ class FleetServiceType(models.Model):
 
     category = fields.Selection(
         selection_add=[(_FUEL, "Combustibil"), (_PARTS, "Parts")],
-        ondelete={_FUEL: "cascade", _PARTS: "cascade"},
+        # on uninstall the types (and the costs filed under them) are kept as
+        # plain services instead of being deleted
+        ondelete={
+            _FUEL: lambda recs: recs.write({"category": "service"}),
+            _PARTS: lambda recs: recs.write({"category": "service"}),
+        },
     )
 
 
+class FleetCostFromStockMixin(models.AbstractModel):
+    """A cost booked from a done stock move follows the move: it can only be
+    corrected by returning the goods, not edited or deleted by hand."""
+
+    _name = "nexterp.fleet.cost.stock.mixin"
+    _description = "Vehicle cost booked from a stock move"
+
+    _STOCK_LOCKED_FIELDS = {
+        "amount",
+        "vehicle_id",
+        "stock_move_id",
+        "product_id",
+        "quantity",
+        "price_unit",
+    }
+
+    def _check_stock_move_lock(self):
+        if any(cost.stock_move_id.state == "done" for cost in self):
+            raise UserError(
+                self.env._(
+                    "This vehicle cost was booked from a done stock move and "
+                    "follows it: return the goods to correct it."
+                )
+            )
+
+    def write(self, vals):
+        if self._STOCK_LOCKED_FIELDS.intersection(vals):
+            self._check_stock_move_lock()
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_done_stock_move(self):
+        self._check_stock_move_lock()
+
+
 class FleetVehicleLogServices(models.Model):
-    _inherit = "fleet.vehicle.log.services"
+    _name = "fleet.vehicle.log.services"
+    _inherit = ["fleet.vehicle.log.services", "nexterp.fleet.cost.stock.mixin"]
 
     owner_id = fields.Many2one(related="vehicle_id.owner_id", store=True)
     product_id = fields.Many2one("product.product")
@@ -67,7 +109,8 @@ class FleetVehicleLogServices(models.Model):
 
 
 class FleetVehicleLogContract(models.Model):
-    _inherit = "fleet.vehicle.log.contract"
+    _name = "fleet.vehicle.log.contract"
+    _inherit = ["fleet.vehicle.log.contract", "nexterp.fleet.cost.stock.mixin"]
 
     owner_id = fields.Many2one(related="vehicle_id.owner_id", store=True)
     product_id = fields.Many2one("product.product")

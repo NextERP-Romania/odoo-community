@@ -3,6 +3,7 @@
 # (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 from odoo.tools.misc import get_lang
 
 
@@ -108,7 +109,48 @@ class SaleOrderLineKit(models.Model):
         "tax_ids",
     )
 
+    def _is_kit_frozen(self):
+        """Detail lines are part of the quote: once the order is confirmed (or
+        the kit line was invoiced) they must not move the price any more."""
+        self.ensure_one()
+        return self.order_id.state not in ("draft", "sent", "cancel") or bool(
+            self.sale_line_id.invoice_lines
+        )
+
+    def _check_kit_editable(self):
+        if any(line._is_kit_frozen() for line in self):
+            self._raise_kit_frozen()
+
+    def _raise_kit_frozen(self):
+        raise UserError(
+            self.env._(
+                "The kit detail lines of a confirmed or invoiced sales order "
+                "can no longer be changed: they set the price of the kit "
+                "line the customer was billed for."
+            )
+        )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        if not self.env.context.get("change_from_soline"):
+            orders = self.env["sale.order"].browse(
+                [vals["order_id"] for vals in vals_list if vals.get("order_id")]
+            )
+            parents = self.env["sale.order.line"].browse(
+                [vals["sale_line_id"] for vals in vals_list if vals.get("sale_line_id")]
+            )
+            if any(
+                order.state not in ("draft", "sent", "cancel")
+                for order in orders | parents.order_id
+            ) or any(parents.mapped("invoice_lines")):
+                self.browse()._raise_kit_frozen()
+        return super().create(vals_list)
+
     def write(self, vals):
+        if {"sale_line_id", "order_id", *self._get_protected_fields()}.intersection(
+            vals
+        ):
+            self._check_kit_editable()
         res = super().write(vals)
         # Recompute parent SO line price only when relevant fields changed
         # AND we are not already inside a parent-driven change.
@@ -152,5 +194,5 @@ class SaleOrderLineKit(models.Model):
 
     def _check_line_unlink(self):
         if self._name == "sale.order.line.kit":
-            return self.browse()
+            return self.filtered(lambda line: line._is_kit_frozen())
         return super()._check_line_unlink()

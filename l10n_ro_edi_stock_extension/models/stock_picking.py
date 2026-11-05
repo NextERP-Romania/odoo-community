@@ -24,7 +24,10 @@ from .etransport_errors import (
     locate_element,
     parse_xsd_errors,
 )
-from .l10n_ro_edi_stock_document import EXTRA_DOCUMENT_STATES
+from .l10n_ro_edi_stock_document import (
+    EXTRA_DOCUMENT_STATES,
+    RECORD_STATE_ONDELETE,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -42,7 +45,8 @@ _STREET_NUMBER_PATTERN = re.compile(
 
 
 class StockPicking(models.Model):
-    _inherit = "stock.picking"
+    _name = "stock.picking"
+    _inherit = ["stock.picking", "l10n.ro.edi.stock.integrity.mixin"]
 
     # The base ``l10n_ro_edi_stock_state`` field copies ``document.state`` into a
     # Selection limited to DOCUMENT_STATES. The extension adds extra document
@@ -51,7 +55,7 @@ class StockPicking(models.Model):
     # ``ValueError: Wrong value ... 'stock_vehicle_modified'``.
     l10n_ro_edi_stock_state = fields.Selection(
         selection_add=EXTRA_DOCUMENT_STATES,
-        ondelete={k: "set null" for k, _ in EXTRA_DOCUMENT_STATES},
+        ondelete=RECORD_STATE_ONDELETE,
     )
 
     # Configurable price source per transfer
@@ -89,6 +93,77 @@ class StockPicking(models.Model):
         help="OUG 41/2022 art. 8 par. 1^3 - declaration allowed until the end "
         "of the next working day after the ANAF system is restored.",
     )
+
+    ################################################################################
+    # Integrity: a transfer with a live UIT stays until ANAF is told otherwise
+    ################################################################################
+
+    # eTransport data the notification was built from; frozen while ANAF is
+    # still processing it (same as the base form's readonly fields).
+    _L10N_RO_EDI_STOCK_SENT_LOCKED_FIELDS = {
+        "l10n_ro_edi_stock_operation_type",
+        "l10n_ro_edi_stock_operation_scope",
+        "l10n_ro_edi_stock_remarks",
+        "l10n_ro_edi_stock_vehicle_number",
+        "l10n_ro_edi_stock_trailer_1_number",
+        "l10n_ro_edi_stock_trailer_2_number",
+        "l10n_ro_edi_stock_start_loc_type",
+        "l10n_ro_edi_stock_start_bcp",
+        "l10n_ro_edi_stock_start_customs_office",
+        "l10n_ro_edi_stock_end_loc_type",
+        "l10n_ro_edi_stock_end_bcp",
+        "l10n_ro_edi_stock_end_customs_office",
+        "l10n_ro_edi_stock_price_source",
+        "l10n_ro_edi_stock_post_outage",
+        "l10n_ro_edi_stock_document_line_ids",
+        "l10n_ro_edi_stock_previous_ids",
+    }
+
+    def write(self, vals):
+        if self._L10N_RO_EDI_STOCK_SENT_LOCKED_FIELDS.intersection(vals):
+            self._l10n_ro_edi_stock_check_not_sent()
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_l10n_ro_edi_stock_live_uit(self):
+        self._l10n_ro_edi_stock_check_no_live_uit(self.env._("deleted"))
+
+    def action_cancel(self):
+        self._l10n_ro_edi_stock_check_no_live_uit(self.env._("cancelled"))
+        return super().action_cancel()
+
+    @api.depends("company_id", "state", "l10n_ro_edi_stock_state")
+    def _compute_l10n_ro_edi_stock_enable_fetch(self):
+        # EXTENDS: a deletion / confirmation / vehicle change waits for its
+        # ANAF processing status the same way a notification does.
+        res = super()._compute_l10n_ro_edi_stock_enable_fetch()
+        for record in self:
+            if (
+                record.l10n_ro_edi_stock_enable
+                and record.l10n_ro_edi_stock_state == "stock_action_sent"
+            ):
+                record.l10n_ro_edi_stock_enable_fetch = True
+        return res
+
+    def _l10n_ro_edi_stock_fetch_document_status(self):
+        # EXTENDS: also fetch the status of pending DEL / CON / MVH uploads
+        res = super()._l10n_ro_edi_stock_fetch_document_status()
+        self._l10n_ro_edi_stock_fetch_pending_actions()
+        return res
+
+    @api.depends("l10n_ro_edi_stock_state")
+    def _compute_l10n_ro_edi_stock_enable_amend(self):
+        # EXTENDS l10n_ro_edi_stock: after a vehicle change the notification is
+        # still the validated one and can still be corrected.
+        res = super()._compute_l10n_ro_edi_stock_enable_amend()
+        for picking in self:
+            if (
+                picking.l10n_ro_edi_stock_enable
+                and picking.l10n_ro_edi_stock_state == "stock_vehicle_modified"
+                and picking._l10n_ro_edi_stock_get_last_document("stock_validated")
+            ):
+                picking.l10n_ro_edi_stock_enable_amend = True
+        return res
 
     ################################################################################
     # Stricter validation per ANAF Schematron v2.0.2
