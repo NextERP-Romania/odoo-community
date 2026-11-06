@@ -38,7 +38,3 @@ class AccountMoveLine(models.Model):
             if s.fleet_service_type_id:
                 s.need_vehicle = True
         return res
-
-    def cancel_vehicle_cost(self):
-        for s in self.cost_ids:
-            s.source.unlink()

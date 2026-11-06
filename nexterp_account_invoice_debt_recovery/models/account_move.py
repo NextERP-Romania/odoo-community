@@ -13,11 +13,14 @@ class AccountMove(models.Model):
     debt_recovery_text = fields.Text()
     payment_state = fields.Selection(
         selection_add=[("debt_recovery", "Debt Recovery")],
-        ondelete={"debt_recovery": "cascade"},
+        # Never "cascade": uninstalling the module must not delete invoices.
+        ondelete={
+            "debt_recovery": lambda moves: moves._debt_recovery_reset_payment_state()
+        },
     )
     status_in_payment = fields.Selection(
         selection_add=[("debt_recovery", "Debt Recovery")],
-        ondelete={"debt_recovery": "cascade"},
+        ondelete={"debt_recovery": "set null"},
     )
     debt_state = fields.Selection(
         string="Debt Status",
@@ -34,6 +37,13 @@ class AccountMove(models.Model):
     def _compute_debt_company(self):
         for record in self:
             record.debt_company = record.company_id.country_code == "RO"
+
+    def _debt_recovery_reset_payment_state(self):
+        """Give back the standard payment state (not_paid / partial / paid...)
+        to the invoices in debt recovery, used when the selection value goes
+        away (module uninstall)."""
+        self._compute_payment_state()
+        self.flush_recordset(["payment_state"])
 
     def action_mark_as_debt_recovery(self):
         self.ensure_one()

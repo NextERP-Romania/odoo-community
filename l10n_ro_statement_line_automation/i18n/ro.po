@@ -29,3 +29,22 @@ msgstr "Nume afișat"
 #: model:ir.model.fields,field_description:l10n_ro_statement_line_automation.field_account_bank_statement_line__id
 msgid "ID"
 msgstr "ID"
+
+#. module: l10n_ro_statement_line_automation
+#: model:ir.model,name:l10n_ro_statement_line_automation.model_account_bank_statement
+msgid "Bank Statement"
+msgstr "Extras bancar"
+
+#. module: l10n_ro_statement_line_automation
+#: model:ir.model.fields,field_description:l10n_ro_statement_line_automation.field_account_bank_statement__l10n_ro_auto_statement
+msgid "Daily Statement Created Automatically"
+msgstr "Extras zilnic creat automat"
+
+#. module: l10n_ro_statement_line_automation
+#: model:ir.model.fields,help:l10n_ro_statement_line_automation.field_account_bank_statement__l10n_ro_auto_statement
+msgid ""
+"Statement opened by the module for the lines of one banking day. Its ending "
+"balance follows the lines that join it."
+msgstr ""
+"Extras deschis de modul pentru liniile unei zile bancare. Soldul final "
+"urmează liniile care intră în el."

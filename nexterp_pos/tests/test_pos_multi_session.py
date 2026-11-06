@@ -111,8 +111,8 @@ class TestPosMultiSession(CommonPosTest):
 
     def test_closing_hands_the_drawer_to_the_session_behind(self):
         first = self._session(1)
-        second = self._session(2)
-        third = self._session(3)
+        second = self._session(2, state="opening_control")
+        third = self._session(3, state="opening_control")
         self._drawer(first).balance_end_real = 500.0
         self._drawer(second)
         self._drawer(third)
@@ -124,9 +124,20 @@ class TestPosMultiSession(CommonPosTest):
         self.assertEqual(second.bank_statement_id.balance_start, 500.0)
         self.assertEqual(third.bank_statement_id.balance_start, 0.0)
 
-    def test_a_register_without_the_setting_rebuilds_nothing(self):
+    def test_a_counted_opening_balance_is_never_overwritten(self):
+        """A session whose opening cash was already counted and confirmed
+        keeps that figure when the session in front of it closes."""
         first = self._session(1)
         second = self._session(2)
+        self._drawer(second).balance_start = 42.0
+        self._drawer(first).balance_end_real = 500.0
+        first._validate_session_accounting()
+        second.invalidate_recordset()
+        self.assertEqual(second.bank_statement_id.balance_start, 42.0)
+
+    def test_a_register_without_the_setting_rebuilds_nothing(self):
+        first = self._session(1)
+        second = self._session(2, state="opening_control")
         # Both exist; now the register goes back to one session at a time.
         self.config.pos_multi_session = False
         self._drawer(second).balance_start = 42.0

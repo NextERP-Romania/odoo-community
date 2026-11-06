@@ -5,18 +5,24 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form" />
         <field name="arch" type="xml">
-            <button id="account_invoice_payment_btn" position="attributes">
-                <attribute name="invisible">
-                    debt_company and (state != 'posted' or payment_state not in ['not_paid', 'partial', 'debt_recovery'] or move_type == 'entry')
-                </attribute>
-            </button>
             <button id="account_invoice_payment_btn" position="after">
+                <!-- Register Payment for invoices in debt recovery (core buttons hide on this state) -->
+                <button
+                    name="action_register_payment"
+                    id="account_invoice_debt_recovery_payment_btn"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="not debt_company or state != 'posted' or payment_state != 'debt_recovery' or move_type == 'entry'"
+                    context="{'dont_redirect_to_payments': True, 'display_account_trust': True}"
+                    string="Pay"
+                    groups="account.group_account_invoice"
+                />
                 <button
                     name="action_mark_as_debt_recovery"
                     id="account_invoice_debt_recovery"
                     type="object"
                     class="oe_highlight"
-                    invisible="debt_company and (debt_recovery != False or state != 'posted' or payment_state not in ['not_paid', 'partial'] or move_type != 'out_invoice')"
+                    invisible="not debt_company or (debt_recovery != False or state != 'posted' or payment_state not in ['not_paid', 'partial'] or move_type != 'out_invoice')"
                     string="Mark as Debt Recovery"
                     groups="account.group_account_invoice"
                 />
@@ -37,17 +43,17 @@
                 >
                     <group id="debt_recovery_group">
                         <group name="debt_recovery">
-                            <field name="debt_recovery" invisibile="1" />
+                            <field name="debt_recovery" />
                             <field name="debt_recovery_done" readonly="1" />
-                            <field name="debt_state" invisibile="1" />
-                            <field name="debt_case_date" invisibile="1" />
+                            <field name="debt_state" />
+                            <field name="debt_case_date" />
                         </group>
                         <group name="debt_recovery">
-                            <field name="debt_law" invisibile="1" />
-                            <field name="debt_amount" invisibile="1" />
-                            <field name="debt_commission" invisibile="1" />
-                            <field name="debt_penalties" invisibile="1" />
-                            <field name="debt_company" invisibile="1" />
+                            <field name="debt_law" />
+                            <field name="debt_amount" />
+                            <field name="debt_commission" />
+                            <field name="debt_penalties" />
+                            <field name="debt_company" invisible="1" />
                         </group>
                     </group>
                     <!-- Debt Recovery note -->
