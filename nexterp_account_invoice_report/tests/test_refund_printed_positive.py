@@ -44,18 +44,20 @@ class TestRefundPrintedNegative(AccountTestInvoicingCommon):
 
     def test_by_default_a_credit_note_prints_positive(self):
         """That is Odoo's way, and it stays the default."""
-        self.assertGreater(self._move().tax_totals["total_amount_currency"], 0)
+        self.assertGreater(
+            self._move()._nexterp_report_tax_totals()["total_amount_currency"], 0
+        )
 
     def test_with_the_setting_on_the_totals_print_negative(self):
         self.company.print_show_refunds = True
-        totals = self._move().tax_totals
+        totals = self._move()._nexterp_report_tax_totals()
         self.assertLess(totals["total_amount_currency"], 0)
         self.assertLess(totals["base_amount_currency"], 0)
         self.assertLess(totals["tax_amount_currency"], 0)
 
     def test_the_tax_lines_under_the_total_turn_too(self):
         self.company.print_show_refunds = True
-        for subtotal in self._move().tax_totals["subtotals"]:
+        for subtotal in self._move()._nexterp_report_tax_totals()["subtotals"]:
             self.assertLess(subtotal["base_amount_currency"], 0)
             for group in subtotal["tax_groups"]:
                 self.assertLess(group["tax_amount_currency"], 0)
@@ -64,12 +66,41 @@ class TestRefundPrintedNegative(AccountTestInvoicingCommon):
     def test_an_ordinary_invoice_is_left_alone(self):
         self.company.print_show_refunds = True
         self.assertGreater(
-            self._move("out_invoice").tax_totals["total_amount_currency"], 0
+            self._move("out_invoice")._nexterp_report_tax_totals()[
+                "total_amount_currency"
+            ],
+            0,
         )
 
     def test_a_supplier_credit_note_turns_as_well(self):
         self.company.print_show_refunds = True
-        self.assertLess(self._move("in_refund").tax_totals["total_amount_currency"], 0)
+        self.assertLess(
+            self._move("in_refund")._nexterp_report_tax_totals()[
+                "total_amount_currency"
+            ],
+            0,
+        )
+
+    def test_the_tax_totals_field_keeps_odoo_signs(self):
+        """The real ``tax_totals`` (computed, with an inverse) is never
+        negated; only the printed copy is."""
+        self.company.print_show_refunds = True
+        refund = self._move()
+        self.assertGreater(refund.tax_totals["total_amount_currency"], 0)
+        self.assertGreater(refund.tax_totals["base_amount_currency"], 0)
+        refund.action_post()
+        self.assertGreater(refund.tax_totals["total_amount_currency"], 0)
+        self.assertLess(refund._nexterp_report_tax_totals()["total_amount_currency"], 0)
+
+    def test_the_credit_note_report_renders(self):
+        self.company.print_show_refunds = True
+        refund = self._move()
+        refund.action_post()
+        html = self.env["ir.actions.report"]._render_qweb_html(
+            "account.report_invoice", refund.ids
+        )[0]
+        self.assertTrue(html)
+        self.assertGreater(refund.amount_total, 0)
 
     def test_what_is_booked_does_not_move(self):
         """Only the printed figures turn; the accounts keep Odoo's signs."""

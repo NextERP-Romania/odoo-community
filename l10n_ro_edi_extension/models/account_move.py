@@ -22,6 +22,32 @@ HOLDING_DAYS = 3  # Arbitrary
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    def _l10n_ro_edi_check_not_in_spv(self):
+        """An invoice sent to (or validated by) the SPV cannot go back to
+        draft nor be cancelled: it must be corrected with a credit note.
+        Core only hides the reset button; this guards the action itself."""
+        for move in self:
+            if move.move_type in (
+                "out_invoice",
+                "out_refund",
+            ) and move.l10n_ro_edi_state in ("invoice_sent", "invoice_validated"):
+                raise UserError(
+                    self.env._(
+                        "The invoice %(name)s was sent to the SPV (e-Factura)"
+                        " and can no longer be reset to draft or cancelled."
+                        " Issue a credit note instead.",
+                        name=move.display_name,
+                    )
+                )
+
+    def button_draft(self):
+        self._l10n_ro_edi_check_not_in_spv()
+        return super().button_draft()
+
+    def button_cancel(self):
+        self._l10n_ro_edi_check_not_in_spv()
+        return super().button_cancel()
+
     @api.model
     def _l10n_ro_edi_fetch_invoices(self):
         """Synchronize bills/invoices from SPV"""
