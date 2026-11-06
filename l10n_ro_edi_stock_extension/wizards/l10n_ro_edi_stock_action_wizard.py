@@ -1,11 +1,11 @@
 # Copyright 2026 NextERP Romania SRL
-import base64
 import logging
 
 import markupsafe
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 from ..models.etransport_api_extra import ETransportAPIExtra
 from ..models.l10n_ro_edi_stock_document import (
@@ -232,7 +232,7 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
             "l10n_ro_edi_stock_load_id": content["index_incarcare"],
             "l10n_ro_edi_stock_uit": self.uit,
             "l10n_ro_edi_stock_event_type": event_type,
-            "attachment": base64.b64encode(raw_xml.encode("utf-8")),
+            "attachment": BinaryBytes(raw_xml.encode("utf-8")),
         }
         if extras:
             values.update(extras)

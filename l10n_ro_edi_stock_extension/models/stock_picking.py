@@ -1,5 +1,4 @@
 # Copyright 2026 NextERP Romania SRL
-import base64
 import logging
 import re
 
@@ -597,7 +596,7 @@ class StockPicking(models.Model):
                 "l10n_ro_edi_stock_uit": current.l10n_ro_edi_stock_uit,
             }
             if current.attachment:
-                values["raw_xml"] = base64.b64decode(current.attachment).decode()
+                values["raw_xml"] = current.attachment.content.decode()
             self._l10n_ro_edi_stock_create_document_stock_sending_failed(values)
         return super()._l10n_ro_edi_stock_report_unhandled_document_state(state)
 
