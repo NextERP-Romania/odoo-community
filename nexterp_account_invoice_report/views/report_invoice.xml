@@ -42,13 +42,13 @@
             />
             <t t-if="o.company_id.print_invoice_tax_value">
                 <span
-                    t-esc="sign * line.quantity"
+                    t-out="sign * line.quantity"
                     class="text-nowrap"
                     t-options='{"widget": "float", "precision": line.product_uom_id.report_precision or 0}'
                 >3.00</span>
             </t>
             <t t-else="">
-                <span t-esc="line.quantity" class="text-nowrap">3.00</span>
+                <span t-out="line.quantity" class="text-nowrap">3.00</span>
             </t>
         </xpath>
         <xpath expr="//span[@t-out='product_uom_qty']" position="replace">
@@ -58,13 +58,13 @@
             />
             <t t-if="o.company_id.print_invoice_tax_value">
                 <span
-                    t-esc="sign * product_uom_qty"
+                    t-out="sign * product_uom_qty"
                     class="text-nowrap"
                     t-options='{"widget": "float", "precision": line.product_id.uom_id.report_precision or 0}'
                 >3.00</span>
             </t>
             <t t-else="">
-                <span t-esc="product_uom_qty" class="text-nowrap">3.00</span>
+                <span t-out="product_uom_qty" class="text-nowrap">3.00</span>
             </t>
         </xpath>
         <xpath expr="//thead/tr" position="inside">
@@ -92,7 +92,7 @@
                 />
                 <td name="td_tax_value" class="text-end">
                     <span
-                        t-esc="sign * (line.price_total-line.price_subtotal)"
+                        t-out="sign * (line.price_total-line.price_subtotal)"
                         t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                     />
                 </td>
@@ -106,7 +106,7 @@
                 />
                 <td name="td_price_total" class="text-end">
                     <span
-                        t-esc="sign * line.price_total"
+                        t-out="sign * line.price_total"
                         t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                     />
                 </td>
@@ -122,7 +122,7 @@
             <t t-if="o.company_id.print_invoice_tax_value">
                 <td name="td_tax_value" class="text-end">
                     <span
-                        t-esc="section_tax_amount"
+                        t-out="section_tax_amount"
                         t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                     />
                 </td>
@@ -131,7 +131,7 @@
             <t t-if="o.company_id.print_invoice_total_value">
                 <td name="td_price_total" class="text-end">
                     <span
-                        t-esc="section_total_amount"
+                        t-out="section_total_amount"
                         t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                     />
                 </td>
@@ -183,7 +183,7 @@
                 <td name="td_tax_value_grouped" class="text-end">
                     <span
                         t-if="not hide_prices"
-                        t-esc="grouped_line['tax_amount']"
+                        t-out="grouped_line['tax_amount']"
                         t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                     />
                 </td>
@@ -193,7 +193,7 @@
                 <td name="td_price_total_grouped" class="text-end">
                     <span
                         t-if="not hide_prices"
-                        t-esc="grouped_line['price_total']"
+                        t-out="grouped_line['price_total']"
                         t-options='{"widget": "monetary", "display_currency": o.currency_id}'
                     />
                 </td>
