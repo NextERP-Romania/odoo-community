@@ -1,0 +1,432 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nexterp_vehicle_costs
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-05 00:00+0000\n"
+"PO-Revision-Date: 2026-11-05 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle__l10n_ro_nondeductible_percent__50
+msgid "50% Nondeductible"
+msgstr "50% nedeductibil"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__active
+msgid "Active"
+msgstr "Activ"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__state__cancelled
+msgid "Cancelled"
+msgstr "Anulat"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_service_type__category
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__category_type
+msgid "Category"
+msgstr "Categorie"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,help:nexterp_vehicle_costs.field_fleet_service_type__category
+#: model:ir.model.fields,help:nexterp_vehicle_costs.field_fleet_vehicle_log_services__category_type
+msgid ""
+"Choose whether the service refer to contracts, vehicle services or both"
+msgstr ""
+"Alegeți dacă serviciul se referă la contracte, servicii pentru vehicule sau "
+"ambele"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__state__closed
+msgid "Closed"
+msgstr "Închis"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_service_type__category__fuel
+msgid "Combustibil"
+msgstr "Combustibil"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__company_id
+msgid "Company"
+msgstr "Companie"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__cost_type__contract
+#: model_terms:ir.ui.view,arch_db:nexterp_vehicle_costs.fleet_log_report_view_search
+msgid "Contract"
+msgstr "Contract"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__source__fleet_vehicle_log_contract
+msgid "Contract Log"
+msgstr "Jurnal contracte"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__amount
+msgid "Cost"
+msgstr "Cost"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__cost_subtype_id
+msgid "Cost Subtype"
+msgstr "Subtip cost"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__cost_type
+msgid "Cost Type"
+msgstr "Tip cost"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.actions.act_window,name:nexterp_vehicle_costs.fleet_log_reporting_action
+msgid "Costs Analysis Log"
+msgstr "Jurnal analiză costuri"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.ui.menu,name:nexterp_vehicle_costs.fleet_log_reporting_menu
+msgid "Costs Log"
+msgstr "Jurnal costuri"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__currency_id
+msgid "Currency"
+msgstr "Monedă"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__date
+msgid "Date"
+msgstr "Dată"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,help:nexterp_vehicle_costs.field_fleet_vehicle_log_report__date
+msgid "Date when the cost has been executed"
+msgstr "Data la care a fost efectuat costul"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle__l10n_ro_nondeductible_percent__0
+msgid "Deductible"
+msgstr "Deductibil"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_account_move__display_name
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_service_type__display_name
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle__display_name
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__display_name
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__display_name
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__display_name
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_nexterp_fleet_cost_stock_mixin__display_name
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_product_template__display_name
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_stock_move__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__state__done
+msgid "Done"
+msgstr "Efectuat"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__purchaser_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__purchaser_id
+msgid "Driver"
+msgstr "Șofer"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,help:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__purchaser_id
+msgid "Driver address of the vehicle"
+msgstr "Adresa șoferului vehiculului"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__state__expired
+msgid "Expired"
+msgstr "Expirat"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_fleet_vehicle_log_report
+msgid "Fleet Cost Unified"
+msgstr "Costuri flotă unificate"
+
+#. module: nexterp_vehicle_costs
+#: model_terms:ir.ui.view,arch_db:nexterp_vehicle_costs.fleet_log_report_view_search
+#: model_terms:ir.ui.view,arch_db:nexterp_vehicle_costs.fleet_vechicle_log_report_view_form
+msgid "Fleet Costs Analysis"
+msgstr "Analiză costuri flotă"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_fleet_service_type
+msgid "Fleet Service Type"
+msgstr "Tip Seviciu Parc Auto"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__cost_type__fuel
+msgid "Fuel"
+msgstr "Combustibil"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_product_product__vehicle_contract
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_product_template__vehicle_contract
+msgid "Generate Vehicle Contract"
+msgstr "Generează contract vehicul"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_account_move__id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_account_move_line__id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_service_type__id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle__id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_nexterp_fleet_cost_stock_mixin__id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_product_template__id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_stock_move__id
+msgid "ID"
+msgstr "ID"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__state__open
+msgid "In Progress"
+msgstr "În desfășurare"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__state__futur
+msgid "Incoming"
+msgstr "De primit"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_account_move
+msgid "Journal Entry"
+msgstr "Înregistrare jurnal"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_account_move_line
+msgid "Journal Item"
+msgstr "Element jurnal"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__liter
+msgid "Liters"
+msgstr "Litri"
+
+#. module: nexterp_vehicle_costs
+#: model_terms:ir.actions.act_window,help:nexterp_vehicle_costs.fleet_log_reporting_action
+msgid "Manage efficiently your different effective vehicles Costs with Odoo."
+msgstr "Gestionați eficient costurile efective ale vehiculelor cu Odoo."
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__move_line_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__move_line_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__move_line_id
+msgid "Move Line"
+msgstr "Linie notă contabilă"
+
+#. module: nexterp_vehicle_costs
+#: model_terms:ir.actions.act_window,help:nexterp_vehicle_costs.fleet_log_reporting_action
+msgid "No data for analysis"
+msgstr "Nu există date pentru analiză"
+
+#. module: nexterp_vehicle_costs
+#: model_terms:ir.ui.view,arch_db:nexterp_vehicle_costs.fleet_vehicle_view_form
+msgid "Non Deductible Percent"
+msgstr "Procent nedeductibil"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle__l10n_ro_nondeductible_percent__100
+msgid "Nondeductible"
+msgstr "Nedeductibil"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle__not_deductible
+#: model_terms:ir.ui.view,arch_db:nexterp_vehicle_costs.fleet_vehicle_view_form
+msgid "Not Deductible"
+msgstr "Nedeductibil"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle__owner_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__owner_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__owner_id
+msgid "Owner"
+msgstr "Proprietar"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_service_type__category__parts
+msgid "Parts"
+msgstr "Piese"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__price_unit
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__price_unit
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__price_unit
+msgid "Price Unit"
+msgstr "Preț unitar"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_product_template
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__product_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__product_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__product_id
+msgid "Product"
+msgstr "Produs"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__quantity
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__quantity
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__quantity
+msgid "Quantity"
+msgstr "Cantitate"
+
+#. module: nexterp_vehicle_costs
+#: model:fleet.service.type,name:nexterp_vehicle_costs.data_fleet_service_type_refuel
+msgid "Realimentare"
+msgstr "Realimentare"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_stock_move__refuel
+msgid "Refuel"
+msgstr "Realimentare"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle__l10n_ro_nondeductible_percent
+msgid "Romania - Non Deductible Percent"
+msgstr "România - procent nedeductibil"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__state__running
+msgid "Running"
+msgstr "În derulare"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__cost_type__service
+#: model_terms:ir.ui.view,arch_db:nexterp_vehicle_costs.fleet_log_report_view_search
+msgid "Service"
+msgstr "Serviciu"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__source__fleet_vehicle_log_service
+msgid "Service Log"
+msgstr "Jurnal servicii"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_fleet_vehicle_log_services
+msgid "Services for vehicles"
+msgstr "Servicii pentru vehicule"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__source
+msgid "Source Data"
+msgstr "Date sursă"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__state
+msgid "Stage"
+msgstr "Etapă"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_stock_move
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_contract__stock_move_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__stock_move_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_services__stock_move_id
+msgid "Stock Move"
+msgstr "Mișcare stoc"
+
+#. module: nexterp_vehicle_costs
+#: model_terms:ir.ui.view,arch_db:nexterp_vehicle_costs.fleet_vechicle_log_report_view_tree
+msgid "Sum of Cost"
+msgstr "Total cost"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle__tax_non_deductible
+msgid "Tax NonDeductible"
+msgstr "Taxă nedeductibilă"
+
+#. module: nexterp_vehicle_costs
+#. odoo-python
+#: code:addons/nexterp_vehicle_costs/models/stock.py:0
+msgid ""
+"The vehicle of done move %(move)s cannot be changed: its cost is already "
+"booked on vehicle %(vehicle)s."
+msgstr ""
+"Vehiculul mișcării efectuate %(move)s nu mai poate fi schimbat: costul ei "
+"este deja înregistrat pe vehiculul %(vehicle)s."
+
+#. module: nexterp_vehicle_costs
+#. odoo-python
+#: code:addons/nexterp_vehicle_costs/models/fleet.py:0
+msgid ""
+"This vehicle cost was booked from a done stock move and follows it: return "
+"the goods to correct it."
+msgstr ""
+"Acest cost de vehicul a fost înregistrat dintr-o mișcare de stoc efectuată "
+"și o urmează: returnați bunurile pentru a-l corecta."
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,help:nexterp_vehicle_costs.field_product_product__vehicle_contract
+#: model:ir.model.fields,help:nexterp_vehicle_costs.field_product_template__vehicle_contract
+msgid ""
+"Ticking this field will enable vehicle contract generation on supplier "
+"invoices automatically"
+msgstr ""
+"Bifarea acestui câmp activează generarea automată a contractelor de vehicul "
+"din facturile furnizorilor"
+
+#. module: nexterp_vehicle_costs
+#. odoo-python
+#: code:addons/nexterp_vehicle_costs/models/stock.py:0
+msgid ""
+"Tip cheltuiala combustibil inexistent.Adaugati unul in Configurari/Tipuri de servicii <Combustibil>\n"
+"Eroare la %s"
+msgstr ""
+"Tip cheltuială combustibil inexistent. Adăugați unul în Configurări/Tipuri de servicii <Combustibil>\n"
+"Eroare la %s"
+
+#. module: nexterp_vehicle_costs
+#. odoo-python
+#: code:addons/nexterp_vehicle_costs/models/stock.py:0
+msgid ""
+"Tip cheltuiala piese inexistent.Adaugati unul in Configurari/Tipuri de servicii <Piese>\n"
+"Eroare la %s"
+msgstr ""
+"Tip cheltuială piese inexistent. Adăugați unul în Configurări/Tipuri de servicii <Piese>\n"
+"Eroare la %s"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields.selection,name:nexterp_vehicle_costs.selection__fleet_vehicle_log_report__state__todo
+msgid "To Do"
+msgstr "De făcut"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_fleet_vehicle
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_fleet_vehicle_log_report__vehicle_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_stock_move__vehicle_id
+msgid "Vehicle"
+msgstr "Vehicul"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_fleet_vehicle_log_contract
+msgid "Vehicle Contract"
+msgstr "Contract Vehicul"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_stock_move__cost_ids
+msgid "Vehicle Costs"
+msgstr "Costuri vehicul"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_account_move_line__fleet_service_type_id
+#: model:ir.model.fields,field_description:nexterp_vehicle_costs.field_stock_move__fleet_service_type_id
+msgid "Vehicle Service Type"
+msgstr "Tip serviciu vehicul"
+
+#. module: nexterp_vehicle_costs
+#: model:ir.model,name:nexterp_vehicle_costs.model_nexterp_fleet_cost_stock_mixin
+msgid "Vehicle cost booked from a stock move"
+msgstr "Cost vehicul înregistrat dintr-o mișcare de stoc"

@@ -7,7 +7,10 @@
         <field name="arch" type="xml">
             <xpath expr="//page/field[@name='order_line']/.." position="after">
                 <page string="Kit Order Lines" name="kit_line_ids">
-                    <field name="kit_line_ids" readonly="state == 'cancel' or locked">
+                    <field
+                        name="kit_line_ids"
+                        readonly="state not in ('draft', 'sent') or locked"
+                    >
                         <list
                             string="Kit Lines"
                             editable="bottom"

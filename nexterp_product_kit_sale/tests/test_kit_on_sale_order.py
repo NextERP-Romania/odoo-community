@@ -9,6 +9,7 @@ moves the price the customer is quoted.
 """
 
 from odoo import Command
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -166,3 +167,84 @@ class TestKitOnSaleOrder(TransactionCase):
         )
         self.assertFalse(order.pricelist_id)
         self.assertEqual(order.order_line.price_unit, 100.0)
+
+    # ------------------------------------------------------------------
+    # Comanda confirmata si facturata
+    # ------------------------------------------------------------------
+    def _confirmed_order(self):
+        order = self._order()
+        order.action_confirm()
+        self.assertEqual(order.state, "sale")
+        return order
+
+    def test_flow_quote_confirm_invoice_keeps_the_kit_price(self):
+        self.kit.invoice_policy = "order"
+        order = self._confirmed_order()
+        self.assertEqual(order.order_line.price_unit, 100.0)
+        invoice = order._create_invoices()
+        self.assertEqual(invoice.invoice_line_ids.product_id, self.kit)
+        self.assertEqual(invoice.invoice_line_ids.price_unit, 100.0)
+        glass_line = order.kit_line_ids.filtered(
+            lambda line: line.product_id == self.glass
+        )
+        with self.assertRaises(UserError):
+            glass_line.price_unit = 30.0
+        self.assertEqual(order.order_line.price_unit, 100.0)
+        self.assertEqual(invoice.invoice_line_ids.price_unit, 100.0)
+
+    def test_the_detail_of_a_confirmed_order_cannot_be_edited(self):
+        order = self._confirmed_order()
+        glass_line = order.kit_line_ids.filtered(
+            lambda line: line.product_id == self.glass
+        )
+        with self.assertRaises(UserError):
+            glass_line.product_uom_qty = 0
+        with self.assertRaises(UserError):
+            glass_line.product_id = self.plain
+        self.assertEqual(glass_line.product_uom_qty, 2)
+        self.assertEqual(order.order_line.price_unit, 100.0)
+
+    def test_the_detail_of_a_confirmed_order_cannot_be_deleted_or_added_to(self):
+        order = self._confirmed_order()
+        with self.assertRaises(UserError):
+            order.kit_line_ids[0].unlink()
+        with self.assertRaises(UserError):
+            self.env["sale.order.line.kit"].create(
+                {
+                    "order_id": order.id,
+                    "sale_line_id": order.order_line.id,
+                    "product_id": self.plain.id,
+                    "product_uom_qty": 1,
+                    "price_unit": 5.0,
+                }
+            )
+        self.assertEqual(len(order.kit_line_ids), 2)
+
+    def test_a_confirmed_kit_line_cannot_change_its_quantity(self):
+        """The detail would no longer match what was sold."""
+        order = self._confirmed_order()
+        with self.assertRaises(UserError):
+            order.order_line.product_uom_qty = 3
+        self.assertEqual(order.order_line.product_uom_qty, 1)
+        glass_line = order.kit_line_ids.filtered(
+            lambda line: line.product_id == self.glass
+        )
+        self.assertEqual(glass_line.product_uom_qty, 2)
+
+    def test_a_confirmed_kit_line_still_takes_its_description(self):
+        order = self._confirmed_order()
+        order.order_line.name = "Tablou, rama neagra"
+        self.assertEqual(order.order_line.name, "Tablou, rama neagra")
+
+    def test_a_cancelled_order_lets_its_detail_go(self):
+        order = self._confirmed_order()
+        order._action_cancel()
+        self.assertEqual(order.state, "cancel")
+        order.order_line.unlink()
+        self.assertFalse(order.kit_line_ids)
+
+    def test_a_confirmed_plain_line_keeps_odoo_rules(self):
+        order = self._order(self.plain)
+        order.action_confirm()
+        order.order_line.product_uom_qty = 3
+        self.assertEqual(order.order_line.product_uom_qty, 3)
