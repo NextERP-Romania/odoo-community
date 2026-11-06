@@ -319,3 +319,31 @@ class AccountMove(models.Model):
             )
             batch_wizard = batch_model.create({"move_ids": to_send_invoices.ids})
             batch_wizard.action_send_and_print()
+
+    @api.model
+    def _l10n_ro_edi_fetch_invoice_status_cron(self):
+        ro_companies = (
+            self.env["res.company"]
+            .sudo()
+            .search([("l10n_ro_edi_access_token", "!=", False)])
+        )
+        for company in ro_companies:
+            invoices = (
+                self.env["account.move"]
+                .with_company(company)
+                .search(
+                    [
+                        ("l10n_ro_edi_state", "=", "invoice_sent"),
+                        ("state", "=", "posted"),
+                        ("company_id", "=", company.id),
+                    ]
+                )
+            )
+            if not invoices:
+                continue
+            try:
+                invoices._l10n_ro_edi_fetch_invoice_sent_documents()
+            except UserError as e:
+                _logger.warning(
+                    "ANAF status fetch failed for company %s: %s", company.id, e
+                )
