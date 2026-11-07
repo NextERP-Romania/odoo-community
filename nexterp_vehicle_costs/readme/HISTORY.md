@@ -1,5 +1,10 @@
 # Changelog
 
+## 20.0.1.1.1 (2026-11-07)
+
+- The module can be installed on 20.0 again: `l10n_ro_nondeductible_vat`,
+  which it depends on, is now available on this series.
+
 ## 20.0.1.1.0 (2026-11-06)
 
 - A vehicle cost booked from a done stock move follows the move: its amount,

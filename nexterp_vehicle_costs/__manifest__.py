@@ -5,7 +5,7 @@
 
 {
     "name": "NextERP - Vehicle Cost Management",
-    "version": "20.0.1.1.0",
+    "version": "20.0.1.1.1",
     "category": "Managing vehicles and contracts",
     "depends": ["account_fleet", "l10n_ro_nondeductible_vat"],
     "summary": "Manage vehicle costs, add categories for fuel and part, etc.",
@@ -21,9 +21,7 @@
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "support": "odooapps@nexterp.ro",
-    # Nu se instaleaza pe 20.0: cere `l10n_ro_nondeductible_vat`, care inca n-a ajuns pe
-    # seria asta in l10n-romania. De reactivat cand apare acolo.
-    "installable": False,
+    "installable": True,
     "auto_install": False,
     "development_status": "Mature",
     "maintainers": ["feketemihai"],
