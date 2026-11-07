@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_pos_pos_form" model="ir.ui.view">
+        <field name="name">pos.order.form.l10n.ro.edi.pos</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//group[@name='other_information']/field[@name='pos_reference']"
+                position="after"
+            >
+                <field name="l10n_ro_fiscal_receipt_number" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
