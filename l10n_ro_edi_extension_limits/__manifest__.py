@@ -8,6 +8,7 @@
     "depends": ["l10n_ro_edi_extension"],
     "data": [],
     "license": "LGPL-3",
+    "images": ["static/description/apps_icon.png"],
     "installable": True,
     "auto_install": True,
 }

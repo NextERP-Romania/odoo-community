@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP - Account EDI Journalt</h1>
         <p class="lead text-muted mb-3">NextERP - Account EDI Journal</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.0.0.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.0.0.1</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Accounting</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">LGPL-3</span>        </div>
       </div>
     </div>
@@ -179,7 +179,9 @@ journals to keep on EDI are configured immediately.</p>
 <p>Go to <strong>Accounting → Configuration → Journals</strong> and open each journal
 you want to keep on EDI:</p>
 <ol>
-<li>On the form, locate <strong>Enable EDI Send</strong> (right after <strong>Currency</strong>).</li>
+<li>On the form, locate <strong>Enable EDI Send</strong> (right after <strong>Currency</strong>).
+It is shown only on sales journals and on purchase journals marked
+<strong>Self Billing</strong>; other journals never send to SPV.</li>
 <li>Tick the checkbox.</li>
 <li>Save the journal.</li>
 </ol>
@@ -192,7 +194,8 @@ SPV reporting.</li>
 <p>Typical journals to leave disabled:</p>
 <ul>
 <li>Vendor bill journals (purchases are pulled by the ANAF API rather
-than pushed).</li>
+than pushed). A purchase journal marked <strong>Self Billing</strong> is the
+exception: the self-invoices issued on it go to SPV like sales.</li>
 <li>Miscellaneous journals used for manual allocations.</li>
 <li>Intercompany / consolidation journals where invoices are mirrored
 from another database and have already been reported once.</li>
@@ -280,7 +283,13 @@ needing to check it must open the journal record.</li>
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.0.0.0 (2026-05-25)</h2>
+      <h2>19.0.0.0.1 (2026-11-04)</h2>
+<ul>
+<li><strong>Enable EDI Send</strong> is shown only on sales journals and on purchase
+journals marked as self-billing, the only ones that issue e-Factura
+documents.</li>
+</ul>
+<h2>19.0.0.0.0 (2026-05-25)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>
