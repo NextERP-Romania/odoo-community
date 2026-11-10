@@ -21,6 +21,26 @@ class TestAccountingDateOnBills(AccountTestInvoicingCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.company_data["company"]
+        # This accounting-date override only applies to Romanian companies.
+        ro_country = cls.env.ref("base.ro")
+        cls.company.account_fiscal_country_id = ro_country
+        # A purchase tax in the RO fiscal country so the bill keeps a tax
+        # (has_tax) without tripping the taxes-vs-fiscal-country validation.
+        # The tax group must share the tax's country, so create both in RO.
+        ro_tax_group = cls.env["account.tax.group"].create(
+            {"name": "RO TVA (test)", "country_id": ro_country.id}
+        )
+        cls.ro_tax = cls.env["account.tax"].create(
+            {
+                "name": "RO TVA 19 (test)",
+                "amount": 19.0,
+                "amount_type": "percent",
+                "type_tax_use": "purchase",
+                "country_id": ro_country.id,
+                "tax_group_id": ro_tax_group.id,
+                "company_id": cls.company.id,
+            }
+        )
 
     def _bill(self, invoice_date, move_type="in_invoice"):
         return self.env["account.move"].create(
@@ -29,7 +49,15 @@ class TestAccountingDateOnBills(AccountTestInvoicingCommon):
                 "partner_id": self.partner_a.id,
                 "invoice_date": invoice_date,
                 "invoice_line_ids": [
-                    (0, 0, {"product_id": self.product_a.id, "price_unit": 100.0})
+                    (
+                        0,
+                        0,
+                        {
+                            "product_id": self.product_a.id,
+                            "price_unit": 100.0,
+                            "tax_ids": [(6, 0, self.ro_tax.ids)],
+                        },
+                    )
                 ],
             }
         )
