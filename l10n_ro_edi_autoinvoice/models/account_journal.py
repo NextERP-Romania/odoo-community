@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 # Same definitions as l10n_ro_account_enterprise, so the fields merge cleanly
 # when both modules are installed.
@@ -34,6 +35,30 @@ class AccountJournal(models.Model):
         )
         if view and view.active == bool(other_view):
             view.sudo().active = not other_view
+
+    def write(self, vals):
+        locked = {"l10n_ro_sequence_type", "l10n_ro_partner_id"} & set(vals)
+        if locked:
+            for journal in self:
+                changed = [
+                    fname
+                    for fname in locked
+                    if journal._fields[fname].convert_to_write(journal[fname], journal)
+                    != vals[fname]
+                ]
+                if changed and self.env["account.move"].sudo().search_count(
+                    [("journal_id", "=", journal.id), ("state", "=", "posted")],
+                    limit=1,
+                ):
+                    raise UserError(
+                        self.env._(
+                            "The journal %(journal)s already has posted entries:"
+                            " its self-invoicing type and partner can no longer"
+                            " be changed.",
+                            journal=journal.display_name,
+                        )
+                    )
+        return super().write(vals)
 
     @api.onchange("l10n_ro_sequence_type")
     def onchange_l10n_ro_sequence_type(self):

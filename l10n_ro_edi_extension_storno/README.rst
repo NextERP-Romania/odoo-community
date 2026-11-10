@@ -60,6 +60,17 @@ The setting is per company. Accounting entries are not changed: the
 credit note stays an ``out_refund`` in Odoo, only the XML sent to ANAF
 changes.
 
+Changelog
+=========
+
+Changelog
+=========
+
+19.0.1.0.0 (2026-11-09)
+-----------------------
+
+-  *Changelog tracking starts at this release.*
+
 Bug Tracker
 ===========
 

@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP - Vehicle Cost Management</h1>
         <p class="lead text-muted mb-3">Manage vehicle costs, add categories for fuel and part, etc.</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.3</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.1.0</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Managing vehicles and contracts</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">AGPL-3</span>        </div>
       </div>
     </div>
@@ -210,7 +210,27 @@
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.1 (2026-08-21)</h2>
+      <h2>19.0.1.1.0 (2026-11-05)</h2>
+<ul>
+<li>A vehicle cost booked from a done stock move follows the move: its amount,
+vehicle, product and quantities cannot be edited and it cannot be deleted;
+notes stay editable. Costs typed by hand are not affected.</li>
+<li>The vehicle (or the refuelling flag) of a done move that already has a cost
+cannot be changed any more.</li>
+<li>Returning goods from the vehicle's consumption location books a negative
+cost on the same vehicle, reversing the original one.</li>
+<li>Contract-type service categories are recognised (the comparison used
+<code>&quot;Contract&quot;</code> instead of <code>&quot;contract&quot;</code>).</li>
+<li>Uninstalling the module turns the fuel and parts service types into plain
+services instead of deleting them together with their costs.</li>
+<li>Cancelling a vendor bill removes the vehicle service costs made from its
+lines when it was posted (posting it again makes them anew).</li>
+<li>Removed code that could never run: a <code>stock.move.action_cancel</code> override
+(there is no such method), a bill-line cost cancellation on fields that do
+not exist, and the unused vehicle cost counters on journal entries.</li>
+<li>Romanian translation added.</li>
+</ul>
+<h2>19.0.1.0.1 (2026-08-21)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

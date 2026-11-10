@@ -91,3 +91,109 @@ class TestStatementLineAutomation(AccountTestInvoicingCommon):
             )
         )
         self.assertFalse(line.statement_id)
+
+    # ------------------------------------------------------------------
+    # Extrase introduse de utilizator
+    # ------------------------------------------------------------------
+    def _user_statement(self, amount, balance_end_real, date="2026-03-15"):
+        return self.env["account.bank.statement"].create(
+            {
+                "journal_id": self.journal.id,
+                "date": date,
+                "name": "Extras banca",
+                "balance_end_real": balance_end_real,
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "journal_id": self.journal.id,
+                            "date": date,
+                            "payment_ref": "Linie extras",
+                            "amount": amount,
+                        },
+                    )
+                ],
+            }
+        )
+
+    def test_a_complete_statement_of_the_user_is_not_extended(self):
+        statement = self._user_statement(100.0, 100.0)
+        self.assertTrue(statement.is_complete)
+        line = self._line(amount=40.0)
+        self.assertNotEqual(line.statement_id, statement)
+        self.assertTrue(line.statement_id.l10n_ro_auto_statement)
+        self.assertEqual(statement.balance_end_real, 100.0)
+        self.assertEqual(len(statement.line_ids), 1)
+
+    def test_an_incomplete_statement_of_the_user_keeps_its_ending_balance(self):
+        statement = self._user_statement(100.0, 300.0)
+        self.assertFalse(statement.is_complete)
+        line = self._line(amount=40.0)
+        self.assertEqual(line.statement_id, statement)
+        self.assertEqual(statement.balance_end, 140.0)
+        self.assertEqual(statement.balance_end_real, 300.0)
+
+    def test_the_daily_statement_ending_balance_follows_its_lines(self):
+        line = self._line(amount=100.0)
+        statement = line.statement_id
+        self.assertTrue(statement.l10n_ro_auto_statement)
+        self._line(amount=50.0)
+        self.assertEqual(statement.balance_end_real, 150.0)
+        self.assertTrue(statement.is_complete)
+
+    def test_lines_of_two_companies_created_together(self):
+        foreign = self.setup_other_company(name="Firma DE")["company"]
+        foreign.country_id = self.env.ref("base.de")
+        journal_de = (
+            self.env["account.journal"]
+            .with_company(foreign)
+            .create({"name": "Banca DE", "code": "BDE", "type": "bank"})
+        )
+        lines = (
+            self.env["account.bank.statement.line"]
+            .with_context(allowed_company_ids=[self.journal.company_id.id, foreign.id])
+            .create(
+                [
+                    {
+                        "journal_id": self.journal.id,
+                        "date": "2026-03-15",
+                        "payment_ref": "RO",
+                        "amount": 10.0,
+                    },
+                    {
+                        "journal_id": journal_de.id,
+                        "date": "2026-03-15",
+                        "payment_ref": "DE",
+                        "amount": 20.0,
+                    },
+                ]
+            )
+        )
+        self.assertTrue(lines[0].statement_id)
+        self.assertEqual(lines[0].statement_id.company_id, self.journal.company_id)
+        self.assertFalse(lines[1].statement_id)
+
+    # ------------------------------------------------------------------
+    # Flux complet
+    # ------------------------------------------------------------------
+    def test_flow_a_banking_day_from_import_to_reconciled_statement(self):
+        """Two lines of the day land in one statement, posted, with the
+        right balances; a line of the next day opens the next statement,
+        starting from the closing balance of the first."""
+        first = self._line(amount=100.0)
+        second = self._line(amount=-30.0)
+        day = first.statement_id
+        self.assertEqual(second.statement_id, day)
+        self.assertEqual(day.line_ids, first | second)
+        self.assertEqual(set(day.line_ids.mapped("state")), {"posted"})
+        self.assertRecordValues(
+            day, [{"balance_end": 70.0, "balance_end_real": 70.0, "is_complete": True}]
+        )
+        self.assertEqual(first.move_id.state, "posted")
+        self.assertEqual(sum(first.move_id.line_ids.mapped("debit")), 100.0)
+        next_line = self._line(amount=10.0, date="2026-03-16")
+        next_day = next_line.statement_id
+        self.assertNotEqual(next_day, day)
+        self.assertEqual(next_day.balance_start, 70.0)
+        self.assertEqual(next_day.balance_end_real, 80.0)

@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP POS</h1>
         <p class="lead text-muted mb-3">Keep several sessions open on one register and close them oldest first</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.3.0.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.3.1.0</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Generic Modules/Point of Sale</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">AGPL-3</span>        </div>
       </div>
     </div>
@@ -184,7 +184,13 @@ for itself; the rest of the database is untouched.</p>
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.3.0.0</h2>
+      <h2>19.0.3.1.0 (2026-11-05)</h2>
+<ul>
+<li>Closing a session rebuilds the opening balance only of the sessions behind
+it that still wait for their opening cash control; an opening balance a
+cashier already counted and confirmed is never overwritten.</li>
+</ul>
+<h2>19.0.3.0.0</h2>
 <ul>
 <li>Moved out of <code>l10n-romania-enterprise</code>: nothing about keeping several
 sessions open is Romanian. The module keeps its name, so a database that

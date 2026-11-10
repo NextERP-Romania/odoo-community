@@ -195,5 +195,18 @@
                 </td>
             </t>
         </xpath>
+        <!-- Totals: negated copy for credit notes, tax_totals stays untouched -->
+        <xpath
+            expr="//t[@t-call='account.document_tax_totals']/t[@t-set='tax_totals']"
+            position="attributes"
+        >
+            <attribute name="t-value">o._nexterp_report_tax_totals()</attribute>
+        </xpath>
+        <xpath
+            expr="//t[@t-call='account.document_tax_totals_company_currency_template']/preceding-sibling::t[@t-set='tax_totals']"
+            position="attributes"
+        >
+            <attribute name="t-value">o._nexterp_report_tax_totals()</attribute>
+        </xpath>
     </template>
 </odoo>

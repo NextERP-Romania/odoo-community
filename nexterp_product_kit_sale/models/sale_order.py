@@ -3,6 +3,7 @@
 # (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
 
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class SaleOrder(models.Model):
@@ -37,8 +38,41 @@ class SaleOrderLine(models.Model):
         "sale.order.line.kit", "sale_line_id", "Kit Sale Lines", copy=False
     )
 
+    def write(self, vals):
+        if self._name == "sale.order.line" and {
+            "product_id",
+            "product_uom_id",
+            "product_uom_qty",
+        }.intersection(vals):
+            for line in self.filtered(
+                lambda line: line.kit_line_ids
+                and line.order_id.state not in ("draft", "sent", "cancel")
+            ):
+                if (
+                    vals.get("product_id", line.product_id.id) != line.product_id.id
+                    or vals.get("product_uom_id", line.product_uom_id.id)
+                    != line.product_uom_id.id
+                    or line.product_uom_id.compare(
+                        vals.get("product_uom_qty", line.product_uom_qty),
+                        line.product_uom_qty,
+                    )
+                ):
+                    raise UserError(
+                        self.env._(
+                            "The kit %(kit)s on confirmed order %(order)s cannot "
+                            "change product, unit or quantity: its detail lines "
+                            "would no longer match. Cancel the order and quote "
+                            "the change again.",
+                            kit=line.product_id.display_name,
+                            order=line.order_id.name,
+                        )
+                    )
+        return super().write(vals)
+
     def unlink(self):
-        if self.kit_line_ids:
+        # sale.order.line.kit inherits this class; its own `kit_line_ids`
+        # matches on ids of the other table and may point back at itself
+        if self._name == "sale.order.line" and self.kit_line_ids:
             self.kit_line_ids.unlink()
         return super().unlink()
 

@@ -72,20 +72,24 @@
                                 readonly="state == 'done'"
                             >
                                 <list editable="bottom">
+                                    <field name="quant_id" column_invisible="1" />
                                     <field
                                         name="location_id"
                                         domain="[('id', 'in', parent.location_ids)]"
                                         options="{'no_create': True}"
+                                        readonly="quant_id"
                                     />
                                     <field
                                         name="product_id"
                                         domain="[('id', 'in', parent.product_ids)]"
                                         options="{'no_create': True}"
+                                        readonly="quant_id"
                                     />
                                     <field
                                         name="product_lot_id"
                                         domain="[('product_id', 'in', parent.product_ids)]"
                                         context="{'default_product_id': product_id}"
+                                        readonly="quant_id"
                                     />
                                     <field
                                         name="standard_price"

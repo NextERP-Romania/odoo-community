@@ -3,6 +3,7 @@
 # (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ProductKit(models.Model):
@@ -24,6 +25,38 @@ class ProductKit(models.Model):
     product_uom_id = fields.Many2one(
         related="component_product_id.uom_id", index=True, store=True
     )
+
+    @api.constrains("product_qty")
+    def _check_product_qty(self):
+        for kit_line in self:
+            if kit_line.product_qty <= 0:
+                raise ValidationError(
+                    self.env._(
+                        "The quantity of component %(component)s in kit %(kit)s "
+                        "must be greater than zero.",
+                        component=kit_line.component_product_id.display_name,
+                        kit=kit_line.product_id.display_name,
+                    )
+                )
+
+    @api.constrains("product_id", "component_product_id")
+    def _check_no_cycle(self):
+        for kit_line in self:
+            kit = kit_line.product_id
+            # walk down from the component: reaching the kit again is a cycle
+            seen = self.env["product.product"]
+            todo = kit_line.component_product_id
+            while todo:
+                if kit in todo:
+                    raise ValidationError(
+                        self.env._(
+                            "Kit %(kit)s cannot contain itself, directly or "
+                            "through one of its components.",
+                            kit=kit.display_name,
+                        )
+                    )
+                seen |= todo
+                todo = todo.kit_product_ids.component_product_id - seen
 
     @api.depends("product_id.display_name", "component_product_id.name")
     def _compute_display_name(self):

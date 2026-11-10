@@ -173,9 +173,11 @@ msgstr "Vehicul modificat"
 #. odoo-python
 #: code:addons/l10n_ro_edi_stock_batch_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
 msgid ""
-"eTransport %(action)s sent successfully (UIT: %(uit)s, load: %(load)s)."
+"eTransport %(action)s uploaded to ANAF (UIT: %(uit)s, load: %(load)s); fetch "
+"its status."
 msgstr ""
-"eTransport %(action)s trimis cu succes (UIT: %(uit)s, încărcare: %(load)s)."
+"eTransport %(action)s încărcat la ANAF (UIT: %(uit)s, încărcare: %(load)s); "
+"preluați starea."
 
 #. module: l10n_ro_edi_stock_batch_extension
 #: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_price_source
@@ -201,3 +203,36 @@ msgstr "Notificare anterioară eTransport (operațiunile 60/70)"
 #: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_l10n_ro_edi_stock_document_line
 msgid "eTransport transport document line"
 msgstr "Linie document transport eTransport"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "The transfers of batch %(batch)s cannot be changed: its eTransport notification (UIT %(uit)s) is registered at ANAF for exactly these goods. Delete the notification first."
+msgstr "Transferurile lotului %(batch)s nu pot fi modificate: notificarea sa eTransport (UIT %(uit)s) este înregistrată la ANAF exact pentru aceste bunuri. Ștergeți mai întâi notificarea."
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "deleted"
+msgstr "șters"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "cancelled"
+msgstr "anulat"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_state__stock_action_sent
+msgid "Action Sent"
+msgstr "Acțiune trimisă"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_enable_uit_action
+msgid "eTransport Action Allowed"
+msgstr "Acțiune eTransport permisă"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.actions.server,name:l10n_ro_edi_stock_batch_extension.ir_cron_l10n_ro_edi_stock_batch_fetch_status_ir_actions_server
+msgid "eTransport: fetch ANAF status of batch transfers"
+msgstr "eTransport: preluare stare ANAF pentru transferuri în lot"

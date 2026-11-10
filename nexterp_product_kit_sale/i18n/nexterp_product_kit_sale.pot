@@ -540,3 +540,15 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:nexterp_product_kit_sale.sale_order_form_quote
 msgid "days"
 msgstr ""
+
+#. module: nexterp_product_kit_sale
+#. odoo-python
+#: code:addons/nexterp_product_kit_sale/models/sale_order_kit.py:0
+msgid "The kit detail lines of a confirmed or invoiced sales order can no longer be changed: they set the price of the kit line the customer was billed for."
+msgstr ""
+
+#. module: nexterp_product_kit_sale
+#. odoo-python
+#: code:addons/nexterp_product_kit_sale/models/sale_order.py:0
+msgid "The kit %(kit)s on confirmed order %(order)s cannot change product, unit or quantity: its detail lines would no longer match. Cancel the order and quote the change again."
+msgstr ""

@@ -111,6 +111,8 @@ Go to **Accounting → Configuration → Journals** and open each journal
 you want to keep on EDI:
 
 1. On the form, locate **Enable EDI Send** (right after **Currency**).
+   It is shown only on sales journals and on purchase journals marked
+   **Self Billing**; other journals never send to SPV.
 2. Tick the checkbox.
 3. Save the journal.
 
@@ -123,7 +125,8 @@ Typical journals to enable:
 Typical journals to leave disabled:
 
 -  Vendor bill journals (purchases are pulled by the ANAF API rather
-   than pushed).
+   than pushed). A purchase journal marked **Self Billing** is the
+   exception: the self-invoices issued on it go to SPV like sales.
 -  Miscellaneous journals used for manual allocations.
 -  Intercompany / consolidation journals where invoices are mirrored
    from another database and have already been reported once.
@@ -212,6 +215,13 @@ Changelog
 
 Changelog
 =========
+
+19.0.0.0.1 (2026-11-04)
+-----------------------
+
+-  **Enable EDI Send** is shown only on sales journals and on purchase
+   journals marked as self-billing, the only ones that issue e-Factura
+   documents.
 
 19.0.0.0.0 (2026-05-25)
 -----------------------

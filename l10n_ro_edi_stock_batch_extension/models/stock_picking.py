@@ -1,9 +1,44 @@
 # Copyright 2026 NextERP Romania SRL
 from odoo import api, models
 
+from .stock_picking_batch import BATCH_DETACH_CTX
+
 
 class StockPicking(models.Model):
     _inherit = "stock.picking"
+
+    ################################################################################
+    # Integrity: the transfers of a batch with a live UIT are the declared goods
+    ################################################################################
+
+    def write(self, vals):
+        if "batch_id" in vals and not self.env.context.get(BATCH_DETACH_CTX):
+            new_batch = self.env["stock.picking.batch"].browse(vals["batch_id"] or [])
+            moved = self.filtered(lambda p: p.batch_id != new_batch)
+            if moved:
+                (moved.batch_id | new_batch)._l10n_ro_edi_stock_check_transfers_locked()
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_l10n_ro_edi_stock_live_batch(self):
+        self.batch_id._l10n_ro_edi_stock_check_transfers_locked()
+
+    # Odoo's own flows that take a transfer out of its batch: validating it
+    # (with or without backorder) and cancelling it.
+    def button_validate(self):
+        return super(
+            StockPicking, self.with_context(**{BATCH_DETACH_CTX: True})
+        ).button_validate()
+
+    def _create_backorder(self, backorder_moves=None):
+        return super(
+            StockPicking, self.with_context(**{BATCH_DETACH_CTX: True})
+        )._create_backorder(backorder_moves=backorder_moves)
+
+    def action_cancel(self):
+        return super(
+            StockPicking, self.with_context(**{BATCH_DETACH_CTX: True})
+        ).action_cancel()
 
     @api.depends("batch_id.state", "batch_id.l10n_ro_edi_stock_state")
     def _compute_l10n_ro_edi_stock_enable(self):

@@ -20,7 +20,7 @@ class AccountPaymentTermLine(models.Model):
         selection_add=[
             ("day_of_the_month", "Day of the current Month"),
         ],
-        ondelete={"day_of_the_month": "cascade"},
+        ondelete={"day_of_the_month": "set default"},
     )
 
     def _get_due_date(self, date_ref):

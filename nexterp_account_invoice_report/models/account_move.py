@@ -2,55 +2,68 @@
 # License OPL-1.0 or later
 # (https://www.odoo.com/documentation/user/16.0/legal/licenses/licenses.html#).
 
+import copy
+
 from odoo import models
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    def _compute_tax_totals(self):
-        res = super()._compute_tax_totals()
+    def _nexterp_report_tax_totals(self):
+        """Tax totals as printed on the invoice report.
 
-        # Add sign (-) to formatted amount and taxes in case of refund
-        # and if setting print_show_refunds is enabled
-        for move in self:
-            if move.company_id.print_show_refunds and move.move_type in [
-                "out_refund",
-                "in_refund",
+        With the ``print_show_refunds`` setting, credit notes print their
+        totals negative. The sign is flipped on a copy only: ``tax_totals`` is
+        a computed field with an inverse (it drives the form widget and can
+        write back on the move), so it must keep Odoo's own values.
+        """
+        self.ensure_one()
+        # l10n_ro_edi_extension_storno prints its storno invoices negative
+        # already: take its copy as is, never negate it a second time.
+        if hasattr(self, "_l10n_ro_is_storno_report") and (
+            self._l10n_ro_is_storno_report()
+        ):
+            return self._l10n_ro_report_tax_totals()
+        tax_totals = self.tax_totals
+        if not (
+            tax_totals
+            and self.company_id.print_show_refunds
+            and self.move_type in ("out_refund", "in_refund")
+        ):
+            return tax_totals
+        tax_totals = copy.deepcopy(tax_totals)
+        for key in [
+            "base_amount",
+            "base_amount_currency",
+            "tax_amount",
+            "tax_amount_currency",
+            "total_amount",
+            "total_amount_currency",
+        ]:
+            if key in tax_totals:
+                tax_totals[key] = -1 * tax_totals[key]
+        for subtotal in tax_totals.get("subtotals", []):
+            for key in [
+                "base_amount",
+                "base_amount_currency",
+                "tax_amount",
+                "tax_amount_currency",
             ]:
-                move_tax_totals = move.tax_totals
+                if key in subtotal:
+                    subtotal[key] = -1 * subtotal[key]
+            for group in subtotal.get("tax_groups", []):
                 for key in [
                     "base_amount",
                     "base_amount_currency",
+                    "display_base_amount",
+                    "display_base_amount_currency",
                     "tax_amount",
                     "tax_amount_currency",
-                    "total_amount",
-                    "total_amount_currency",
                 ]:
-                    if key in move_tax_totals:
-                        move_tax_totals[key] = -1 * move_tax_totals[key]
-                for subtotal in move_tax_totals.get("subtotals", []):
-                    for key in [
-                        "base_amount",
-                        "base_amount_currency",
-                        "tax_amount",
-                        "tax_amount_currency",
-                    ]:
-                        if key in subtotal:
-                            subtotal[key] = -1 * subtotal[key]
-                    for group in subtotal.get("tax_groups", []):
-                        for key in [
-                            "base_amount",
-                            "base_amount_currency",
-                            "display_base_amount",
-                            "display_base_amount_currency",
-                            "tax_amount",
-                            "tax_amount_currency",
-                        ]:
-                            if key in group:
-                                group[key] = -1 * group[key]
-                move.tax_totals = move_tax_totals
-        return res
+                    if key in group:
+                        group[key] = -1 * group[key]
+        return tax_totals
 
 
 class AccountMoveLine(models.Model):

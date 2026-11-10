@@ -125,6 +125,13 @@ Changelog
 Changelog
 =========
 
+19.0.3.1.0 (2026-11-05)
+-----------------------
+
+-  Closing a session rebuilds the opening balance only of the sessions
+   behind it that still wait for their opening cash control; an opening
+   balance a cashier already counted and confirmed is never overwritten.
+
 19.0.3.0.0
 ----------
 
