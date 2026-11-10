@@ -21,6 +21,8 @@ class TestAccountingDateOnBills(AccountTestInvoicingCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.company_data["company"]
+        # This accounting-date override only applies to Romanian companies.
+        cls.company.account_fiscal_country_id = cls.env.ref("base.ro")
 
     def _bill(self, invoice_date, move_type="in_invoice"):
         return self.env["account.move"].create(
