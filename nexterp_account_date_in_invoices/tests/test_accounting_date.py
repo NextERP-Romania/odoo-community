@@ -26,15 +26,10 @@ class TestAccountingDateOnBills(AccountTestInvoicingCommon):
         cls.company.account_fiscal_country_id = ro_country
         # A purchase tax in the RO fiscal country so the bill keeps a tax
         # (has_tax) without tripping the taxes-vs-fiscal-country validation.
-        cls.ro_tax = cls.env["account.tax"].create(
-            {
-                "name": "RO TVA 19 (test)",
-                "amount": 19.0,
-                "amount_type": "percent",
-                "type_tax_use": "purchase",
-                "country_id": ro_country.id,
-                "company_id": cls.company.id,
-            }
+        # Copy the chart's purchase tax to inherit its tax group and
+        # repartition lines, only switching the country.
+        cls.ro_tax = cls.company_data["default_tax_purchase"].copy(
+            {"name": "RO TVA 19 (test)", "country_id": ro_country.id}
         )
 
     def _bill(self, invoice_date, move_type="in_invoice"):
