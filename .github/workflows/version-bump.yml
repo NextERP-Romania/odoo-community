@@ -2,15 +2,19 @@
 # uitat s-o ridice el.
 #
 # Bumpul se scrie pe branch-ul pull request-ului, ca un commit in plus, si
-# README.md (tabelul cu versiuni) se regenereaza odata cu el.
+# tabelul de module din README.md se regenereaza odata cu el.
 #
-# Setari necesare:
-#   - Settings -> Actions -> General -> "Read and write permissions"
-#   - Secret `REGEN_PAT` (PAT classic cu scope `repo`). Fara el, workflow-ul
-#     nu poate impinge commit-ul -- si, mai ales, un push facut cu
-#     GITHUB_TOKEN nu re-declanseaza `tests`/`pre-commit`, deci pull
-#     request-ul ar ramane fara rezultate pe varful nou. In lipsa secretului
-#     workflow-ul doar verifica si pica, lasand bumpul in seama autorului.
+# Secretul `REGEN_PAT` (PAT classic cu scope `repo`) e pus pe organizatie,
+# vizibil doar repo-urilor private, deci repo-urile private il au de-a gata.
+# Unde nu ajunge -- un repo public, sau un pull request dintr-un fork, care nu
+# primeste secrete si pe al carui branch nu putem scrie -- workflow-ul doar
+# verifica si pica, lasand bumpul in seama autorului.
+#
+# Un push facut cu GITHUB_TOKEN in locul PAT-ului nu re-declanseaza
+# `tests`/`pre-commit`, deci pull request-ul ar ramane fara rezultate pe varful
+# nou; de aceea fara PAT nu impingem deloc.
+#
+# Mai cere: Settings -> Actions -> General -> "Read and write permissions".
 
 name: version bump
 
@@ -30,30 +34,36 @@ concurrency:
 jobs:
   bump:
     runs-on: ubuntu-latest
-    # Un pull request dintr-un fork nu primeste secretele si nu se poate
-    # impinge inapoi; acolo ramane doar verificarea din `pre-commit`.
-    if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
       # `secrets` nu se poate citi direct intr-un `if`, deci intrebam o data
       # daca avem token si lucram mai departe cu raspunsul.
-      - name: Detect push token
-        id: token
+      - name: Can we push the bump?
+        id: mode
         env:
           PAT: ${{ secrets.REGEN_PAT }}
+          SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
-          if [ -n "${PAT}" ]; then
-            echo "has_pat=true" >> $GITHUB_OUTPUT
+          if [ -n "${PAT}" ] && [ "${SAME_REPO}" = "true" ]; then
+            echo "push=true" >> $GITHUB_OUTPUT
           else
-            echo "has_pat=false" >> $GITHUB_OUTPUT
+            echo "push=false" >> $GITHUB_OUTPUT
+            echo "::notice::Fara REGEN_PAT sau pull request din fork: doar verific versiunile."
           fi
 
+      # Branch-ul pull request-ului, cand putem scrie pe el.
       - uses: actions/checkout@v4
+        if: steps.mode.outputs.push == 'true'
         with:
-          # Branch-ul pull request-ului, nu commit-ul de merge: pe el scriem.
           ref: ${{ github.head_ref }}
           # `bump_versions.py` compara cu baza pull request-ului.
           fetch-depth: 0
-          token: ${{ secrets.REGEN_PAT || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.REGEN_PAT }}
+
+      # Altfel commit-ul de merge e de ajuns: doar citim.
+      - uses: actions/checkout@v4
+        if: steps.mode.outputs.push != 'true'
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -64,16 +74,14 @@ jobs:
           git fetch --no-tags origin \
             "+refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
 
-      # Fara PAT nu putem impinge un commit care sa re-declanseze CI, deci
-      # semnalam problema in loc s-o reparam pe tacute.
-      - name: Check versions (fara REGEN_PAT)
-        if: steps.token.outputs.has_pat != 'true'
+      - name: Check versions
+        if: steps.mode.outputs.push != 'true'
         run: |
           python3 .github/scripts/bump_versions.py --check \
             "origin/${{ github.base_ref }}" HEAD
 
       - name: Bump versions
-        if: steps.token.outputs.has_pat == 'true'
+        if: steps.mode.outputs.push == 'true'
         id: bump
         run: |
           python3 .github/scripts/bump_versions.py \
