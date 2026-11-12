@@ -13,6 +13,19 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.addons.l10n_ro_edi.models.utils import make_efactura_request
 
 
+# Everything parsed here arrives from the SPV, so the parser is given no way
+# out of the document: entity resolution, DTD loading and network access all
+# off. `recover` stays where it was - the SPV does send invoices that are not
+# quite well formed - and only affects how hard lxml tries to read the tree.
+def _xml_parser(recover=False):
+    return etree.XMLParser(
+        recover=recover,
+        resolve_entities=False,
+        no_network=True,
+        load_dtd=False,
+    )
+
+
 class AccountMove(models.Model):
     _inherit = "account.move"
 
@@ -137,7 +150,7 @@ class AccountMove(models.Model):
         if not company_vat or not xml_bytes:
             return False
         try:
-            tree = etree.fromstring(xml_bytes, parser=etree.XMLParser(recover=True))
+            tree = etree.fromstring(xml_bytes, parser=_xml_parser(recover=True))
         except (etree.XMLSyntaxError, ValueError):
             return False
         if tree is None:
@@ -392,7 +405,7 @@ class AccountMove(models.Model):
                 return {"key_loading": False}
             return result
 
-        root = etree.fromstring(result["content"])
+        root = etree.fromstring(result["content"], parser=_xml_parser())
         if root.get("ExecutionStatus") == "1":
             # Namespace-agnostic: read errorMessage off any element carrying it
             # so the real SPV rejection reason is no longer swallowed.
