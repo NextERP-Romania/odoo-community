@@ -1,0 +1,109 @@
+# Ridica automat versiunea modulelor atinse de un pull request, daca autorul a
+# uitat s-o ridice el.
+#
+# Bumpul se scrie pe branch-ul pull request-ului, ca un commit in plus, si
+# README.md (tabelul cu versiuni) se regenereaza odata cu el.
+#
+# Setari necesare:
+#   - Settings -> Actions -> General -> "Read and write permissions"
+#   - Secret `REGEN_PAT` (PAT classic cu scope `repo`). Fara el, workflow-ul
+#     nu poate impinge commit-ul -- si, mai ales, un push facut cu
+#     GITHUB_TOKEN nu re-declanseaza `tests`/`pre-commit`, deci pull
+#     request-ul ar ramane fara rezultate pe varful nou. In lipsa secretului
+#     workflow-ul doar verifica si pica, lasand bumpul in seama autorului.
+
+name: version bump
+
+on:
+  pull_request:
+    branches:
+      - "19.0*"
+    paths-ignore:
+      - "**/static/description/**"
+      - "**/README.rst"
+      - "README.md"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    # Un pull request dintr-un fork nu primeste secretele si nu se poate
+    # impinge inapoi; acolo ramane doar verificarea din `pre-commit`.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      # `secrets` nu se poate citi direct intr-un `if`, deci intrebam o data
+      # daca avem token si lucram mai departe cu raspunsul.
+      - name: Detect push token
+        id: token
+        env:
+          PAT: ${{ secrets.REGEN_PAT }}
+        run: |
+          if [ -n "${PAT}" ]; then
+            echo "has_pat=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_pat=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          # Branch-ul pull request-ului, nu commit-ul de merge: pe el scriem.
+          ref: ${{ github.head_ref }}
+          # `bump_versions.py` compara cu baza pull request-ului.
+          fetch-depth: 0
+          token: ${{ secrets.REGEN_PAT || secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch base branch
+        run: |
+          git fetch --no-tags origin \
+            "+refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+
+      # Fara PAT nu putem impinge un commit care sa re-declanseze CI, deci
+      # semnalam problema in loc s-o reparam pe tacute.
+      - name: Check versions (fara REGEN_PAT)
+        if: steps.token.outputs.has_pat != 'true'
+        run: |
+          python3 .github/scripts/bump_versions.py --check \
+            "origin/${{ github.base_ref }}" HEAD
+
+      - name: Bump versions
+        if: steps.token.outputs.has_pat == 'true'
+        id: bump
+        run: |
+          python3 .github/scripts/bump_versions.py \
+            "origin/${{ github.base_ref }}" HEAD
+
+      - name: Regenerate the addons table
+        if: steps.bump.outputs.bumped != ''
+        run: |
+          # Fara marcajele generatorului nu avem ce regenera.
+          if ! grep -q '(addons)' README.md 2>/dev/null; then
+            echo "README.md nu are tabel de module; sar peste."
+            exit 0
+          fi
+          pip install --quiet \
+            "git+https://github.com/NextERP-Romania/maintainer-tools.git@2a9e0531afb2302457fc4cfd5c4a67eaef4833c0"
+          oca-gen-addons-table --addons-dir . --no-commit
+
+      - name: Commit and push
+        if: steps.bump.outputs.bumped != ''
+        env:
+          BUMPED: ${{ steps.bump.outputs.bumped }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Nimic de commis."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: bump versiuni pentru ${BUMPED}" \
+            -m "Versiunile modulelor atinse de acest pull request nu fusesera ridicate; ridicate automat de workflow-ul \`version bump\`."
+          git push origin "HEAD:${{ github.head_ref }}"
