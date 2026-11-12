@@ -108,7 +108,15 @@ def locate_element(raw_xml, line):
     if isinstance(raw_xml, str):
         raw_xml = raw_xml.encode()
     try:
-        root = etree.fromstring(raw_xml)
+        # Entities, DTDs and the network all off: this only has to walk the
+        # tree of a notification to point at the element ANAF complained
+        # about, and never has a reason to reach outside the document.
+        root = etree.fromstring(
+            raw_xml,
+            parser=etree.XMLParser(
+                resolve_entities=False, no_network=True, load_dtd=False
+            ),
+        )
     except etree.XMLSyntaxError:
         return None
     found = None
