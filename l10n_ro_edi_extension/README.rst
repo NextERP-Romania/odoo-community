@@ -195,6 +195,14 @@ Changelog
 Changelog
 =========
 
+19.0.1.1.1
+----------
+
+-  The XML that comes back from the SPV is parsed with entity
+   resolution, DTD loading and network access switched off, and an
+   archive member that unpacks to more than 64 MB is refused instead of
+   being read into memory.
+
 19.0.1.1.0 (2026-11-05)
 -----------------------
 
