@@ -109,6 +109,30 @@ class MessageSPV(models.Model):
                         "partner_id": customer.id,
                     }
                 )
+        # A self-invoice taken in outside a customer self-invoicing journal
+        # sits in an ordinary sale journal and carries the customer, while
+        # the message - which ANAF lists without cif_emitent - still carries
+        # the company. The matching in `l10n_ro_message_spv` asks for the
+        # partner of the two to agree, so it cannot pair them. The SPV index
+        # identifies the document on its own, so pair them here: an outgoing
+        # move answering a received message is exactly the self-invoice case.
+        unlinked = self.filtered(lambda m: not m.invoice_id and m.request_id)
+        if unlinked:
+            self_invoices = self.env["account.move"].search(
+                [
+                    ("company_id", "in", unlinked.company_id.ids),
+                    ("state", "!=", "cancel"),
+                    ("move_type", "in", ("out_invoice", "out_refund")),
+                    ("l10n_ro_edi_index", "in", unlinked.mapped("request_id")),
+                ]
+            )
+            for message in unlinked:
+                move = self_invoices.filtered(
+                    lambda i, m=message: i.company_id == m.company_id
+                    and i.l10n_ro_edi_index == m.request_id
+                )[:1]
+                if move:
+                    message.invoice_id = move.id
         return super().get_invoice_from_move()
 
     def create_invoice(self):
