@@ -30,8 +30,12 @@ class InterCompanyField(models.AbstractModel):
             return ["company_id"]
         return []
 
+    # No `depends_context`: the field is stored, so it has one value in the
+    # database and cannot vary with the company of whoever reads it. Declaring
+    # the context only made the cache believe otherwise. Records of a model
+    # that carries `company_id` - the ones this mixin is used on - read their
+    # company from the record anyway.
     @api.depends(lambda self: self._check_partner_id_in_fields())
-    @api.depends_context("company")
     def _compute_is_inter_company(self):
         for record in self:
             has_company = record._check_company_id_in_fields()

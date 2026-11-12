@@ -1,5 +1,10 @@
 # Changelog
 
+## 19.0.1.3.1
+
+- The parser that locates the element behind an ANAF error no longer
+  resolves entities and cannot reach the network.
+
 ## 19.0.1.3.0 (2026-11-05)
 
 - A transfer whose UIT is alive at ANAF (sent, validated, confirmed or with a
