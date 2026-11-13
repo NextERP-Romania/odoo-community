@@ -1,5 +1,14 @@
 # Changelog
 
+## 19.0.1.2.0
+
+- The module no longer depends on `l10n_ro_message_spv` (AGPL-3), so its
+  LGPL-3 license is consistent with its dependencies. The company setting
+  "Maximum number of days to download e-invoices" is defined here as well,
+  with the same definition, and the override that routed the SPV message
+  download of `l10n_ro_message_spv` through this module's paginated fetch was
+  dropped — `l10n_ro_message_spv` uses its own paginated implementation.
+
 ## 19.0.1.1.1
 
 - The XML that comes back from the SPV is parsed with entity resolution, DTD
