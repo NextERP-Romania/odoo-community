@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_l10n_ro_message_spv_tree" model="ir.ui.view">
+        <field name="model">l10n.ro.message.spv</field>
+        <field
+            name="inherit_id"
+            ref="l10n_ro_message_spv.view_l10n_ro_message_spv_tree"
+        />
+        <field name="arch" type="xml">
+            <field name="message_type" position="after">
+                <field name="l10n_ro_is_autoinvoice" optional="show" />
+            </field>
+        </field>
+    </record>
+    <record id="view_l10n_ro_message_spv_form" model="ir.ui.view">
+        <field name="model">l10n.ro.message.spv</field>
+        <field
+            name="inherit_id"
+            ref="l10n_ro_message_spv.view_l10n_ro_message_spv_form"
+        />
+        <field name="arch" type="xml">
+            <field name="message_type" position="after">
+                <field name="l10n_ro_is_autoinvoice" />
+            </field>
+        </field>
+    </record>
+</odoo>
