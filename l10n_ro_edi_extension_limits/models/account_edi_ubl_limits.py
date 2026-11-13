@@ -77,6 +77,12 @@ _ITEM_ADDITIONAL_PROPERTY_PATHS = {
 # UBL allows the element to repeat.
 _NOTE_MAX_LEN = 300
 
+# BT-22 (invoice note): the invoice is always sent, only the text that fits
+# is kept. ANAF accepts at most 20 cbc:Note (BR-RO-A020) of 300 chars
+# (BR-RO-L300); we stay below on purpose — adjust here if needed.
+_INVOICE_NOTE_MAX_LEN = 200
+_INVOICE_NOTE_MAX_COUNT = 10
+
 
 class AccountEdiXmlUBLRO(models.AbstractModel):
     _inherit = "account.edi.xml.ubl_ro"
@@ -148,14 +154,16 @@ class AccountEdiXmlUBLRO(models.AbstractModel):
     def _add_invoice_header_nodes(self, document_node, vals):
         res = super()._add_invoice_header_nodes(document_node, vals)
 
-        # BT-22 — split the invoice note into repeated cbc:Note tags
-        # (max 300 chars each, BR-RO-L300).
+        # BT-22 — split the invoice note into repeated cbc:Note tags of at
+        # most _INVOICE_NOTE_MAX_LEN chars; the count is capped in
+        # _ro_apply_length_limits (BR-RO-A020).
         invoice = vals["invoice"]
         if invoice.narration:
             plain = html2plaintext(invoice.narration).strip()
             if plain:
                 document_node["cbc:Note"] = [
-                    {"_text": s} for s in self.split_string(plain, _NOTE_MAX_LEN)
+                    {"_text": s}
+                    for s in self.split_string(plain, _INVOICE_NOTE_MAX_LEN)
                 ]
         return res
 
@@ -184,7 +192,22 @@ class AccountEdiXmlUBLRO(models.AbstractModel):
         self._ro_apply_length_limits(document_node)
         return document_node
 
+    def _ro_apply_invoice_note_limits(self, document_node):
+        # BT-22 — keep only the first _INVOICE_NOTE_MAX_COUNT notes, each of
+        # at most _INVOICE_NOTE_MAX_LEN chars; the rest of the text is
+        # dropped so the invoice is still accepted by ANAF (BR-RO-A020).
+        notes = document_node.get("cbc:Note")
+        if isinstance(notes, dict):
+            notes = [notes]
+        if not isinstance(notes, list):
+            return
+        notes = [n for n in notes if isinstance(n, dict) and n.get("_text")]
+        for note in notes:
+            self._ro_truncate_text(note, _INVOICE_NOTE_MAX_LEN)
+        document_node["cbc:Note"] = notes[:_INVOICE_NOTE_MAX_COUNT]
+
     def _ro_apply_length_limits(self, document_node):
+        self._ro_apply_invoice_note_limits(document_node)
         for path, max_len in _DOCUMENT_LIMITS.items():
             self._ro_apply_path(document_node, path, max_len)
 
