@@ -9,6 +9,11 @@ class ResCompany(models.Model):
     _inherit = "res.company"
 
     l10n_ro_edi_residence = fields.Integer(string="Period of Residence", default=5)
+    # Same definition as in l10n_ro_message_spv, so the two modules can share
+    # the column without depending on each other.
+    l10n_ro_download_einvoices_days = fields.Integer(
+        string="Maximum number of days to download e-invoices.", default=60
+    )
     l10n_ro_edi_error_notify_users = fields.Many2many(
         "res.users",
         relation="res_company_res_users_edi_notify_rel",

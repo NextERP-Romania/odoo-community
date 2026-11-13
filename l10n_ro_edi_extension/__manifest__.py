@@ -1,13 +1,12 @@
 {
     "author": "NextERP Romania",
     "name": "Romania - E-invoicing Extension",
-    "version": "20.0.1.1.0",
+    "version": "20.0.1.2.0",
     "category": "Accounting/Localizations/EDI",
     "summary": "E-Invoice implementation for Romania",
     "website": "https://www.nexterp.ro",
     "depends": [
         "l10n_ro_edi",
-        "l10n_ro_message_spv",
     ],
     "data": [
         "data/account_edi_cron_data.xml",
@@ -16,8 +15,6 @@
     ],
     "license": "LGPL-3",
     "images": ["static/description/apps_icon.png"],
-    # Nu se instaleaza pe 20.0: cere `l10n_ro_message_spv`, care inca n-a
-    # ajuns pe seria asta in l10n-romania. De reactivat cand apare acolo.
-    "installable": False,
+    "installable": True,
     "auto_install": True,
 }
