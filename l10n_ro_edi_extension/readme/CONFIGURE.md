@@ -22,4 +22,4 @@ Set the following fields on the **Romanian EDI** section:
 
 ## 3. SPV / ANAF credentials
 
-Ensure the ANAF OAuth credentials are configured as required by the base `l10n_ro_edi` and `l10n_ro_message_spv` modules. This module relies on those credentials to submit outgoing invoices and pull inbound SPV messages.
+Ensure the ANAF OAuth credentials are configured as required by the base `l10n_ro_edi` module. This module relies on those credentials to submit outgoing invoices and pull inbound SPV messages.
