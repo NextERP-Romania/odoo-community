@@ -307,8 +307,8 @@ class BomExcelImportWizard(models.TransientModel):
 
             except Exception as e:
                 errors += 1
-                log_lines.append(f"Row {row_num}: ERROR - {str(e)}")
-                _logger.error(f"Error processing row {row_num}: {str(e)}")
+                log_lines.append(f"Row {row_num}: ERROR - {e!s}")
+                _logger.error(f"Error processing row {row_num}: {e!s}")
 
             row_num += 1
 
@@ -327,20 +327,14 @@ class BomExcelImportWizard(models.TransientModel):
                 log_lines.append(f"Created workcenter: {workcenter_name}")
             except Exception as e:
                 errors += 1
-                log_lines.append(
-                    f"ERROR creating workcenter {workcenter_name}: {str(e)}"
-                )
+                log_lines.append(f"ERROR creating workcenter {workcenter_name}: {e!s}")
 
         # Refresh workcenter cache
         all_workcenters = self.env["mrp.workcenter"].search([])  # pylint: disable=no-search-all
         workcenter_map = {wc.name: wc.id for wc in all_workcenters}
 
         # Get or create products and BOMs
-        all_products = self.env["product.product"].search([])  # pylint: disable=no-search-all
-        product_map = {p.name: p.id for p in all_products}
-        product_map.update(
-            {p.default_code: p.id for p in all_products if p.default_code}
-        )
+        product_map = self._product_map(bom_data.keys())
 
         # Create BOMs and operations for each product
         for product_name, operations_data in bom_data.items():
@@ -443,7 +437,7 @@ class BomExcelImportWizard(models.TransientModel):
                                     errors += 1
                                     log_lines.append(
                                         f"  ERROR creating operation {operation_name}: "
-                                        f"{str(e)}"
+                                        f"{e!s}"
                                     )
                             else:
                                 errors += 1
@@ -454,8 +448,8 @@ class BomExcelImportWizard(models.TransientModel):
 
             except Exception as e:
                 errors += 1
-                log_lines.append(f"ERROR creating BOM for {product_name}: {str(e)}")
-                _logger.error(f"Error creating BOM for {product_name}: {str(e)}")
+                log_lines.append(f"ERROR creating BOM for {product_name}: {e!s}")
+                _logger.error(f"Error creating BOM for {product_name}: {e!s}")
 
         log_lines.append("")
         log_lines.append("=== OPERATIONS SUMMARY ===")
@@ -545,8 +539,8 @@ class BomExcelImportWizard(models.TransientModel):
 
             except Exception as e:
                 errors += 1
-                log_lines.append(f"Row {row_num}: ERROR - {str(e)}")
-                _logger.error(f"Error processing row {row_num}: {str(e)}")
+                log_lines.append(f"Row {row_num}: ERROR - {e!s}")
+                _logger.error(f"Error processing row {row_num}: {e!s}")
 
             row_num += 1
 
@@ -556,14 +550,18 @@ class BomExcelImportWizard(models.TransientModel):
         log_lines.append("=== ADDING BOM LINES ===")
 
         # Get product and operation mappings
-        all_products = self.env["product.product"].search([])  # pylint: disable=no-search-all
-        product_map = {p.name: p.id for p in all_products}
-        product_map.update(
-            {p.default_code: p.id for p in all_products if p.default_code}
-        )
+        referenced_names = list(bom_data.keys()) + [
+            comp.get("component")
+            for components in bom_data.values()
+            for comp in components
+        ]
+        product_map = self._product_map(referenced_names)
 
-        # Get all existing BOMs
-        all_boms = self.env["mrp.bom"].search([])  # pylint: disable=no-search-all
+        # The BOMs of the products this file talks about, not every BOM in
+        # the database.
+        all_boms = self.env["mrp.bom"].search(
+            [("product_id", "in", list(set(product_map.values())))]
+        )
         bom_map = {}
         for bom in all_boms:
             if bom.product_id:
@@ -571,8 +569,16 @@ class BomExcelImportWizard(models.TransientModel):
                 if bom.product_id.default_code:
                     bom_map[bom.product_id.default_code] = bom
 
-        # Get all operations to link components
-        all_operations = self.env["mrp.routing.workcenter"].search([])  # pylint: disable=no-search-all
+        # The operations of those BOMs, keyed once by (bom, name): scanning a
+        # recordset of every operation in the database for each component is
+        # quadratic, and it was the slowest part of a large import.
+        operation_by_bom_name = {}
+        for operation in self.env["mrp.routing.workcenter"].search(
+            [("bom_id", "in", all_boms.ids)]
+        ):
+            operation_by_bom_name.setdefault(
+                (operation.bom_id.id, operation.name), operation.id
+            )
 
         # Add BOM lines to existing BOMs
         for product_name, components in bom_data.items():
@@ -600,15 +606,9 @@ class BomExcelImportWizard(models.TransientModel):
                         continue
 
                     # Find operation for this component if specified
-                    operation_id = None
-                    if comp_data.get("operation"):
-                        operation = all_operations.filtered(
-                            lambda op, bom=bom, comp=comp_data: op.name
-                            == comp["operation"]
-                            and op.bom_id.id == bom.id
-                        )
-                        if operation:
-                            operation_id = operation[0].id
+                    operation_id = operation_by_bom_name.get(
+                        (bom.id, comp_data.get("operation"))
+                    )
 
                     # Find UOM for the component
                     product_uom_id = None
@@ -673,10 +673,10 @@ class BomExcelImportWizard(models.TransientModel):
             except Exception as e:
                 errors += 1
                 log_lines.append(
-                    f"ERROR adding components to BOM for {product_name}: {str(e)}"
+                    f"ERROR adding components to BOM for {product_name}: {e!s}"
                 )
                 _logger.error(
-                    f"Error adding components to BOM for {product_name}: {str(e)}"
+                    f"Error adding components to BOM for {product_name}: {e!s}"
                 )
 
         log_lines.append("")
@@ -689,6 +689,26 @@ class BomExcelImportWizard(models.TransientModel):
             "bom_lines_created": created_bom_lines,
             "errors": errors,
         }
+
+    def _product_map(self, names):
+        """Map the names and codes an import mentions to product ids.
+
+        Reading the whole catalogue to build this map costs the memory of
+        every product in the database for a file that names a few dozen. Ask
+        for the ones the file mentions instead; whatever does not match
+        exactly still goes through `_find_or_create_product`, which searches
+        case-insensitively and creates what is missing.
+        """
+        names = [name for name in set(names) if name]
+        product_map = {}
+        if not names:
+            return product_map
+        products = self.env["product.product"].search(
+            ["|", ("name", "in", names), ("default_code", "in", names)]
+        )
+        product_map = {p.name: p.id for p in products}
+        product_map.update({p.default_code: p.id for p in products if p.default_code})
+        return product_map
 
     def _find_or_create_product(self, product_name, product_map, log_lines):
         """Find product by name or default_code, create if not found"""
@@ -734,5 +754,5 @@ class BomExcelImportWizard(models.TransientModel):
             log_lines.append(f"Created product: {product_name} (storable, tracked)")
             return product.id
         except Exception as e:
-            log_lines.append(f"ERROR creating product {product_name}: {str(e)}")
+            log_lines.append(f"ERROR creating product {product_name}: {e!s}")
             return None
