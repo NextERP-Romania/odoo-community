@@ -13,6 +13,10 @@ class AccountMove(models.Model):
     def _get_accounting_date(self, invoice_date, has_tax, lock_dates=None):
         """Get either invoice_date or tax_lock_date + 1"""
         acc_date = super()._get_accounting_date(invoice_date, has_tax, lock_dates)
+        # Only Romanian companies override the accounting date with the invoice
+        # date; for any other company keep core's (lock-date-aware) result.
+        if self.company_id.account_fiscal_country_id.code != "RO":
+            return acc_date
         tax_lock_date = self.company_id.tax_lock_date
         if invoice_date and tax_lock_date and has_tax and invoice_date <= tax_lock_date:
             invoice_date = tax_lock_date + timedelta(days=1)

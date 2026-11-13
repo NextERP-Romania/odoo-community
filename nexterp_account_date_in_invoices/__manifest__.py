@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Purchase Invoice Accounting Date",
     "summary": """NextERP - Purchase Invoice Accounting Date""",
-    "version": "20.0.0.0.0",
+    "version": "20.0.0.1.0",
     "category": "Invoicing",
     "depends": ["account"],
     "author": "NextERP Romania",
