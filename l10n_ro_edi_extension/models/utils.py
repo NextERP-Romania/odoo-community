@@ -16,6 +16,19 @@ NS_DOWNLOAD = {
 NS_SIGNATURE = {"ns": "http://www.w3.org/2000/09/xmldsig#"}
 
 
+# The SPV answer is parsed before anything about it has been checked, so the
+# parser is given no way to reach outside the document: no entity resolution,
+# no DTD loading, no network. A malformed or hostile file can then only fail
+# to parse.
+def _xml_parser():
+    return etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False)
+
+
+# An e-Factura invoice is a few hundred kilobytes. Anything that unpacks to
+# more than this is not one, and is not worth holding in memory to find out.
+MAX_UNCOMPRESSED_SIZE = 64 * 1024 * 1024
+
+
 def _safe_xml_fromstring(file_bytes):
     """Parse XML bytes received from the SPV, working around invoices that
     incorrectly declare ``xmlns:schemaLocation`` instead of
@@ -24,7 +37,7 @@ def _safe_xml_fromstring(file_bytes):
     invalid URI, so the whole download fails to parse even though the
     document is otherwise well-formed."""
     try:
-        return etree.fromstring(file_bytes)
+        return etree.fromstring(file_bytes, parser=_xml_parser())
     except etree.XMLSyntaxError:
         if b"xmlns:schemaLocation=" not in file_bytes:
             raise
@@ -38,7 +51,7 @@ def _safe_xml_fromstring(file_bytes):
                 b"xsi:schemaLocation=",
                 1,
             )
-        return etree.fromstring(fixed_bytes)
+        return etree.fromstring(fixed_bytes, parser=_xml_parser())
 
 
 def make_efactura_request(
@@ -173,6 +186,14 @@ def _request_ciusro_download_answer(company, key_download, session):
         extracted_data = {"signature": {}, "invoice": {}}
         with zipfile.ZipFile(io.BytesIO(result["content"])) as zip_ref:
             for file in zip_ref.infolist():
+                if file.file_size > MAX_UNCOMPRESSED_SIZE:
+                    return {
+                        "error": company.env._(
+                            "The answer from the SPV contains a file of "
+                            "%(size)s bytes, which is not an invoice.",
+                            size=file.file_size,
+                        )
+                    }
                 file_bytes = zip_ref.read(file)
                 root = _safe_xml_fromstring(file_bytes)
 
