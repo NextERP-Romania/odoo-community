@@ -239,3 +239,8 @@ msgid ""
 msgstr ""
 "Factura %(name)s a fost trimisă în SPV (e-Factura) și nu mai poate fi "
 "readusă în ciornă sau anulată. Emiteți o factură de stornare."
+
+#. module: l10n_ro_edi_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_extension.field_res_company__l10n_ro_download_einvoices_days
+msgid "Maximum number of days to download e-invoices."
+msgstr "Numărul maxim de zile pentru descărcarea e-facturilor."
