@@ -211,7 +211,13 @@ class StockPicking(models.Model):
         # it needs a VAT number, a city and a street). A company that
         # declares everything it moves can have Odoo's own behaviour back
         # from the settings.
-        if picking.company_id.l10n_ro_edi_stock_carrier_check != "validate":
+        force_check = self.env.context.get("l10n_ro_edi_stock_validate_carrier", False)
+        if force_check:
+            return picking.company_id.account_fiscal_country_id.code == "RO"
+        if (
+            picking.company_id.l10n_ro_edi_stock_carrier_check != "validate"
+            and not picking.l10n_ro_edi_stock_operation_type
+        ):
             return False
         return super()._l10n_ro_edi_stock_validate_carrier_filter(picking)
 
@@ -681,13 +687,13 @@ class StockPicking(models.Model):
                 locatie["numar"] = street_parts["numar"]
             if partner.street2:
                 locatie["alteInfo"] = partner.street2
-            # ANAF Str* types have minLength 1: an empty string (e.g. a blanked
-            # street2) would render as alteInfo="" and fail XSD validation, so
-            # drop blank values and let QWeb omit the attribute.
+            # ANAF Str* types have minLength 1: a blank value (e.g., a street2
+            # saved as "") would render as alteInfo="" and fail XSD validation.
+            # Set it to None so QWeb omits the attribute; the key must stay,
+            # the base template reads data_*_loc['alteInfo'] with brackets.
             locatie = {
-                k: v
+                k: None if (isinstance(v, str) and not v.strip()) else v
                 for k, v in locatie.items()
-                if not (isinstance(v, str) and not v.strip())
             }
             loc_entry["locatie"] = locatie
 
