@@ -1,7 +1,7 @@
 {
     "author": "NextERP Romania",
     "name": "Romania - E-invoicing Extension Limits",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Accounting/Localizations/EDI",
     "summary": "E-Invoice Limits implementation for Romania",
     "website": "https://www.nexterp.ro",
