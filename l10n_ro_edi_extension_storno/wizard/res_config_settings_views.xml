@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_config_settings_form_inherit_l10n_ro_edi_storno" model="ir.ui.view">
+        <field name="name">res.config.settings.form.inherit.l10n.ro.edi.storno</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="l10n_ro_edi_extension.res_config_settings_form_inherit_l10n_ro_edi"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//setting[@id='l10n_ro_edi_test_env_setting']"
+                position="after"
+            >
+                <setting
+                    id="l10n_ro_credit_note_einvoice_setting"
+                    string="Credit Notes as Invoice 380"
+                    title="Send customer credit notes to ANAF as storno invoices."
+                    help="Send customer credit notes to e-Factura as Invoice 380 with negative values and a reference to the original invoice, instead of Credit Note 381"
+                    company_dependent="1"
+                >
+                    <field name="l10n_ro_credit_note_einvoice" />
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
