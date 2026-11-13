@@ -1,0 +1,18 @@
+# Copyright (C) 2025 NextERP Romania SRL
+# License AGPL-3.0 or later
+# (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
+{
+    "name": "NextERP -  Account Button Credit Note",
+    "summary": "NextERP -  Hide button Reverse and Create Invoice, form credit note",
+    "version": "20.0.1.0.0",
+    "author": "NextERP Romania",
+    "website": "https://www.nexterp.ro",
+    "category": "Special",
+    "depends": ["account"],
+    "data": ["wizard/account_move_reversal_view.xml"],
+    "auto_install": False,
+    "installable": True,
+    "development_status": "Mature",
+    "license": "AGPL-3",
+    "images": ["static/description/apps_icon.png"],
+}
