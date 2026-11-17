@@ -320,12 +320,22 @@ class TestEtransportPickingIntegrity(EtransportIntegrityCommon):
         self.assertIn("UIT inexistent", document.message)
         self.assertTrue(picking.l10n_ro_edi_stock_enable_uit_action)
 
-    def test_an_unreachable_anaf_leaves_the_action_waiting(self):
+    def test_a_token_problem_leaves_the_action_waiting(self):
+        """ANAF has not judged the action yet: asking later can still work."""
         picking = self._validate(self._picking())
         self._wizard(picking, "delete", answer=None)
-        with patch(_REQUEST, return_value={"error": "timeout"}):
+        with patch(_REQUEST, return_value={"error": "Access token is unauthorized."}):
             picking.action_l10n_ro_edi_stock_fetch_status()
         self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_action_sent")
+
+    def test_an_action_refused_by_anaf_is_not_left_waiting(self):
+        """Seen on a live test: "UIT inactiv" came back as an error of the
+        status call and the vehicle change stayed 'sent' forever."""
+        picking = self._validate(self._picking())
+        self._wizard(picking, "delete", answer=None)
+        with patch(_REQUEST, return_value={"error": "UIT inactiv."}):
+            picking.action_l10n_ro_edi_stock_fetch_status()
+        self.assertEqual(picking.l10n_ro_edi_stock_state, "stock_sending_failed")
 
     def test_a_confirmation_accepted_and_refused(self):
         picking = self._validate(self._picking())

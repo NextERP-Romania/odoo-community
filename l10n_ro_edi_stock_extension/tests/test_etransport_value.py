@@ -161,4 +161,4 @@ class TestEtransportValue(TransactionCase):
         )
         picking._l10n_ro_edi_stock_send_etransport_document("send")
         message = picking.l10n_ro_edi_stock_document_ids.sorted("id")[-1:].message
-        self.assertIn("0 net weight", message or "")
+        self.assertIn("no weight - set the product Weight", message or "")

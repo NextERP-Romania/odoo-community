@@ -15,6 +15,9 @@ from odoo.addons.l10n_ro_edi_stock_extension.models.l10n_ro_edi_stock_document i
     EXTRA_DOCUMENT_STATES,
     RECORD_STATE_ONDELETE,
 )
+from odoo.addons.l10n_ro_edi_stock_extension.models.stock_picking import (
+    EtransportCheckResult,
+)
 
 # Context key set by the stock flows that legitimately take a transfer out of
 # a batch (validation with backorders, cancellation of a transfer).
@@ -102,6 +105,35 @@ class StockPickingBatch(models.Model):
     @api.ondelete(at_uninstall=False)
     def _unlink_except_l10n_ro_edi_stock_live_uit(self):
         self._l10n_ro_edi_stock_check_no_live_uit(self.env._("deleted"))
+
+    def action_l10n_ro_edi_stock_check(self):
+        """Run every check of a send without sending (same as on a transfer)."""
+        self.ensure_one()
+        try:
+            self.with_context(
+                l10n_ro_edi_stock_dry_run=True
+            )._l10n_ro_edi_stock_send_etransport_document("send")
+            errors = []
+        except EtransportCheckResult as result:
+            errors = result.errors
+        except UserError as error:
+            errors = [str(error.args[0])]
+        if errors:
+            raise UserError(
+                self.env._(
+                    "%(name)s cannot be sent to eTransport yet:\n\n%(errors)s",
+                    name=self.display_name,
+                    errors="\n".join(f"- {e}" for e in errors),
+                )
+            )
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "type": "success",
+                "message": self.env._("eTransport data is complete, it can be sent."),
+            },
+        }
 
     def action_cancel(self):
         self._l10n_ro_edi_stock_check_no_live_uit(self.env._("cancelled"))
