@@ -145,3 +145,20 @@ class TestEtransportValue(TransactionCase):
         picking = self._picking()
         picking.l10n_ro_edi_stock_enable = False
         self.assertFalse(picking.l10n_ro_edi_stock_enable_send)
+
+    # ------------------------------------------------------------------
+    # Verificarile noastre ruleaza si pe un singur transfer
+    # ------------------------------------------------------------------
+    def test_a_single_transfer_is_checked_before_reaching_anaf(self):
+        """The goods checks used to run only for batches: on a single transfer
+        a product without weight went to ANAF and came back as a raw schema
+        error instead of a readable message."""
+        self.product.weight = 0.0
+        picking = self._picking(
+            l10n_ro_edi_stock_operation_type="20",
+            l10n_ro_edi_stock_operation_scope="101",
+            l10n_ro_edi_stock_vehicle_number="BN01ABC",
+        )
+        picking._l10n_ro_edi_stock_send_etransport_document("send")
+        message = picking.l10n_ro_edi_stock_document_ids.sorted("id")[-1:].message
+        self.assertIn("0 net weight", message or "")

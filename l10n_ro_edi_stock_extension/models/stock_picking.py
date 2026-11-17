@@ -180,6 +180,13 @@ class StockPicking(models.Model):
 
     @api.model
     def _l10n_ro_edi_stock_validate_data(self, data: dict):
+        # The base builds ``data`` without the record; the checks below
+        # (goods, weights, document lines, previous notifications) need it.
+        # Without this they were skipped on a single transfer and the user
+        # only got ANAF's raw rejection (BR-208, greutateBruta, ...).
+        picking_id = self.env.context.get("l10n_ro_edi_stock_extension_picking")
+        if picking_id and not data.get("_picking_record"):
+            data["_picking_record"] = self.browse(picking_id)
         errors = super()._l10n_ro_edi_stock_validate_data(data=data)
         errors = self._l10n_ro_edi_stock_drop_foreign_counterparty_error(errors, data)
 
