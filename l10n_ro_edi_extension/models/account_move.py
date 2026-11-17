@@ -11,6 +11,7 @@ from odoo.fields import Domain
 
 from .utils import (
     _request_ciusro_synchronize_invoices,
+    _request_ciusro_upload,
     _request_ciusro_xml_to_pdf,
 )
 
@@ -292,6 +293,69 @@ class AccountMove(models.Model):
                     "No PDF found: PDF imported from SPV."
                 )
             bill.message_post(body=chatter_message)
+
+    def _l10n_ro_edi_upload(self, xml_data):
+        """Upload ``xml_data`` for this move; hook for extra upload params."""
+        self.ensure_one()
+        return _request_ciusro_upload(
+            self.company_id,
+            xml_data,
+            is_b2b=self.partner_id.commercial_partner_id.is_company,
+        )
+
+    def _l10n_ro_edi_send_invoice(self, xml_data):
+        # OVERRIDES l10n_ro_edi: same steps, but the upload picks ``standard``
+        # from the XML (a storno credit note is an <Invoice>, not CN) and
+        # reports ANAF's actual rejection instead of an empty message.
+        self.ensure_one()
+        if errors := self._l10n_ro_edi_get_pre_send_errors(xml_data):
+            self.message_post(
+                body=self.env._(
+                    "The invoice is not ready to be sent: %s", ", ".join(errors)
+                )
+            )
+            return errors
+
+        self.l10n_ro_edi_index = False
+        self.env["res.company"]._with_locked_records(self)
+        result = self._l10n_ro_edi_upload(xml_data)
+        if "error" in result:
+            self.message_post(
+                body=self.env._(
+                    "Error when trying to send the e-Factura to the SPV: %s",
+                    result["error"],
+                )
+            )
+            return [result["error"]]
+
+        self.env["l10n_ro_edi.document"].sudo().create(
+            {
+                "invoice_id": self.id,
+                "state": "invoice_sent",
+                "attachment": base64.b64encode(xml_data),
+            }
+        )
+        if result["key_loading"]:
+            self.l10n_ro_edi_index = result["key_loading"]
+            self.message_post(
+                body=self.env._(
+                    "The e-Factura has been sent and is now being validated by "
+                    "the SPV with index key: %s",
+                    self.l10n_ro_edi_index,
+                )
+            )
+        else:
+            self.l10n_ro_edi_state = "invoice_not_indexed"
+            self.message_post(
+                body=self.env._(
+                    "SPV failed to return with an index on time, synchronize "
+                    "this invoice to recover the index and the status."
+                )
+            )
+
+        if self._can_commit():
+            self.env.cr.commit()  # pylint: disable=invalid-commit
+        return None
 
     def action_send_and_print_anaf(self):
         self.env["account.move.send"]._check_move_constraints(self)
