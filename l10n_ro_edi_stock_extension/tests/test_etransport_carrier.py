@@ -78,12 +78,15 @@ class TestEtransportCarrier(TransactionCase):
         with self.assertRaisesRegex(UserError, "missing the partner field value"):
             picking.button_validate()
 
-    def test_a_delivery_meant_for_etransport_validates_with_a_carrier(self):
+    def test_with_a_carrier_only_the_etransport_data_is_left_to_fill(self):
+        """The carrier is accepted; what stops the validation now is the rest
+        of the eTransport data, checked so the notification can be sent."""
         picking = self._picking(
             l10n_ro_edi_stock_operation_type="30", carrier_id=self.carrier.id
         )
-        picking.button_validate()
-        self.assertEqual(picking.state, "done")
+        with self.assertRaisesRegex(UserError, "eTransport data is incomplete"):
+            picking.button_validate()
+        self.assertNotEqual(picking.state, "done")
 
     def test_a_transfer_outside_romania_is_never_checked(self):
         self.company.account_fiscal_country_id = self.env.ref("base.be")

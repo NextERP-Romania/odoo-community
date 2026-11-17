@@ -18,6 +18,12 @@
                 expr="//button[@name='action_l10n_ro_edi_stock_fetch_status']"
                 position="after"
             >
+                <button
+                    name="action_l10n_ro_edi_stock_check"
+                    string="Check eTransport"
+                    type="object"
+                    invisible="not l10n_ro_edi_stock_enable_send"
+                />
                 <field name="l10n_ro_edi_stock_enable_uit_action" invisible="1" />
                 <button
                     name="%(l10n_ro_edi_stock_extension.action_l10n_ro_edi_stock_action_wizard_delete)d"

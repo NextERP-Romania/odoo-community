@@ -3,6 +3,7 @@ import requests
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools.translate import LazyTranslate
 
 from odoo.addons.l10n_ro_edi_stock.models.etransport_api import ETransportAPI
 
@@ -13,6 +14,8 @@ from .l10n_ro_edi_stock_document import (
     l10n_ro_edi_stock_effective_document,
     l10n_ro_edi_stock_live_uit_document,
 )
+
+_lt_base = LazyTranslate("l10n_ro_edi_stock")
 
 
 class L10nRoEdiStockIntegrityMixin(models.AbstractModel):
@@ -78,6 +81,17 @@ class L10nRoEdiStockIntegrityMixin(models.AbstractModel):
     # Processing status of a deletion / confirmation / vehicle change
     ################################################################################
 
+    @api.model
+    def _l10n_ro_edi_stock_is_transient_error(self, error):
+        """Errors after which asking again later can still succeed: the
+        access token or the request limit, not ANAF's verdict."""
+        transient = {
+            str(_lt_base("Access token is forbidden.")),
+            str(_lt_base("Access token is unauthorized.")),
+            str(_lt_base("You reached the limit of requests. Please try again later.")),
+        }
+        return error in transient
+
     def _l10n_ro_edi_stock_fetch_pending_actions(self):
         """Ask ANAF how it processed the DEL / CON / MVH uploads waiting in
         ``stock_action_sent``, the same way the base module fetches a sent
@@ -105,6 +119,25 @@ class L10nRoEdiStockIntegrityMixin(models.AbstractModel):
                     document_load_id=document.l10n_ro_edi_stock_load_id,
                     session=session,
                 )
+                if "error" in result and not self._l10n_ro_edi_stock_is_transient_error(
+                    result["error"]
+                ):
+                    # ANAF answered and refused it (e.g. "UIT inactiv"): the
+                    # action is over, not pending.
+                    record._l10n_ro_edi_stock_write_document(
+                        document,
+                        {"state": "stock_sending_failed", "message": result["error"]},
+                    )
+                    record._message_log(
+                        body=self.env._(
+                            "eTransport %(action)s refused by ANAF (UIT: %(uit)s): "
+                            "%(message)s",
+                            action=document.l10n_ro_edi_stock_event_type,
+                            uit=document.l10n_ro_edi_stock_uit,
+                            message=result["error"],
+                        )
+                    )
+                    continue
                 if "error" in result:
                     record._message_log(
                         body=self.env._(
