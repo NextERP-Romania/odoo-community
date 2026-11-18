@@ -418,14 +418,24 @@ class AccountMove(models.Model):
             .search([("l10n_ro_edi_access_token", "!=", False)])
         )
         for company in ro_companies:
+            nb_days = int(company.l10n_ro_download_einvoices_days or 1)
+            sent_from = fields.Datetime.now() - timedelta(days=nb_days)
+            _logger.info(
+                "Starting fetching invoice status of sent invoices in SPV "
+                "for company %s for the last %s days",
+                company.name,
+                nb_days,
+            )
             invoices = (
                 self.env["account.move"]
                 .with_company(company)
                 .search(
                     [
                         ("l10n_ro_edi_state", "=", "invoice_sent"),
+                        ("l10n_ro_edi_index", "!=", False),
                         ("state", "=", "posted"),
                         ("company_id", "=", company.id),
+                        ("date", ">=", sent_from),
                     ]
                 )
             )

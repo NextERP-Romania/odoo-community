@@ -1,7 +1,7 @@
 {
     "author": "NextERP Romania",
     "name": "Romania - E-invoicing Extension",
-    "version": "19.0.1.3.0",
+    "version": "19.0.1.3.1",
     "category": "Accounting/Localizations/EDI",
     "summary": "E-Invoice implementation for Romania",
     "website": "https://www.nexterp.ro",
