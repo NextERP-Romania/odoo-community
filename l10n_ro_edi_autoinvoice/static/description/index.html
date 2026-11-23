@@ -31,6 +31,9 @@
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
+      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
+    </li>
+    <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
@@ -126,6 +129,20 @@
 
     </div>
 
+    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
+      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
+      <ul>
+<li><strong>Automatic ingestion of <em>autofacturi</em></strong> — self-invoices customers upload to the SPV in your company's name are taken in as customer invoices, not vendor bills.</li>
+<li><strong>Reliable XML recognition</strong> — a document is treated as a self-invoice only when the supplier VAT matches your company and the UBL type code is 389, so your own outgoing invoices are never confused with one.</li>
+<li><strong>Dedicated self-invoicing journals</strong> — set <code>l10n_ro_sequence_type</code> to <em>Customer Auto Invoicing</em> and <code>l10n_ro_partner_id</code> to the customer; the imported invoice keeps the customer's own number and is posted automatically.</li>
+<li><strong>SPV deduplication</strong> — an imported self-invoice is immediately flagged as validated in the SPV so a later synchronization never creates a duplicate.</li>
+<li><strong>Both SPV sync paths covered</strong> — works with the <code>l10n_ro_edi</code> scheduled sync and with the <strong>SPV Messages</strong> list from <code>l10n_ro_message_spv</code> (ticked <em>Self-Invoice</em> → <em>Create Invoice</em>).</li>
+<li><strong>Outbound <em>autofacturi</em> handled too</strong> — vendor bills/refunds on a <em>Supplier Auto Invoicing</em> purchase journal are uploaded to ANAF with <code>autofactura=DA</code>, <code>standard=UBL</code> (or <code>CN</code> for credit notes), and <code>CreditNoteTypeCode</code> 381 instead of Odoo's default 261.</li>
+<li><strong>Company-level toggle</strong> — <code>l10n_ro_create_customer_autoinvoice</code> in <strong>Settings → Accounting</strong> controls whether self-invoices are taken in as customer invoices at all.</li>
+<li><strong>No enterprise dependency</strong> — the <em>Ro Auto Invoicing</em> journal fields are added by this module itself; <code>l10n_ro_account_enterprise</code> is optional.</li>
+</ul>
+
+    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>

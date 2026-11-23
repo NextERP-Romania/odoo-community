@@ -31,6 +31,9 @@
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
+      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
+    </li>
+    <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
@@ -120,6 +123,17 @@ this product when no company <em>Down Payment Account</em> is configured.</p>
 
     </div>
 
+    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
+      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
+      <ul>
+<li><strong>Configurable Down Payment Product</strong> — set a company-level <code>l10n_ro_sale_down_payment_product_id</code> so every sale order down payment line and its invoice counterpart carry a real product.</li>
+<li><strong>Fills the Odoo 19 gap</strong> — standard Odoo 19 down payment lines have no product; this module restores product-level tracking without patching core code.</li>
+<li><strong>Income account fallback</strong> — when no company <em>Down Payment Account</em> is configured, the income account is derived from the selected down payment product.</li>
+<li><strong>Multi-company ready</strong> — the setting is stored per company (<code>res.company</code>) and exposed in <em>Settings → Default Accounts</em> for each entity.</li>
+<li><strong>Zero workflow change</strong> — the standard <em>Create Invoice → Down Payment</em> flow is unchanged; the product is injected automatically behind the scenes.</li>
+</ul>
+
+    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>

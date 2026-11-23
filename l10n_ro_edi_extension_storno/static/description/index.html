@@ -31,7 +31,13 @@
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
+      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
+    </li>
+    <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
+    </li>
+    <li class="nav-item mx-1 mb-2" role="presentation">
+      <a class="nav-link" id="nx-tab-usage" data-bs-toggle="pill" data-bs-target="#nx-panel-usage" href="#nx-panel-usage" role="tab" aria-controls="nx-panel-usage" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">How it works</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-versions" data-bs-toggle="pill" data-bs-target="#nx-panel-versions" href="#nx-panel-versions" role="tab" aria-controls="nx-panel-versions" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Versions</a>
@@ -132,6 +138,27 @@ price stays positive.</li>
 
     </div>
 
+    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
+      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
+      <ul>
+<li><strong>Storno instead of CreditNote</strong> — submits <code>out_refund</code> documents to ANAF
+SPV as UBL <code>Invoice</code> type <strong>380</strong> with negative values, not CreditNote <strong>381</strong>.</li>
+<li><strong>Per-company opt-in</strong> — single boolean field <code>l10n_ro_credit_note_einvoice</code>;
+companies not enabled keep the default 381 behaviour.</li>
+<li><strong>Fully negated XML</strong> — line quantities, allowances/charges, VAT totals and
+all <code>LegalMonetaryTotal</code> amounts are negated; item net price (BT-146) stays
+positive per BR-27.</li>
+<li><strong>BillingReference auto-filled</strong> — BT-25 and BT-26 reference the original
+reversed invoice number and date in <code>cac:BillingReference</code>.</li>
+<li><strong>Matching storno PDF</strong> — printed report shows <em>Storno Invoice</em> title,
+negative quantities/amounts and a <em>Storno of invoice …</em> reference line.</li>
+<li><strong>Zero accounting impact</strong> — Odoo ledger entries are untouched; only the
+UBL XML sent to e-Factura / SPV changes.</li>
+<li><strong>UBL compliance</strong> — <code>DocumentTypeCode 50</code> suppressed on the embedded PDF
+(not allowed on Invoice 380, per UBL-SR-43).</li>
+</ul>
+
+    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
@@ -144,6 +171,38 @@ note stays an <code>out_refund</code> in Odoo, only the XML sent to ANAF changes
 
     </div>
 
+    <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
+      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
+      <h2>Sending a credit note to ANAF as a storno invoice</h2>
+<p>Once the company setting is enabled (see Configuration), the storno behaviour
+applies automatically every time you send a customer credit note to ANAF
+e-Factura / SPV.</p>
+<ol>
+<li>Create a customer credit note as usual (<em>Accounting → Customers →
+Credit Notes → New</em>), or use <strong>Add Credit Note</strong> on a posted invoice to
+reverse it.</li>
+<li>Fill in the credit note lines and confirm (post) the document. The move
+type remains <code>out_refund</code> in Odoo — accounting entries are unchanged.</li>
+<li>Click <strong>Send &amp; Print</strong> (or the e-Factura send action). Instead of a
+<code>CreditNote</code> UBL document with <code>InvoiceTypeCode</code> <strong>381</strong>, the XML
+transmitted to ANAF SPV is an <code>Invoice</code> with <code>InvoiceTypeCode</code> <strong>380</strong>
+and all amounts/quantities negated.</li>
+<li>The embedded PDF printed alongside the XML also reflects the storno
+format: title reads <em>Storno Invoice</em>, dates are labelled <em>Invoice Date</em>,
+and a <em>Storno of invoice … dated …</em> reference line is included. Line
+quantities and amounts are negative; unit prices remain positive
+(BT-146, as required by BR-27).</li>
+<li>The original reversed invoice is referenced automatically in
+<code>cac:BillingReference</code> (BT-25 number and BT-26 issue date), so ANAF
+can link the storno to the source document.</li>
+</ol>
+<blockquote>
+<p><strong>Note:</strong> Companies that do <strong>not</strong> have <code>l10n_ro_credit_note_einvoice</code>
+enabled continue to submit standard 381 CreditNote documents — no change
+in their workflow.</p>
+</blockquote>
+
+    </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
