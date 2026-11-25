@@ -7,6 +7,7 @@ What used to come back from ANAF as a schema error is found here first and
 told to the user in words, one line per product.
 """
 
+import base64
 from datetime import timedelta
 
 from odoo import fields
@@ -75,19 +76,82 @@ class TestEtransportCheck(TransactionCase):
         with self.assertRaisesRegex(UserError, "cannot be sent to eTransport yet"):
             picking.action_l10n_ro_edi_stock_check()
 
-    def test_a_past_transport_date_is_reported(self):
+    def test_a_new_notification_is_declared_for_today(self):
+        """The UIT is valid from 00:00 of dataTransport; declaring today
+        lets the vehicle be changed or the transport confirmed right away,
+        whatever the scheduled date."""
+        picking = self._picking(
+            scheduled_date=fields.Datetime.now() + timedelta(days=2)
+        )
+        data = {"_picking_record": picking, "send_type": "send"}
+        picking._l10n_ro_edi_stock_set_transport_date(data)
+        self.assertEqual(
+            data["scheduled_date"].date(), fields.Date.context_today(picking)
+        )
+        errors = picking._l10n_ro_edi_stock_check_errors()
+        self.assertFalse([e for e in errors if "outside the interval" in e])
+
+    def test_a_chosen_transport_date_is_sent(self):
+        picking = self._picking()
+        chosen = fields.Date.context_today(picking) + timedelta(days=2)
+        picking.l10n_ro_edi_stock_transport_date = chosen
+        data = {"_picking_record": picking, "send_type": "send"}
+        picking._l10n_ro_edi_stock_set_transport_date(data)
+        self.assertEqual(data["scheduled_date"].date(), chosen)
+
+    def test_a_chosen_date_outside_the_interval_is_reported(self):
+        picking = self._picking()
+        picking.l10n_ro_edi_stock_transport_date = fields.Date.context_today(
+            picking
+        ) - timedelta(days=5)
+        errors = picking._l10n_ro_edi_stock_check_errors()
+        self.assertTrue([e for e in errors if "outside the interval" in e])
+
+    def test_a_past_scheduled_date_does_not_stop_the_notification(self):
         picking = self._picking(
             scheduled_date=fields.Datetime.now() - timedelta(days=30)
         )
         errors = picking._l10n_ro_edi_stock_check_errors()
-        self.assertTrue([e for e in errors if "outside the interval" in e])
-
-    def test_a_date_within_three_days_is_accepted(self):
-        picking = self._picking(
-            scheduled_date=fields.Datetime.now() + timedelta(days=2)
-        )
-        errors = picking._l10n_ro_edi_stock_check_errors()
         self.assertFalse([e for e in errors if "outside the interval" in e])
+
+    def test_a_post_outage_declaration_keeps_the_scheduled_date(self):
+        scheduled = fields.Datetime.now() - timedelta(days=1)
+        picking = self._picking(
+            scheduled_date=scheduled, l10n_ro_edi_stock_post_outage=True
+        )
+        data = {
+            "_picking_record": picking,
+            "send_type": "send",
+            "scheduled_date": scheduled,
+        }
+        picking._l10n_ro_edi_stock_set_transport_date(data)
+        self.assertEqual(data["scheduled_date"], scheduled)
+
+    def test_a_correction_keeps_the_declared_date(self):
+        picking = self._picking()
+        declared = fields.Date.context_today(picking) - timedelta(days=1)
+        xml = f'<dateTransport dataTransport="{declared}"/>'
+        self.env["l10n_ro_edi.document"].create(
+            {
+                "picking_id": picking.id,
+                "state": "stock_validated",
+                "l10n_ro_edi_stock_uit": "UIT1",
+                "attachment": base64.b64encode(xml.encode()),
+            }
+        )
+        self.assertEqual(picking._l10n_ro_edi_stock_declared_transport_date(), declared)
+        picking.l10n_ro_edi_stock_operation_type = "20"
+        self.assertEqual(picking.l10n_ro_edi_stock_uit_valid_from, declared)
+        self.assertEqual(
+            picking.l10n_ro_edi_stock_uit_valid_until, declared + timedelta(days=4)
+        )
+        picking.l10n_ro_edi_stock_operation_type = "10"
+        self.assertEqual(
+            picking.l10n_ro_edi_stock_uit_valid_until, declared + timedelta(days=14)
+        )
+        data = {"_picking_record": picking, "send_type": "amend"}
+        picking._l10n_ro_edi_stock_set_transport_date(data)
+        self.assertEqual(data["scheduled_date"].date(), declared)
 
     def test_validation_is_stopped_when_the_data_is_incomplete(self):
         picking = self._picking()
