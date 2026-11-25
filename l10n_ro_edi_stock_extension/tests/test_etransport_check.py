@@ -145,9 +145,15 @@ class TestEtransportCheck(TransactionCase):
         self.assertEqual(
             picking.l10n_ro_edi_stock_uit_valid_until, declared + timedelta(days=4)
         )
-        picking.l10n_ro_edi_stock_operation_type = "10"
+        for op_type in ("10", "12", "14", "60"):
+            picking.l10n_ro_edi_stock_operation_type = op_type
+            self.assertEqual(
+                picking.l10n_ro_edi_stock_uit_valid_until,
+                declared + timedelta(days=14),
+            )
+        picking.l10n_ro_edi_stock_operation_type = "40"
         self.assertEqual(
-            picking.l10n_ro_edi_stock_uit_valid_until, declared + timedelta(days=14)
+            picking.l10n_ro_edi_stock_uit_valid_until, declared + timedelta(days=4)
         )
         data = {"_picking_record": picking, "send_type": "amend"}
         picking._l10n_ro_edi_stock_set_transport_date(data)

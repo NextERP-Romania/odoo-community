@@ -6,10 +6,13 @@ OUTGOING_OPERATIONS = ("20", "22", "24", "50", "70")
 NATIONAL_OPERATIONS = ("30",)
 NO_GOODS_DATA_OPERATIONS = ("60", "70")
 
-# Days the UIT is valid, counted from dataTransport inclusive: 15 for an
-# intra-community acquisition, 5 otherwise (seen at ANAF: op 20 declared on
-# 18.11 -> valid 18 - 22.11).
-UIT_VALIDITY_DAYS = {"10": 15}
+# Days the UIT is valid, counted from dataTransport inclusive (OUG 41/2022
+# art. 11 par. 2): 15 for goods entering Romania from another EU state -
+# intra-community acquisition (10), non-transfer / lohn (12), stocks at the
+# customer's disposal (14), intra-community transit with storage (60);
+# 5 for everything else (seen at ANAF: op 20 declared on 18.11 -> valid
+# 18 - 22.11).
+UIT_VALIDITY_DAYS = dict.fromkeys(("10", "12", "14", "60"), 15)
 UIT_VALIDITY_DAYS_DEFAULT = 5
 
 DOCUMENT_TYPES = [
