@@ -357,21 +357,16 @@ class StockPicking(models.Model):
         from 00:00 of it, and ANAF refuses a confirmation or a vehicle change
         before that day).
 
-        - a new notification (post-outage too): the eTransport Transport
-          Start, or today when empty;
-        - a correction: the date first declared.
+        The eTransport Transport Start (today when empty), for a correction
+        too: it cannot be changed once the UIT is alive.
 
         The base sends ``data["scheduled_date"].date()``, so the date is put
         there at noon to keep the same day in any timezone."""
         record = data.get("_picking_record")
-        if data.get("send_type") == "amend":
-            date = record and record._l10n_ro_edi_stock_declared_transport_date()
-        else:
-            date = (
-                record and record.l10n_ro_edi_stock_transport_date
-            ) or fields.Date.context_today(self)
-        if date:
-            data["scheduled_date"] = datetime.combine(date, time(12))
+        date = (
+            record and record.l10n_ro_edi_stock_transport_date
+        ) or fields.Date.context_today(self)
+        data["scheduled_date"] = datetime.combine(date, time(12))
 
     @api.model
     def _l10n_ro_edi_stock_validate_transport_date(self, data):

@@ -7,7 +7,6 @@ What used to come back from ANAF as a schema error is found here first and
 told to the user in words, one line per product.
 """
 
-import base64
 from datetime import timedelta
 
 from odoo import fields
@@ -129,37 +128,33 @@ class TestEtransportCheck(TransactionCase):
         picking._l10n_ro_edi_stock_set_transport_date(data)
         self.assertEqual(data["scheduled_date"].date(), past)
 
-    def test_a_correction_keeps_the_declared_date(self):
+    def test_the_validity_runs_from_the_transport_start(self):
         picking = self._picking()
-        declared = fields.Date.context_today(picking) - timedelta(days=1)
-        xml = f'<dateTransport dataTransport="{declared}"/>'
+        start = fields.Date.context_today(picking) + timedelta(days=1)
+        picking.l10n_ro_edi_stock_transport_date = start
+        self.assertFalse(picking.l10n_ro_edi_stock_uit_valid_until)
         self.env["l10n_ro_edi.document"].create(
             {
                 "picking_id": picking.id,
                 "state": "stock_validated",
                 "l10n_ro_edi_stock_uit": "UIT1",
-                "attachment": base64.b64encode(xml.encode()),
             }
         )
-        self.assertEqual(picking._l10n_ro_edi_stock_declared_transport_date(), declared)
         picking.l10n_ro_edi_stock_operation_type = "20"
-        self.assertEqual(picking.l10n_ro_edi_stock_uit_valid_from, declared)
+        self.assertTrue(picking.l10n_ro_edi_stock_has_live_uit)
         self.assertEqual(
-            picking.l10n_ro_edi_stock_uit_valid_until, declared + timedelta(days=4)
+            picking.l10n_ro_edi_stock_uit_valid_until, start + timedelta(days=4)
         )
         for op_type in ("10", "12", "14", "60"):
             picking.l10n_ro_edi_stock_operation_type = op_type
             self.assertEqual(
                 picking.l10n_ro_edi_stock_uit_valid_until,
-                declared + timedelta(days=14),
+                start + timedelta(days=14),
             )
         picking.l10n_ro_edi_stock_operation_type = "40"
         self.assertEqual(
-            picking.l10n_ro_edi_stock_uit_valid_until, declared + timedelta(days=4)
+            picking.l10n_ro_edi_stock_uit_valid_until, start + timedelta(days=4)
         )
-        data = {"_picking_record": picking, "send_type": "amend"}
-        picking._l10n_ro_edi_stock_set_transport_date(data)
-        self.assertEqual(data["scheduled_date"].date(), declared)
 
     def test_validation_is_stopped_when_the_data_is_incomplete(self):
         picking = self._picking()
