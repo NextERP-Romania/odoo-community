@@ -122,7 +122,8 @@ class StockPicking(models.Model):
         copy=False,
         help="Transport company declared in the eTransport notification. "
         "Filled from the delivery method; can be changed until the "
-        "notification is sent (and corrected afterwards).",
+        "notification is sent. Another carrier afterwards means deleting the "
+        "notification and sending a new one.",
     )
 
     @api.depends("carrier_id.l10n_ro_edi_stock_partner_id")

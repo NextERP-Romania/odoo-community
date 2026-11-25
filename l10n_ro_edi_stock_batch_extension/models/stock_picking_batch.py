@@ -85,7 +85,8 @@ class StockPickingBatch(models.Model):
         copy=False,
         help="Transport company declared in the eTransport notification. "
         "Filled from the delivery method of the transfers; can be changed "
-        "until the notification is sent (and corrected afterwards).",
+        "until the notification is sent. Another carrier afterwards means "
+        "deleting the notification and sending a new one.",
     )
 
     @api.depends("picking_ids.carrier_id.l10n_ro_edi_stock_partner_id")
