@@ -6,12 +6,17 @@ from datetime import timedelta
 import requests
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools.misc import format_date
 from odoo.tools.translate import LazyTranslate
 
 from odoo.addons.l10n_ro_edi_stock.models.etransport_api import ETransportAPI
 
-from .etransport_constants import UIT_VALIDITY_DAYS, UIT_VALIDITY_DAYS_DEFAULT
+from .etransport_constants import (
+    TRANSPORT_DATE_MAX_DAYS,
+    UIT_VALIDITY_DAYS,
+    UIT_VALIDITY_DAYS_DEFAULT,
+)
 from .l10n_ro_edi_stock_document import (
     ACTION_FINAL_STATES,
     PENDING_ACTION_STATE,
@@ -30,6 +35,39 @@ class L10nRoEdiStockIntegrityMixin(models.AbstractModel):
 
     _name = "l10n.ro.edi.stock.integrity.mixin"
     _description = "eTransport notification integrity"
+
+    # Start of the transport, declared as dataTransport (date only). The UIT
+    # is valid from 00:00 of it; ANAF accepts it from today to today + 3.
+    l10n_ro_edi_stock_transport_date = fields.Date(
+        string="eTransport Transport Start",
+        default=lambda self: fields.Date.context_today(self),
+        copy=False,
+        help="Day the transport starts, declared to ANAF. Between today and "
+        "today + 3 days. The UIT is valid from this day: ANAF refuses a "
+        "confirmation or a vehicle change before it (use a correction "
+        "instead).",
+    )
+
+    @api.constrains("l10n_ro_edi_stock_transport_date")
+    def _check_l10n_ro_edi_stock_transport_date(self):
+        today = fields.Date.context_today(self)
+        last = today + timedelta(days=TRANSPORT_DATE_MAX_DAYS)
+        for record in self:
+            date = record.l10n_ro_edi_stock_transport_date
+            if (
+                not date
+                or record.l10n_ro_edi_stock_post_outage
+                or today <= date <= last
+            ):
+                continue
+            raise ValidationError(
+                self.env._(
+                    "The eTransport transport start must be between %(first)s "
+                    "and %(last)s (ANAF accepts today to today + 3 days).",
+                    first=format_date(self.env, today),
+                    last=format_date(self.env, last),
+                )
+            )
 
     # Validity of the UIT at ANAF: a confirmation or a vehicle change is only
     # accepted between these two days (inclusive).

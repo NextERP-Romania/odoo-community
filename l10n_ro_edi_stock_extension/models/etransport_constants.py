@@ -6,6 +6,10 @@ OUTGOING_OPERATIONS = ("20", "22", "24", "50", "70")
 NATIONAL_OPERATIONS = ("30",)
 NO_GOODS_DATA_OPERATIONS = ("60", "70")
 
+# ANAF: "Data declarată a transportului trebuie să fie în intervalul
+# <azi> - <azi + 3>".
+TRANSPORT_DATE_MAX_DAYS = 3
+
 # Days the UIT is valid, counted from dataTransport inclusive (OUG 41/2022
 # art. 11 par. 2): 15 for goods entering Romania from another EU state -
 # intra-community acquisition (10), non-transfer / lohn (12), stocks at the
