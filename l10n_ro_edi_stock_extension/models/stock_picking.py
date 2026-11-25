@@ -2,6 +2,7 @@
 import base64
 import logging
 import re
+from datetime import datetime, time
 
 from dateutil.relativedelta import relativedelta
 
@@ -127,6 +128,18 @@ class StockPicking(models.Model):
         "notification is sent (and corrected afterwards).",
     )
 
+    # Date declared as dataTransport. Empty: today, when the notification
+    # is sent (the UIT is valid from 00:00 of that day, so the vehicle can be
+    # changed right away); filled with the date sent.
+    l10n_ro_edi_stock_transport_date = fields.Date(
+        string="eTransport Transport Date",
+        copy=False,
+        help="Date declared to ANAF as the transport date. The UIT is valid "
+        "from 00:00 of this day: ANAF refuses a confirmation or a vehicle "
+        "change before it. Leave empty to declare the day the notification "
+        "is sent.",
+    )
+
     @api.depends("carrier_id.l10n_ro_edi_stock_partner_id")
     def _compute_l10n_ro_edi_stock_transport_partner_id(self):
         for picking in self:
@@ -187,6 +200,7 @@ class StockPicking(models.Model):
         "l10n_ro_edi_stock_price_source",
         "l10n_ro_edi_stock_post_outage",
         "l10n_ro_edi_stock_transport_partner_id",
+        "l10n_ro_edi_stock_transport_date",
         "l10n_ro_edi_stock_document_line_ids",
         "l10n_ro_edi_stock_previous_ids",
     }
@@ -253,6 +267,7 @@ class StockPicking(models.Model):
         record = data.get("_picking_record")
         if record:
             data["transport_partner_id"] = record.l10n_ro_edi_stock_transport_partner_id
+        self._l10n_ro_edi_stock_set_transport_date(data)
         errors = super()._l10n_ro_edi_stock_validate_data(data=data)
         if not data["transport_partner_id"]:
             # one clear message instead of the base's missing VAT/City/Street
@@ -352,10 +367,39 @@ class StockPicking(models.Model):
         return errors
 
     @api.model
+    def _l10n_ro_edi_stock_set_transport_date(self, data):
+        """Date declared as ``dataTransport`` (date only: the UIT is valid
+        from 00:00 of it, and ANAF refuses a confirmation or a vehicle change
+        before that day).
+
+        - a new notification: the eTransport Transport Date, or today when
+          empty (then written on the record, so the tab shows it);
+        - a correction: the date first declared;
+        - a post-outage declaration: the eTransport Transport Date, or the
+          scheduled date (the goods already left).
+
+        The base sends ``data["scheduled_date"].date()``, so the date is put
+        there at noon to keep the same day in any timezone."""
+        record = data.get("_picking_record")
+        chosen = record and record.l10n_ro_edi_stock_transport_date
+        if data.get("send_type") == "amend":
+            date = record and record._l10n_ro_edi_stock_declared_transport_date()
+        elif chosen or (record and record.l10n_ro_edi_stock_post_outage):
+            date = chosen
+        else:
+            date = fields.Date.context_today(self)
+            if record and not self.env.context.get("l10n_ro_edi_stock_dry_run"):
+                record.with_context(
+                    l10n_ro_edi_stock_skip_sent_lock=True
+                ).l10n_ro_edi_stock_transport_date = date
+        if date:
+            data["scheduled_date"] = datetime.combine(date, time(12))
+
+    @api.model
     def _l10n_ro_edi_stock_validate_transport_date(self, data):
         """ANAF only accepts a transport date from today to today + 3 days
         (a correction keeps the original date; a post-outage declaration
-        is allowed late). The date sent is the transfer's scheduled date."""
+        is allowed late). See _l10n_ro_edi_stock_set_transport_date."""
         ctx = self.env.context
         if (
             data.get("send_type") == "amend"
@@ -374,8 +418,8 @@ class StockPicking(models.Model):
         return [
             self.env._(
                 "Transport date %(date)s is outside the interval ANAF accepts "
-                "(%(first)s - %(last)s). Set the Scheduled Date of the transfer "
-                "to the day the goods leave.",
+                "(%(first)s - %(last)s). Change the eTransport Transport Date "
+                "(empty means today).",
                 date=format_date(self.env, date),
                 first=format_date(self.env, today),
                 last=format_date(self.env, last),
