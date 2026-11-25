@@ -117,6 +117,16 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         if not start:
             return
         today = fields.Date.context_today(self)
+        if today < start and self.action_type == "modify_vehicle":
+            raise UserError(
+                self.env._(
+                    "UIT %(uit)s is valid only from %(start)s: ANAF refuses a "
+                    "vehicle change before that day. Change the vehicle number "
+                    "on the transfer and send a correction (Amend) instead.",
+                    uit=self.uit,
+                    start=format_date(self.env, start),
+                )
+            )
         if not start <= today <= end:
             raise UserError(
                 self.env._(

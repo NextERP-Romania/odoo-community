@@ -108,7 +108,6 @@
                 <field
                     name="l10n_ro_edi_stock_transport_date"
                     readonly="l10n_ro_edi_stock_fields_readonly"
-                    placeholder="Today, when sent"
                 />
                 <field
                     name="l10n_ro_edi_stock_uit_valid_from"

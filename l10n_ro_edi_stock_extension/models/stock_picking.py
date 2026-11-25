@@ -15,6 +15,7 @@ from odoo.tools.translate import LazyTranslate
 from .etransport_constants import (
     EU_COUNTRY_CODES,
     OPERATION_TYPE_TO_ALLOWED_SCOPE_CODES_FULL,
+    TRANSPORT_DATE_MAX_DAYS,
     VALID_COUNTRY_CODE_MAP,
     is_national,
     is_outgoing,
@@ -40,10 +41,6 @@ _logger = logging.getLogger(__name__)
 # l10n_ro_edi_stock's catalog and therefore match the errors it emits,
 # whatever language the user runs in.
 _lt_base = LazyTranslate("l10n_ro_edi_stock")
-
-# ANAF: "Data declarată a transportului trebuie să fie în intervalul
-# <azi> - <azi + 3>".
-TRANSPORT_DATE_MAX_DAYS = 3
 
 
 class EtransportCheckResult(Exception):
@@ -126,18 +123,6 @@ class StockPicking(models.Model):
         help="Transport company declared in the eTransport notification. "
         "Filled from the delivery method; can be changed until the "
         "notification is sent (and corrected afterwards).",
-    )
-
-    # Date declared as dataTransport. Empty: today, when the notification
-    # is sent (the UIT is valid from 00:00 of that day, so the vehicle can be
-    # changed right away); filled with the date sent.
-    l10n_ro_edi_stock_transport_date = fields.Date(
-        string="eTransport Transport Date",
-        copy=False,
-        help="Date declared to ANAF as the transport date. The UIT is valid "
-        "from 00:00 of this day: ANAF refuses a confirmation or a vehicle "
-        "change before it. Leave empty to declare the day the notification "
-        "is sent.",
     )
 
     @api.depends("carrier_id.l10n_ro_edi_stock_partner_id")
@@ -372,26 +357,19 @@ class StockPicking(models.Model):
         from 00:00 of it, and ANAF refuses a confirmation or a vehicle change
         before that day).
 
-        - a new notification: the eTransport Transport Date, or today when
-          empty (then written on the record, so the tab shows it);
-        - a correction: the date first declared;
-        - a post-outage declaration: the eTransport Transport Date, or the
-          scheduled date (the goods already left).
+        - a new notification (post-outage too): the eTransport Transport
+          Start, or today when empty;
+        - a correction: the date first declared.
 
         The base sends ``data["scheduled_date"].date()``, so the date is put
         there at noon to keep the same day in any timezone."""
         record = data.get("_picking_record")
-        chosen = record and record.l10n_ro_edi_stock_transport_date
         if data.get("send_type") == "amend":
             date = record and record._l10n_ro_edi_stock_declared_transport_date()
-        elif chosen or (record and record.l10n_ro_edi_stock_post_outage):
-            date = chosen
         else:
-            date = fields.Date.context_today(self)
-            if record and not self.env.context.get("l10n_ro_edi_stock_dry_run"):
-                record.with_context(
-                    l10n_ro_edi_stock_skip_sent_lock=True
-                ).l10n_ro_edi_stock_transport_date = date
+            date = (
+                record and record.l10n_ro_edi_stock_transport_date
+            ) or fields.Date.context_today(self)
         if date:
             data["scheduled_date"] = datetime.combine(date, time(12))
 
@@ -418,8 +396,7 @@ class StockPicking(models.Model):
         return [
             self.env._(
                 "Transport date %(date)s is outside the interval ANAF accepts "
-                "(%(first)s - %(last)s). Change the eTransport Transport Date "
-                "(empty means today).",
+                "(%(first)s - %(last)s). Change the eTransport Transport Start.",
                 date=format_date(self.env, date),
                 first=format_date(self.env, today),
                 last=format_date(self.env, last),

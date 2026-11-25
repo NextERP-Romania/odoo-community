@@ -88,18 +88,6 @@ class StockPickingBatch(models.Model):
         "until the notification is sent (and corrected afterwards).",
     )
 
-    # Date declared as dataTransport. Empty: today, when the notification
-    # is sent (the UIT is valid from 00:00 of that day, so the vehicle can be
-    # changed right away); filled with the date sent.
-    l10n_ro_edi_stock_transport_date = fields.Date(
-        string="eTransport Transport Date",
-        copy=False,
-        help="Date declared to ANAF as the transport date. The UIT is valid "
-        "from 00:00 of this day: ANAF refuses a confirmation or a vehicle "
-        "change before it. Leave empty to declare the day the notification "
-        "is sent.",
-    )
-
     @api.depends("picking_ids.carrier_id.l10n_ro_edi_stock_partner_id")
     def _compute_l10n_ro_edi_stock_transport_partner_id(self):
         for batch in self:
