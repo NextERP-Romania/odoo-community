@@ -106,9 +106,10 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
             )
 
     def _check_uit_active(self):
-        """ANAF refuses a confirmation or a vehicle change outside the
-        validity of the UIT ("UIT inactiv"): from the declared transport date
-        to the last valid day. A deletion is accepted at any time."""
+        """ANAF refuses an action on an expired UIT ("UIT inactiv"), and a
+        confirmation before the transport start. A vehicle change before the
+        start is left to ANAF (it may be accepted in the days before); a
+        deletion is accepted at any time."""
         if self.action_type not in ("confirm", "modify_vehicle"):
             return
         record = self._get_etransport_record()
@@ -117,22 +118,12 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         if not start:
             return
         today = fields.Date.context_today(self)
-        if today < start and self.action_type == "modify_vehicle":
-            raise UserError(
-                self.env._(
-                    "UIT %(uit)s is valid only from %(start)s: ANAF refuses a "
-                    "vehicle change before that day. Change the vehicle number "
-                    "on the transfer and send a correction (Amend) instead.",
-                    uit=self.uit,
-                    start=format_date(self.env, start),
-                )
-            )
-        if not start <= today <= end:
+        early = today < start and self.action_type == "confirm"
+        if early or today > end:
             raise UserError(
                 self.env._(
                     "UIT %(uit)s is valid from %(start)s to %(end)s. ANAF "
-                    "accepts a confirmation or a vehicle change only in this "
-                    "interval.",
+                    "refuses this action outside the interval.",
                     uit=self.uit,
                     start=format_date(self.env, start),
                     end=format_date(self.env, end),

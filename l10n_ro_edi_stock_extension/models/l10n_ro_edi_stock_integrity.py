@@ -43,9 +43,7 @@ class L10nRoEdiStockIntegrityMixin(models.AbstractModel):
         default=lambda self: fields.Date.context_today(self),
         copy=False,
         help="Day the transport starts, declared to ANAF. Between today and "
-        "today + 3 days. The UIT is valid from this day: ANAF refuses a "
-        "confirmation or a vehicle change before it (use a correction "
-        "instead).",
+        "today + 3 days. The UIT is valid from this day.",
     )
 
     @api.constrains("l10n_ro_edi_stock_transport_date")
@@ -78,8 +76,7 @@ class L10nRoEdiStockIntegrityMixin(models.AbstractModel):
     l10n_ro_edi_stock_uit_valid_until = fields.Date(
         string="UIT Valid Until",
         compute="_compute_l10n_ro_edi_stock_uit_validity",
-        help="ANAF accepts a confirmation or a vehicle change only from the "
-        "transport date up to this day.",
+        help="Last day ANAF accepts a confirmation or a vehicle change.",
     )
 
     @api.depends("l10n_ro_edi_stock_document_ids", "l10n_ro_edi_stock_operation_type")
