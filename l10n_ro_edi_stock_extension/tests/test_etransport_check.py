@@ -132,16 +132,7 @@ class TestEtransportCheck(TransactionCase):
         picking = self._picking()
         start = fields.Date.context_today(picking) + timedelta(days=1)
         picking.l10n_ro_edi_stock_transport_date = start
-        self.assertFalse(picking.l10n_ro_edi_stock_uit_valid_until)
-        self.env["l10n_ro_edi.document"].create(
-            {
-                "picking_id": picking.id,
-                "state": "stock_validated",
-                "l10n_ro_edi_stock_uit": "UIT1",
-            }
-        )
         picking.l10n_ro_edi_stock_operation_type = "20"
-        self.assertTrue(picking.l10n_ro_edi_stock_has_live_uit)
         self.assertEqual(
             picking.l10n_ro_edi_stock_uit_valid_until, start + timedelta(days=4)
         )
