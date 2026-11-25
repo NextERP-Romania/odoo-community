@@ -9,24 +9,24 @@ _DATE = re.compile(rb'dataTransport="(\d{4}-\d{2}-\d{2})"')
 
 def migrate(cr, version):
     """The new eTransport Transport Start got today's date on every record;
-    where a UIT is alive, put back the date sent to ANAF (the validity is
-    computed from it)."""
+    where a notification was sent, put back its dataTransport (read from the
+    latest sent XML that carries one: deletion / confirmation / vehicle
+    change XMLs do not)."""
     if not version:
         return
     env = api.Environment(cr, SUPERUSER_ID, {})
-    for record in env["stock.picking"].search(
+    records = env["stock.picking"].search(
         [("l10n_ro_edi_stock_document_ids", "!=", False)]
-    ):
-        document = record._l10n_ro_edi_stock_live_uit_document()
-        validated = document and record._l10n_ro_edi_stock_get_last_document(
-            "stock_validated"
-        )
-        if not validated or not validated.attachment:
-            continue
-        match = _DATE.search(base64.b64decode(validated.attachment))
-        if match:
-            cr.execute(
-                "UPDATE stock_picking SET l10n_ro_edi_stock_transport_date = %s "
-                "WHERE id = %s",
-                (match.group(1).decode(), record.id),
-            )
+    )
+    for record in records:
+        for document in record.l10n_ro_edi_stock_document_ids.sorted():
+            if not document.attachment:
+                continue
+            match = _DATE.search(base64.b64decode(document.attachment))
+            if match:
+                cr.execute(
+                    "UPDATE stock_picking SET l10n_ro_edi_stock_transport_date = %s "
+                    "WHERE id = %s",
+                    (match.group(1).decode(), record.id),
+                )
+                break
