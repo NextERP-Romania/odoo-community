@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-16 13:27+0000\n"
-"PO-Revision-Date: 2026-07-16 13:27+0000\n"
+"POT-Creation-Date: 2026-11-25 16:54+0000\n"
+"PO-Revision-Date: 2026-11-25 16:54+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -17,9 +17,26 @@ msgstr ""
 
 #. module: l10n_ro_edi_stock_batch_extension
 #. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid ""
+"%(name)s cannot be sent to eTransport yet:\n"
+"\n"
+"%(errors)s"
+msgstr ""
+"%(name)s nu poate fi trimis încă în eTransport:\n"
+"\n"
+"%(errors)s"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
 #: code:addons/l10n_ro_edi_stock_batch_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
 msgid "ANAF error on %(action)s: %(err)s"
 msgstr "Eroare ANAF la %(action)s: %(err)s"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_state__stock_action_sent
+msgid "Action Sent"
+msgstr "Acțiune trimisă"
 
 #. module: l10n_ro_edi_stock_batch_extension
 #: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
@@ -40,6 +57,11 @@ msgid "Batch Transfer"
 msgstr "Transfer în lot"
 
 #. module: l10n_ro_edi_stock_batch_extension
+#: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
+msgid "Check eTransport"
+msgstr "Verifică eTransport"
+
+#. module: l10n_ro_edi_stock_batch_extension
 #: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_res_company
 msgid "Companies"
 msgstr "Companii"
@@ -58,6 +80,15 @@ msgstr "Confirmat"
 #: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_price_source__cost
 msgid "Cost price (standard_price)"
 msgstr "Preț de cost (standard_price)"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,help:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_transport_date
+msgid ""
+"Day the transport starts, declared to ANAF. Between today and today + 3 "
+"days. The UIT is valid from this day."
+msgstr ""
+"Ziua în care începe transportul, declarată la ANAF. Între azi și azi + 3 "
+"zile. Codul UIT este valabil de la această zi."
 
 #. module: l10n_ro_edi_stock_batch_extension
 #: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
@@ -143,6 +174,24 @@ msgstr ""
 "Automat: utilizează prețul de cost pentru achiziții și transferuri interne; utilizează prețul de vânzare pentru livrări."
 
 #. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,help:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_uit_valid_until
+msgid "The UIT is valid from the transport start up to this day."
+msgstr ""
+"Codul UIT este valabil de la începutul transportului până în această zi."
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid ""
+"The transfers of batch %(batch)s cannot be changed: its eTransport "
+"notification (UIT %(uit)s) is registered at ANAF for exactly these goods. "
+"Delete the notification first."
+msgstr ""
+"Transferurile lotului %(batch)s nu pot fi modificate: notificarea sa "
+"eTransport (UIT %(uit)s) este înregistrată la ANAF exact pentru aceste "
+"bunuri. Ștergeți mai întâi notificarea."
+
+#. module: l10n_ro_edi_stock_batch_extension
 #: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_stock_picking
 #: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_l10n_ro_edi_stock_action_wizard__picking_id
 msgid "Transfer"
@@ -154,9 +203,27 @@ msgid "Transport Documents"
 msgstr "Documente de transport"
 
 #. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,help:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_transport_partner_id
+msgid ""
+"Transport company declared in the eTransport notification. Filled from the "
+"delivery method of the transfers; can be changed until the notification is "
+"sent. Another carrier afterwards means deleting the notification and sending"
+" a new one."
+msgstr ""
+"Firma de transport declarată în notificarea eTransport. Se completează din "
+"metoda de livrare a transferurilor; se poate schimba până la trimiterea "
+"notificării. Un alt transportator după trimitere înseamnă ștergerea "
+"notificării și trimiterea uneia noi."
+
+#. module: l10n_ro_edi_stock_batch_extension
 #: model_terms:ir.ui.view,arch_db:l10n_ro_edi_stock_batch_extension.view_picking_batch_form_l10n_ro_edi_stock_batch_extension
 msgid "Transport documents"
 msgstr "Documente de transport"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_uit_valid_until
+msgid "UIT Valid Until"
+msgstr "UIT valabil până la"
 
 #. module: l10n_ro_edi_stock_batch_extension
 #. odoo-python
@@ -171,13 +238,35 @@ msgstr "Vehicul modificat"
 
 #. module: l10n_ro_edi_stock_batch_extension
 #. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "cancelled"
+msgstr "anulat"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "deleted"
+msgstr "șters"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
 #: code:addons/l10n_ro_edi_stock_batch_extension/wizards/l10n_ro_edi_stock_action_wizard.py:0
 msgid ""
-"eTransport %(action)s uploaded to ANAF (UIT: %(uit)s, load: %(load)s); fetch "
-"its status."
+"eTransport %(action)s uploaded to ANAF (UIT: %(uit)s, load: %(load)s); fetch"
+" its status."
 msgstr ""
 "eTransport %(action)s încărcat la ANAF (UIT: %(uit)s, încărcare: %(load)s); "
 "preluați starea."
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_enable_uit_action
+msgid "eTransport Action Allowed"
+msgstr "Acțiune eTransport permisă"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_transport_partner_id
+msgid "eTransport Carrier"
+msgstr "Transportator eTransport"
 
 #. module: l10n_ro_edi_stock_batch_extension
 #: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_price_source
@@ -190,9 +279,21 @@ msgid "eTransport Status"
 msgstr "Starea eTransport"
 
 #. module: l10n_ro_edi_stock_batch_extension
+#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_transport_date
+msgid "eTransport Transport Start"
+msgstr "Început transport eTransport"
+
+#. module: l10n_ro_edi_stock_batch_extension
 #: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_l10n_ro_edi_stock_action_wizard
 msgid "eTransport UIT action wizard (delete / confirm / modify vehicle)"
-msgstr "Expert acțiuni eTransport UIT (ștergere / confirmare / modificare vehicul)"
+msgstr ""
+"Expert acțiuni eTransport UIT (ștergere / confirmare / modificare vehicul)"
+
+#. module: l10n_ro_edi_stock_batch_extension
+#. odoo-python
+#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
+msgid "eTransport data is complete, it can be sent."
+msgstr "Datele eTransport sunt complete, notificarea poate fi trimisă."
 
 #. module: l10n_ro_edi_stock_batch_extension
 #: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_l10n_ro_edi_stock_previous_notification
@@ -203,34 +304,6 @@ msgstr "Notificare anterioară eTransport (operațiunile 60/70)"
 #: model:ir.model,name:l10n_ro_edi_stock_batch_extension.model_l10n_ro_edi_stock_document_line
 msgid "eTransport transport document line"
 msgstr "Linie document transport eTransport"
-
-#. module: l10n_ro_edi_stock_batch_extension
-#. odoo-python
-#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
-msgid "The transfers of batch %(batch)s cannot be changed: its eTransport notification (UIT %(uit)s) is registered at ANAF for exactly these goods. Delete the notification first."
-msgstr "Transferurile lotului %(batch)s nu pot fi modificate: notificarea sa eTransport (UIT %(uit)s) este înregistrată la ANAF exact pentru aceste bunuri. Ștergeți mai întâi notificarea."
-
-#. module: l10n_ro_edi_stock_batch_extension
-#. odoo-python
-#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
-msgid "deleted"
-msgstr "șters"
-
-#. module: l10n_ro_edi_stock_batch_extension
-#. odoo-python
-#: code:addons/l10n_ro_edi_stock_batch_extension/models/stock_picking_batch.py:0
-msgid "cancelled"
-msgstr "anulat"
-
-#. module: l10n_ro_edi_stock_batch_extension
-#: model:ir.model.fields.selection,name:l10n_ro_edi_stock_batch_extension.selection__stock_picking_batch__l10n_ro_edi_stock_state__stock_action_sent
-msgid "Action Sent"
-msgstr "Acțiune trimisă"
-
-#. module: l10n_ro_edi_stock_batch_extension
-#: model:ir.model.fields,field_description:l10n_ro_edi_stock_batch_extension.field_stock_picking_batch__l10n_ro_edi_stock_enable_uit_action
-msgid "eTransport Action Allowed"
-msgstr "Acțiune eTransport permisă"
 
 #. module: l10n_ro_edi_stock_batch_extension
 #: model:ir.actions.server,name:l10n_ro_edi_stock_batch_extension.ir_cron_l10n_ro_edi_stock_batch_fetch_status_ir_actions_server
