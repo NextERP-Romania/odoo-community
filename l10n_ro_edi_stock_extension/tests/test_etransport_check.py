@@ -11,7 +11,7 @@ import base64
 from datetime import timedelta
 
 from odoo import fields
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -99,13 +99,20 @@ class TestEtransportCheck(TransactionCase):
         picking._l10n_ro_edi_stock_set_transport_date(data)
         self.assertEqual(data["scheduled_date"].date(), chosen)
 
-    def test_a_chosen_date_outside_the_interval_is_reported(self):
+    def test_the_transport_start_defaults_to_today(self):
         picking = self._picking()
-        picking.l10n_ro_edi_stock_transport_date = fields.Date.context_today(
-            picking
-        ) - timedelta(days=5)
-        errors = picking._l10n_ro_edi_stock_check_errors()
-        self.assertTrue([e for e in errors if "outside the interval" in e])
+        self.assertEqual(
+            picking.l10n_ro_edi_stock_transport_date,
+            fields.Date.context_today(picking),
+        )
+
+    def test_the_transport_start_is_limited_to_today_plus_three(self):
+        picking = self._picking()
+        today = fields.Date.context_today(picking)
+        picking.l10n_ro_edi_stock_transport_date = today + timedelta(days=3)
+        for days in (-1, 4):
+            with self.assertRaises(ValidationError):
+                picking.l10n_ro_edi_stock_transport_date = today + timedelta(days=days)
 
     def test_a_past_scheduled_date_does_not_stop_the_notification(self):
         picking = self._picking(
@@ -114,18 +121,13 @@ class TestEtransportCheck(TransactionCase):
         errors = picking._l10n_ro_edi_stock_check_errors()
         self.assertFalse([e for e in errors if "outside the interval" in e])
 
-    def test_a_post_outage_declaration_keeps_the_scheduled_date(self):
-        scheduled = fields.Datetime.now() - timedelta(days=1)
-        picking = self._picking(
-            scheduled_date=scheduled, l10n_ro_edi_stock_post_outage=True
-        )
-        data = {
-            "_picking_record": picking,
-            "send_type": "send",
-            "scheduled_date": scheduled,
-        }
+    def test_a_post_outage_declaration_may_start_in_the_past(self):
+        picking = self._picking(l10n_ro_edi_stock_post_outage=True)
+        past = fields.Date.context_today(picking) - timedelta(days=1)
+        picking.l10n_ro_edi_stock_transport_date = past
+        data = {"_picking_record": picking, "send_type": "send"}
         picking._l10n_ro_edi_stock_set_transport_date(data)
-        self.assertEqual(data["scheduled_date"], scheduled)
+        self.assertEqual(data["scheduled_date"].date(), past)
 
     def test_a_correction_keeps_the_declared_date(self):
         picking = self._picking()
