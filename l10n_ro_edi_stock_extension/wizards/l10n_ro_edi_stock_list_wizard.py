@@ -106,7 +106,11 @@ class L10nRoEdiStockListWizard(models.TransientModel):
             return
         pickings = self.env["stock.picking"].search(
             [
-                ("l10n_ro_edi_stock_document_uit", "in", list(uits)),
+                (
+                    "l10n_ro_edi_stock_document_ids.l10n_ro_edi_stock_uit",
+                    "in",
+                    list(uits),
+                ),
             ]
         )
         for pk in pickings:

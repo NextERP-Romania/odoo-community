@@ -45,7 +45,11 @@ class ResCompany(models.Model):
             .search(
                 [
                     ("company_id", "=", company.id),
-                    ("l10n_ro_edi_stock_document_uit", "in", uits),
+                    (
+                        "l10n_ro_edi_stock_document_ids.l10n_ro_edi_stock_uit",
+                        "in",
+                        uits,
+                    ),
                 ]
             )
         ):
@@ -56,7 +60,11 @@ class ResCompany(models.Model):
             .search(
                 [
                     ("company_id", "=", company.id),
-                    ("l10n_ro_edi_stock_document_uit", "in", uits),
+                    (
+                        "l10n_ro_edi_stock_document_ids.l10n_ro_edi_stock_uit",
+                        "in",
+                        uits,
+                    ),
                 ]
             )
         ):
