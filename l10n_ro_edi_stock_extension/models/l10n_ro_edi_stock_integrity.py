@@ -65,38 +65,22 @@ class L10nRoEdiStockIntegrityMixin(models.AbstractModel):
                 )
             )
 
-    # A UIT is alive at ANAF: its transport start is fixed (shown read-only)
-    # and the validity runs from it.
-    l10n_ro_edi_stock_has_live_uit = fields.Boolean(
-        compute="_compute_l10n_ro_edi_stock_uit_validity",
-    )
+    # The UIT is valid from the transport start up to this day.
     l10n_ro_edi_stock_uit_valid_until = fields.Date(
         string="UIT Valid Until",
-        compute="_compute_l10n_ro_edi_stock_uit_validity",
+        compute="_compute_l10n_ro_edi_stock_uit_valid_until",
         help="The UIT is valid from the transport start up to this day.",
     )
 
-    @api.depends(
-        "l10n_ro_edi_stock_document_ids.state",
-        "l10n_ro_edi_stock_transport_date",
-        "l10n_ro_edi_stock_operation_type",
-    )
-    def _compute_l10n_ro_edi_stock_uit_validity(self):
+    @api.depends("l10n_ro_edi_stock_transport_date", "l10n_ro_edi_stock_operation_type")
+    def _compute_l10n_ro_edi_stock_uit_valid_until(self):
         for record in self:
-            live = bool(record.id and record._l10n_ro_edi_stock_live_uit_document())
             start = record.l10n_ro_edi_stock_transport_date
-            record.l10n_ro_edi_stock_has_live_uit = live
-            record.l10n_ro_edi_stock_uit_valid_until = (
-                live
-                and start
-                and start
-                + timedelta(
-                    days=UIT_VALIDITY_DAYS.get(
-                        record.l10n_ro_edi_stock_operation_type,
-                        UIT_VALIDITY_DAYS_DEFAULT,
-                    )
-                    - 1
-                )
+            days = UIT_VALIDITY_DAYS.get(
+                record.l10n_ro_edi_stock_operation_type, UIT_VALIDITY_DAYS_DEFAULT
+            )
+            record.l10n_ro_edi_stock_uit_valid_until = start and start + timedelta(
+                days=days - 1
             )
 
     # Whether ANAF would accept a deletion / confirmation / vehicle change now:

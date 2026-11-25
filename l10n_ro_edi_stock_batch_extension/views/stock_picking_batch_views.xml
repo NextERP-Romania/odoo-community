@@ -112,13 +112,9 @@
                 />
                 <field
                     name="l10n_ro_edi_stock_transport_date"
-                    readonly="l10n_ro_edi_stock_fields_readonly or l10n_ro_edi_stock_has_live_uit"
+                    readonly="l10n_ro_edi_stock_state in ('stock_sent', 'stock_action_sent', 'stock_validated', 'stock_vehicle_modified', 'stock_confirmed')"
                 />
-                <field name="l10n_ro_edi_stock_has_live_uit" invisible="1" />
-                <field
-                    name="l10n_ro_edi_stock_uit_valid_until"
-                    invisible="not l10n_ro_edi_stock_uit_valid_until"
-                />
+                <field name="l10n_ro_edi_stock_uit_valid_until" />
             </xpath>
         </field>
     </record>
