@@ -6,6 +6,12 @@ OUTGOING_OPERATIONS = ("20", "22", "24", "50", "70")
 NATIONAL_OPERATIONS = ("30",)
 NO_GOODS_DATA_OPERATIONS = ("60", "70")
 
+# Days the UIT is valid, counted from dataTransport inclusive: 15 for an
+# intra-community acquisition, 5 otherwise (seen at ANAF: op 20 declared on
+# 18.11 -> valid 18 - 22.11).
+UIT_VALIDITY_DAYS = {"10": 15}
+UIT_VALIDITY_DAYS_DEFAULT = 5
+
 DOCUMENT_TYPES = [
     ("10", "CMR"),
     ("20", "Invoice"),
