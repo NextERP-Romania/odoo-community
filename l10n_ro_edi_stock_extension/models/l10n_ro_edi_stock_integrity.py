@@ -1,6 +1,4 @@
 # Copyright 2026 NextERP Romania SRL
-import base64
-import re
 from datetime import timedelta
 
 import requests
@@ -67,25 +65,31 @@ class L10nRoEdiStockIntegrityMixin(models.AbstractModel):
                 )
             )
 
-    # Validity of the UIT at ANAF: a confirmation or a vehicle change is only
-    # accepted between these two days (inclusive).
-    l10n_ro_edi_stock_uit_valid_from = fields.Date(
-        string="UIT Valid From",
+    # A UIT is alive at ANAF: its transport start is fixed (shown read-only)
+    # and the validity runs from it.
+    l10n_ro_edi_stock_has_live_uit = fields.Boolean(
         compute="_compute_l10n_ro_edi_stock_uit_validity",
     )
     l10n_ro_edi_stock_uit_valid_until = fields.Date(
         string="UIT Valid Until",
         compute="_compute_l10n_ro_edi_stock_uit_validity",
-        help="Last day ANAF accepts a confirmation or a vehicle change.",
+        help="The UIT is valid from the transport start up to this day.",
     )
 
-    @api.depends("l10n_ro_edi_stock_document_ids", "l10n_ro_edi_stock_operation_type")
+    @api.depends(
+        "l10n_ro_edi_stock_document_ids.state",
+        "l10n_ro_edi_stock_transport_date",
+        "l10n_ro_edi_stock_operation_type",
+    )
     def _compute_l10n_ro_edi_stock_uit_validity(self):
         for record in self:
-            start = record._l10n_ro_edi_stock_declared_transport_date()
-            record.l10n_ro_edi_stock_uit_valid_from = start
-            record.l10n_ro_edi_stock_uit_valid_until = start and (
-                start
+            live = bool(record.id and record._l10n_ro_edi_stock_live_uit_document())
+            start = record.l10n_ro_edi_stock_transport_date
+            record.l10n_ro_edi_stock_has_live_uit = live
+            record.l10n_ro_edi_stock_uit_valid_until = (
+                live
+                and start
+                and start
                 + timedelta(
                     days=UIT_VALIDITY_DAYS.get(
                         record.l10n_ro_edi_stock_operation_type,
@@ -94,22 +98,6 @@ class L10nRoEdiStockIntegrityMixin(models.AbstractModel):
                     - 1
                 )
             )
-
-    def _l10n_ro_edi_stock_declared_transport_date(self):
-        """The ``dataTransport`` of the notification ANAF validated, read
-        from the XML actually sent (the scheduled date may have changed
-        since). The UIT is valid from 00:00 of that day."""
-        self.ensure_one()
-        if not self.id:
-            return False
-        document = self._l10n_ro_edi_stock_get_last_document("stock_validated")
-        if not document or not document.attachment:
-            return False
-        match = re.search(
-            rb'dataTransport="(\d{4}-\d{2}-\d{2})"',
-            base64.b64decode(document.attachment),
-        )
-        return fields.Date.to_date(match.group(1).decode()) if match else False
 
     # Whether ANAF would accept a deletion / confirmation / vehicle change now:
     # the notification is validated (possibly with a changed vehicle), even if

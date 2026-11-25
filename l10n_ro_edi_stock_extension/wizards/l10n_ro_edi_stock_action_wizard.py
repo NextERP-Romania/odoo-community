@@ -113,9 +113,9 @@ class L10nRoEdiStockActionWizard(models.TransientModel):
         if self.action_type not in ("confirm", "modify_vehicle"):
             return
         record = self._get_etransport_record()
-        start = record.l10n_ro_edi_stock_uit_valid_from
+        start = record.l10n_ro_edi_stock_transport_date
         end = record.l10n_ro_edi_stock_uit_valid_until
-        if not start:
+        if not start or not end:
             return
         today = fields.Date.context_today(self)
         early = today < start and self.action_type == "confirm"
