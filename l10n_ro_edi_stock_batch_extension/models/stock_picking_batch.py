@@ -73,6 +73,28 @@ class StockPickingBatch(models.Model):
         "of the next working day after the ANAF system is restored.",
     )
 
+    # Transport company declared to ANAF for the whole batch (see the field
+    # of the same name on stock.picking): filled from the delivery method of
+    # the transfers, editable when the carrier is only known later.
+    l10n_ro_edi_stock_transport_partner_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="eTransport Carrier",
+        compute="_compute_l10n_ro_edi_stock_transport_partner_id",
+        store=True,
+        readonly=False,
+        copy=False,
+        help="Transport company declared in the eTransport notification. "
+        "Filled from the delivery method of the transfers; can be changed "
+        "until the notification is sent (and corrected afterwards).",
+    )
+
+    @api.depends("picking_ids.carrier_id.l10n_ro_edi_stock_partner_id")
+    def _compute_l10n_ro_edi_stock_transport_partner_id(self):
+        for batch in self:
+            partner = batch.picking_ids[:1].carrier_id.l10n_ro_edi_stock_partner_id
+            if partner:
+                batch.l10n_ro_edi_stock_transport_partner_id = partner
+
     ################################################################################
     # Integrity: a batch with a live UIT stays until ANAF is told otherwise
     ################################################################################

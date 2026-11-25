@@ -1,11 +1,13 @@
 # Copyright 2026 NextERP Romania SRL
 # License AGPL-3.0 or later
 # (https://www.odoo.com/documentation/user/19.0/legal/licenses/licenses.html#).
-"""When validating a transfer asks for a delivery carrier.
+"""The carrier declared to eTransport.
 
-The base module asks for one on every receipt and delivery of a Romanian
-company, even when nobody means to send it to eTransport. Here the carrier is
-only asked for once the transfer has an eTransport operation type.
+The base module asks for a delivery method before validating every receipt
+and delivery of a Romanian company. Here the transport company is a field of
+its own (eTransport Carrier), filled from the delivery method, editable after
+validation (freight exchange), and only required when the notification is
+sent.
 """
 
 from odoo.exceptions import UserError
@@ -65,28 +67,57 @@ class TestEtransportCarrier(TransactionCase):
         picking.button_validate()
         self.assertEqual(picking.state, "done")
 
-    def test_a_delivery_meant_for_etransport_still_needs_a_carrier(self):
+    def test_a_delivery_meant_for_etransport_validates_without_a_carrier(self):
+        """The carrier may be found on a freight exchange after the goods
+        are ready: it does not stop the validation, only the rest of the
+        eTransport data does."""
         picking = self._picking(l10n_ro_edi_stock_operation_type="30")
-        with self.assertRaisesRegex(UserError, "missing a delivery carrier"):
+        with self.assertRaises(UserError) as error:
             picking.button_validate()
+        message = str(error.exception.args[0])
+        self.assertIn("eTransport data is incomplete", message)
+        self.assertNotIn("delivery carrier", message)
+        self.assertNotIn("eTransport Carrier", message)
 
-    def test_the_carrier_still_needs_its_transport_company(self):
-        self.carrier.l10n_ro_edi_stock_partner_id = False
-        picking = self._picking(
-            l10n_ro_edi_stock_operation_type="30", carrier_id=self.carrier.id
+    def test_the_etransport_carrier_comes_from_the_delivery_method(self):
+        picking = self._picking(carrier_id=self.carrier.id)
+        self.assertEqual(
+            picking.l10n_ro_edi_stock_transport_partner_id, self.transporter
         )
-        with self.assertRaisesRegex(UserError, "missing the partner field value"):
-            picking.button_validate()
 
-    def test_with_a_carrier_only_the_etransport_data_is_left_to_fill(self):
-        """The carrier is accepted; what stops the validation now is the rest
-        of the eTransport data, checked so the notification can be sent."""
-        picking = self._picking(
-            l10n_ro_edi_stock_operation_type="30", carrier_id=self.carrier.id
+    def test_the_etransport_carrier_can_be_changed_after_validation(self):
+        picking = self._picking(carrier_id=self.carrier.id)
+        picking.button_validate()
+        self.assertEqual(picking.state, "done")
+        other = self.env["res.partner"].create({"name": "Bursa transport"})
+        picking.l10n_ro_edi_stock_transport_partner_id = other
+        self.assertEqual(picking.l10n_ro_edi_stock_transport_partner_id, other)
+
+    def test_sending_needs_the_etransport_carrier(self):
+        picking = self._picking(l10n_ro_edi_stock_operation_type="30")
+        errors = picking._l10n_ro_edi_stock_check_errors(skip_date=True)
+        self.assertIn("The eTransport Carrier (transport company) is not set.", errors)
+        self.assertFalse(
+            self.env["stock.picking"]._l10n_ro_edi_stock_carrier_partner_errors(errors)
         )
-        with self.assertRaisesRegex(UserError, "eTransport data is incomplete"):
-            picking.button_validate()
-        self.assertNotEqual(picking.state, "done")
+
+    def test_the_etransport_carrier_is_the_one_sent(self):
+        other = self.env["res.partner"].create({"name": "Bursa transport"})
+        picking = self._picking(
+            l10n_ro_edi_stock_operation_type="30",
+            carrier_id=self.carrier.id,
+        )
+        picking.l10n_ro_edi_stock_transport_partner_id = other
+        # neither partner has VAT/city/street yet
+        carrier_errors = self.env[
+            "stock.picking"
+        ]._l10n_ro_edi_stock_carrier_partner_errors
+        errors = picking._l10n_ro_edi_stock_check_errors(skip_date=True)
+        self.assertTrue(carrier_errors(errors))
+        # completing only the field's partner clears them: that one is sent
+        other.write({"vat": "RO1234567897", "city": "Timisoara", "street": "Str 1"})
+        errors = picking._l10n_ro_edi_stock_check_errors(skip_date=True)
+        self.assertFalse(carrier_errors(errors))
 
     def test_a_transfer_outside_romania_is_never_checked(self):
         self.company.account_fiscal_country_id = self.env.ref("base.be")

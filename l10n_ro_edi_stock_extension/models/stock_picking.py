@@ -110,6 +110,52 @@ class StockPicking(models.Model):
         "of the next working day after the ANAF system is restored.",
     )
 
+    # Transport company declared to ANAF. Starts from the delivery method but
+    # stays editable on its own: the delivery method can no longer be changed
+    # once the transfer is done, and when the transport is found on a freight
+    # exchange the carrier is only known after the goods are prepared.
+    l10n_ro_edi_stock_transport_partner_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="eTransport Carrier",
+        compute="_compute_l10n_ro_edi_stock_transport_partner_id",
+        store=True,
+        readonly=False,
+        precompute=True,
+        copy=False,
+        help="Transport company declared in the eTransport notification. "
+        "Filled from the delivery method; can be changed until the "
+        "notification is sent (and corrected afterwards).",
+    )
+
+    @api.depends("carrier_id.l10n_ro_edi_stock_partner_id")
+    def _compute_l10n_ro_edi_stock_transport_partner_id(self):
+        for picking in self:
+            partner = picking.carrier_id.l10n_ro_edi_stock_partner_id
+            if partner:
+                picking.l10n_ro_edi_stock_transport_partner_id = partner
+
+    def _l10n_ro_edi_stock_validate_carrier(self):
+        # OVERRIDE l10n_ro_edi_stock: the base demands a delivery method (with
+        # its transport company) before validating the transfer. The carrier
+        # is now the eTransport Carrier field, checked when the notification
+        # is sent, so validating the goods no longer depends on it.
+        return
+
+    @api.model
+    def _l10n_ro_edi_stock_carrier_partner_errors(self, errors):
+        """The base's errors about the transport company's fields."""
+        prefixes = tuple(
+            str(_lt_base(msg)).split("%(")[0]
+            for msg in (
+                "The delivery carrier partner is missing the %(field_name)s field.",
+                (
+                    "The delivery carrier partner is missing following fields: "
+                    "%(field_names)s"
+                ),
+            )
+        )
+        return [error for error in errors if error.startswith(prefixes)]
+
     @api.model
     def _l10n_ro_edi_stock_validate_carrier_filter(self, picking):
         # ask for a carrier only when the transfer
@@ -140,6 +186,7 @@ class StockPicking(models.Model):
         "l10n_ro_edi_stock_end_customs_office",
         "l10n_ro_edi_stock_price_source",
         "l10n_ro_edi_stock_post_outage",
+        "l10n_ro_edi_stock_transport_partner_id",
         "l10n_ro_edi_stock_document_line_ids",
         "l10n_ro_edi_stock_previous_ids",
     }
@@ -203,7 +250,21 @@ class StockPicking(models.Model):
         picking_id = self.env.context.get("l10n_ro_edi_stock_extension_picking")
         if picking_id and not data.get("_picking_record"):
             data["_picking_record"] = self.browse(picking_id)
+        record = data.get("_picking_record")
+        if record:
+            data["transport_partner_id"] = record.l10n_ro_edi_stock_transport_partner_id
         errors = super()._l10n_ro_edi_stock_validate_data(data=data)
+        if not data["transport_partner_id"]:
+            # one clear message instead of the base's missing VAT/City/Street
+            spurious = self._l10n_ro_edi_stock_carrier_partner_errors(errors)
+            errors = [error for error in errors if error not in spurious]
+            if not self.env.context.get("l10n_ro_edi_stock_skip_carrier_check"):
+                errors.insert(
+                    0,
+                    self.env._(
+                        "The eTransport Carrier (transport company) is not set."
+                    ),
+                )
         errors = self._l10n_ro_edi_stock_drop_foreign_counterparty_error(errors, data)
 
         op_type = data.get("l10n_ro_edi_stock_operation_type")
@@ -359,13 +420,14 @@ class StockPicking(models.Model):
     # Check before sending / before validating the transfer
     ################################################################################
 
-    def _l10n_ro_edi_stock_check_errors(self, skip_date=False):
+    def _l10n_ro_edi_stock_check_errors(self, skip_date=False, skip_carrier=False):
         """Everything that would stop the notification, without sending it."""
         self.ensure_one()
         try:
             self.with_context(
                 l10n_ro_edi_stock_dry_run=True,
                 l10n_ro_edi_stock_skip_date_check=skip_date,
+                l10n_ro_edi_stock_skip_carrier_check=skip_carrier,
             )._l10n_ro_edi_stock_send_etransport_document("send")
         except EtransportCheckResult as result:
             return result.errors
@@ -397,10 +459,12 @@ class StockPicking(models.Model):
         """Transfers set up for eTransport (operation type chosen) whose
         notification is not sent yet."""
         return self.filtered(
-            lambda p: p.l10n_ro_edi_stock_enable
-            and p.l10n_ro_edi_stock_operation_type
-            and not p.batch_id
-            and p.l10n_ro_edi_stock_state in (False, "stock_sending_failed")
+            lambda p: (
+                p.l10n_ro_edi_stock_enable
+                and p.l10n_ro_edi_stock_operation_type
+                and not p.batch_id
+                and p.l10n_ro_edi_stock_state in (False, "stock_sending_failed")
+            )
         )
 
     def button_validate(self):
@@ -408,11 +472,13 @@ class StockPicking(models.Model):
         # notification can still be sent afterwards. The date is not checked
         # here: the goods may be validated after they left.
         to_check = self._l10n_ro_edi_stock_pickings_to_check_on_validate()
-        # carrier first, with the base's own messages
-        to_check._l10n_ro_edi_stock_validate_carrier()
+        # The carrier is not checked here either: it may only be found after
+        # the goods are ready (freight exchange) and is set before sending.
         messages = []
         for picking in to_check:
-            errors = picking._l10n_ro_edi_stock_check_errors(skip_date=True)
+            errors = picking._l10n_ro_edi_stock_check_errors(
+                skip_date=True, skip_carrier=True
+            )
             if errors:
                 lines = "\n".join(f"- {e}" for e in errors)
                 messages.append(f"{picking.display_name}:\n{lines}")
@@ -1087,12 +1153,11 @@ class StockPicking(models.Model):
                 "denumireOrgTransport": "name",
             }.get(attribute)
             if carrier_fname:
-                carrier = self.carrier_id.l10n_ro_edi_stock_partner_id
+                carrier = self.l10n_ro_edi_stock_transport_partner_id
                 return (
                     self.env._(
-                        "Transport company %(partner)s (delivery method %(carrier)s)",
+                        "Transport company %(partner)s (eTransport Carrier)",
                         partner=carrier.name,
-                        carrier=self.carrier_id.name,
                     ),
                     label("res.partner", carrier_fname),
                 )
