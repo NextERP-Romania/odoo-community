@@ -2,7 +2,7 @@
 # License LGPL-3 or later
 
 {
-    "name": "NextERP - Account EDI Journalt",
+    "name": "NextERP - Account EDI Journal",
     "version": "20.0.0.0.2",
     "summary": """ NextERP - Account EDI Journal""",
     "category": "Accounting",
