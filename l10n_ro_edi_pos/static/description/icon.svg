@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E31E24"/>
+      <stop offset="55%" stop-color="#CC0C54"/>
+      <stop offset="100%" stop-color="#A81884"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+
+  <!-- decorative blobs, still readable at small sizes -->
+  <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
+  <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
+
+  <!-- a fiscal receipt and the invoice issued for it -->
+  <path d="M48 52 H136 V208 L121 196 L106 208 L91 196 L76 208 L61 196 L48 208 Z" fill="none" stroke="#ffffff" stroke-width="10" stroke-linejoin="round"/>
+  <rect x="66" y="78" width="52" height="10" rx="5" fill="#ffffff"/>
+  <rect x="66" y="102" width="36" height="10" rx="5" fill="#ffffff" opacity="0.7"/>
+  <rect x="66" y="126" width="52" height="10" rx="5" fill="#ffffff" opacity="0.7"/>
+  <rect x="66" y="156" width="52" height="14" rx="5" fill="#ffffff"/>
+  <path d="M156 92 H192 L212 112 V196 H156 Z" fill="#ffffff" opacity="0.85"/>
+</svg>

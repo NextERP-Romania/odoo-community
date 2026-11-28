@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Stock Inventory",
     "summary": "Stock Inventory",
-    "version": "20.0.1.2.0",
+    "version": "20.0.1.2.1",
     "license": "AGPL-3",
     "images": ["static/description/apps_icon.png"],
     "category": "Generic Modules/Stock",

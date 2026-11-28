@@ -1,3 +1,10 @@
-This module allows you to define if an Account Move is a inter-company transaction. This
-is useful when you have a company that is part of a group of companies and you need to
-define if a transaction is between companies in the group.
+Flags invoices, journal entries and journal items made with another company
+of the group, so they can be shown alone or left out of any accounting list
+or analysis.
+
+- Every invoice and journal entry whose partner is a group company is
+  flagged inter-company; its journal items follow.
+- **Inter Company** and **Without Inter Company** filters on invoices, bills,
+  journal entries, journal items and **Invoice Analysis**.
+- Existing documents are flagged at installation, even on large databases.
+- Group companies come from `nexterp_inter_company`.

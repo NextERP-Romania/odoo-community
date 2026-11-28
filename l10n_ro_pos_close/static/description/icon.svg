@@ -13,16 +13,13 @@
   <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
   <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
 
-
-  <!-- the drawer counted at closing, and the gap it leaves -->
-  <path d="M44 120h168v56a18 18 0 0 1-18 18H62a18 18 0 0 1-18-18Z" fill="#ffffff" opacity="0.92"/>
-  <path d="M62 68h132l18 52H44Z" fill="#ffffff" opacity="0.6"/>
-  <rect x="108" y="140" width="40" height="12" rx="6" fill="#CC0C54" opacity="0.6"/>
-  <!-- what was counted against what was recorded -->
-  <g fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round"
-     stroke-linejoin="round">
-    <path d="M84 96V50"/><path d="M66 68l18-18 18 18"/>
-    <path d="M172 50v46"/><path d="M154 78l18 18 18-18"/>
-  </g>
-
+  <!-- the balance of the closing: counted against expected -->
+  <rect x="122" y="56" width="12" height="140" rx="6" fill="#ffffff"/>
+  <rect x="84" y="196" width="88" height="14" rx="7" fill="#ffffff"/>
+  <rect x="52" y="70" width="152" height="12" rx="6" fill="#ffffff" transform="rotate(-8 128 76)"/>
+  <circle cx="128" cy="52" r="10" fill="#ffffff"/>
+  <path d="M48 150 L70 92 L92 150 Z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M42 150 H98 A28 18 0 0 1 42 150 Z" fill="#ffffff"/>
+  <path d="M164 136 L186 78 L208 136 Z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M158 136 H214 A28 18 0 0 1 158 136 Z" fill="#ffffff"/>
 </svg>

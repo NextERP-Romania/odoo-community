@@ -11,23 +11,16 @@ NextERP - Product Kit Sale Timesheet
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Bridge between ``nexterp_product_kit_sale`` and ``sale_project``: when a
-sale order is confirmed, one project task is created per kit component
-flagged as a service with **Service Tracking = Task in Project**, in
-addition to the standard task created for the parent sale order line.
+Turn every service inside a kit into its own project task. When an order
+with a service kit is confirmed, a task is created for the kit and a
+sub-task for each service component, so work and timesheets can be
+tracked per job.
 
-The hook lives in ``sale.order.line._timesheet_create_task``: after the
-core task for the parent line is created, the module iterates over
-``kit_line_ids`` and calls a kit-aware ``_timesheet_create_task`` on
-each component whose product is a ``task_in_project`` service. Each kit
-task is linked back to the originating ``sale.order.line`` and nested
-under the parent task through the ``parent_id`` field, so kit
-hierarchies are visible in the project's Gantt / hierarchy view.
-
-Targets service-bundle sales where one quotation line resolves to
-several billable jobs — installation kits, consulting packages,
-multi-stage interventions — and you want each component tracked as its
-own task with timesheets attached.
+-  One sub-task per service component, under the task of the kit.
+-  Task names show the order, the kit and the component.
+-  Time spent on the sub-tasks is billed through the kit's order line.
+-  Mixed kits supported: goods in the kit create no task.
+-  Each task links back to the sales order.
 
 
 **Table of contents**
@@ -35,167 +28,36 @@ own task with timesheets attached.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  Override of ``sale.order.line._timesheet_create_task``: after the
-   standard task is created for a ``task_in_project`` parent line, the
-   module loops over its ``kit_line_ids`` and creates one extra task per
-   service component.
--  Component-level task creation only fires when the kit component
-   product also has ``service_tracking == "task_in_project"``, so mixed
-   kits (services + storable) generate tasks only where it makes sense.
--  New ``sale.order.line.kit._timesheet_create_task`` builds the task
-   itself: it prepares values via
-   ``_timesheet_create_task_prepare_values``, creates the task with
-   ``sudo()`` and writes its id back onto the kit line through
-   ``task_id``.
--  Task naming convention:
-   ``"<Order name>: <parent product> - <component product>"`` — gives
-   immediate context in project lists, Kanban and search.
--  Tasks are linked back to the originating ``sale.order.line`` via
-   ``sale_line_id`` (so timesheet billing stays attached to the parent
-   SO line) and nested under the parent task via ``parent_id``, using
-   the ``parent_task`` context key passed by the override.
--  Override of ``sale.order._compute_tasks_ids``: when computing the set
-   of tasks belonging to an order, kit-line tasks that are not yet
-   linked to a ``sale_line_id`` are re-attached to their parent SO line,
-   keeping the order's task list consistent.
--  A creation message is posted on each kit task with a clickable link
-   back to the source sale order.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 16.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Product Kit Sale Timesheet" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
-
-The module has no settings of its own. Configuration consists of
-preparing the products that should generate tasks and the project they
-will be created in.
-
-1. Service products
--------------------
-
-1. Go to **Sales → Products → Products** (or **Inventory → Products →
-   Products**).
-2. For every kit component that must become a task, open the product and
-   set:
-
-   -  **Product Type** — ``Service``.
-   -  **Invoicing Policy** — usually ``Based on Timesheets``.
-   -  **Service Tracking** — ``Task in Project`` (this is the trigger
-      checked by ``_timesheet_create_task``).
-   -  **Project** — the default project where tasks will land (if not
-      filled, the parent line's project is reused).
-
-3. Make sure the parent kit product itself is also a ``task_in_project``
-   service: the override only fires when the parent SO line creates a
-   task in the first place.
-
-2. Kit definition
------------------
-
-1. On the kit product, open the **Kit Products** tab (added by
-   ``nexterp_product_kit``) and add the service components configured at
-   step 1.
-2. The non-service components stay in the kit definition without
-   producing tasks, so mixed bundles (service + goods) are supported.
-
-3. Project and timesheets
--------------------------
-
-1. Enable **Project → Configuration → Settings → Timesheets** if not
-   already on.
-2. Optionally enable **Sub-tasks** so the parent / child hierarchy from
-   kit explosion is visible.
-3. Grant the relevant users access to the target project.
-
-4. Sale workflow
-----------------
-
-No further configuration is needed in **Sales**. As soon as a kit
-service product is added to a quotation and the order is confirmed, the
-dependent ``nexterp_product_kit_sale`` explodes the kit lines and this
-module creates one task per service component.
+1. Go to **Sales > Products > Products** and, for the kit and for each
+   service component that should become a task, set the product type to
+   **Service** and the creation option to a task in a project, with the
+   target project.
+2. Add the service components to the kit on the **Kit Products** tab.
+3. Optionally enable **Sub-tasks** and **Timesheets** in **Project >
+   Configuration > Settings**.
 
 Usage
 =====
 
-Daily use
-=========
-
-What happens on order confirmation
-----------------------------------
-
-1. The user confirms a sale order that contains a kit service product
-   (parent SO line with ``service_tracking == "task_in_project"``).
-2. Standard ``sale_project`` creates the task for the parent SO line.
-3. This module then loops over ``kit_line_ids`` on that SO line and, for
-   every component whose own product is also ``task_in_project``:
-
-   -  creates a new ``project.task`` via
-      ``sale.order.line.kit._timesheet_create_task``;
-   -  writes the task id onto the kit line (``task_id``);
-   -  attaches it to the parent SO line through ``sale_line_id``;
-   -  sets ``parent_id`` to the task created at step 2, so the kit task
-      appears as a sub-task in the project.
-
-4. The new task gets the name
-   ``"<Order>: <parent product> - <component product>"`` and receives a
-   chatter message pointing back to the source order.
-
-Tracking the tasks
-------------------
-
--  Open **Project → All Tasks** and filter / group by the sale order to
-   see the parent task and its kit sub-tasks together.
--  The **Tasks** smart button on the sale order shows the same set;
-   ``_compute_tasks_ids`` is overridden so kit tasks created before the
-   order's full reload are still reattached to the parent SO line.
--  Open any kit task to view the chatter link back to the originating
-   sale order.
-
-Time tracking and invoicing
----------------------------
-
--  Time logged on a kit task is recorded against its ``sale_line_id`` —
-   the parent SO line of the kit. Invoicing the parent line therefore
-   aggregates the timesheets of every kit sub-task plus its own.
--  This matches the kit pricing model used by
-   ``nexterp_product_kit_sale``: the customer sees and pays one SO line
-   while internally the work is split across multiple tasks.
-
-Caveats
--------
-
--  Kit components that are not services (or services not flagged as
-   ``task_in_project``) are silently skipped — no task is created for
-   them.
--  The override does not delete tasks when a kit line is removed later.
-   If you re-explode a kit, expect orphan tasks unless they are archived
-   manually.
+1. Create a quotation with the service kit and confirm it.
+2. A task is created for the kit and a sub-task for each service
+   component.
+3. Open the **Tasks** button on the order, or **Project > Tasks > All
+   Tasks**, to follow them.
+4. Log time on the sub-tasks; it is invoiced on the kit line of the
+   order.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.1.1.1 (2026-11-28)
+-----------------------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.0 (2026-05-25)
 -----------------------

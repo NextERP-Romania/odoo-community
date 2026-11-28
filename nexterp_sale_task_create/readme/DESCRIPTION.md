@@ -1,19 +1,17 @@
-Switch project-task creation on `sale_project` from always-on to
-opt-in. Standard Odoo creates a task as soon as a sale order with a
-service product is confirmed; this module gates that behaviour
-behind a per-order **Auto Create Sale Tasks** flag (defaulted from
-the company setting) and adds a **Generate Tasks** button so users
-can trigger the creation manually when the flag is off.
+Confirming a sales order with service products set to create tasks
+normally creates those tasks straight away. That is not always wanted: an
+order may be confirmed long before the project is staffed, or tasks may be
+planned in a later step.
 
-The override lives in `sale.order.line._timesheet_service_generation`:
-when the `create_tasks` context key is missing, the standard
-generator only runs for SO lines whose order has
-`sale_create_taks_auto = True`. The button on the sale order form
-calls `action_generate_tasks`, which loops through the order's lines
-and runs the generator with `create_tasks=True` for any line that
-does not yet have a `task_id`.
+This module makes task creation a choice, per company and per order, and
+adds a button to create the tasks when the time comes.
 
-Targets project / services businesses where confirming a quotation
-should not always spawn tasks — for instance when sales teams
-prepare orders ahead of project staffing, or when tasks are created
-later from an external planning step.
+- **Auto Create Sale Tasks** setting per company, used as the default for
+  new orders.
+- The same option on every sales order, so one order can differ from the
+  company default.
+- A **Generate Tasks** button on orders where automatic creation is off.
+- The button only creates the tasks that are still missing, so it can be
+  clicked again after lines are added.
+- Salespeople can create the tasks of their own orders even without full
+  access to Project.

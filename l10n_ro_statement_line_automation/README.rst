@@ -11,21 +11,22 @@ Romania - Statement Line Automation
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Automate the attachment of bank statement lines to a parent bank
-statement on Romanian companies. When a new line is created without a
-``statement_id``, the module looks for an existing statement on the same
-journal and date, creates one if it does not exist, and links the line
-to it.
+Bank transactions imported or received one by one are gathered
+automatically into one bank statement per journal and per day, for
+Romanian companies. Nobody has to open a daily statement before the
+lines come in.
 
-This avoids the manual step of opening or creating a daily statement
-before importing bank transactions — useful for setups that ingest
-statement lines through MT940 / CAMT.053 parsers, OCR uploads or
-external feeds, where the source format only carries the line and not
-its statement wrapper.
-
-The behaviour is gated on the company's country code being ``RO``, so
-multi-company databases that mix Romanian and non-Romanian entities keep
-the standard Odoo behaviour everywhere else.
+-  **One statement per day**: each new bank line joins the statement of
+   its journal and date, or a new one is opened for it.
+-  **Running balance kept up to date**: the ending balance of a
+   statement opened this way follows the lines that join it.
+-  **Your statements respected**: a complete statement you entered
+   yourself is never extended, and its ending balance is never
+   rewritten; an incomplete one of the same day is filled in.
+-  **Works with any source**: bank file imports, online bank feeds or
+   integrations that create bank lines.
+-  **Romanian companies only**: other companies of the same database
+   keep the standard behaviour.
 
 
 **Table of contents**
@@ -33,155 +34,38 @@ the standard Odoo behaviour everywhere else.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Country-scoped automation** — the create override on
-   ``account.bank.statement.line`` runs only when the company's country
-   code is ``RO``, leaving other localisations untouched.
--  **Date + journal grouping** — a new line without ``statement_id`` is
-   attached to the existing ``account.bank.statement`` that matches its
-   ``journal_id`` and ``date``; one statement per journal per day.
--  **On-demand statement creation** — if no matching statement exists,
-   one is created with the line's date used as both ``date`` and
-   ``name``, then linked to the line.
--  **Balance recomputation** — after the link is set, the module
-   triggers ``_compute_balance_end`` and ``_compute_balance_end_real``
-   on the statement so the running balance stays consistent with the new
-   line.
--  **Batch-friendly** — implemented through ``@api.model_create_multi``,
-   the override processes each record of a multi-create call
-   individually, which keeps it compatible with bulk imports from
-   parsers and connectors.
--  **No new UI** — the module adds no fields, views, menus or
-   configuration; behaviour is automatic on record creation.
--  **No data files** — installation simply loads the model override;
-   there is nothing to seed or migrate.
-
 Configuration
 =============
 
-Configuration
-=============
+Nothing to configure. Make sure that:
 
-The module is dependency-driven: install it and the automation runs as
-soon as a Romanian company creates a bank statement line. There are no
-settings, no menus and no user-facing toggles.
+1. the company's **Country** is *Romania* (**Settings > Users &
+   Companies > Companies**);
+2. the bank journals exist in **Invoicing > Configuration > Accounting >
+   Journals**.
 
-1. Install dependencies
------------------------
-
-The manifest depends on:
-
--  ``account`` — bank statement and statement line models.
--  ``l10n_ro`` — Romanian localisation; required so the country
-   detection on ``res.company`` matches a real installed chart.
-
-Both must be installable in the database before this module.
-
-2. Set the company country
---------------------------
-
-Go to **Settings → Companies → Companies** and open the Romanian
-company. Make sure **Country** is set to **Romania** (``RO``). The
-automation reads ``record.company_id.country_id.code`` to decide whether
-to run, so any company with a different country code is skipped.
-
-3. Configure a bank journal
----------------------------
-
-Go to **Accounting → Configuration → Journals** and ensure each bank
-journal that receives lines has the right currency and accounting
-defaults. The module does not create journals; it only attaches lines to
-statements within an existing journal.
-
-4. Optional — import pipelines
-------------------------------
-
-The automation is most useful when statement lines arrive without a
-parent statement, for example:
-
--  **CAMT.053 / MT940 imports** via ``account_bank_statement_import_*``
-   modules that read one transaction per line.
--  **OCR uploads** through ``account_invoice_extract`` or a custom
-   connector that drops lines into a journal.
--  **External connectors** posting ``account.bank.statement.line``
-   records via XML-RPC / ``web`` API.
-
-No specific setup is required on these pipelines — once they create the
-lines, this module fills in ``statement_id``.
-
-5. User access
---------------
-
-The override runs in ``sudo``-less context as the user who creates the
-line. Standard Accounting access on ``account.bank.statement`` /
-``account.bank.statement.line`` is enough; no extra security groups are
-added.
+From then on, every bank line created without a statement is placed in a
+daily statement.
 
 Usage
 =====
 
-How it works
-============
+1. Import a bank file, receive transactions from a bank feed, or add
+   lines on a bank journal.
+2. Open the bank journal from the **Invoicing** dashboard: each line
+   already sits in the statement of its day, with the balance computed.
+3. Reconcile the lines as usual. The module only places them in
+   statements; matching, amounts, partners and labels are left as they
+   came.
 
-The whole module is one override on
-``account.bank.statement.line.create``. There is nothing to click —
-usage is observing the side effect when new lines are created.
+Changelog
+=========
 
-Trigger
--------
-
-A new ``account.bank.statement.line`` is created (single record or
-batch) on a company whose country is ``RO``, and ``statement_id`` is not
-set in the ``vals``.
-
-Resolution
+20.0.0.1.1
 ----------
 
-For each affected line, the override:
-
-1. Searches ``account.bank.statement`` for a record with
-   ``journal_id == record.journal_id`` and ``date == record.date``.
-2. If a statement exists, links the line to it.
-3. If no statement exists, creates one with ``journal_id``, ``date``,
-   and ``name = date``, then links the line to the new statement.
-4. Calls ``_compute_balance_end`` and ``_compute_balance_end_real`` on
-   the resulting statement so the closing balance is refreshed
-   immediately.
-
-Typical flow
-------------
-
-1. A bank-statement importer (CAMT.053, MT940, custom feed) calls
-   ``create()`` on ``account.bank.statement.line`` with one record per
-   transaction.
-2. Odoo would normally leave each line orphaned until a user opens
-   **Accounting → Bank → Bank Statements** and creates a daily
-   statement.
-3. With this module installed, the line is already attached to a
-   per-journal, per-date statement by the time ``create()`` returns.
-4. Open **Accounting → Bank** to find the statement listed with its
-   computed end balance; the lines are visible inside it.
-
-What it does not do
--------------------
-
--  Does not reconcile or match the line to a journal entry.
--  Does not change the line's amount, partner or labels.
--  Does not run on non-Romanian companies, even in a multi-company
-   database.
--  Does not create statements for lines that already have a
-   ``statement_id``.
-
-Changelog
-=========
-
-Changelog
-=========
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.0.1.0 (2026-11-06)
 -----------------------

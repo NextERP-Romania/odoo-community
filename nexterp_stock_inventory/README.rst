@@ -11,32 +11,23 @@ NextERP - Stock Inventory
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Add a dedicated stock-inventory document on top of ``stock.quant`` so
-physical counts are grouped, dated and valued as a single record. The
-module introduces two new models — ``l10n.ro.stock.inventory`` (the
-header) and ``l10n.ro.stock.inventory.line`` (the counted lines) — with
-a form, list and search view, plus a reporting list / pivot / graph over
-the lines.
+Run physical inventories as documents: choose the locations and
+products, generate the count sheet from current stock, enter what was
+counted and validate. Every adjustment is booked on the date you choose
+and kept in a history you can report on.
 
-Each inventory is scoped to a set of internal locations and, optionally,
-to a list of products. Generating the lines fetches the corresponding
-``stock.quant`` records, snapshots their on-hand quantity and value, and
-lets the operator enter the counted quantity. Validating the inventory
-applies the differences through ``stock.quant.action_apply_inventory()``
-on the chosen accounting date and stores the resulting value difference
-per line.
-
-The model also wires the inverse side: when quants are adjusted outside
-this workflow (standard Odoo screens, third-party imports), an
-``l10n.ro.stock.inventory`` is created automatically, grouped by
-accounting date, so every stock adjustment ends up captured in a
-traceable document.
-
-A QWeb PDF report (*proces verbal de inventariere*) prints the document
-as the record required by the Romanian accounting rules: the commission
-appointed by decision, the counted locations, the surpluses and
-shortages summarised per location, the detail of every difference and
-the signature block.
+-  Inventory documents per date, locations and products.
+-  Count lines generated from the stock on hand, with quantities and
+   values.
+-  Validation books the differences in stock and accounting on the
+   chosen date.
+-  Adjustments made elsewhere are captured in inventory documents too.
+-  A validated inventory is locked.
+-  Printable inventory report with the inventory commission, the
+   appointing decision and the surplus, shortage and net difference
+   values.
+-  **Inventory Stock Line Adjustments History** report with list, pivot
+   and graph views.
 
 
 **Table of contents**
@@ -44,258 +35,47 @@ the signature block.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Inventory header model** — ``l10n.ro.stock.inventory`` ties an
-   accounting date, a company, internal locations and (optionally) a
-   product list to a draft/done state, with an auto-computed name like
-   ``Inventory - YYYY-MM-DD``.
--  **Counted-line model** — ``l10n.ro.stock.inventory.line`` carries the
-   counted quantity, on-hand quantity, difference, standard price,
-   current value, post-validation value and value difference, each line
-   linked to a ``stock.quant``. ``inventory_diff_value`` is filled as
-   soon as the quantity is counted, valued the way the adjustment will
-   book it (FIFO layers, standard / average price, lot valuation), so it
-   does not change on validation.
--  **Quant uniqueness** — a Postgres constraint
-   ``unique(inventory_id, quant_id)`` blocks the same quant from
-   appearing twice on the same inventory.
--  **Generate / clear actions** — ``Generate Inventory Lines`` fetches
-   quants for the configured locations and products (creates missing
-   quants on the fly), ``Clear Inventory Lines`` removes them and resets
-   the flag.
--  **Validate action** — ``Validate Inventory`` calls
-   ``stock.quant.action_apply_inventory()`` on each line with the
-   inventory's accounting date, snapshots the new value, computes the
-   per-line value difference and locks the document.
--  **Reverse capture** — the override of
-   ``stock.quant.action_apply_inventory`` creates one
-   ``l10n.ro.stock.inventory`` per accounting date when quants are
-   adjusted outside this workflow, so manual quant edits are still
-   archived as inventory documents.
--  **Inventory report** — ``Print Inventory Report`` renders the *proces
-   verbal de inventariere* as a PDF: commission members and their role,
-   the appointing decision, a surplus / shortage summary per location,
-   the lines that show a difference and the signature block.
--  **One valuation hook for the document** — the report draws every
-   figure through ``line._report_diff_value()`` and
-   ``_report_totals()``, so a module carrying the goods at another value
-   - a shop holding them at shelf price - restates the whole document by
-   overriding one method.
--  **Commission model** — ``l10n.ro.stock.inventory.commission`` holds
-   one member per line (optional user, name, job position and role:
-   chairman / member / stock keeper).
--  **Reporting** — a list / pivot / graph view on
-   ``l10n.ro.stock.inventory.line`` filterable by inventory, product,
-   lot, location and accounting date, with ``quantity``,
-   ``inventory_quantity`` and ``inventory_diff_quantity`` as measures.
--  **Manager-only menus** — both menus live under the existing
-   ``stock.menu_stock_adjustments`` / ``stock.menu_warehouse_report``
-   parents with ``groups="stock.group_stock_manager"``.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 20.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Stock Inventory" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Give the people running inventories the **Inventory / Administrator**
+   access right in **Settings > Users & Companies > Users**; the menus
+   are visible to this group.
+2. Make sure the locations to count are internal locations (**Inventory
+   > Configuration > Warehouse Management > Locations**).
+3. Stock valuation must be active (the module relies on stock
+   accounting).
 
-The module ships with no settings page. All setup is master-data
-preparation and access-rights checks.
-
-1. Install dependencies
------------------------
-
-The manifest depends on ``stock_account``, so:
-
--  **Inventory** must be installed.
--  **Accounting** or another module pulling in ``stock_account`` must be
-   installed so quants carry a ``value`` and a ``standard_price`` that
-   the inventory lines can snapshot.
-
-2. Grant access
----------------
-
-The inventory header is editable by ``base.group_user``, but both menu
-entries are restricted to ``stock.group_stock_manager``. Go to
-**Settings → Users & Companies → Users** and put the operators who run
-inventories in the **Inventory: Administrator** group. Other users can
-view inventories only through their record URL.
-
-Access rights for the two new models (read / write / create / unlink)
-are defined in ``security/ir.model.access.csv`` for
-``stock.group_stock_user`` and ``stock.group_stock_manager``.
-
-3. Prepare locations
---------------------
-
-Open **Inventory → Configuration → Warehouses Management → Locations**
-and ensure every location that has to be counted is set to **Usage:
-Internal**. The inventory form filters location pickers by
-``usage == 'internal'`` and silently ignores all others.
-
-4. Prepare products (optional scoping)
---------------------------------------
-
-Inventories can be limited to a product list. The form filters the
-many2many to products of type ``consu`` (which in 19.0 covers storable
-and non-storable goods). If no product is selected, all internal
-locations of the company are scanned.
-
-5. Multi-company
-----------------
-
-``company_id`` defaults to ``self.env.company`` and is propagated
-through related fields on the lines. Each company maintains its own
-inventories; quants of another company are not picked up when lines are
-generated.
-
-6. Open the menus
------------------
-
-After install the new entries are:
-
--  **Inventory → Operations → Adjustments → Inventory Stock
-   Adjustments** — the header list and form (action
-   ``action_open_stock_inventory``).
--  **Inventory → Reporting → Inventory Stock Line Adjustments History**
-   — list / pivot / graph over validated lines (action
-   ``action_open_stock_inventory_line_history``), filtered to
-   ``state = done`` by default.
+For the printed report, list the members of the commission on the
+**Inventory Commission** tab of each inventory and fill in the decision
+number in the **Inventory Report** group.
 
 Usage
 =====
 
-Daily use
-=========
-
-The flow is built around the ``l10n.ro.stock.inventory`` form. A single
-record represents one physical inventory: pick a scope, generate the
-lines from current stock, count, then validate.
-
-1. Create an inventory
-----------------------
-
-Go to **Inventory → Operations → Adjustments → Inventory Stock
-Adjustments** and click **New**:
-
-1. **Accounting Date** — defaults to today; the date the stock
-   adjustments will be booked on.
-2. **Locations** — pick one or more internal locations to count. Leave
-   empty to count every internal location of the company.
-3. **Products** — optionally restrict the inventory to a product list;
-   leave empty to count every product on the selected quants.
-
-Save the draft.
-
-2. Generate the lines
----------------------
-
-Click **Generate Inventory Lines**. The wizard:
-
--  Searches ``stock.quant`` for the configured scope.
--  Skips quants that already have a line on this inventory (the action
-   can be called multiple times while the inventory is in **Draft**).
--  Creates one line per quant, snapshotting **On Hand Quantity**,
-   **Counted Quantity**, **Difference**, **Standard Price** and
-   **Value**.
--  Sets ``inventory_quantity = 0`` on quants that had no value, so the
-   counter starts from a blank slate.
-
-3. Adjust the count
--------------------
-
-In the **Inventory Lines** tab:
-
--  Edit **Counted Quantity** per line; **Difference** updates
-   automatically through the related quant.
--  Add manual lines for product / location / lot combinations not yet in
-   stock — the create override on the line model finds the matching
-   ``stock.quant`` (or creates one with ``inventory_quantity = 0``).
--  Click **Clear Inventory Lines** to wipe all lines and start over; the
-   related quants' ``inventory_quantity`` is cleared as well.
-
-4. Validate
------------
-
-Click **Validate Inventory**. The action:
-
-1. Sets the accounting date on each quant.
-2. Re-reads the final on-hand quantity, value and difference on each
-   line.
-3. Calls ``stock.quant.action_apply_inventory()`` on the quant, posting
-   the stock-account journal entries.
-4. Captures ``inventory_value`` (post-apply value) and
-   ``inventory_diff_value`` on each line, then locks the document with
-   **State = Done**.
-
-5. Print the inventory report
------------------------------
-
-The *proces verbal de inventariere* is printed from the same form, with
-the **Print Inventory Report** button in the header or from the
-**Print** menu. Fill in the documentary data first:
-
--  **Inventory Report** group — **Decision Number**, the decision
-   appointing the commission. The group also shows the read-only
-   **Surplus**, **Shortage** and **Difference** totals. The document is
-   dated by the **Accounting Date** of the inventory itself.
--  **Inventory Commission** tab — one line per member: pick a **User**
-   to fill the name automatically or type it, then the **Job Position**
-   and the **Role** (Chairman, Member or Stock Keeper). The order of the
-   lines is the order they are printed in, and can be changed by drag
-   and drop.
--  **Conclusions** tab — free text with the conclusions and proposals of
-   the commission, printed at the end of the report.
-
-The PDF lists only the lines whose counted quantity differs from the
-quantity on hand, valued the way the location carries them — at cost
-here, at shelf price where a module says otherwise. Each difference is
-valued in ``inventory_diff_value`` as soon as the quantity is counted,
-the same way the adjustment will book it: a surplus at the current cost,
-a shortage at the FIFO layers it consumes or at the standard / average
-price, with lot valuation honoured when the product uses it. The figure
-therefore does not change on validation, so the draft report and the
-final one show the same amounts.
-
-6. Inverse capture from elsewhere
----------------------------------
-
-When users adjust quants directly from **Inventory → Operations →
-Physical Inventory** or via imports, the override on
-``stock.quant.action_apply_inventory`` creates one
-``l10n.ro.stock.inventory`` per accounting date involved, generates its
-lines from the affected quants and validates it immediately. Those
-documents appear in the same list as user-created ones, marked **Done**.
-
-7. Reporting
-------------
-
-Open **Inventory → Reporting → Inventory Stock Line Adjustments
-History** for a flat list of every counted line. The view supports list,
-pivot and graph layouts, with measures **On Hand Quantity**, **Counted
-Quantity** and **Difference**, grouped by inventory or state.
+1. Go to **Inventory > Operations > Adjustments > Inventory Stock
+   Adjustments** and click **New**.
+2. Set the **Accounting Date**, the locations and, optionally, the
+   products.
+3. Click **Generate Inventory Lines** to list the stock on hand.
+4. Enter the counted quantity on each line; add lines for goods found
+   but not in stock. Use **Clear Inventory Lines** to start over.
+5. Click **Validate Inventory**: the differences are booked and the
+   document is set to *Done*.
+6. Click **Print Inventory Report** to print the inventory report with
+   the commission, the values found in surplus and in shortage and the
+   net difference.
+7. Review all counted lines in **Inventory > Reporting > Inventory Stock
+   Line Adjustments History**.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.1.2.1 (2026-11-28)
+-----------------------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.1.2.0 (2026-11-06)
 -----------------------
@@ -309,7 +89,7 @@ Changelog
    ignored: nothing was applied, yet the inventory was set to done.
 -  An adjustment made on the quants that ends in Odoo's conflict wizard
    no longer leaves a done inventory behind; the document is made when
-   the conflict is settled. The ``date`` argument is passed on to Odoo.
+   the conflict is settled.
 -  Lines keep their unit of measure after the quant they counted is
    cleaned up; their location, product and lot cannot be changed once
    the quant is set; goods tracked by lot cannot be counted in without
@@ -321,15 +101,13 @@ Changelog
 20.0.1.1.0 (2026-10-02)
 -----------------------
 
--  Add the printable inventory report (*proces verbal de inventariere*):
-   commission members, appointing decision, conclusions and a
-   ``Print Inventory Report`` button on the inventory form.
--  Value the counted difference in ``inventory_diff_value`` as soon as
-   the quantity is entered, the way the adjustment will book it, through
-   the new ``_update_diff_values()`` hook on the inventory line.
--  Draw the printed figures through ``_report_diff_value()`` and
-   ``_report_totals()``, so a module holding the goods at another value
-   can restate the document.
+-  Add the printable inventory report: commission members, appointing
+   decision, conclusions and a **Print Inventory Report** button on the
+   inventory form.
+-  Value the counted difference as soon as the quantity is entered, the
+   way the adjustment will book it.
+-  The printed figures can be restated by modules that hold the goods at
+   another value.
 
 19.0.1.0.0 (2026-05-25)
 -----------------------

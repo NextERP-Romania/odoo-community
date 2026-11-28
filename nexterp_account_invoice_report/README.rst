@@ -11,24 +11,20 @@ NextERP - Account Invoice Report
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-``nexterp_account_invoice_report`` extends the standard Odoo customer
-invoice PDF to better match Romanian accounting practice. It inherits
-the ``account.report_invoice_document`` QWeb template and adds two
-optional per-line columns (VAT amount and total amount) plus the option
-to print refund invoices with explicit negative quantities and amounts.
+Adds options to the printed invoice that accountants often ask for: VAT
+and total per line, credit notes printed with negative amounts, and a
+print precision per unit of measure.
 
-The behaviour is driven by three company-level switches exposed under
-Accounting Settings. When enabled, the report displays refund (storno)
-quantities, base, tax and totals with a minus sign and renders the extra
-columns on both detailed and grouped invoice layouts. Section subtotals
-are recomputed accordingly through helper methods on
-``account.move.line``.
-
-A complementary ``report_precision`` field is added on ``uom.uom``, so
-each unit of measure can override how many decimal places are printed
-for quantities on the invoice — useful for products sold in kilograms,
-litres or meters where the standard Product Unit precision is not
-granular enough.
+-  **VAT** column with the tax amount of each line, also on section
+   subtotals.
+-  **Total** column with the amount including taxes of each line.
+-  Credit notes printed with negative quantities, amounts, taxes and
+   totals, as a storno document.
+-  **Report Precision** on each unit of measure: how many decimals the
+   printed quantity shows (for example three for kilograms, none for
+   pieces).
+-  All options are per company and work on detailed and grouped invoice
+   layouts.
 
 
 **Table of contents**
@@ -36,137 +32,42 @@ granular enough.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  Inherits ``account.report_invoice_document`` (priority 100) so the
-   standard Invoice / Credit Note PDF is replaced everywhere it is used.
--  Optional **VAT** column added next to each invoice line, showing
-   ``price_total - price_subtotal`` per line.
--  Optional **Total** column added next to each invoice line, showing
-   the line total including taxes.
--  Refund (storno) invoices can be printed with negative quantities,
-   base, tax and total amounts so that the document visually matches the
-   accounting sign.
--  Section subtotals on grouped layouts are recomputed via
-   ``get_section_subtotal``, ``get_section_tax_amount`` and
-   ``get_section_total_amount`` to remain consistent with the printed
-   sign.
--  New ``report_precision`` field on ``uom.uom`` lets each unit of
-   measure define its own number of decimal places for printed
-   quantities.
--  The grouped lines view (``td_quantity_grouped``) is patched so the
-   unit count column also respects the refund sign and UoM precision.
--  All toggles are per company, stored on ``res.company``, and exposed
-   through the standard Accounting Settings form.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Account Invoice Report" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Go to **Invoicing > Configuration > Settings**.
+2. Near the end of the page, after the reporting options, tick what you
+   need:
 
-All options are configured per company under **Accounting ->
-Configuration -> Settings**, in the **Account invoice report options**
-block (added right after the standard *Account Reports* block).
+   -  **Print Show Refunds**: credit notes print negative.
+   -  **Print Invoice Tax Value**: adds the **VAT** column.
+   -  **Print Invoice Total Value**: adds the **Total** column.
 
-1. Enable the print options
----------------------------
-
-1. Go to **Accounting -> Configuration -> Settings**.
-2. Scroll to the **Account invoice report options** block.
-3. Tick any of the following options, depending on what you need on the
-   printed invoice:
-
-   -  **Print Show Refunds** — print refund / storno invoices with
-      negative quantities, base, taxes and totals.
-   -  **Print Invoice Tax Value** — add a per-line **VAT** column.
-   -  **Print Invoice Total Value** — add a per-line **Total** column.
-
-4. **Save** the settings. The options are stored on the current company;
-   in a multi-company database, switch company and repeat the
-   configuration if needed.
-
-2. Set per-UoM print precision (optional)
------------------------------------------
-
-The module also adds a **Report Precision** field on units of measure.
-
-1. Go to **Inventory -> Configuration -> Units of Measure -> Units of
-   Measure**.
-2. Open a unit (e.g. *kg*, *l*, *m*) and set **Report Precision** to the
-   number of decimal places you want printed on invoices for that UoM.
-   Leave at ``0`` to fall back to the default behaviour.
-
-No other setup is required — the inherited invoice template is used
-automatically by the standard *Invoice* print action on
-``account.move``.
+3. Click **Save**. The options belong to the current company; repeat for
+   the other companies if needed.
+4. Optional: go to **Inventory > Configuration > Units & Packagings**,
+   open a unit and set **Report Precision** to the number of decimals to
+   print. The precision is used when **Print Invoice Tax Value** is on.
 
 Usage
 =====
 
-Daily use
-=========
-
-Once configured, the module is fully transparent — there is no extra
-report action or menu. Every invoice or refund printed from the standard
-**Print -> Invoice** action on ``account.move`` uses the inherited
-template.
-
-Printing an invoice
--------------------
-
-1. Open a confirmed invoice from **Accounting -> Customers -> Invoices**
-   (or **Vendors -> Bills**).
-2. Click **Print -> Invoice**.
-3. The generated PDF includes the extra **VAT** and/or **Total** columns
-   if the corresponding company options are enabled.
-
-Printing a refund (storno)
---------------------------
-
-1. Open a posted **Credit Note** (``out_refund``) or vendor **Refund**
-   (``in_refund``).
-2. Click **Print -> Invoice**.
-3. If **Print Show Refunds** is enabled on the company, all numeric
-   values on the PDF — line quantities, base amounts, tax amounts,
-   totals and section subtotals — are rendered with a minus sign.
-
-How it works
-------------
-
--  ``_compute_tax_totals`` on ``account.move`` inverts the sign of every
-   ``base_amount``, ``tax_amount`` and ``total_amount`` (and their
-   currency counterparts) on refund moves whose company has *Print Show
-   Refunds* enabled.
--  Line, section and grouped-line helpers (``get_section_subtotal``,
-   ``get_section_tax_amount``, ``get_section_total_amount``,
-   ``_get_child_lines``) apply the same sign so subtotals stay
-   consistent with the per-line numbers.
--  Each quantity span uses the UoM's ``report_precision`` when *Print
-   Invoice Tax Value* is on, so a kilogram line with precision ``3``
-   prints as ``1,250`` instead of ``1,25``.
+1. Open a confirmed invoice from **Invoicing > Customers > Invoices**.
+2. Click **Print**: the PDF shows the **VAT** and **Total** columns
+   enabled in the settings, with quantities printed at the precision of
+   their unit.
+3. Open a credit note from **Invoicing > Customers > Credit Notes** and
+   print it: with **Print Show Refunds** on, quantities, amounts, taxes
+   and totals are printed with a minus sign.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.0.1.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.0.1.0 (2026-11-06)
 -----------------------

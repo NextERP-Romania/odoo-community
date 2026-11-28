@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E31E24"/>
+      <stop offset="55%" stop-color="#CC0C54"/>
+      <stop offset="100%" stop-color="#A81884"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+
+  <!-- decorative blobs, still readable at small sizes -->
+  <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
+  <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
+
+  <!-- an invoice with a gavel over it -->
+  <rect x="44" y="64" width="96" height="136" rx="12" fill="none" stroke="#ffffff" stroke-width="10"/>
+  <rect x="62" y="90" width="60" height="9" rx="4.5" fill="#ffffff"/>
+  <rect x="62" y="112" width="46" height="9" rx="4.5" fill="#ffffff" opacity="0.7"/>
+  <rect x="62" y="134" width="54" height="9" rx="4.5" fill="#ffffff" opacity="0.5"/>
+  <g transform="rotate(-40 170 110)">
+    <rect x="140" y="70" width="60" height="30" rx="8" fill="#ffffff"/>
+    <rect x="164" y="100" width="12" height="76" rx="6" fill="#ffffff"/>
+  </g>
+  <rect x="132" y="190" width="80" height="14" rx="7" fill="#ffffff"/>
+</svg>

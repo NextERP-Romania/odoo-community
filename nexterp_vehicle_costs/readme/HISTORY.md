@@ -1,4 +1,6 @@
-# Changelog
+## 20.0.1.1.2
+
+- Apps listing: English description, configuration and usage, new icon and cover.
 
 ## 20.0.1.1.1 (2026-11-07)
 
@@ -20,7 +22,7 @@
   services instead of deleting them together with their costs.
 - Cancelling a vendor bill removes the vehicle service costs made from its
   lines when it was posted (posting it again makes them anew).
-- Removed code that could never run: a `stock.move.action_cancel` override
+- Removed code that could never run: a stock move cancellation override
   (there is no such method), a bill-line cost cancellation on fields that do
   not exist, and the unused vehicle cost counters on journal entries.
 - Romanian translation added.

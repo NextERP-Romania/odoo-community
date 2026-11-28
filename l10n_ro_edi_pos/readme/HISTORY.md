@@ -1,3 +1,7 @@
+## 20.0.1.0.1
+
+- Apps listing: English description, configuration and usage, new icon and cover.
+
 ## 20.0.1.0.0 (2026-11-07)
 
 - Forward-port from 19.0 (19.0.1.1.0): an invoice issued for a sale already on

@@ -11,24 +11,23 @@ BOM Excel Import
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Import Bills of Materials, operations and workcenters from a single
-Excel spreadsheet, without touching Odoo's standard data-import tooling.
-The module ships a guided wizard that walks through file upload,
-operations creation and BOM-line creation, and reports a detailed log
-for every row.
+Load bills of materials, their operations and work centers from one
+Excel spreadsheet instead of typing them in one by one. A guided wizard
+reads the file, creates what is missing and shows a log of every row it
+handled.
 
-The expected sheet layout is fixed and column-positional: product
-produced, operation name, consumed quantity, component UoM, component,
-workcenter, subcontracting flag and a comma-separated list of
-subcontractors. Missing workcenters and missing products are created on
-the fly (storable goods with the product name as default code) so a
-typical first import bootstraps the whole manufacturing master data.
-
-Best suited for teams migrating MRP data from a legacy ERP, prototyping
-manufacturing setups from a planning spreadsheet, or maintaining BOMs
-externally in Excel and pushing them into Odoo at intervals. Existing
-BOMs and components are detected and skipped instead of being
-duplicated.
+-  **One file, all master data**: produced product, operation,
+   component, quantity, unit of measure, work center and subcontractors
+   on one row.
+-  **Missing records created on the fly**: unknown work centers and
+   products are created, so a first import can set up manufacturing from
+   scratch.
+-  **Subcontracting aware**: a row can mark the bill of materials as
+   subcontracted and name the subcontractors.
+-  **No duplicates**: bills of materials and components that already
+   exist are detected and skipped.
+-  **Readable log**: counters and a row-by-row log of everything
+   created, skipped or rejected.
 
 
 **Table of contents**
@@ -36,182 +35,64 @@ duplicated.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Multi-step wizard** — a single ``bom.excel.import.wizard``
-   transient model drives four steps: upload, import operations, import
-   BOM lines and a final summary screen.
--  **Workcenter auto-creation** — every workcenter name in column 6 that
-   is not already present in ``mrp.workcenter`` is created automatically
-   before any operation is linked to it.
--  **BOM and operation creation** — for each unique product in column 1
-   one ``mrp.bom`` is created (skipped if a BOM already exists for the
-   template) and one ``mrp.routing.workcenter`` per distinct operation
-   in the rows, with a default cycle time of 60 minutes.
--  **Subcontracting awareness** — column 7 sets the BOM type to
-   ``subcontract``, and the comma-separated names in column 8 are
-   matched against ``res.partner`` and attached as subcontractors.
--  **Component bootstrapping** — components and produced products are
-   searched by name and by ``default_code``; if no match is found a new
-   storable product is created with the spreadsheet name as default
-   code.
--  **UoM resolution** — column 4 is matched case-insensitively against
-   ``uom.uom``; when it cannot be resolved, the component product's
-   default UoM is used and a warning is added to the log.
--  **Detailed import log** — every row, every created record and every
-   error is captured in two text fields (``operations_import_log``,
-   ``bom_import_log``) shown on the wizard's final tab.
--  **External dependency** — relies on the ``openpyxl`` Python library,
-   which must be installed in the Odoo environment.
-
 Configuration
 =============
 
-Configuration
-=============
+1. Make sure the ``openpyxl`` Python library is installed on the server
+   running Odoo; the wizard tells you if it is missing.
 
-The module ships no setup screen of its own — once installed, a single
-menu entry exposes the wizard. Configuration is limited to preparing the
-Excel file and making sure the Python dependency is available.
+2. Users need the **Manufacturing / User** access right to run the
+   import.
 
-1. Install the openpyxl dependency
-----------------------------------
+3. Prepare the Excel file with one header row and these columns, in this
+   order:
 
-The wizard refuses to start unless the ``openpyxl`` library is reachable
-from the Odoo server. Install it in the environment used to run Odoo:
+   +--------+------------------------------------------------------------+
+   | Column | Content                                                    |
+   +========+============================================================+
+   | 1      | Product produced (name or internal reference)              |
+   +--------+------------------------------------------------------------+
+   | 2      | Operation name                                             |
+   +--------+------------------------------------------------------------+
+   | 3      | Quantity consumed                                          |
+   +--------+------------------------------------------------------------+
+   | 4      | Component unit of measure (by name)                        |
+   +--------+------------------------------------------------------------+
+   | 5      | Component (name or internal reference)                     |
+   +--------+------------------------------------------------------------+
+   | 6      | Work center name                                           |
+   +--------+------------------------------------------------------------+
+   | 7      | Subcontracting flag (any value marks the bill of materials |
+   |        | as subcontracted)                                          |
+   +--------+------------------------------------------------------------+
+   | 8      | Subcontractors, comma-separated partner names              |
+   +--------+------------------------------------------------------------+
 
-::
-
-   pip install openpyxl
-
-If it is missing, opening the wizard raises a user error pointing back
-to this command.
-
-2. Prepare the Excel file
--------------------------
-
-The wizard expects a column-positional layout. Header row aside, each
-row must use these columns:
-
-+--------+------------------------------------------------------------+
-| Column | Content                                                    |
-+========+============================================================+
-| 1      | Product produced (name or internal reference)              |
-+--------+------------------------------------------------------------+
-| 2      | Operation name                                             |
-+--------+------------------------------------------------------------+
-| 3      | Quantity consumed                                          |
-+--------+------------------------------------------------------------+
-| 4      | Component UoM (matched against ``uom.uom`` by name)        |
-+--------+------------------------------------------------------------+
-| 5      | Component (name or internal reference)                     |
-+--------+------------------------------------------------------------+
-| 6      | Workcenter name                                            |
-+--------+------------------------------------------------------------+
-| 7      | Subcontracting flag (truthy value sets BOM type to         |
-|        | ``subcontract``)                                           |
-+--------+------------------------------------------------------------+
-| 8      | Subcontractors, comma-separated partner names              |
-+--------+------------------------------------------------------------+
-
-By default the wizard reads the sheet named ``Sheet1`` and starts at row
-``2`` (one header row). Both values are editable on the upload screen.
-
-3. Open the wizard
-------------------
-
-Go to **Manufacturing → Products → BOM Excel Import**. The wizard opens
-on the upload step.
-
-4. User access
---------------
-
-The wizard is exposed via ``bom.excel.import.wizard`` with read/write
-access for ``mrp.group_mrp_user`` (see
-``security/ir.model.access.csv``). Any Manufacturing user can run the
-import; component and product creation happens through the same user.
-
-5. Optional sheet/start-row override
-------------------------------------
-
-If the spreadsheet does not follow the default layout:
-
-1. Fill in **Sheet** with the actual sheet name (must exist in the
-   workbook, otherwise the wizard lists available sheets in the error
-   message).
-2. Set **Start Row** to the first data row (e.g. ``1`` if there is no
-   header).
+By default the wizard reads the sheet named *Sheet1* from row 2; both
+can be changed on the upload screen.
 
 Usage
 =====
 
-How it works
-============
-
-The wizard drives a fixed four-step flow. Each transition rewrites the
-same wizard record and re-opens the form, so the log accumulates as you
-progress.
-
-1. Upload
----------
-
-Open **Manufacturing → Products → BOM Excel Import**, attach the
-``.xlsx`` file, optionally adjust **Sheet** and **Start Row**, then
-click **Start Import**. The wizard:
-
--  Loads the workbook with ``openpyxl`` in data-only mode.
--  Verifies the sheet exists, otherwise lists the available sheets.
--  Moves to the **Operations** step.
-
-2. Import operations
---------------------
-
-Click **Import Operations** to run ``action_import_operations``. The
-wizard scans every row from the start row downwards and:
-
--  Collects unique workcenter names; missing ones are created in
-   ``mrp.workcenter``.
--  Groups rows by produced product and creates one BOM per product
-   (skipping products that already have a BOM).
--  Creates one ``mrp.routing.workcenter`` per distinct operation in the
-   group, sequenced in steps of 10 with a 60-minute cycle time.
--  Sets the BOM type to ``subcontract`` and attaches matching partners
-   when column 7/8 are filled.
-
-Counters for workcenters, operations and BOMs created are stored on the
-wizard and shown on the next screen.
-
-3. Import BOM lines
--------------------
-
-Click **Import BOMs** to run ``action_import_boms``. The wizard:
-
--  Re-reads the sheet and groups component rows by produced product.
--  Resolves each component via name or internal reference, creating a
-   new storable product when nothing matches.
--  Resolves the UoM by name; falls back to the component's default UoM
-   with a warning.
--  Creates one ``mrp.bom.line`` per component, linked to the right
-   operation when column 2 matches. Components already present in the
-   BOM are skipped.
-
-4. Review the summary
----------------------
-
-The final screen shows the count of workcenters, operations, BOMs and
-BOM lines created, the total error count, and both logs on separate
-tabs. Click **Import Another File** to reset the wizard to the upload
-step.
+1. Go to **Manufacturing > Products > BOM Excel Import**.
+2. Attach the Excel file, adjust **Sheet** and **Start Row** if needed
+   and click **Start Import**.
+3. Click **Import Operations**: missing work centers are created, then
+   one bill of materials per produced product with its operations.
+4. Click **Import BOMs**: the component lines are added to each bill of
+   materials, creating components that do not exist yet.
+5. Review the summary: counts of work centers, operations, bills of
+   materials and lines created, the number of errors and both logs.
+6. Click **Import Another File** to start again.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.1.1.1 (2026-11-28)
+-----------------------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.1 (2026-05-25)
 -----------------------

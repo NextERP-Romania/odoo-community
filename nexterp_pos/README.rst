@@ -11,25 +11,26 @@ NextERP POS
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Odoo runs one session at a time on a Point of Sale: open it, sell, close
-it, open the next. A shop whose orders arrive from an external back-end
-does not work that way -- the day it is syncing is not always the day
-that has just ended, and a register can have several days open at once.
+A point of sale normally runs one session at a time: open it, sell,
+close it, open the next. A shop whose orders come in from an external
+back-end does not always work that way: the day being synchronised is
+not always the day that has just ended, and one register can have
+several days open at once.
 
-This module lets that happen, and keeps the cash honest while it does:
+This module lets a register keep several sessions open and keeps the
+cash right while it does.
 
--  the register's *current* session is the **oldest** one still open,
-   not the newest. That is the day the till is working through, and the
-   one a cashier reopening it lands in;
--  a new session cannot be opened while an older one is still open,
-   because its opening balance would have nothing real to start from;
--  when a session closes, every session still open behind it has its
-   opening balance rebuilt from the real end balance of the session
-   before it. While an earlier one is still open that balance is zero,
-   and it becomes real as the chain closes down, oldest first;
--  the opening time a session already carries is kept when the cash
-   control is filled in, so filling it does not reorder the register's
-   open days.
+-  **Multiple Open Sessions**, switched on register by register; the
+   other registers keep working as before.
+-  The register always works in the **oldest** open session, so a
+   cashier reopening the till lands in the right day.
+-  A session opened from the list of sessions opens that session, not
+   whichever was created last.
+-  When a session closes, the sessions still open after it get their
+   opening balance rebuilt from its real closing balance, as long as
+   their opening cash count has not been confirmed yet.
+-  Filling in the opening cash count keeps the opening time the session
+   already has, so the open days stay in the order they happened.
 
 
 **Table of contents**
@@ -40,15 +41,54 @@ This module lets that happen, and keeps the cash honest while it does:
 Configuration
 =============
 
-Turn on **Multiple Open Sessions** on the register, under *Point of Sale
-> Configuration > Settings*, in the **Orders** section. Every register
-decides for itself; the rest of the database is untouched.
+1. Go to **Point of Sale > Configuration > Settings**.
+2. At the top, select the register the setting applies to.
+3. In the **PoS Interface** section, tick **Multiple Open Sessions**.
+4. Click **Save**.
+
+The setting belongs to the register: every register decides for itself,
+and registers where it stays off keep the usual one-session-at-a-time
+behaviour.
+
+Usage
+=====
+
+Working with several open days
+------------------------------
+
+1. Go to **Point of Sale > Dashboard** and open a session on a register
+   that has **Multiple Open Sessions** switched on (for example,
+   Monday).
+2. When orders for a new day arrive before Monday is closed, open
+   another session on the same register (Tuesday). Both stay open side
+   by side.
+3. Opening the register from the dashboard takes the cashier to the
+   **oldest** open session, the day the till is still working through.
+   To work in another day, open that session from **Point of Sale >
+   Orders > Sessions**.
+4. Close the oldest session first, as usual: count the cash and confirm
+   the closing.
+5. The next session's opening balance is rebuilt from the real closing
+   balance of the one just closed. Close it in turn; any later session
+   is updated the same way.
+
+What is kept
+------------
+
+-  The opening time of a session does not change when its opening cash
+   is counted, so the open days keep their order.
+-  An opening balance that a cashier has already counted and confirmed
+   is never overwritten: only sessions still waiting for their opening
+   count are updated.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.3.1.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.3.1.0 (2026-11-06)
 -----------------------

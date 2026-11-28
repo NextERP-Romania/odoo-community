@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E31E24"/>
+      <stop offset="55%" stop-color="#CC0C54"/>
+      <stop offset="100%" stop-color="#A81884"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+
+  <!-- decorative blobs, still readable at small sizes -->
+  <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
+  <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
+
+  <!-- several open days stacked on one register, the oldest in front -->
+  <rect x="96" y="48" width="112" height="84" rx="14" fill="#ffffff" opacity="0.35"/>
+  <rect x="72" y="72" width="112" height="84" rx="14" fill="#ffffff" opacity="0.6"/>
+  <path d="M62 96 H146 A14 14 0 0 1 160 110 V166 A14 14 0 0 1 146 180 H62 A14 14 0 0 1 48 166 V110 A14 14 0 0 1 62 96 Z M71 114 H137 A7 7 0 0 1 144 121 V121 A7 7 0 0 1 137 128 H71 A7 7 0 0 1 64 121 V121 A7 7 0 0 1 71 114 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <rect x="40" y="194" width="176" height="14" rx="7" fill="#ffffff"/>
+</svg>

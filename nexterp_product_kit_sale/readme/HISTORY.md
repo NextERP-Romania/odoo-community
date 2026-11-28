@@ -1,4 +1,6 @@
-# Changelog
+## 20.0.1.2.1 (2026-11-28)
+
+- Apps listing: English description, configuration and usage, new icon and cover.
 
 ## 20.0.1.1.0 (2026-11-06)
 

@@ -4,7 +4,7 @@
 {
     "name": "NextERP - Payment Term Current Month",
     "summary": "NextERP -  Payment Term Current Month",
-    "version": "20.0.1.1.0",
+    "version": "20.0.1.1.1",
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "category": "Special",

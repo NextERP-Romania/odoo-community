@@ -1,26 +1,23 @@
-# Usage
+## Sending customer invoices
 
-## Sending an outgoing invoice to ANAF
+1. Create and confirm the invoice in **Invoicing > Customers > Invoices**.
+2. Let the scheduled sending pick it up once the waiting period has
+   passed, or send it at once:
+   - from the invoice, with **Send & Print**, where the e-Factura option
+     is already selected;
+   - from the list, select one or more invoices and click **Send to
+     ANAF**.
+3. Follow the result on the invoice: the e-Factura status and the
+   chatter show ANAF's answer. When a sending fails, the users set in the
+   configuration receive a notification.
 
-### Automatic (cron)
+## Receiving supplier invoices
 
-Once the module is installed and configured, the cron job **Romania - Send Invoices to ANAF** runs on a schedule and submits all confirmed, unsent invoices automatically. No manual action is required for routine operation.
+1. The synchronization downloads the invoices received in the SPV.
+2. Each new one is created as a draft in **Invoicing > Vendors > Bills**.
+3. Check the lines and confirm the bill.
 
-### Manual send from the invoice
+## Correcting a sent invoice
 
-1. Open the invoice: **Accounting → Customers → Invoices**.
-2. Confirm the invoice (status **Posted**).
-3. Click **Send & Print** → the Romanian EDI channel is pre-selected by default.
-4. Alternatively, use the dedicated **Send to ANAF** button (`action_send_and_print_anaf`) on the invoice form to submit immediately and generate the PDF in one step.
-5. The invoice status bar and the chatter show the ANAF submission result. If an error occurs, the users configured in **EDI Error Notify Users** receive an internal notification.
-
-## Receiving supplier bills from SPV
-
-1. The cron `_l10n_ro_edi_fetch_invoices` runs periodically and queries the SPV for new inbound messages.
-2. For each new message, `_l10n_ro_edi_process_bill_messages` creates a draft `account.move` (vendor bill) in **Accounting → Vendors → Bills** if the bill does not already exist.
-3. Open the generated draft bill, verify the lines, and confirm as usual.
-
-## Monitoring EDI errors
-
-- Users listed in **EDI Error Notify Users** (see CONFIGURE) automatically receive Odoo internal messages when a submission to ANAF fails.
-- Check the invoice chatter for the full error response returned by ANAF.
+An invoice sent to or validated in the SPV cannot be reset to draft or
+cancelled. Issue a credit note with **Credit Note** and send it to ANAF.
