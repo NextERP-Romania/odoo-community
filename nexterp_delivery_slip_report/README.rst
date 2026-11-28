@@ -11,24 +11,18 @@ NextERP - Stock Delivery Slip Report
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-``nexterp_delivery_slip_report`` customises the standard Odoo delivery
-slip PDF (``stock.report_delivery_document``) and its variants for
-serial numbers and aggregated lines. It does not introduce a new report
-action — instead, it inherits the existing templates at priority 100 and
-changes their rendering based on three company-level switches.
+Make the delivery slip print exactly what the warehouse and the customer
+need, through three company options.
 
-The module addresses two recurring requests on warehouse paperwork: the
-product column should print only the product name (without the
-``[CODE] Name`` display name and without the picking description), and
-the quantity column should honour the per-UoM decimal precision already
-exposed by ``nexterp_account_invoice_report`` (a dependency).
-
-A third option drives the language of incoming / internal transfers:
-when enabled, the printed slip uses the company partner's language for
-non-outgoing pickings, while customer deliveries (``outgoing``) keep the
-standard behaviour of using the customer language. All three options are
-stored on ``res.company`` and are configurable under the Inventory
-settings.
+-  **Product name only**: print the bare product name, without the
+   internal reference and without the line description.
+-  **Unit of measure precision**: print quantities with the number of
+   decimals set on each unit of measure.
+-  **Company language for internal documents**: receipts and internal
+   transfers are printed in your company's language, while customer
+   deliveries keep the customer's language.
+-  Applies to all delivery slip layouts, including the ones with serial
+   numbers and grouped lines.
 
 
 **Table of contents**
@@ -36,148 +30,38 @@ settings.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  Inherits the three standard delivery PDF templates at priority 100:
-   ``stock.report_delivery_document``,
-   ``stock.stock_report_delivery_has_serial_move_line`` and
-   ``stock.stock_report_delivery_aggregated_move_lines``.
--  **Delivery slip report only name** — replaces the product display
-   name (which prepends the internal reference) with the bare
-   ``product_id.name``, and hides the ``move.description_picking`` /
-   aggregated description so the product column is cleaner.
--  **Delivery slip report uom precision** — formats the demand and done
-   quantity using the ``report_precision`` defined per UoM (field
-   inherited from ``nexterp_account_invoice_report``), so quantities are
-   printed with the correct number of decimals for kg / l / m / etc.
--  **Picking report lang company** — for non-outgoing pickings
-   (receipts, internal transfers, returns…), forces the report language
-   to the company partner's language. Customer deliveries still print in
-   the customer's language.
--  All three switches are independent and can be combined.
--  Depends on ``nexterp_account_invoice_report`` to reuse the
-   ``uom.uom.report_precision`` field.
--  The aggregated-lines variant also propagates ``report_precision``
-   through ``_get_aggregated_product_quantities``, and the override of
-   ``_get_aggregated_properties`` strips the ``[CODE]`` prefix from the
-   printed product name when *only name* is on.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Delivery Slip Report" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Go to **Inventory > Configuration > Settings**.
+2. Below the **Operations** block, tick the options you need:
 
-All options are per company and are exposed in the standard Inventory
-settings page, right after the *Operations* block.
+   -  **Product Name Only on Delivery Slip**
+   -  **Unit of Measure Precision on Delivery Slip**
+   -  **Print Transfers in Company Language**
 
-1. Enable the print options
----------------------------
+3. Save. The options apply to the current company.
 
-1. Go to **Inventory -> Configuration -> Settings**.
-2. Scroll down past the **Operations** block.
-3. Tick the options you want enabled for the printed delivery slip:
-
-   -  **Delivery slip report only name** — print only the product name,
-      hide the ``[internal reference] Name`` prefix and the picking
-      description.
-   -  **Delivery slip report uom precision** — format quantities using
-      the per-UoM **Report Precision**.
-   -  **Picking report lang company** — print receipts and internal
-      transfers in the company partner's language.
-
-4. **Save** the settings. Repeat per company in a multi-company
-   database.
-
-2. Set UoM print precision
---------------------------
-
-This module relies on the ``report_precision`` field added on
-``uom.uom`` by **nexterp_account_invoice_report**.
-
-1. Go to **Inventory -> Configuration -> Units of Measure -> Units of
-   Measure**.
-2. Open a unit (e.g. *kg*, *l*, *m*) and set **Report Precision** to the
-   number of decimal places you want printed on delivery slips.
-3. Leave the field empty (or ``0``) to keep the default behaviour for
-   that UoM.
-
-3. Language of receipts
------------------------
-
-When **Picking report lang company** is on, only receipts and internal
-transfers switch to the company language; customer deliveries
-(``picking_type_code == 'outgoing'``) keep the standard language
-resolution and print in the customer's language.
+For the unit of measure precision, set the number of decimals on each
+unit of measure as provided by ``nexterp_account_invoice_report``.
 
 Usage
 =====
 
-Daily use
-=========
-
-The module changes the behaviour of the existing delivery slip print
-actions — there is no new menu or wizard. Once installed and configured,
-every delivery slip printed from a transfer uses the inherited
-templates.
-
-Printing a delivery slip
-------------------------
-
-1. Open a transfer from **Inventory -> Operations -> Transfers**.
-2. Click **Print -> Delivery Slip**.
-3. The generated PDF reflects the company options:
-
-   -  Product column shows the bare product name (no ``[CODE]`` prefix,
-      no description) when *only name* is enabled.
-   -  Demand and done quantities are printed with the UoM-specific
-      number of decimals when *uom precision* is enabled.
-   -  The PDF is rendered in the company partner's language for
-      non-outgoing pickings when *lang company* is enabled.
-
-How it works
-------------
-
--  ``stock.report_delivery_document`` is patched to replace
-   ``move.product_id`` and conditionally hide
-   ``move.description_picking``.
--  ``stock.stock_report_delivery_has_serial_move_line`` applies the same
-   replacements on the per-serial-number view used for tracked products.
--  ``stock.stock_report_delivery_aggregated_move_lines`` hides the
-   aggregated description and consumes a ``report_precision`` value
-   attached to each aggregated line.
--  ``StockMoveLine._get_aggregated_product_quantities`` injects
-   ``report_precision`` from the line UoM into the aggregated dict.
--  ``StockMoveLine._get_aggregated_properties`` returns ``product.name``
-   (instead of the display name) when *only name* is on.
--  ``StockPicking._get_report_lang`` returns the company partner
-   language for non-outgoing pickings when *lang company* is on; the
-   default behaviour is preserved for customer deliveries.
--  ``StockMoveLine._get_report_lang`` picks the move partner language
-   first, falling back to the line partner language and then to the user
-   language.
+1. Open a transfer from **Inventory > Operations > Transfers**.
+2. Click **Print > Delivery Slip**.
+3. The PDF follows the options of your company: product names without
+   references, quantities with the decimals of their unit, and the
+   company language for receipts and internal transfers.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.0.0.1 (2026-11-28)
+-----------------------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.0.0.0 (2026-05-25)
 -----------------------

@@ -1,34 +1,38 @@
-# Romania - eTransport Extension
+Completes eTransport, the ANAF notification for the transport of goods
+with high fiscal risk, so that notifications are filled in correctly and
+can be followed through their whole life from the transfer.
 
-Fixes and extensions for the official Odoo `l10n_ro_edi_stock` module to align it with the ANAF eTransport v2 specification (XSD 2023-01-26, Schematron v2.0.2 from 2024-08-12).
+**Correct data in the notification**
 
-The official module ships with several calculation bugs and missing features required by the current ANAF eTransport schema. This module corrects those issues and adds the full set of operations mandated by eTransport v2.0.2.
+- **Values without VAT** taken from the right source: cost on receipts,
+  sale price on deliveries, or a source you choose per company or per
+  transfer (cost, purchase order, sale order or sales price).
+- **Quantities, units, weights and customs tariff codes** computed
+  consistently; the gross weight is never below the net weight.
+- **Addresses** split into street and number the way ANAF expects.
 
-## Corrections to the official module
+**More of what ANAF allows**
 
-- **`valoareLeiFaraTva` (VAT-excluded value)** is computed correctly per operation direction:
-  - *Incoming* (operations 10, 12, 14, 30-transfer, 40, 60): cost price from the stock move or, when a Purchase Order exists, `purchase.order.line.price_unit` converted to RON.
-  - *Outgoing* (operations 20, 22, 24, 30-sale, 50, 70): sale price from `sale.order.line.price_unit` converted to RON, or `list_price` as fallback.
-- **Quantity / UoM conversion** between `move.product_uom` and the declared `codUnitateMasura` is now consistent.
-- **Gross weight** no longer doubles `shipping_weight` when a package has multiple `move_lines`; `greutateBruta >= greutateNeta` is always guaranteed.
-- **`codTarifar`** (NC8/HS code) is required — the erroneous `00000000` fallback is removed.
-- **`denumireStrada`** is correctly split from `numar / bloc / scara / etaj / apartament` per the `LocatieType` XSD definition.
+- **Several transport documents** per notification: CMR, invoice,
+  delivery note or other.
+- **Previous notifications** for the operations that need them.
+- **Post-outage declaration** for notifications sent after an ANAF
+  outage.
 
-## What this module provides
+**The whole life of a notification**
 
-- **Flexible price source** (`l10n_ro_edi_stock_price_source` on `stock.picking`): *Automatic*, *Cost price*, *Purchase order price*, *Sale order price*, or *Product list price* — configurable per transfer or as a company-wide default.
-- **Multiple transport documents per notification** (`l10n.ro.edi.stock.document.line`): `tipDocument` types 10 CMR / 20 Invoice / 30 Delivery note / 9999 Other, with free-text `remarks` for type 9999.
-- **Previous notifications** (`l10n.ro.edi.stock.previous.notification`): `notificareAnterioara` entries required for operations 60/70 (DIN/DIE).
-- **Post-outage declaration** (`l10n_ro_edi_stock_post_outage`): `declPostAvarie` flag per OUG 41/2022 art. 8 par. 1³.
-- **Full UIT lifecycle wizard** (`l10n.ro.edi.stock.action.wizard`): Delete (DEL), Confirm (CON — confirmed / partially confirmed / refused), and Vehicle Modification (MVH) actions sent directly to ANAF.
-- **LIST service sync** (`l10n.ro.edi.stock.list.wizard`): fetch and reconcile the ANAF notifications list for any date range (1–60 days); automatic reconciliation logs matched UITs in the transfer chatter. A scheduled cron job (`ir_cron_l10n_ro_edi_stock_list_sync`) runs every 6 hours.
-- **Transporter Info service** (`l10n.ro.edi.stock.transporter.info.wizard`): query ANAF for all notifications in which the company acts as transport operator, with full vehicle and location details.
-- **Extended document state tracking**: `l10n_ro_edi_stock_event_type` (NOT / COR / DEL / CON / MVH) and `l10n_ro_edi_stock_confirm_type` (10 / 20 / 30) stored on `l10n_ro_edi.document`.
-- **Batch transfers** (`stock.picking.batch`): everything above applies equally
-  to a batch notification. Odoo 20.0 merged `l10n_ro_edi_stock_batch` into
-  `l10n_ro_edi_stock` (`stock_picking_batch` itself became part of `stock`), so
-  the batch support that used to live in a separate
-  `l10n_ro_edi_stock_batch_extension` module is now part of this one. The batch
-  record is injected as the `_picking_record` consumed by the validation and
-  XML template pipeline and implements the same helper interface, so there is
-  no duplicated logic.
+- **Delete**, **Confirm transport** (confirmed, partially confirmed or
+  refused) and **Modify vehicle**, sent to ANAF from the transfer; each
+  waits for ANAF's answer before it counts.
+- **Notifications list**: the notifications ANAF holds for the company,
+  matched with the transfers, by hand or every six hours.
+- **Transporters**: the notifications in which the company is the
+  carrier, with vehicles and routes.
+- **Protected transfers**: a transfer whose notification is alive at ANAF
+  cannot be deleted or cancelled, and its declared data are frozen while
+  ANAF processes it.
+- **Batch transfers**: everything above works the same on a batch
+  declared with a single notification.
+- **Carrier asked for when it matters**: the delivery carrier can be
+  required only when the notification is sent, not on every validated
+  transfer.

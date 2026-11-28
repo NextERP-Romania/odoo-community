@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Product Kit Sale",
     "summary": "NextERP - Product Kit Sale",
-    "version": "20.0.1.2.0",
+    "version": "20.0.1.2.1",
     "category": "Sales",
     "depends": ["nexterp_product_kit", "sale", "sale_service"],
     "author": "NextERP Romania",

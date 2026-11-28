@@ -11,85 +11,44 @@ Romania - eTransport Extension
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Romania - eTransport Extension
-==============================
+Completes eTransport, the ANAF notification for the transport of goods
+with high fiscal risk, so that notifications are filled in correctly and
+can be followed through their whole life from the transfer.
 
-Fixes and extensions for the official Odoo ``l10n_ro_edi_stock`` module
-to align it with the ANAF eTransport v2 specification (XSD 2023-01-26,
-Schematron v2.0.2 from 2024-08-12).
+**Correct data in the notification**
 
-The official module ships with several calculation bugs and missing
-features required by the current ANAF eTransport schema. This module
-corrects those issues and adds the full set of operations mandated by
-eTransport v2.0.2.
+-  **Values without VAT** taken from the right source: cost on receipts,
+   sale price on deliveries, or a source you choose per company or per
+   transfer (cost, purchase order, sale order or sales price).
+-  **Quantities, units, weights and customs tariff codes** computed
+   consistently; the gross weight is never below the net weight.
+-  **Addresses** split into street and number the way ANAF expects.
 
-Corrections to the official module
-----------------------------------
+**More of what ANAF allows**
 
--  **``valoareLeiFaraTva`` (VAT-excluded value)** is computed correctly
-   per operation direction:
+-  **Several transport documents** per notification: CMR, invoice,
+   delivery note or other.
+-  **Previous notifications** for the operations that need them.
+-  **Post-outage declaration** for notifications sent after an ANAF
+   outage.
 
-   -  *Incoming* (operations 10, 12, 14, 30-transfer, 40, 60): cost
-      price from the stock move or, when a Purchase Order exists,
-      ``purchase.order.line.price_unit`` converted to RON.
-   -  *Outgoing* (operations 20, 22, 24, 30-sale, 50, 70): sale price
-      from ``sale.order.line.price_unit`` converted to RON, or
-      ``list_price`` as fallback.
+**The whole life of a notification**
 
--  **Quantity / UoM conversion** between ``move.product_uom`` and the
-   declared ``codUnitateMasura`` is now consistent.
--  **Gross weight** no longer doubles ``shipping_weight`` when a package
-   has multiple ``move_lines``; ``greutateBruta >= greutateNeta`` is
-   always guaranteed.
--  **``codTarifar``** (NC8/HS code) is required — the erroneous
-   ``00000000`` fallback is removed.
--  **``denumireStrada``** is correctly split from
-   ``numar / bloc / scara / etaj / apartament`` per the ``LocatieType``
-   XSD definition.
-
-What this module provides
--------------------------
-
--  **Flexible price source** (``l10n_ro_edi_stock_price_source`` on
-   ``stock.picking``): *Automatic*, *Cost price*, *Purchase order
-   price*, *Sale order price*, or *Product list price* — configurable
-   per transfer or as a company-wide default.
--  **Multiple transport documents per notification**
-   (``l10n.ro.edi.stock.document.line``): ``tipDocument`` types 10 CMR /
-   20 Invoice / 30 Delivery note / 9999 Other, with free-text
-   ``remarks`` for type 9999.
--  **Previous notifications**
-   (``l10n.ro.edi.stock.previous.notification``):
-   ``notificareAnterioara`` entries required for operations 60/70
-   (DIN/DIE).
--  **Post-outage declaration** (``l10n_ro_edi_stock_post_outage``):
-   ``declPostAvarie`` flag per OUG 41/2022 art. 8 par. 1³.
--  **Full UIT lifecycle wizard** (``l10n.ro.edi.stock.action.wizard``):
-   Delete (DEL), Confirm (CON — confirmed / partially confirmed /
-   refused), and Vehicle Modification (MVH) actions sent directly to
-   ANAF.
--  **LIST service sync** (``l10n.ro.edi.stock.list.wizard``): fetch and
-   reconcile the ANAF notifications list for any date range (1–60 days);
-   automatic reconciliation logs matched UITs in the transfer chatter. A
-   scheduled cron job (``ir_cron_l10n_ro_edi_stock_list_sync``) runs
-   every 6 hours.
--  **Transporter Info service**
-   (``l10n.ro.edi.stock.transporter.info.wizard``): query ANAF for all
-   notifications in which the company acts as transport operator, with
-   full vehicle and location details.
--  **Extended document state tracking**:
-   ``l10n_ro_edi_stock_event_type`` (NOT / COR / DEL / CON / MVH) and
-   ``l10n_ro_edi_stock_confirm_type`` (10 / 20 / 30) stored on
-   ``l10n_ro_edi.document``.
--  **Batch transfers** (``stock.picking.batch``): everything above
-   applies equally to a batch notification. Odoo 20.0 merged
-   ``l10n_ro_edi_stock_batch`` into ``l10n_ro_edi_stock``
-   (``stock_picking_batch`` itself became part of ``stock``), so the
-   batch support that used to live in a separate
-   ``l10n_ro_edi_stock_batch_extension`` module is now part of this one.
-   The batch record is injected as the ``_picking_record`` consumed by
-   the validation and XML template pipeline and implements the same
-   helper interface, so there is no duplicated logic.
+-  **Delete**, **Confirm transport** (confirmed, partially confirmed or
+   refused) and **Modify vehicle**, sent to ANAF from the transfer; each
+   waits for ANAF's answer before it counts.
+-  **Notifications list**: the notifications ANAF holds for the company,
+   matched with the transfers, by hand or every six hours.
+-  **Transporters**: the notifications in which the company is the
+   carrier, with vehicles and routes.
+-  **Protected transfers**: a transfer whose notification is alive at
+   ANAF cannot be deleted or cancelled, and its declared data are frozen
+   while ANAF processes it.
+-  **Batch transfers**: everything above works the same on a batch
+   declared with a single notification.
+-  **Carrier asked for when it matters**: the delivery carrier can be
+   required only when the notification is sent, not on every validated
+   transfer.
 
 
 **Table of contents**
@@ -97,242 +56,93 @@ What this module provides
 .. contents::
    :local:
 
-Use Cases / Context
-===================
+Configuration
+=============
 
-Key features
-============
+1. Set up eTransport and the ANAF connection as required by the Romanian
+   eTransport localization.
+2. Go to **Invoicing > Configuration > Settings**, section **Romanian
+   E-Factura**, block **eTransport additional settings**:
 
--  **Compliant with ANAF eTransport v2.0.2** — corrects value, weight,
-   UoM, address and HS-code bugs in the official ``l10n_ro_edi_stock``
-   module.
--  **Flexible VAT-excluded value calculation** — choose between
-   Automatic, Cost, Purchase Order, Sale Order, or List price per
-   transfer or as a company default.
--  **Multiple transport documents per notification** — attach CMR,
-   invoices, delivery notes or other documents to a single eTransport
-   XML.
--  **Full UIT lifecycle** — Delete, Confirm (confirmed / partially /
-   refused), and Vehicle Modification actions sent directly to ANAF from
+   -  **Default eTransport Price Source**: where the values without VAT
+      come from; *Automatic (by operation)* suits most companies;
+   -  **Delivery Carrier Required**: *When the notification is sent*
+      (the default) lets transfers be validated without a carrier and
+      asks for it when the notification goes to ANAF; *When the transfer
+      is validated* asks for it on every receipt and delivery. Either
+      way the carrier needs an eTransport partner with VAT number, city
+      and street;
+   -  **Automatic List Sync**: tick it to match the ANAF notifications
+      list with the transfers every six hours;
+   -  **List Sync Days**: how many days back each synchronization looks
+      (1 to 60).
+
+3. Make sure every product moved under eTransport has its customs tariff
+   code (4, 6 or 8 digits) on the product form.
+4. Write partner addresses as *street name and number* (for instance
+   *Calea Victoriei 12-14*), so the street and the number are split
+   correctly.
+5. Optionally, in developer mode, activate the scheduled action
+   **eTransport: fetch ANAF status of transfers** in **Settings >
+   Technical > Automation > Scheduled Actions**, to fetch the answers to
+   deletions, confirmations and vehicle changes automatically.
+
+Usage
+=====
+
+Sending a notification
+----------------------
+
+1. Open the transfer in **Inventory > Operations > Transfers** and go to
+   the **eTransport** tab.
+2. Check **eTransport Price Source**, and tick **Post-Outage
+   Declaration** if the notification is sent after an ANAF outage.
+3. Under **Transport documents**, add the CMR, invoice, delivery note or
+   other documents (for *Other*, the remarks are required).
+4. For the operations that need them, fill in the previous
+   notifications.
+5. Click **Check eTransport** to see any error before sending, then
+   click **Send eTransport**. The UIT received from ANAF is stored on
    the transfer.
--  **Previous notification support** — ``notificareAnterioara`` entries
-   for operations 60/70 (DIN/DIE).
--  **Post-outage declaration flag** — ``declPostAvarie`` per OUG 41/2022
-   for submissions during ANAF system outages.
--  **Automatic LIST sync cron** — reconciles ANAF notification list with
-   local transfers every 6 hours; manual wizard also available.
--  **Transporter Info service** — query ANAF for all notifications where
-   the company acts as transport operator, with full vehicle and route
-   details.
--  **Batch transfers included** — the same validation, price sources,
-   transport documents, UIT lifecycle actions and LIST reconciliation on
-   ``stock.picking.batch``, and a picking stays sendable while its batch
-   is still in progress and has not been notified itself.
 
-Configuration
-=============
+After the UIT is received
+-------------------------
 
-Configuration
-=============
+1. Use the buttons of the transfer: **Delete notification**, **Confirm
+   transport** (choose confirmed, partially confirmed or refused) or
+   **Modify vehicle** (new vehicle and trailers, date and time).
+2. The action waits as *Action Sent* until ANAF's answer is fetched
+   (**Fetch Status**, or the scheduled action). Accepted, it is
+   recorded; refused, the error is shown and the action can be sent
+   again.
+3. All the documents exchanged with ANAF are listed in **Inventory >
+   eTransport > Documents**.
 
-1. Company-wide default price source
-------------------------------------
+Checking what ANAF holds
+------------------------
 
-1. Go to **Settings → Inventory** (or **Settings → Accounting**) and
-   search for the **eTransport** section.
-2. Set **Default eTransport Price Source**
-   (``l10n_ro_edi_stock_default_price_source``) to the strategy that
-   matches your typical operations:
+1. **Inventory > eTransport > Notifications list**: enter the number of
+   days and click **Query ANAF**; the notifications found are matched
+   with the transfers and noted in their chatter.
+2. **Inventory > eTransport > Transporters**: enter the carrier's VAT
+   number (and optionally a UIT or reference) and click **Query ANAF**
+   to see the notifications in which the company is the carrier.
 
-   -  *Automatic (by operation)* is recommended for mixed-use companies.
-   -  Override per transfer when needed using the field on
-      ``stock.picking``.
+Batch transfers
+---------------
 
-2. When the delivery carrier is asked for
------------------------------------------
-
-1. In the same **eTransport** section, **Delivery Carrier Required**
-   (``l10n_ro_edi_stock_carrier_check``):
-
-   -  *When the notification is sent* (the default) — a transfer is
-      validated without a carrier, and the carrier is demanded, with the
-      eTransport partner behind it, when the notification goes to ANAF.
-      This is what a company whose transfers are mostly below the
-      eTransport thresholds wants: no carrier is invented for goods
-      nobody declares.
-   -  *When the transfer is validated* — Odoo's own behaviour: every
-      incoming and outgoing transfer of a Romanian company needs a
-      carrier before it can be validated, declared or not.
-
-2. Either way the carrier needs an **eTransport partner**
-   (``l10n_ro_edi_stock_partner_id`` on the carrier) with a VAT number,
-   a city and a street, or the notification is refused.
-3. On the default setting, the carrier stays writable on a transfer that
-   is already done, for as long as a notification can still be sent for
-   it.
-
-3. Automatic LIST sync (cron)
------------------------------
-
-1. In the same settings page, tick **Automatic List Sync**
-   (``l10n_ro_edi_stock_list_enabled``).
-2. Set **List Sync Days** (``l10n_ro_edi_stock_list_days``, 1–60) — the
-   number of days the cron looks back each run.
-3. The scheduled action *eTransport: ANAF notifications list sync*
-   (``ir_cron_l10n_ro_edi_stock_list_sync``) runs every 6 hours
-   automatically once enabled. To adjust the interval, go to **Settings
-   → Technical → Automation → Scheduled Actions** and edit the cron
-   record.
-
-4. Verify NC8/HS codes on products
-----------------------------------
-
-Because ``codTarifar`` is now mandatory (the ``00000000`` fallback has
-been removed), ensure every product that appears on eTransport-eligible
-transfers has a valid 4-, 6-, or 8-digit HS/NC8 code set on the product
-form before sending notifications.
-
-5. Verify address structure
----------------------------
-
-The module splits Romanian street addresses into ``denumireStrada`` +
-number/building details automatically via
-``_l10n_ro_edi_stock_split_street``. Confirm that partner addresses
-follow the format *"Street name number"* (e.g. *"Calea Victoriei
-12-14"*) to ensure correct splitting.
-
-6. Batch transfers
-------------------
-
-No dedicated configuration is needed. Batch transfers reuse the
-company-wide settings above; the **eTransport Price Source** field on
-the batch form defaults to the company default
-(``_l10n_ro_edi_stock_default_price_source``) and can be overridden per
-batch before sending the notification.
-
-Usage
-=====
-
-Usage
-=====
-
-Configuring the price source for a transfer
--------------------------------------------
-
-1. Open a validated or in-progress transfer in **Inventory →
-   Transfers**.
-2. In the **eTransport** tab, locate the **eTransport Price Source**
-   field (``l10n_ro_edi_stock_price_source``).
-3. Choose one of:
-
-   -  *Automatic (by operation)* — cost on incoming/internal, sale price
-      on outgoing.
-   -  *Cost price* — always uses ``standard_price``.
-   -  *Purchase order price* — pulls from the linked PO line in RON.
-   -  *Sale order price* — pulls from the linked SO line in RON.
-   -  *Product list price* — uses ``list_price``.
-
-4. Continue with the normal eTransport notification flow.
-
-Adding transport documents (CMR, Invoice, etc.)
------------------------------------------------
-
-1. Open the transfer and go to the **eTransport** tab.
-2. Under **Transport Documents**, click **Add a line**.
-3. Set **Document Type** (10 CMR / 20 Invoice / 30 Delivery Note / 9999
-   Other), **Document Number**, and **Document Date**.
-4. If type is *Other (9999)*, fill in the **Remarks** field (required by
-   ANAF).
-5. Add as many documents as needed; all will be included in the XML
-   notification.
-
-Declaring previous notifications (operations 60/70)
----------------------------------------------------
-
-1. On the transfer, go to the **eTransport** tab → **Previous
-   Notifications** section.
-2. Click **Add a line** and enter the **Previous UIT**, optional
-   **Remarks**, and **Declarant Reference**.
-3. These entries are serialised as ``notificareAnterioara`` elements in
-   the XML sent to ANAF.
-
-Marking a post-outage declaration
----------------------------------
-
-1. On the transfer **eTransport** tab, tick **Post-Outage Declaration**
-   (``l10n_ro_edi_stock_post_outage``).
-2. This sets ``declPostAvarie=1`` in the submitted XML, allowed until
-   the end of the next working day after an ANAF system outage (OUG
-   41/2022 art. 8 par. 1³).
-
-Performing UIT lifecycle actions (Delete / Confirm / Modify vehicle)
---------------------------------------------------------------------
-
-After a notification UIT has been obtained:
-
-1. Open the transfer and use the action buttons in the **eTransport**
-   tab (or the action menu).
-2. **Delete notification** — opens ``l10n.ro.edi.stock.action.wizard``
-   pre-set to *DEL*; confirm to send the deletion to ANAF.
-3. **Confirm transport** — opens the wizard pre-set to *CON*; choose
-   confirmation type (10 Confirmed / 20 Partially confirmed / 30
-   Refused) and submit.
-4. **Modify vehicle** — opens the wizard pre-set to *MVH*; enter the new
-   vehicle number, optional trailer numbers, and modification date/time.
-5. The wizard calls ``_upload_and_log``, posts the ANAF response in the
-   chatter, and updates ``l10n_ro_edi_stock_event_type`` on the related
-   ``l10n_ro_edi.document`` record.
-
-Syncing the ANAF notifications list manually
---------------------------------------------
-
-1. Go to **Inventory → eTransport → Notifications list**
-   (``menu_l10n_ro_edi_stock_list_wizard``).
-2. Enter the **Number of days** (1–60) to look back.
-3. Click **Fetch** (``action_fetch``). The wizard retrieves the ANAF
-   LIST and displays all returned notifications as
-   ``l10n.ro.edi.stock.list.line`` records.
-4. Click **Reconcile** to automatically match UITs to local transfers
-   and log the result in each transfer's chatter.
-
-Querying transporter info (as transport operator)
--------------------------------------------------
-
-1. Go to **Inventory → eTransport → Transporters**
-   (``menu_l10n_ro_edi_stock_transporter_info_wizard``).
-2. Fill in **Transport operator VAT**, and optionally **Initial
-   declarant VAT**, **Specific UIT**, or **Declarant reference**.
-3. Click **Fetch** (``action_fetch``). Each matching ANAF notification
-   appears as an ``l10n.ro.edi.stock.transporter.info.line`` row with
-   UIT, vehicle numbers, start/end locations, and expiry date.
-
-Declaring a batch transfer
---------------------------
-
-1. Go to **Inventory → Operations → Batch Transfers** and open the batch
-   you want to declare.
-2. Fill in the **eTransport** tab exactly as on a single transfer:
-   operation type and scope, vehicle, start/end locations, **eTransport
-   Price Source**, **Transport documents**, **Previous notifications**
-   and **Post-Outage Declaration**.
-3. Click **Send eTransport**. The batch data goes through the same ANAF
-   Schematron v2.0.2 validation as a single transfer and the returned
-   UIT is stored on the batch.
-4. **Delete notification**, **Confirm transport** and **Modify vehicle**
-   are available on the batch form once the UIT is validated, and the
-   ANAF response is logged in the batch chatter.
-
-A picking that belongs to a batch stays sendable on its own as long as
-the batch itself has not been notified and is not done — otherwise the
-batch notification is the authoritative one and the picking can no
-longer file a second UIT for the same goods. Batch UITs are reconciled
-by the LIST cron job alongside transfer UITs.
+Open the batch in **Inventory > Operations > Jobs > Batch Transfers**:
+the **eTransport** tab and the buttons work exactly as on a single
+transfer, for one notification covering all the transfers of the batch.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.1.6.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.1.5.0 (2026-11-06)
 -----------------------
@@ -380,17 +190,15 @@ Changelog
 
 -  **The delivery carrier is asked for when the notification is sent,
    not when the transfer is validated.** The base demands one on every
-   incoming and outgoing transfer of a Romanian company --
-   ``l10n_ro_edi_stock_enable`` is no narrower than "not internal, not
-   batched, company in Romania" -- so a shop receiving three cartons it
-   fetched itself could not validate its receipt. eTransport applies to
-   goods of high fiscal risk above the legal thresholds, and the carrier
-   is data the notification needs, so that is where it is now demanded,
-   in full: no carrier means one clear error at send time instead of
-   three complaints about a transport partner that is not there.
-   Companies that declare everything they move keep Odoo's behaviour
-   with **Delivery Carrier Required = When the transfer is validated**
-   in the eTransport settings.
+   incoming and outgoing transfer of a Romanian company, so a shop
+   receiving three cartons it fetched itself could not validate its
+   receipt. eTransport applies to goods of high fiscal risk above the
+   legal thresholds, and the carrier is data the notification needs, so
+   that is where it is now demanded, in full: no carrier means one clear
+   error at send time instead of three complaints about a transport
+   partner that is not there. Companies that declare everything they
+   move keep Odoo's behaviour with **Delivery Carrier Required = When
+   the transfer is validated** in the eTransport settings.
 -  The carrier stays writable on a validated transfer for as long as a
    notification can still be sent for it. Odoo locks the field once the
    goods are done, which made sense only while the carrier had to be
@@ -399,29 +207,20 @@ Changelog
 20.0.1.3.0 (2026-09-26)
 -----------------------
 
--  Merge ``l10n_ro_edi_stock_batch_extension`` into this module,
-   mirroring Odoo 20.0, where ``l10n_ro_edi_stock_batch`` was merged
-   into ``l10n_ro_edi_stock`` (``stock_picking_batch`` itself became
-   part of ``stock``). Batch transfer support is unchanged functionally.
-   A pre-migration script merges the old module into this one with
-   ``openupgradelib``
-   (``update_module_names(..., merge_modules=True)``), so its records
-   change owner instead of being dropped, and a post-migration script
-   uninstalls the old module should the merge not have run.
+-  Batch transfer support, previously a separate module, is now part of
+   this one; the separate module is merged in automatically on update,
+   with no change in behaviour.
 
 19.0.1.2.0 (2026-09-15)
 -----------------------
 
--  Drop the base ``Warehouse of ... should be in Romania`` error on the
-   counterparty side of intra-EU / import / export operations, which
-   ``l10n_ro_edi_stock`` started raising unconditionally and which made
-   those notifications impossible to send.
--  Fix ``AttributeError`` when the ANAF response has an unexpected
-   shape: ``ETransportAPI`` is a plain class, so the module-level ``_``
-   has to be used instead of ``self.env._``.
--  ``_compute_l10n_ro_edi_stock_enable_send`` now only widens the states
-   the base does not already cover ('assigned' has been allowed upstream
-   since 19.0).
+-  Notifications for intra-EU, import and export operations can be sent
+   again: the check that the counterparty's warehouse is in Romania no
+   longer blocks them.
+-  An unexpected answer from ANAF is reported as a clear error instead
+   of stopping the operation.
+-  A transfer can be sent to eTransport in every state where it makes
+   sense, not only in the states the base localization allowed.
 
 19.0.1.0.0 (2026-06-23)
 -----------------------

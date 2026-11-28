@@ -1,6 +1,6 @@
-==============================
-NextERP - Account EDI Journalt
-==============================
+=============================
+NextERP - Account EDI Journal
+=============================
 
 ..
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -11,24 +11,19 @@ NextERP - Account EDI Journalt
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Add a per-journal switch that controls whether moves posted in that
-journal are eligible for Romanian e-invoicing (e-Factura / SPV). The
-standard ``l10n_ro_edi`` flow applies the EDI check to every customer
-invoice on a Romanian company; this module makes the decision explicit
-at the journal level so internal, manual or out-of-scope journals can
-opt out without disabling the whole feature.
+With the Romanian e-Factura integration, every invoice of a Romanian
+company is a candidate for sending to the national e-invoicing system
+(SPV). This module lets you choose, journal by journal, which invoices
+go there, so internal, test or out-of-scope journals never upload
+anything.
 
-The change is minimal: one Boolean field ``l10n_ro_edi_send_enabled`` on
-``account.journal``, a small form override to surface it next to the
-journal currency, and a guard in
-``account.move.send._is_ro_edi_applicable`` that returns ``False`` when
-the move's journal has the flag unchecked. All other Odoo behaviour
-around EDI sending is unchanged.
-
-Use this module when the database has several sales / miscellaneous
-journals and only some of them are subject to SPV reporting — for
-example, intercompany sales, internal allocations or test journals that
-should never be uploaded to ANAF.
+-  **Enable EDI Send** option on the journal, shown on sales journals
+   and on purchase journals marked **Self Billing**.
+-  Invoices of a journal without the option are sent and printed
+   normally, without the e-Factura upload.
+-  Every journal must be switched on explicitly: nothing is sent by
+   surprise.
+-  Documents already sent for past invoices are kept as they are.
 
 
 **Table of contents**
@@ -36,185 +31,44 @@ should never be uploaded to ANAF.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Per-journal EDI switch** — adds the Boolean field
-   ``l10n_ro_edi_send_enabled`` on ``account.journal``, defaulting to
-   ``False``, so existing journals do not start sending EDI documents
-   silently after the module is installed.
--  **Form integration** — the field is injected into the standard
-   journal form view right after ``currency_id``, keeping it visible in
-   the same area as the other journal configuration toggles.
--  **Send-flow guard** — overrides
-   ``account.move.send._is_ro_edi_applicable`` so the move is considered
-   non-applicable as soon as
-   ``move.journal_id.l10n_ro_edi_send_enabled`` is ``False``; the rest
-   of the upstream conditions still apply when the flag is on.
--  **No new menus or wizards** — the feature is purely configuration on
-   existing screens; there is nothing to open or trigger separately.
--  **Romanian-EDI dependency** — depends on ``l10n_ro_edi``, which
-   carries the SPV / e-Factura connectivity, EDI document model and
-   default applicability logic.
--  **Safe default** — because the new flag defaults to ``False``, every
-   journal must be explicitly opted in. Existing setups stop sending EDI
-   until journals are configured.
--  **Backwards-compatible with EDI logs** — the override only blocks
-   applicability; it does not delete or alter EDI documents already
-   attached to past moves.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 16.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Account EDI Journal" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Install and set up the Romanian e-Factura integration
+   (``l10n_ro_edi``) for the company: certificate, ANAF access and the
+   rest of its configuration.
+2. Go to **Invoicing > Configuration > Journals**.
+3. Open each journal whose invoices must go to e-Factura, for example
+   *Customer Invoices*, or a purchase journal used for self-billing.
+4. Tick **Enable EDI Send** (next to **Currency**) and save.
 
-The module exposes a single Boolean per journal. Setup is a one-time
-review of every accounting journal that should — or should not — push to
-SPV.
-
-1. Install dependencies
------------------------
-
-The manifest depends on ``l10n_ro_edi``. Make sure the Romanian EDI
-module is installed and the company is fully set up for SPV connectivity
-(certificate, ANAF credentials, EDI format selection) before configuring
-journals.
-
-2. Default behaviour after install
-----------------------------------
-
-The flag ``l10n_ro_edi_send_enabled`` defaults to ``False``. Right after
-installing the module, **no journal is EDI-enabled** — including
-journals that were sending EDI before. Plan the rollout so the journals
-to keep on EDI are configured immediately.
-
-3. Enable EDI per journal
--------------------------
-
-Go to **Accounting → Configuration → Journals** and open each journal
-you want to keep on EDI:
-
-1. On the form, locate **Enable EDI Send** (right after **Currency**).
-   It is shown only on sales journals and on purchase journals marked
-   **Self Billing**; other journals never send to SPV.
-2. Tick the checkbox.
-3. Save the journal.
-
-Typical journals to enable:
-
--  The default **Customer Invoices** journal of the Romanian company.
--  Any additional sales journal that issues B2B invoices subject to SPV
-   reporting.
-
-Typical journals to leave disabled:
-
--  Vendor bill journals (purchases are pulled by the ANAF API rather
-   than pushed). A purchase journal marked **Self Billing** is the
-   exception: the self-invoices issued on it go to SPV like sales.
--  Miscellaneous journals used for manual allocations.
--  Intercompany / consolidation journals where invoices are mirrored
-   from another database and have already been reported once.
--  Test or training journals.
-
-4. Verify in the move-send flow
--------------------------------
-
-1. Open **Accounting → Customers → Invoices** and create an invoice on a
-   journal that has **Enable EDI Send** ticked.
-2. Confirm and click **Send & Print**.
-3. The EDI option appears in the wizard with the journal's setting.
-4. Repeat on a journal where the flag is off — the EDI option is skipped
-   because ``_is_ro_edi_applicable`` now returns ``False`` upstream.
-
-5. User access
---------------
-
-No new security groups are added. The journal field is editable by users
-with the **Accounting: Adviser** group, like the rest of the journal
-configuration.
+After installation the option is off on every journal, including the
+ones that used to send. Switch on the right journals right away to keep
+sending without interruption. Leave it off on journals for internal
+transfers, group invoices already reported elsewhere or tests.
 
 Usage
 =====
 
-Daily use
-=========
+1. Create and confirm an invoice in a journal with **Enable EDI Send**
+   ticked.
+2. Click **Send**: the e-Factura option is offered as usual and the
+   invoice is uploaded to SPV.
+3. Create and confirm an invoice in a journal without the option.
+4. Click **Send**: no e-Factura option is offered; the invoice is only
+   emailed or printed.
 
-Once the journals are configured, users do not interact with this module
-directly. The behaviour shows up implicitly in the **Send & Print** flow
-and in the EDI reporting screens.
-
-Posting an EDI-eligible invoice
--------------------------------
-
-1. Go to **Accounting → Customers → Invoices** and create or open an
-   invoice on a journal where **Enable EDI Send** is ticked.
-2. Confirm the invoice.
-3. Click **Send & Print**.
-4. The EDI option is offered by ``l10n_ro_edi`` like in the standard
-   flow; sending the invoice produces an ``account.edi.document`` and
-   uploads it to ANAF / SPV.
-
-Posting on a non-EDI journal
-----------------------------
-
-1. Open or create an invoice on a journal where **Enable EDI Send** is
-   unticked.
-2. Confirm and click **Send & Print**.
-3. The EDI checkbox does not appear (or is hidden as not applicable),
-   because ``account.move.send._is_ro_edi_applicable`` returns ``False``
-   for that journal.
-4. The invoice is sent by email / printed as a normal PDF without any
-   ANAF upload.
-
-Changing the setting
---------------------
-
-The flag can be toggled at any time on **Accounting → Configuration →
-Journals**:
-
--  Turning it **on** makes new postings on that journal EDI-eligible,
-   starting from the next save.
--  Turning it **off** stops new postings from being submitted; EDI
-   documents already generated for past moves remain attached to those
-   moves and are not deleted.
-
-Multi-company
--------------
-
-The override looks at the journal of the move, not the company directly.
-In a multi-company database each company's journals must be configured
-separately; switching companies in the top bar then opening **Accounting
-→ Configuration → Journals** shows the journals of the active company.
-
-What the user does not see
---------------------------
-
--  The override is silent — there is no warning popup when an invoice is
-   posted on a non-EDI journal.
--  The journal flag is not visible from the invoice itself; users
-   needing to check it must open the journal record.
+The option can be changed at any time on the journal; it applies to the
+next invoices sent from that journal.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.0.0.2
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.0.0.1 (2026-11-06)
 -----------------------

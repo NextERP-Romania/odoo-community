@@ -2,41 +2,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#e11d48"/>
-      <stop offset="100%" stop-color="#9f1239"/>
+      <stop offset="0%" stop-color="#E31E24"/>
+      <stop offset="55%" stop-color="#CC0C54"/>
+      <stop offset="100%" stop-color="#A81884"/>
     </linearGradient>
   </defs>
   <rect width="256" height="256" rx="48" fill="url(#bg)"/>
 
-  <!-- subtle decorative blobs that survive at small sizes -->
-  <circle cx="220" cy="60" r="60" fill="#ffffff" opacity="0.10"/>
-  <circle cx="40" cy="220" r="40" fill="#ffffff" opacity="0.07"/>
+  <!-- decorative blobs, still readable at small sizes -->
+  <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
+  <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
 
-  <!-- module initials, white, dead center -->
-  <text x="128" y="138"
-        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-        font-size="100"
-        font-weight="800"
-        fill="#ffffff"
-        text-anchor="middle"
-        dominant-baseline="middle"
-        letter-spacing="-2">SUPA</text>
-
-  <!-- emoji badge top-right: white pill, category emoji on top -->
-  <circle cx="200" cy="56" r="28" fill="#ffffff" opacity="0.95"/>
-  <text x="200" y="58"
-        font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif"
-        font-size="32"
-        text-anchor="middle"
-        dominant-baseline="middle">⚙️</text>
-
-  <!-- NextERP mark at the bottom -->
-  <text x="128" y="232"
-        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-        font-size="16"
-        font-weight="600"
-        fill="#ffffff"
-        opacity="0.75"
-        text-anchor="middle"
-        letter-spacing="1">NextERP</text>
+  <!-- a price tag inside the arrows of a refresh -->
+  <path d="M60 128 A68 68 0 0 1 184 90" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+  <path d="M196 128 A68 68 0 0 1 72 166" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+  <path d="M168 70 L196 84 L178 108 Z" fill="#ffffff"/>
+  <path d="M88 186 L60 172 L78 148 Z" fill="#ffffff"/>
+  <path d="M104 100 L146 100 L168 128 L146 156 L104 156 Z M134 128 A8 8 0 1 0 150 128 A8 8 0 1 0 134 128 Z" fill="#ffffff" fill-rule="evenodd"/>
 </svg>

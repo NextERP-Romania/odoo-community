@@ -11,19 +11,23 @@ Romania - E-invoicing Invoices Issued for a Fiscal Receipt
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-When a customer asks for an invoice for a sale already on a fiscal
-receipt, the sale and its VAT were declared with the receipt; the
-invoice is issued for accounting purposes only and goes to RO e-Factura
-with type code **751** ("Factură — informații în scopuri contabile")
-instead of 380.
+When a customer asks for an invoice for a sale already printed on a
+fiscal receipt, the sale and its VAT were already declared with the
+receipt. The invoice is then issued for accounting purposes only and
+must reach e-Factura with the type code for that case (751), not as a
+regular invoice.
 
-The module adds the **Fiscal Receipt Number** to the point of sale
-order, written by the register's driver once the receipt is printed, and
-to the invoice, filled from the orders behind it. An invoice with a
-receipt number is exported as 751; any other invoice, and every credit
-note, keeps its usual type code. A point of sale without a register, or
-one that sells on invoice only, prints no receipt: its invoices stay
-380.
+-  **Fiscal receipt number on the order**: written on the point of sale
+   order by the fiscal register integration once the receipt is printed.
+-  **Carried to the invoice**: an invoice created from the order takes
+   the receipt number automatically.
+-  **Right type code**: an invoice with a receipt number is sent with
+   type code 751; every other invoice and every credit note keeps its
+   usual code.
+-  **Back-office invoices**: the receipt number can be typed on an
+   invoice issued later for a receipt printed elsewhere.
+-  **Locked once sent**: the number can only be changed while the
+   invoice is a draft not yet sent to the SPV.
 
 
 **Table of contents**
@@ -34,16 +38,44 @@ one that sells on invoice only, prints no receipt: its invoices stay
 Configuration
 =============
 
-Nothing to set. The number is written on the order by the integration of
-the fiscal register, once the receipt is printed, and reaches the
-invoice generated from the order.
+Nothing to set up. The fiscal receipt number is written on the order by
+the integration of your fiscal register, once the receipt is printed.
 
-For an invoice issued later in the back office for a sale already on a
-receipt, fill **Fiscal Receipt Number** in the invoice's *Other Info*
-tab before sending it to ANAF.
+A point of sale without a fiscal register, or one that sells on invoice
+only, prints no receipt: its invoices are sent as regular invoices.
+
+Usage
+=====
+
+Invoice created from a point of sale order
+------------------------------------------
+
+1. The cashier completes the sale; the fiscal register prints the
+   receipt and its number appears as **Fiscal Receipt Number** in the
+   **Other Information** group of the order (**Point of Sale > Orders >
+   Orders**).
+2. When the customer asks for an invoice, create it from the order as
+   usual. The receipt number is copied to the invoice.
+3. Send the invoice to ANAF with **Send & Print**. It goes with type
+   code 751.
+
+Invoice issued later in the back office
+---------------------------------------
+
+1. In **Invoicing > Customers > Invoices**, create or open a draft
+   invoice.
+2. In the **Other Info** tab, fill in **Fiscal Receipt Number** with the
+   number printed on the receipt.
+3. Confirm the invoice and send it to ANAF. It goes with type code 751.
 
 Changelog
 =========
+
+20.0.1.0.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.1.0.0 (2026-11-07)
 -----------------------

@@ -11,9 +11,20 @@ NextERP - Allow Delete Last Invoice
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-This module allows you to delete the last invoice from journal. A
-setting is available for each company in the Invocing Settings to
-allow/dissalow the behaviour.
+When an invoice is created by mistake, Odoo keeps its number taken even
+after the invoice is deleted, leaving a gap in the sequence. This module
+lets a company give the number back: if the deleted invoice is the last
+one issued in its journal, the next invoice reuses its number and the
+sequence stays continuous.
+
+-  **Allow Delete Last Invoice** option, set per company in the
+   invoicing settings.
+-  Only the most recent invoice of a journal can release its number;
+   earlier invoices keep the standard protection.
+-  Off by default: nothing changes for a company until the option is
+   ticked.
+-  Works for customer invoices, vendor bills, credit notes and other
+   journal entries numbered by a journal sequence.
 
 
 **Table of contents**
@@ -21,92 +32,41 @@ allow/dissalow the behaviour.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Delete the last posted invoice** in a journal without breaking the
-   accounting sequence lock.
--  **Per-company toggle** — enable or disable the behaviour
-   independently for each company via
-   ``account_allow_delete_last_invoice`` on ``res.company``.
--  **Standard Settings UI** — the option appears directly in *Settings →
-   Invoicing*, requiring no developer mode or manual configuration.
--  **Minimal footprint** — extends only ``account.move.unlink`` and
-   ``res.config.settings``; no new models or data files introduced.
--  **Safe by default** — the flag is ``False`` on installation, so
-   existing companies are unaffected until an administrator explicitly
-   opts in.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 18.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Allow Delete Last Invoice" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Go to **Invoicing > Configuration > Settings**.
+2. In the **Customer Invoices** section, tick **Allow Delete Last
+   Invoice**.
+3. Click **Save**.
 
-After installing the module, enable the feature per company:
+The option belongs to the current company. In a multi-company database,
+switch to each company that needs it and repeat the steps.
 
-1. Go to **Settings → Invoicing** (or **Settings → Accounting**).
-2. Scroll to the **Invoicing** section and locate the **Allow Delete
-   Last Invoice** checkbox (``account_allow_delete_last_invoice``).
-3. Tick the checkbox to allow deletion of the last invoice in a journal
-   for the current company.
-4. Click **Save**.
-
-Repeat for each company in a multi-company setup that should have this
-behaviour enabled. Companies where the checkbox is left unticked retain
-the standard Odoo protection against deleting posted journal entries.
+Keep in mind that an invoice which was already sent to the customer or
+to a tax authority should be cancelled with a credit note, not deleted.
 
 Usage
 =====
 
-Usage
-=====
+1. Open the invoice to remove, for example from **Invoicing > Customers
+   > Invoices**. It must be the last invoice numbered in its journal.
+2. Click **Reset to Draft**.
+3. Delete it with **Actions > Delete** (form) or from the list view.
+4. Create the next invoice in the same journal: it receives the number
+   the deleted invoice had, so no gap is left.
 
-Deleting the last invoice in a journal
---------------------------------------
-
-Once the ``account_allow_delete_last_invoice`` setting is enabled for
-your company (see **Configure**), users with the appropriate access
-rights can delete the most recent posted invoice in a journal directly
-from the standard invoice list or form.
-
-1. Go to **Invoicing → Customers → Invoices** (or **Vendor Bills** for
-   supplier invoices).
-2. Open the invoice you want to delete — it must be the last posted
-   entry in its journal sequence.
-3. Reset the invoice to draft if required, then use the **Action →
-   Delete** option (or the delete button in the list view).
-4. Odoo will allow the deletion instead of raising the usual
-   sequence-lock error, because the ``unlink`` method on
-   ``account.move`` has been extended to respect the company-level
-   ``account_allow_delete_last_invoice`` flag.
-
-..
-
-   **Note:** Only the *last* invoice in the journal sequence can be
-   deleted this way. Earlier entries remain protected to preserve
-   accounting sequence integrity.
+If the invoice is not the last one of its journal, it is deleted the
+standard way and its number is not reused.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.0.0.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.0.0.0 (2026-06-03)
 -----------------------

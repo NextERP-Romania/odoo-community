@@ -1,26 +1,15 @@
-Add a dedicated stock-inventory document on top of `stock.quant` so
-physical counts are grouped, dated and valued as a single record. The
-module introduces two new models — `l10n.ro.stock.inventory` (the
-header) and `l10n.ro.stock.inventory.line` (the counted lines) — with
-a form, list and search view, plus a reporting list / pivot / graph
-over the lines.
+Run physical inventories as documents: choose the locations and products,
+generate the count sheet from current stock, enter what was counted and
+validate. Every adjustment is booked on the date you choose and kept in a
+history you can report on.
 
-Each inventory is scoped to a set of internal locations and, optionally,
-to a list of products. Generating the lines fetches the corresponding
-`stock.quant` records, snapshots their on-hand quantity and value, and
-lets the operator enter the counted quantity. Validating the inventory
-applies the differences through `stock.quant.action_apply_inventory()`
-on the chosen accounting date and stores the resulting value
-difference per line.
-
-The model also wires the inverse side: when quants are adjusted outside
-this workflow (standard Odoo screens, third-party imports), an
-`l10n.ro.stock.inventory` is created automatically, grouped by
-accounting date, so every stock adjustment ends up captured in a
-traceable document.
-
-A QWeb PDF report (*proces verbal de inventariere*) prints the document
-as the record required by the Romanian accounting rules: the commission
-appointed by decision, the counted locations, the surpluses and
-shortages summarised per location, the detail of every difference and
-the signature block.
+- Inventory documents per date, locations and products.
+- Count lines generated from the stock on hand, with quantities and values.
+- Validation books the differences in stock and accounting on the chosen
+  date.
+- Adjustments made elsewhere are captured in inventory documents too.
+- A validated inventory is locked.
+- Printable inventory report with the inventory commission, the appointing
+  decision and the surplus, shortage and net difference values.
+- **Inventory Stock Line Adjustments History** report with list, pivot and
+  graph views.

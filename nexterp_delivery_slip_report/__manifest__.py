@@ -4,7 +4,7 @@
 
 {
     "name": "NextERP - Stock Delivery Slip Report",
-    "version": "20.0.0.0.0",
+    "version": "20.0.0.0.1",
     "summary": """ NextERP - Stock Delivery Slip Report""",
     "category": "Warehouse",
     "author": "NextERP Romania",

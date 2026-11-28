@@ -42,7 +42,7 @@ class AccountMove(models.Model):
         """Give back the standard payment state (not_paid / partial / paid...)
         to the invoices in debt recovery, used when the selection value goes
         away (module uninstall)."""
-        self._compute_payment_state()
+        self.with_context(debt_recovery_reset=True)._compute_payment_state()
         self.flush_recordset(["payment_state"])
 
     def action_mark_as_debt_recovery(self):
@@ -51,12 +51,25 @@ class AccountMove(models.Model):
             self.debt_recovery = True
             self.payment_state = "debt_recovery"
 
+    def _debt_recovery_sync_state(self):
+        """Paid: the recovery is closed. Not paid: the invoice stays in debt
+        recovery instead of falling back among the ordinary unpaid ones."""
+        if self.env.context.get("debt_recovery_reset"):
+            return
+        for move in self.filtered("debt_recovery"):
+            if move.payment_state in ("paid", "in_payment"):
+                move.debt_recovery_done = True
+            else:
+                move.payment_state = "debt_recovery"
+
     def _compute_amount(self):
         res = super()._compute_amount()
-        for move in self:
-            if move.debt_recovery:
-                if move.payment_state == "paid":
-                    move.debt_recovery_done = True
-                else:
-                    move.payment_state = "debt_recovery"
+        self._debt_recovery_sync_state()
+        return res
+
+    def _compute_payment_state(self):
+        # the payment state has its own compute: a payment updates it here,
+        # not in _compute_amount
+        res = super()._compute_payment_state()
+        self._debt_recovery_sync_state()
         return res

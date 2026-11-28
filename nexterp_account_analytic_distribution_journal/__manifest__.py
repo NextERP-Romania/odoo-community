@@ -4,7 +4,7 @@
 
 {
     "name": "NextERP - Analytic Distribution Models by Journal",
-    "version": "20.0.1.0.1",
+    "version": "20.0.1.0.2",
     "summary": """Match analytic distribution models by journal.""",
     "category": "Accounting/Analytic",
     "author": "NextERP Romania",

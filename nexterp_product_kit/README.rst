@@ -11,23 +11,20 @@ NextERP - Product Kit
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Define composite products (kits) made up of one or more component
-products. A kit is a regular ``product.product`` that holds a list of
-component lines, each with its own quantity and unit of measure;
-components are individual storable or service products flagged as **Is a
-Kit Component** so they are excluded from direct sale.
+Sell bundles made of other products and let their price follow the
+components. A kit lists its components with quantities; its sales price
+and cost are the sum of the components, and pricelists are applied
+component by component.
 
-The module computes the kit's cost and list price from the sum of its
-components: ``_price_compute`` aggregates ``standard_price`` and
-``lst_price`` of every component multiplied by its line quantity, and
-the pricelist engine (``_compute_price_rule``) returns the kit price
-based on each component's pricelist entry rather than a flat list price.
-This keeps the kit price consistent when component prices or pricelists
-change.
-
-Targets sales catalogs built from reusable components — service bundles,
-hardware-plus-installation packs, or any product sold as a single SKU
-but priced and tracked as a sum of parts.
+-  **Kit Products** tab on the product and on each variant.
+-  **Is a Kit Component** option that keeps components out of the
+   regular sales catalog.
+-  Sales price and cost computed from the components, always up to date.
+-  Pricelist rules applied on each component, so promotions on a
+   component reach the kit.
+-  **Product Kits** report with list and pivot views of every kit line.
+-  Safeguards: quantities must be positive and a kit cannot contain
+   itself.
 
 
 **Table of contents**
@@ -35,148 +32,42 @@ but priced and tracked as a sum of parts.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  New model ``product.product.kit`` storing the component lines of
-   every kit product (component product, quantity, unit price, unit of
-   measure).
--  Boolean field **Is a Kit Component** on ``product.template`` and
-   ``product.product``; ticking it automatically clears **Can be Sold**
-   via an onchange.
--  Kit lines exposed on both the product template form and the
-   per-variant easy-edit form via a dedicated **Kit Products** notebook
-   tab.
--  Kit list price (``lst_price``) recomputed from component
-   ``product_qty * product_price``, with pricelist and target UoM taken
-   into account through ``_compute_product_lst_price``.
--  Cost price (``standard_price``) and any other price type aggregated
-   from components in ``_price_compute``, so reports and valuations stay
-   consistent.
--  Pricelist override (``product.pricelist._compute_price_rule``):
-   whenever a pricelist is applied to a kit product, the engine sums the
-   components' contextual prices for the requested quantity, UoM and
-   date.
--  Dedicated **Product Kits** menu under **Sales → Products** with list,
-   form, pivot and grouping search views (restricted to the Sales
-   Manager group).
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 16.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Product Kit" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Go to **Sales > Products > Products** and open each product used as a
+   component. Tick **Is a Kit Component** (this clears **Can be Sold**).
+2. Open the product that represents the kit, keep **Can be Sold** active
+   and fill the **Kit Products** tab with one line per component and its
+   quantity.
+3. For products with variants, define the components per variant on the
+   **Kit Products** tab of the variant form.
 
-1. Mark the component products
-------------------------------
-
-1. Go to **Sales → Products → Products** (or **Inventory → Products →
-   Products**).
-2. Open each product that should act as a kit component.
-3. Under the **General Information** tab, in the *Options* area, tick
-   **Is a Kit Component**. **Can be Sold** is cleared automatically, so
-   components stay out of the regular sales catalog.
-4. Save.
-
-2. Define the kit product
--------------------------
-
-1. Open (or create) the product that represents the kit itself.
-2. Leave **Is a Kit Component** unticked and keep **Can be Sold**
-   active.
-3. Open the **Kit Products** tab.
-4. Add one line per component:
-
-   -  **Component Product** — the component flagged at step 1.
-   -  **Quantity** — how many units of that component the kit contains.
-   -  **Unit of Measure** — pulled from the component product.
-   -  **Price** — auto-computed as ``quantity * component list price``.
-
-5. Save. The kit's **Sales Price** and **Cost** are now computed from
-   the sum of its components.
-
-3. Per-variant kit definition (optional)
-----------------------------------------
-
-For products with variants, open a variant from the **Variants** smart
-button and use the **Kit Products** tab on the variant form to define a
-variant-specific component list.
-
-4. Browse all kits
-------------------
-
-The **Sales → Products → Product Kits** menu (Sales Manager group)
-provides a global list / pivot view of every kit line in the database.
+The **Sales > Products > Product Kits** menu is visible to the **Sales /
+Administrator** group.
 
 Usage
 =====
 
-Daily use
-=========
+1. Open a kit product: its **Sales Price** and **Cost** show the sum of
+   its components.
+2. Change a component's price or quantity; the kit price follows.
+3. Use the kit on quotations: with a pricelist, each component is priced
+   by the pricelist and the results are added up.
+4. Go to **Sales > Products > Product Kits** to review every kit line,
+   grouped by category, kit and component.
 
-Pricing behaviour
------------------
-
-Once a product has at least one entry in the **Kit Products** tab, its
-price stops behaving like a regular product:
-
--  **Sales Price (``lst_price``)** is recomputed as
-   ``sum(line.product_qty * component.lst_price)`` for every kit line.
-   Changing a component's list price flows through to the kit price
-   immediately.
--  **Cost (``standard_price``)** is aggregated the same way from each
-   component's cost.
--  When a **pricelist** is active in the context, the kit price is
-   rebuilt by calling the pricelist on each component (using the
-   component's own UoM, the requested quantity, the partner and the
-   date) and summing the results, instead of using the kit's flat list
-   price.
-
-Editing a kit
--------------
-
-To change what a kit contains, open the kit product and edit the lines
-in the **Kit Products** tab — add, remove or adjust quantities. The
-kit's price refreshes the next time prices are computed (form re-open,
-pricelist evaluation, report rendering, etc.).
-
-Browsing kits
--------------
-
-Use **Sales → Products → Product Kits** to see every component line
-across the database. The pivot view groups by category, template and
-product on rows and by component on columns, and measures **Quantity**
-and **Price**, which is useful for auditing kits that share the same
-components or for spotting outliers in component quantities.
-
-Behaviour on dependent modules
-------------------------------
-
-This module only defines the kit data and the price aggregation. To
-explode kit lines onto sale orders, install
-``nexterp_product_kit_sale``. To create one task per service component
-on confirmation, add ``nexterp_product_kit_sale_timesheet`` on top.
+To show the components on sales orders install
+``nexterp_product_kit_sale``.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.1.1.1 (2026-11-28)
+-----------------------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.1.1.0 (2026-11-06)
 -----------------------

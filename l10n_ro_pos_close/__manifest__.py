@@ -6,7 +6,7 @@
     "name": "Romania - POS Closing Differences",
     "summary": "Record the differences per payment method at the closing of a "
     "POS session and print the report that explains them",
-    "version": "20.0.1.0.0",
+    "version": "20.0.1.0.1",
     "license": "AGPL-3",
     "images": ["static/description/apps_icon.png"],
     "category": "Localization/Point of Sale",

@@ -11,11 +11,23 @@ NextERP - Allow Debt Recovery Invoice
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-This module allows you set a invoice as "Debt Recovery". A setting is
-available for each company in the Invocing Settings to allow/dissalow
-the behaviour. A new tab will be available to write down debt recovery
-terms. The payment state will be set as Debt Collector until the invoice
-will be paid. The receivable line will be blocked for next follow-ups.
+Follow overdue customer invoices that were handed over for debt
+recovery, right on the invoice. The invoice is clearly marked, keeps its
+own payment status until it is settled, and carries the details of the
+case.
+
+-  **Mark as Debt Recovery** button on unpaid or partly paid customer
+   invoices.
+-  A *Debt Recovery* ribbon and payment status on the invoice until it
+   is paid.
+-  **Debt Recovery** tab with status (*Notification* or *Lawyer*), case
+   date, law firm, amount in litigation, commission, penalties and
+   notes.
+-  **Debt Recovery** filter and **Payment Status** grouping on the
+   invoice list, optional **Debt Status** and **Case Date** columns.
+-  Payments can still be registered; the case is marked done once the
+   invoice is fully paid.
+-  Available for companies located in Romania, enabled per company.
 
 
 **Table of contents**
@@ -23,115 +35,57 @@ will be paid. The receivable line will be blocked for next follow-ups.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **One-click debt escalation** — a *Mark as Debt Recovery* server
-   action flags any customer invoice and shifts its payment state to
-   *Debt Collector* instantly.
--  **Dedicated Debt Recovery tab** on the invoice form — capture case
-   date, law reference, debt amount, commission, and penalties
-   separately from the original invoice.
--  **Two-stage debt status** — track whether the case is at
-   *Notification* or *Lawyer* stage via the ``debt_state`` field.
--  **Follow-up blocking** — the receivable journal item is blocked from
-   automatic follow-up sequences while the invoice is in debt recovery.
--  **Company-level toggle** — enable or disable debt recovery
-   functionality per company from **Invoicing → Configuration →
-   Settings**.
--  **List view & search integration** — filter and spot debt-recovery
-   invoices at a glance from the standard invoice list.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 18.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Allow Debt Recovery Invoice" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Go to **Invoicing > Configuration > Settings**.
+2. In the **Customer Invoices** section, tick **Allow Debt Recovery on
+   Invoice**.
+3. Click **Save**.
 
-Enable Debt Recovery per Company
+The option is per company; the debt recovery buttons appear only on
+invoices of companies located in Romania. Users need the usual invoicing
+rights to use them.
+
+Usage
+=====
+
+Send an invoice to debt recovery
 --------------------------------
 
-1. Go to **Invoicing → Configuration → Settings**.
-2. Scroll to the **Debt Recovery** section.
-3. Enable **Allow Debt Recovery on Invoice**
-   (``account_allow_debt_recovery_invoice``).
-4. Click **Save**.
+1. Open an unpaid or partly paid customer invoice from **Invoicing >
+   Customers > Invoices**.
+2. Click **Mark as Debt Recovery**. The invoice gets the *Debt Recovery*
+   ribbon and payment status.
+3. Open the **Debt Recovery** tab and fill in **Debt Status**, **Case
+   Date**, **Law Firm**, **Amount in Litigation**, **Commission (%)**,
+   **Penalties (%)** and the notes.
+4. Save.
 
-..
+Follow the cases
+----------------
 
-   This setting is stored on ``res.company`` and must be enabled for
-   each company independently. When it is off, the Debt Recovery
-   controls are hidden from invoice forms for that company.
+1. In **Invoicing > Customers > Invoices**, use the **Debt Recovery**
+   filter.
+2. Group by **Payment Status**, or show the **Debt Status** and **Case
+   Date** columns from the optional columns menu.
 
-Usage
-=====
+Close a case
+------------
 
-Usage
-=====
-
-Marking an Invoice for Debt Recovery
-------------------------------------
-
-1. Go to **Invoicing → Customers → Invoices** and open the overdue
-   invoice you want to send to debt recovery.
-2. Click the **Mark as Debt Recovery** server action (available from the
-   action menu or the form button).
-
-   -  The ``debt_recovery`` flag is set to ``True`` on the
-      ``account.move`` record.
-   -  The ``payment_state`` is updated to reflect *Debt Collector*
-      status, blocking the receivable line from further follow-up
-      sequences.
-
-3. Switch to the **Debt Recovery** tab on the invoice form to fill in
-   the case details:
-
-   -  **Debt Status** (``debt_state``) — choose ``Notification`` (first
-      contact) or ``Lawyer`` (escalated).
-   -  **Debt Case Date** (``debt_case_date``) — the date the case was
-      opened.
-   -  **Law Reference** (``debt_law``) — optional legal act or case
-      number.
-   -  **Debt Amount** (``debt_amount``), **Commission**
-      (``debt_commission``), **Penalties** (``debt_penalties``) —
-      monetary breakdowns tracked separately from the original invoice
-      amount.
-   -  **Debt Recovery Text** (``debt_recovery_text``) — free-text field
-      for terms, notes or correspondence history.
-
-4. Save the record. The invoice list view now shows the debt recovery
-   status, and the search panel includes a **Debt Recovery** filter for
-   quick reporting.
-
-Marking a Debt as Resolved
---------------------------
-
-1. Once the invoice is paid or the debt is settled, open the invoice.
-2. Tick **Debt Recovery Done** (``debt_recovery_done``) on the Debt
-   Recovery tab.
-3. The ``payment_state`` recomputes normally and the receivable line is
-   unblocked.
+1. When money comes in, click **Pay** on the invoice and register the
+   payment.
+2. Once the invoice is fully paid, **Debt Recovery Done** is ticked on
+   the **Debt Recovery** tab automatically.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.0.1.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.0.1.0 (2026-11-06)
 -----------------------

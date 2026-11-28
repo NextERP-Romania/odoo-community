@@ -3,7 +3,7 @@
 {
     "name": "Romania - E-invoicing Self-Invoices",
     "summary": "Take in the self-invoices customers issue in your name from the SPV",
-    "version": "20.0.1.1.1",
+    "version": "20.0.1.1.2",
     "category": "Accounting/Localizations/EDI",
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",

@@ -1,7 +1,7 @@
 {
     "author": "NextERP Romania",
     "name": "Romania - E-invoicing Storno Credit Notes",
-    "version": "20.0.1.0.0",
+    "version": "20.0.1.0.1",
     "category": "Accounting/Localizations/EDI",
     "summary": "Send customer credit notes to ANAF as invoice 380 with negative values",
     "website": "https://www.nexterp.ro",

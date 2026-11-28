@@ -11,41 +11,29 @@ Romania - POS Closing Differences
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-A session of a point of sale is closed by counting: the cashier
-declares, for each payment method, the amount actually in hand. Odoo
-compares that with what the register recorded, posts the gap to the
-profit or loss account of the journal, and keeps neither number. What is
-left in the database is a correction entry nobody can read back.
+When a point of sale session is closed, the cashier counts what is in
+hand for each payment method and Odoo posts the difference. The module
+keeps that count and explains it: what was expected, what was counted,
+why they differ, in a report the shop can sign and file.
 
-A shop has to be able to say *why*. The common case is not a missing leu
-but a misplaced one: an order cashed in on the card method while the
-customer paid in cash, which leaves the card short by exactly what the
-drawer holds too much. The takings are complete, their split between the
-payment methods is not, and somebody has to state that in writing.
+The most common case is not missing money but money recorded on the
+wrong method, such as a cash payment entered as card. The takings are
+complete, only their split is wrong, and the report says so in writing.
 
-This module keeps the closing control and turns it into that statement:
-
--  when a session is closed, one line per payment method records what
-   the register expected, what the cashier counted and the difference
-   between them. Methods the register did not count are left out, as
-   core leaves them out of the reconciliation;
--  the closing popup of the register asks the cashier, for every method
-   that did not match, what happened: a cause and a sentence of
-   explanation. That is the moment somebody still knows, and the closing
-   note typed in the same popup -- which Odoo collects and then drops on
-   the way to the server -- is kept with it;
--  a session that did not match is flagged in the chatter, method by
-   method, as soon as it closes, and what was not explained at the
-   register can be completed afterwards from the session;
--  **Report of Differences** prints the lot as the record a Romanian
-   shop files for it (*proces verbal de constatare a diferențelor la
-   închiderea sesiunii de casă*): the methods, the amounts, the causes,
-   the note and the signatures. When the surpluses cover the shortages
-   in full, the report says so in as many words: the takings are whole,
-   only recorded on the wrong method.
-
-The accounting itself is untouched. Core posts the differences as it
-always did; this module only explains them.
+-  **Closing control per payment method**: expected amount, counted
+   amount and difference, kept on the session.
+-  **Asked at the register**: for each method that does not match, the
+   closing popup asks for a cause and an explanation, while somebody
+   still remembers.
+-  **Closing note kept**: the note typed in the closing popup is saved.
+-  **Flagged in the chatter**: a session closed out of balance lists the
+   methods that did not match.
+-  **Completed later**: what was not explained at the register can be
+   added from the session.
+-  **Report of Differences**: methods, amounts, causes, note and
+   signatures, stating clearly when surpluses cover shortages.
+-  **Accounting unchanged**: differences are posted as before; the
+   module only explains them.
 
 
 **Table of contents**
@@ -53,187 +41,51 @@ always did; this module only explains them.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Closing control model** — ``l10n.ro.pos.closing.line`` holds, per
-   session and payment method, ``expected_amount``, ``counted_amount``,
-   the computed ``difference`` (counted less expected, so a positive
-   amount is a surplus), the ``reason`` and a free ``note``.
--  **Capture on the way through** — ``close_session_from_ui`` flags the
-   call and ``_handle_cash_statement_entries`` writes the lines just
-   before core posts the cash correction, which is the last moment the
-   drawer is still the one the cashier counted and the sales have
-   already reached the statement.
--  **Expected amount** — the payments of the session for a bank method,
-   the end balance of the cash statement for the cash method: the same
-   figures core compares the count against.
--  **Methods left out** — a bank method the register did not send is
-   skipped, as core skips its reconciliation; the cash method is always
-   controlled, an uncounted drawer counting as empty. Methods that are
-   neither cash nor bank (pay later) are not controlled at all.
--  **Session totals** — ``l10n_ro_closing_surplus``,
-   ``l10n_ro_closing_shortage``, ``l10n_ro_closing_difference`` and
-   ``l10n_ro_has_closing_difference`` are stored on ``pos.session``, so
-   differences can be searched and grouped.
--  **Asked at the register** — the closing popup gains, for each payment
-   method whose count does not match, a cause and an explanation. They
-   are sent by ``l10n_ro_set_closing_explanations`` just before core
-   closes the session, parked on ``l10n_ro_closing_explanations`` and
-   written on the control lines as they are created. The cause is
-   checked against the selection, since it comes from a browser.
--  **The closing note is no longer lost** — core's popup collects a
-   closing note and never sends it; the same call stores it on
-   ``closing_notes`` (which the daily sale report already prints) and on
-   the explanatory note of the report of differences.
--  **Chatter notice** — a session closed out of balance posts the list
-   of the methods that did not match, with the amounts.
--  **Explanatory note wizard** — ``l10n.ro.pos.closing.note`` writes the
-   cause and the explanation of each line and the note of the session,
-   for what was not said at the register or has to be corrected. The
-   session form is read only in core, so the wizard is how they are
-   filled in.
--  **Report** — ``Report of Differences``, a QWeb PDF on
-   ``pos.session``: the register, the cashier, the control table with
-   the differences first, the surplus / shortage / net totals, the note
-   and the signature block. A closing whose surpluses cover its
-   shortages is stated as such.
-
 Configuration
 =============
 
-Configuration
-=============
+Nothing to configure: the control starts with the first session closed
+after installation.
 
-The module ships with no settings page: it starts working at the first
-session closed after it is installed.
-
-Access rights
--------------
-
--  **Point of Sale / User** reads and writes the closing control lines,
-   so a cashier can state the cause of their own differences, and can
-   open the explanatory note wizard.
--  **Point of Sale / Administrator** can also delete them.
-
-The lines are restricted to the companies of the user by a record rule
-on ``company_id``, which follows the company of the session.
-
-Payment methods
----------------
-
-Only the payment methods of the register that are of type **Cash** or
-**Bank** are controlled. A method of type **Customer Account** (pay
-later) is not counted at closing and is left out of the report.
-
-If a register has more than one bank method — a card terminal and a meal
-voucher method, say — each is controlled separately, which is what makes
-a payment recorded on the wrong one visible.
+-  **Point of Sale / User** can fill in the causes and the explanatory
+   note; **Point of Sale / Administrator** can also delete control
+   lines.
+-  Only payment methods of type *Cash* or *Bank* are controlled;
+   *Customer Account* methods are left out. Several bank methods on one
+   register (card terminal, meal vouchers) are controlled separately.
 
 Usage
 =====
 
-Daily use
-=========
+1. **Close the session** at the register as usual. If a counted amount
+   differs from the expected one, the closing popup shows **Differences
+   found**: for each method choose a cause (*Takings recorded on another
+   payment method*, *Counting error at closing*, *Takings missing*,
+   *Surplus without a known origin* or *Other*) and type an explanation.
+   Nothing is mandatory.
+2. **Review the session** in **Point of Sale > Orders > Sessions**: the
+   **Closing Differences** tab shows, per method, **Recorded**,
+   **Counted** and **Difference** (a positive difference is a surplus),
+   with the surplus, shortage and net totals; the chatter lists the
+   methods that did not match.
+3. **Complete the explanation** with **Explanatory Note** in the header:
+   adjust the cause and explanation of each line and the note of the
+   session, then **Save** or **Save and Print**.
+4. **Print** with **Report of Differences**: register, cashier, times,
+   control table, totals, causes, note and signature block for the
+   cashier, the shop manager and the accountant.
 
-The cashier closes the session as before, declaring what is in hand for
-each payment method. What is new is one question asked at that moment,
-for the methods that do not match, and a document that can be printed
-afterwards.
-
-1. Explain the difference at the register
------------------------------------------
-
-As soon as a counted amount differs from what the register recorded, the
-closing popup shows a **Differences found** section under the counts,
-with one line per payment method that did not match:
-
--  the method and the difference, so there is no doubt which one is
-   meant;
--  a **cause**: *Takings recorded on another payment method*, *Counting
-   error at closing*, *Takings missing*, *Surplus without a known
-   origin* or *Other*;
--  an **explanation** in free text, printed as typed on the report.
-
-The **Closing note** of the same popup is the note of the whole closing,
-and it is printed at the end of the report. Until now Odoo collected it
-and threw it away on the way to the server; it is now kept, both for
-this report and for the daily sale report that already printed it.
-
-Nothing is mandatory: a cashier in a hurry closes as before, and the
-back office completes what is missing at step 3.
-
-2. See that a session did not match
------------------------------------
-
-Open **Point of Sale → Orders → Sessions** and pick the closed session.
-A session with differences carries:
-
--  a chatter message listing the payment methods that did not match and
-   by how much, posted when the session closed;
--  a **Closing Differences** tab with one line per controlled payment
-   method: **Recorded**, **Counted** and **Difference**, the lines in
-   red being the ones that did not match;
--  the **Surplus**, **Shortage** and **Net difference** totals of the
-   session.
-
-A difference is read as counted less recorded: a positive amount is
-money in hand above what the register knows about, a negative one money
-missing from it.
-
-3. Complete or correct the explanation
---------------------------------------
-
-Click **Explanatory Note** in the header. The wizard lists the same
-lines, already carrying what was typed at the register, with two columns
-to fill in:
-
--  **Cause** — one of *Takings recorded on another payment method*,
-   *Counting error at closing*, *Takings missing*, *Surplus without a
-   known origin* or *Other*.
--  **Explanation** — the sentence printed on the report, for instance:
-   *the order of 120 lei was cashed in on the card method while the
-   money was taken in cash*.
-
-Below them, the **Explanatory Note** of the session covers the closing
-as a whole. **Save** keeps everything on the session; **Save and Print**
-goes straight to the report.
-
-4. Print the report of differences
-----------------------------------
-
-**Report of Differences**, in the header of the session or in its
-**Print** menu, renders the PDF: the register and the cashier, the
-opening and closing times, the control table with the differences first,
-the totals, the causes and explanations, the note, and the signature
-block for the cashier, the shop manager and the accountant.
-
-When the surpluses cover the shortages to the last leu, the report
-states it: the takings of the session are complete, and the differences
-are only amounts recorded on a payment method other than the one the
-money came in on. That is the paragraph the file needs for a card
-payment that was in fact cash.
-
-5. What is not covered
-----------------------
-
-The accounting of the differences is core's: the gap of a bank method is
-posted to the profit or loss account of its journal, the gap of the cash
-method is a correction line on the cash statement. The report explains
-those entries, it does not replace them, and it does not move an amount
-from one payment method to another.
-
-Sessions closed before the module was installed carry no control lines;
-printing their report says so instead of printing an empty one.
+Sessions closed before installation have no control lines; their report
+says so.
 
 Changelog
 =========
 
-Changelog
-=========
+20.0.1.0.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 20.0.1.0.0 (2026-10-02)
 -----------------------
