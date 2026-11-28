@@ -35,7 +35,6 @@ addon | version | maintainers | summary
 [nexterp_sale_task_create](nexterp_sale_task_create/) | 20.0.1.0.1 | <a href='https://github.com/feketemihai'><img src='https://github.com/feketemihai.png' width='32' height='32' style='border-radius:50%;' alt='feketemihai'/></a> | NextERP - Auto Create Sale Tasks
 [nexterp_sale_update_price_auto](nexterp_sale_update_price_auto/) | 20.0.1.0.1 | <a href='https://github.com/feketemihai'><img src='https://github.com/feketemihai.png' width='32' height='32' style='border-radius:50%;' alt='feketemihai'/></a> | NextERP - Sale Update Prices Auto
 [nexterp_stock_inventory](nexterp_stock_inventory/) | 20.0.1.1.0 | <a href='https://github.com/feketemihai'><img src='https://github.com/feketemihai.png' width='32' height='32' style='border-radius:50%;' alt='feketemihai'/></a> | Stock Inventory
-[web_simulation](web_simulation/) | 20.0.1.0.0 | <a href='https://github.com/feketemihai'><img src='https://github.com/feketemihai.png' width='32' height='32' style='border-radius:50%;' alt='feketemihai'/></a> | Run a document's buttons without saving, and see what they would do to stock and to the books
 
 
 Unported addons
