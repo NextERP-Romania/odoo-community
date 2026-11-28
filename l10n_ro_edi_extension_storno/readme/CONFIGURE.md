@@ -1,7 +1,6 @@
-# Configuration
+1. Go to **Invoicing > Configuration > Settings**, section **Romanian
+   E-Factura**.
+2. Enable **Credit Notes as Invoice 380**.
 
-1. Go to **Settings → Accounting**, section **Romanian E-Factura**.
-2. Enable **Send Credit Notes as Invoice 380 with negative values**.
-
-The setting is per company. Accounting entries are not changed: the credit
-note stays an `out_refund` in Odoo, only the XML sent to ANAF changes.
+The setting applies to the current company only. Companies where it is not
+enabled keep sending regular credit notes.

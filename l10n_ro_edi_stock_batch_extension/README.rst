@@ -11,57 +11,23 @@ Romania - eTransport Batch Extension
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Romania - eTransport Batch Extension
-====================================
+Brings the eTransport improvements of ``l10n_ro_edi_stock_extension`` to
+batch transfers, so a shipment of several transfers declared with a
+single notification is filled in and followed exactly like a single
+transfer.
 
-Extends eTransport (e-Transport) EDI notifications to **batch
-transfers** (``stock.picking.batch``), bringing the full feature set of
-``l10n_ro_edi_stock_extension`` to multi-picking shipments declared
-together to ANAF.
-
-By default, the base ``l10n_ro_edi_stock_batch`` module can send a
-single UIT notification for a batch, but it lacks the stricter
-validation and enrichment that ``l10n_ro_edi_stock_extension`` provides
-for individual transfers. This module bridges that gap: a batch
-notification sent through this module is treated identically to a
-single-transfer notification, satisfying ANAF Schematron v2.0.2
-requirements.
-
-What this module provides
--------------------------
-
--  **Schematron v2.0.2 validation for batches** — operation scope vs
-   operation type, partner country code, mandatory tariff code
-   (``codTarifar`` / NC8), weights, values, and previous notification
-   references for operations 60/70.
--  **Configurable price source** (``l10n_ro_edi_stock_price_source``) on
-   the batch — choose between *Automatic (by operation)*, *Cost price*,
-   *Purchase order price*, *Sale order price*, or *Product list price*
-   to drive the ``valoareLeiFaraTva`` field sent to ANAF.
--  **Correct per-move data**: net and gross weight computation, quantity
-   and unit of measure (``_l10n_ro_edi_stock_get_qty_and_uom``), and NC8
-   tariff code (``_l10n_ro_edi_stock_get_codtarifar``).
--  **Street / number split** on location addresses
-   (``_l10n_ro_edi_stock_split_street``) per ANAF schema.
--  **Multiple transport document entries**
-   (``l10n_ro_edi_stock_document_line_ids``) and **previous notification
-   entries** (``l10n_ro_edi_stock_previous_ids``) directly on the batch
-   form.
--  **Post-outage declaration flag** (``l10n_ro_edi_stock_post_outage``)
-   — OUG 41/2022 art. 8 par. 1³, allowing late declaration until end of
-   the next working day after ANAF system recovery.
--  **Full ANAF action wizard** on the batch form — *Send*, *Delete*,
-   *Confirm*, and *Modify Vehicle* actions
-   (``l10n.ro.edi.stock.action.wizard``) extended to work against a
-   ``stock.picking.batch`` instead of a single picking.
--  **Batch UIT reconciliation** in the ANAF LIST cron job — batch UITs
-   are picked up alongside individual transfer UITs during the scheduled
-   sync (``_l10n_ro_edi_stock_list_sync_one``).
-
-Technically, the batch record is injected as the ``_picking_record``
-consumed by ``l10n_ro_edi_stock_extension``'s validation and XML
-template pipeline, implementing the same helper interface so no
-duplicate logic is needed.
+-  **Same checks and data**: values, quantities, weights, customs tariff
+   codes and addresses computed as for a transfer.
+-  **Price source per batch**: cost, purchase order, sale order or sales
+   price.
+-  **Transport documents and previous notifications** on the batch.
+-  **Post-outage declaration** on the batch.
+-  **Delete, Confirm transport and Modify vehicle** from the batch, each
+   waiting for ANAF's answer.
+-  **Included in the notifications list synchronization** with ANAF.
+-  **Protected batches**: a batch whose notification is alive at ANAF
+   cannot be deleted or cancelled, and its transfers cannot be added or
+   removed by hand.
 
 
 **Table of contents**
@@ -69,101 +35,40 @@ duplicate logic is needed.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Full eTransport parity for batch transfers** — batch notifications
-   go through the same ANAF Schematron v2.0.2 validation as individual
-   transfer notifications.
--  **Configurable price source per batch** — drive ``valoareLeiFaraTva``
-   from cost, purchase order, sale order, or list price.
--  **Correct weights, UoM, and NC8 tariff codes** computed per move
-   within the batch.
--  **Street/number address split** on location addresses, satisfying
-   ANAF schema requirements.
--  **Multiple transport documents and previous notifications** on the
-   batch form for operations 60/70.
--  **Post-outage declaration flag** (OUG 41/2022 art. 8 par. 1³)
-   directly on the batch.
--  **Delete / Confirm / Modify Vehicle** ANAF actions available on the
-   batch form via the shared action wizard.
--  **Batch UIT reconciliation** included in the scheduled ANAF LIST sync
-   cron job automatically.
-
 Configuration
 =============
 
-Configuration
-=============
+No configuration of its own. It is installed automatically when both
+``l10n_ro_edi_stock_batch`` and ``l10n_ro_edi_stock_extension`` are
+installed, and uses their settings (ANAF connection, **Default
+eTransport Price Source**, notifications list synchronization).
 
-This module requires no dedicated configuration steps beyond installing
-its two dependencies (``l10n_ro_edi_stock_batch`` and
-``l10n_ro_edi_stock_extension``). All configuration required for those
-modules (ANAF credentials, eTransport product settings, warehouse
-addresses) applies equally to batch transfers.
-
-The only batch-specific setting is the **eTransport Price Source** field
-on each batch transfer form, which defaults to *Automatic (by
-operation)* via ``_l10n_ro_edi_stock_default_price_source``. Change it
-per batch as needed before sending the notification.
+Optionally, in developer mode, activate the scheduled action
+**eTransport: fetch ANAF status of batch transfers** in **Settings >
+Technical > Automation > Scheduled Actions**.
 
 Usage
 =====
 
-Usage
-=====
-
-This module extends the existing eTransport workflows on batch
-transfers. The steps below assume ``l10n_ro_edi_stock_batch`` and
-``l10n_ro_edi_stock_extension`` are already in use for individual
-transfers.
-
-Sending an eTransport notification from a batch transfer
---------------------------------------------------------
-
-1. Navigate to **Inventory → Operations → Batch Transfers** and open (or
-   create) the batch you want to declare.
-2. On the batch form, locate the **eTransport** section (added by this
-   module).
-3. Set **eTransport Price Source** (``l10n_ro_edi_stock_price_source``)
-   to the value appropriate for the shipment — e.g. *Purchase order
-   price* for inbound goods.
-4. If the transport is a continuation or correction of a previous
-   notification (operations 60/70), add entries under **Previous
-   Notifications** (``l10n_ro_edi_stock_previous_ids``).
-5. Add any accompanying **Transport Documents**
-   (``l10n_ro_edi_stock_document_line_ids``) (CMR, waybill, etc.).
-6. If the notification could not be sent during an ANAF outage, tick
-   **Post-Outage Declaration** (``l10n_ro_edi_stock_post_outage``).
-7. Click the **Send eTransport** button (from the action wizard). The
-   wizard (``l10n.ro.edi.stock.action.wizard``) validates the batch data
-   against ANAF Schematron v2.0.2 and uploads the XML. The returned UIT
+1. Open the batch in **Inventory > Operations > Jobs > Batch Transfers**
+   and go to the **eTransport** tab.
+2. Check **eTransport Price Source**, add the **Transport documents**,
+   the previous notifications if the operation needs them, and tick
+   **Post-Outage Declaration** if needed.
+3. Click **Check eTransport**, then click **Send eTransport**. The UIT
    is stored on the batch.
-
-Modifying vehicle or deleting/confirming a previously sent notification
------------------------------------------------------------------------
-
-1. Open the batch transfer that already has a UIT.
-2. Use the **Delete**, **Confirm**, or **Modify Vehicle** actions
-   available on the batch form (same wizard, ``batch_id``-aware branch).
-3. ANAF's response is logged on the chatter.
-
-Monitoring batch UITs via the ANAF LIST cron
---------------------------------------------
-
-The scheduled action **eTransport — ANAF LIST sync** (defined in
-``l10n_ro_edi_stock``) automatically reconciles batch UITs alongside
-individual transfer UITs. No extra configuration is needed — batches are
-included in ``_l10n_ro_edi_stock_list_sync_one`` automatically.
+4. Later, use **Delete notification**, **Confirm transport** or **Modify
+   vehicle** on the batch; ANAF's answer is fetched with **Fetch
+   Status** or by the scheduled action and noted in the chatter.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.1.8.4
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.3.0 (2026-11-05)
 -----------------------
@@ -190,10 +95,9 @@ Changelog
 -----------------------
 
 -  Keep a picking sendable to eTransport while its batch is still in
-   progress and has not been notified itself.
-   ``l10n_ro_edi_stock_batch`` disables eTransport on every picking
-   belonging to a batch, which defeated sending the notification before
-   the goods move.
+   progress and has not been notified itself. The base localization
+   disabled eTransport on every transfer of a batch, which prevented
+   sending the notification before the goods moved.
 
 19.0.1.0.0 (2026-06-23)
 -----------------------

@@ -11,11 +11,18 @@ NextERP - Analytic Distribution Models by Journal
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-This module adds a **Journal** field on analytic distribution models.
+Analytic distribution models fill in the analytic distribution of
+journal items automatically, based on the account, partner, product and
+so on. This module adds the **Journal** as one more criterion, so a
+model can apply only to what is posted in one journal.
 
-A model pinned to a journal is only applied to journal items posted in
-that journal; items from any other journal ignore it. Models left
-without a journal keep applying everywhere, as before.
+-  A **Journal** field on every analytic distribution model, in the form
+   and as a column in the list.
+-  A model with a journal applies only to items posted in that journal;
+   items from other journals ignore it.
+-  Models without a journal keep applying everywhere, as before.
+-  Useful to split costs differently per sales channel, purchase
+   journal, bank or miscellaneous journal without extra rules.
 
 
 **Table of contents**
@@ -23,107 +30,45 @@ without a journal keep applying everywhere, as before.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Journal-scoped analytic distribution** — pin any analytic
-   distribution model to a specific journal so it fires only for lines
-   posted in that journal.
--  **Fully backward-compatible** — models with no journal set continue
-   to apply to all journals, preserving existing behaviour.
--  **No extra configuration** — the ``journal_id`` field is added
-   directly to the existing ``account.analytic.distribution.model`` form
-   and list views.
--  **Granular cost allocation** — separate analytic plans per journal
-   type (e.g. sales vs. purchases vs. bank) without writing custom code.
--  **Lightweight extension** — depends only on the standard ``account``
-   module; no additional apps required.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 19.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Analytic Distribution Models by Journal" in
-   your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Make sure analytic accounting is enabled: **Invoicing > Configuration
+   > Settings**, section **Analytics**, option **Analytic Accounting**.
+2. Go to **Invoicing > Configuration > Analytic Distribution Models**.
+3. Open a model (or create one) and choose the **Journal** it is meant
+   for.
+4. Save.
 
-No dedicated configuration steps are required beyond installing the
-module. The **Journal** field is immediately available on every analytic
-distribution model record.
-
-If you manage many models and want to review which ones are
-journal-restricted:
-
-1. Go to **Accounting → Configuration → Analytic Distribution Models**.
-2. The list view now includes a **Journal** column. Use the built-in
-   **Group By** or **Filter** controls to sort or filter models by
-   journal.
-3. Adjust the **Journal** field on each model as needed and save.
+Leave **Journal** empty on the models that should keep applying to every
+journal. The **Journal** column of the list can be used to group or
+filter the models.
 
 Usage
 =====
 
-Usage
-=====
+1. Create or open a document whose lines are posted in a journal pinned
+   on a model, for example a vendor bill in the journal chosen on the
+   model.
+2. Fill in the lines as usual: the analytic distribution of the model is
+   set on the matching lines.
+3. Post the same kind of line in another journal: the pinned model is
+   ignored and only the models without a journal (or pinned to that
+   journal) apply.
 
-Pinning an Analytic Distribution Model to a Journal
----------------------------------------------------
-
-1. Go to **Accounting → Configuration → Analytic Distribution Models**.
-2. Open an existing model or click **New** to create one.
-3. In the **Journal** field, select the journal (e.g. *Customer
-   Invoices*, *Vendor Bills*, *Bank*) to which this model should be
-   restricted.
-4. Save the record.
-
-From this point on, when Odoo auto-applies analytic distributions to
-journal items (``account.move.line``), the model will only match lines
-that belong to the selected journal. Lines posted in any other journal
-will skip this model entirely.
-
-Leaving a Model Journal-agnostic
---------------------------------
-
-If the **Journal** field is left empty, the model behaves exactly as in
-standard Odoo — it is applied to journal items from **all** journals,
-just as before installation of this module.
-
-Typical scenario
-----------------
-
-You have two cost centres and want:
-
--  *Project costs* analytic plan → applied only to lines in the **Vendor
-   Bills** journal.
--  *Operating expenses* analytic plan → applied to every other journal.
-
-Steps:
-
-1. Open the *Project costs* distribution model and set **Journal** =
-   ``Vendor Bills``.
-2. Leave the *Operating expenses* model's **Journal** field blank.
-3. Post a vendor bill — only the *Project costs* model fires.
-4. Post a bank payment — only the *Operating expenses* model fires.
+Example: a *Project costs* model pinned to the vendor bills journal and
+an *Operating expenses* model with no journal. A vendor bill picks up
+*Project costs*; a bank or miscellaneous entry picks up only *Operating
+expenses*.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.1.0.2
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.1 (2026-09-28)
 -----------------------

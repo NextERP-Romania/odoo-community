@@ -11,24 +11,18 @@ NextERP - Conformity Certificate
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-``nexterp_conformity_report`` adds a *Certificate of Conformity*
-(declarație de conformitate) PDF report on ``stock.picking``. The report
-is attached as a print binding on the picking form, so it is available
-from the standard **Print** menu for any delivery in the *Done* state.
+Print a *Certificate of Conformity* for every delivery, ready to be
+signed when the goods are handed over.
 
-The certificate is structured around the data already present on the
-delivery: customer information, picking number, dispatch date, the
-related sale order reference (and the customer order reference, when
-filled). It then lists every move line of the picking — product name,
-custom customer product code, lot number, unit of measure, quantity
-shipped and minimum shelf life (lot expiration date) — followed by a
-boilerplate declaration in which the issuing company guarantees that the
-delivered products meet food-safety regulations.
-
-A signature block for the agent, delegate (with means of transport), and
-a "shipment made in our presence" line are rendered at the bottom so the
-document is ready to be signed at hand-over. The module depends on
-``sale_stock`` and on ``l10n_ro_stock_picking_comment_template``.
+-  Available from the **Print** menu of any done delivery.
+-  Customer details, delivery number and date, sales order and customer
+   reference in the header.
+-  One row per delivered line: product, customer product code, lot, unit
+   of measure, quantity and minimum shelf life (lot expiration date).
+-  A conformity declaration issued by your company, followed by
+   signature blocks for the agent and the delegate, with the means of
+   transport.
+-  Printed in the language of your company.
 
 
 **Table of contents**
@@ -36,159 +30,37 @@ document is ready to be signed at hand-over. The module depends on
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  Adds a new QWeb-PDF action **Conformity Report** on
-   ``stock.picking``, available as a print binding
-   (``binding_type=report``) from the picking form *Print* menu.
--  Header block prints the customer address, VAT number (using the
-   fiscal country's VAT label) and the trade-register number (``nrc``).
--  Title block shows the picking number, the dispatch date (uses
-   ``l10n_ro_accounting_date`` when present, otherwise ``date_done`` /
-   ``scheduled_date``) and the related sale order or customer order
-   reference (``client_order_ref``).
--  Move-line table renders one row per ``move.line`` with: row number,
-   product name, customer-specific product code (read from
-   ``product.customer_ids`` when the field exists), lot number, UoM,
-   quantity done and lot **expiration date** as minimum shelf life.
--  Conformity declaration paragraph cites the company name, city and
-   street and the picking name + date.
--  Footer signature block with agent details, sale order reference and a
-   delegate panel (name, ID, means of transport ``l10n_ro_mean_transp``,
-   date / hour and dual signature lines).
--  Report is rendered in the company partner language; the file name
-   follows the pattern ``Conformity_Report - <picking name>.pdf``.
--  The certificate body is only rendered for pickings in state ``done``.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 17.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Conformity Certificate" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Go to **Settings > Users & Companies > Companies**, open your company
+   and check that its name, street and city are filled in: they are
+   printed in the declaration.
+2. Fill in the VAT and trade register number on your customers so they
+   appear under the customer address.
+3. For the **Lot** and **Minimum shelf life** columns, track the
+   products by lots and set an expiration date on the lots.
 
-The report is registered as ``ir.actions.report`` with
-``binding_model_id = stock.picking``, so no specific configuration menu
-is exposed. After installing the module, the **Conformity Report** entry
-appears automatically under the **Print** menu of every transfer form.
-
-1. Company information
-----------------------
-
-The declaration paragraph at the bottom of the PDF reads the issuing
-company partner. Make sure the following fields are filled, otherwise
-the corresponding parts of the sentence will print blank:
-
-1. Go to **Settings -> Companies -> Companies** (or **Settings -> Users
-   & Companies -> Companies**).
-2. Open the company and verify:
-
-   -  **Name** — printed at the start of the declaration.
-   -  **City** and **Street** — printed in the company address part of
-      the declaration.
-
-2. Romanian localization fields (optional but recommended)
-----------------------------------------------------------
-
-The template reads several optional Romanian-localization fields if they
-exist on the picking and partner. Filling them improves the output:
-
-+-----------------------+-------------------+-----------------------+
-| Field                 | Source            | Used for              |
-+=======================+===================+=======================+
-| ``l10n                | ``stock.picking`` | Dispatch date in the  |
-| _ro_accounting_date`` |                   | header and            |
-|                       |                   | declaration           |
-+-----------------------+-------------------+-----------------------+
-| ``                    | ``stock.picking`` | Name of the delegate  |
-| l10n_ro_delegate_id`` |                   | in the signature      |
-|                       |                   | block                 |
-+-----------------------+-------------------+-----------------------+
-| ``                    | ``stock.picking`` | Means of transport in |
-| l10n_ro_mean_transp`` |                   | the signature block   |
-+-----------------------+-------------------+-----------------------+
-| ``nrc``               | ``res.partner``   | Trade register number |
-|                       |                   | under the customer    |
-|                       |                   | address               |
-+-----------------------+-------------------+-----------------------+
-| ``vat``               | ``res.partner``   | VAT / Tax ID under    |
-|                       |                   | the customer address  |
-+-----------------------+-------------------+-----------------------+
-
-3. Lot tracking
----------------
-
-Quantities are listed from ``move_line_ids``. For the **Lot No.** and
-**Minimum shelf life** columns to be populated, the products must be
-tracked by lot and the corresponding ``stock.lot`` records must carry an
-``expiration_date``.
+The delegate and the means of transport come from the Romanian delivery
+fields provided by ``l10n_ro_stock_picking_comment_template``.
 
 Usage
 =====
 
-Daily use
+1. Open a delivery from **Inventory > Operations > Transfers** or from
+   the **Delivery** button of a sales order.
+2. Validate it so it reaches the *Done* state.
+3. Click **Print > Conformity Report**.
+4. Hand the PDF over with the goods or send it to the customer.
+
+Changelog
 =========
 
-The Certificate of Conformity is intended to be printed together with
-the delivery slip whenever goods leave the warehouse and the customer
-requires a sanitary / food-safety declaration.
-
-Printing the certificate
-------------------------
-
-1. Open a delivery from **Inventory -> Operations -> Transfers** (or
-   from the sale order's *Delivery* smart button).
-2. Validate the picking so it reaches the **Done** state — the report
-   body only renders for ``state == 'done'``.
-3. From the picking form, click **Print -> Conformity Report**.
-4. Odoo generates a PDF named ``Conformity_Report - <picking name>.pdf``
-   and downloads it. The file can be attached to the delivery or sent to
-   the customer.
-
-What appears on the PDF
+19.0.1.0.1 (2026-11-28)
 -----------------------
 
--  **Header**: customer address, VAT, trade register.
--  **Title block**: *Certificate of Conformity*, picking series /
-   number, dispatch date, order number (sale order or customer
-   reference).
--  **Move-line table**: one row per move line, with row number, product,
-   customer product code, lot number, UoM, quantity done and lot
-   expiration date.
--  **Declaration**: the issuing company guarantees that the listed
-   products do not endanger life or health and comply with the sanitary
-   / veterinary food-safety legislation in force.
--  **Signature block**: agent, supplier code and sale order on the left;
-   shipping information, delegate name, ID, means of transport, date /
-   hour and signature lines on the right.
-
-Language
---------
-
-The report is rendered with ``lang = company.partner_id.lang``, so the
-certificate language follows the company's own configured language
-(useful when the customer language differs from the company language).
-
-Changelog
-=========
-
-Changelog
-=========
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.0 (2026-05-25)
 -----------------------

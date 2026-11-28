@@ -21,7 +21,7 @@
         <p class="lead text-muted mb-3">This module allows calculating the price of subcontracted products
         based on purchase price and the components value</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.1</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Manufacturing</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">OPL-1</span>        </div>
       </div>
     </div>
@@ -30,9 +30,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -50,24 +47,18 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>Override stock valuation for subcontracted finished goods so the price
-of the incoming receipt is taken from the purchase line — the price
-actually paid to the subcontractor — instead of being recomputed from
-the components shipped out. The standard Odoo behaviour assumes the
-company knows the component cost at receipt time, which is rarely the
-case when materials are owned by the subcontractor or are valued
-upstream.</p>
-<p>The module re-uses the origin move's value when the incoming
-subcontracted move and all its origins are <code>done</code>, so the receipt
-inherits the subcontracting service price from the related vendor
-bill / purchase order line. The trigger is wired into
-<code>stock.move._action_done</code> so the post-receipt valuation runs
-automatically, without manual relayering or extra accounting steps.</p>
-<p>Intended for Romanian manufacturers and traders running subcontracted
-production where the conversion service is invoiced as a single line
-on the PO, and the resulting finished good must enter stock at that
-service price plus any sent-out component cost already booked on the
-outgoing leg.</p>
+        <p>Value subcontracted finished goods at the price you actually pay the
+subcontractor. When the receipt of a subcontracted product is validated, its
+stock value is taken from the purchase order line instead of being rebuilt
+from the components that were sent out.</p>
+<ul>
+<li><strong>Receipt valued at the purchase price</strong> of the subcontracting service.</li>
+<li><strong>Automatic</strong>: the value is set when the receipt is validated, with no
+manual revaluation.</li>
+<li><strong>Consistent with the vendor bill</strong>: the bill clears the received-not-invoiced
+account at the same price.</li>
+<li>Built for the Romanian stock accounting provided by <code>l10n_ro_stock_account</code>.</li>
+</ul>
 
       </div>
       <hr class="my-4" />
@@ -135,161 +126,47 @@ outgoing leg.</p>
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li><strong>Purchase-driven valuation</strong> — the override of <code>stock.move._get_value_data</code>
-returns the origin move's value when the incoming move
-<code>is_subcontract</code>, both legs are <code>done</code>, and <code>move_orig_ids</code> exists.
-The standard Odoo computation is bypassed in that case.</li>
-<li><strong>Automatic re-trigger on done</strong> — <code>stock.move._action_done</code> is
-extended so any inbound move with subcontracting destinations runs
-<code>_set_value()</code> on its <code>move_dest_ids</code> after standard processing,
-ensuring the new valuation rule is applied at the right moment.</li>
-<li><strong>Single inheritance, no new models</strong> — the module adds no fields,
-views, menus or wizards; only two methods are overridden on
-<code>stock.move</code>.</li>
-<li><strong>Romanian-stock-account integration</strong> — the manifest depends on
-<code>l10n_ro_stock_account</code>, so the value flow uses the Romanian
-inventory-valuation logic (separate goods received / not invoiced
-account, FIFO/AVG per location, etc.).</li>
-<li><strong>Subcontracting-purchase integration</strong> — depends on
-<code>mrp_subcontracting_purchase</code>, the Odoo bridge that links a
-subcontracting BOM to the purchase order line, providing the
-<code>is_subcontract</code> flag and the move chain the override walks.</li>
-<li><strong>Origin-move tracing</strong> — uses Odoo's
-<code>_get_value_from_origin_move(quantity)</code> helper to fetch the value
-proportional to the received quantity, so partial subcontract
-receipts are valued correctly.</li>
-<li><strong>No effect when components are valued at receipt</strong> — the override
-only triggers for subcontract moves with an origin chain; regular
-moves keep the standard Odoo costing.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>The module activates as soon as it is installed and a subcontracting
-purchase flow exists. There is no settings page; configuration is
-limited to making sure the upstream modules and master data are in
-place.</p>
-<h2>1. Install dependencies</h2>
-<p>The manifest pulls two prerequisites that must be installable first:</p>
-<ul>
-<li><code>l10n_ro_stock_account</code> — Romanian stock-account valuation (OCA).</li>
-<li><code>mrp_subcontracting_purchase</code> — Odoo bridge between subcontracting
-BOMs and purchase orders.</li>
-</ul>
-<p>Install both before this module.</p>
-<h2>2. Configure subcontracted products</h2>
-<p>Go to <strong>Inventory → Products → Products</strong> and open each finished good
-that will be subcontracted:</p>
-<ol>
-<li>Set the <strong>Product Type</strong> to a storable / consumable as usual.</li>
-<li>On the <strong>Inventory</strong> tab, set <strong>Costing Method</strong> to <strong>Standard
-Price</strong>, <strong>Average Cost (AVCO)</strong> or <strong>FIFO</strong> as required.</li>
-<li>Make sure <strong>Valuation</strong> is set to <strong>Automated</strong> (perpetual
-inventory) — the override only updates stock value on done moves;
-manual valuation would leave it untouched.</li>
+      <ol>
+<li>Install <code>l10n_ro_stock_account</code> and the Odoo <strong>Subcontracting</strong> purchase
+bridge (<code>mrp_subcontracting_purchase</code>); this module needs both.</li>
+<li>For each subcontracted product, go to <strong>Inventory &gt; Products &gt; Products</strong>
+and make sure its product category uses automated (perpetual) inventory
+valuation.</li>
+<li>Go to <strong>Manufacturing &gt; Products &gt; Bills of Materials</strong> and create a bill of
+materials of type <strong>Subcontracting</strong>, with the subcontractors and the
+components they receive.</li>
 </ol>
-<h2>3. Configure the subcontracting BOM</h2>
-<p>Go to <strong>Manufacturing → Products → Bills of Materials</strong> and create a
-BOM with:</p>
-<ol>
-<li><strong>BOM Type</strong> = <strong>Subcontracting</strong>.</li>
-<li><strong>Subcontractors</strong> = the supplier partners that will perform the
-service.</li>
-<li><strong>Components</strong> = the materials sent to the subcontractor.</li>
-</ol>
-<h2>4. Configure the purchase product (the service)</h2>
-<p>The amount the subcontractor charges should be the unit price of the
-purchase order line for the finished good. Standard Odoo subcontracting
-expects you to buy the finished product itself; that line's price
-becomes the receipt value.</p>
-<p>If the service is invoiced as a separate purchase product, it must
-sit on the same PO so that <code>move_orig_ids</code> chains the receipt to the
-purchase price.</p>
-<h2>5. User access</h2>
-<p>No new security groups are added. Users handling subcontracting need
-their existing <strong>Manufacturing</strong>, <strong>Inventory</strong> and <strong>Purchase</strong>
-groups. Valuation updates run with the user posting the receipt.</p>
-<h2>6. Verification</h2>
-<p>After installation, post a subcontracted receipt and open the
-<strong>Valuation Layer</strong> of the finished good. The amount should match the
-purchase line value at the received quantity, not a recomputation from
-the component standard prices.</p>
-
-<hr class="my-4" />      <p>To install this module, you need to:</p>
-<ul>
-<li>clone the repository <a href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
-<li>add the path to this repository in your configuration (addons-path)</li>
-<li>update the module list</li>
-<li>search for &quot;Purchase Subcontracting Price&quot; in your addons</li>
-<li>install the module</li>
-</ul>
+<p>There are no settings of its own and no new access groups.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <p>Day-to-day operations are unchanged: users post purchase orders and
-receipts the same way they did before installing the module. The
-override only changes how the receipt value is computed.</p>
-<h2>Typical flow</h2>
-<ol>
-<li><strong>Send components</strong> — confirm a subcontracting picking that ships
-the BOM components from your warehouse to the subcontractor
-location. These moves create the regular outbound valuation
-entries.</li>
-<li><strong>Place a purchase order</strong> — open <strong>Purchase → Orders → Purchase
-Orders</strong>, create a PO on the subcontractor partner and add a line
-for the subcontracted finished product. The unit price on that
-line is the price the subcontractor charges per unit produced.</li>
-<li><strong>Confirm the PO</strong> — Odoo's <code>mrp_subcontracting_purchase</code> creates
-the incoming receipt linked to the PO line; the move is flagged
-<code>is_subcontract</code>.</li>
-<li><strong>Validate the receipt</strong> — when the receipt's <code>stock.move</code> reaches
-<code>state == 'done'</code>, this module's override of <code>_action_done</code> runs:
-<ul>
-<li>it inspects all inbound moves with a subcontracting destination,</li>
-<li>it re-runs <code>_set_value()</code> on those destinations so the inventory
-layer is recomputed using the new rule.</li>
-</ul>
-</li>
-<li><strong>Valuation is set from the PO</strong> —
-<code>_get_value_data</code> detects the subcontract move with a finished
-origin chain and returns <code>_get_value_from_origin_move(quantity)</code>,
-i.e. the purchase line value scaled to the received quantity.</li>
+      <ol>
+<li>Send the components to the subcontractor as usual.</li>
+<li>Go to <strong>Purchase &gt; Orders &gt; Purchase Orders</strong>, create an order for the
+subcontractor and add the finished product at the price the subcontractor
+charges per unit.</li>
+<li>Confirm the order; the receipt of the finished product is created.</li>
+<li>Validate the receipt. The finished product enters stock at the purchase
+line price, scaled to the quantity received.</li>
+<li>Check the result on the journal entry of the receipt: the stock value
+matches the purchase line.</li>
 </ol>
-<h2>Inspecting the result</h2>
-<ul>
-<li>Open <strong>Inventory → Reporting → Valuation</strong> and filter by product or
-date to see the layer created by the receipt. The unit value matches
-the PO line price.</li>
-<li>Open the journal entry generated by the move: the input account is
-posted against the standard Goods Received / Not Invoiced account
-provided by <code>l10n_ro_stock_account</code>.</li>
-<li>The corresponding vendor bill, once posted, clears that account at
-the same price.</li>
-</ul>
-<h2>When the override does nothing</h2>
-<ul>
-<li>Partial chain not done — if any move in <code>move_orig_ids</code> is still in
-progress, the standard valuation is used until the chain is
-complete.</li>
-<li>Non-subcontracting move — regular receipts, internal transfers and
-manufacturing orders keep the unchanged Odoo costing.</li>
-<li>Manual valuation — products configured with <strong>Valuation: Manual</strong>
-are not updated at all by stock-move automation.</li>
-</ul>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.0 (2026-05-25)</h2>
+      <h2>19.0.1.0.1 (2026-11-28)</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.1.0.0 (2026-05-25)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

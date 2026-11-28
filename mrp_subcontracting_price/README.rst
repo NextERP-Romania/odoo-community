@@ -11,26 +11,19 @@ Purchase Subcontracting Price
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Override stock valuation for subcontracted finished goods so the price
-of the incoming receipt is taken from the purchase line — the price
-actually paid to the subcontractor — instead of being recomputed from
-the components shipped out. The standard Odoo behaviour assumes the
-company knows the component cost at receipt time, which is rarely the
-case when materials are owned by the subcontractor or are valued
-upstream.
+Value subcontracted finished goods at the price you actually pay the
+subcontractor. When the receipt of a subcontracted product is validated,
+its stock value is taken from the purchase order line instead of being
+rebuilt from the components that were sent out.
 
-The module re-uses the origin move's value when the incoming
-subcontracted move and all its origins are ``done``, so the receipt
-inherits the subcontracting service price from the related vendor bill /
-purchase order line. The trigger is wired into
-``stock.move._action_done`` so the post-receipt valuation runs
-automatically, without manual relayering or extra accounting steps.
-
-Intended for Romanian manufacturers and traders running subcontracted
-production where the conversion service is invoiced as a single line on
-the PO, and the resulting finished good must enter stock at that service
-price plus any sent-out component cost already booked on the outgoing
-leg.
+-  **Receipt valued at the purchase price** of the subcontracting
+   service.
+-  **Automatic**: the value is set when the receipt is validated, with
+   no manual revaluation.
+-  **Consistent with the vendor bill**: the bill clears the
+   received-not-invoiced account at the same price.
+-  Built for the Romanian stock accounting provided by
+   ``l10n_ro_stock_account``.
 
 
 **Table of contents**
@@ -38,187 +31,42 @@ leg.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Purchase-driven valuation** — the override of
-   ``stock.move._get_value_data`` returns the origin move's value when
-   the incoming move ``is_subcontract``, both legs are ``done``, and
-   ``move_orig_ids`` exists. The standard Odoo computation is bypassed
-   in that case.
--  **Automatic re-trigger on done** — ``stock.move._action_done`` is
-   extended so any inbound move with subcontracting destinations runs
-   ``_set_value()`` on its ``move_dest_ids`` after standard processing,
-   ensuring the new valuation rule is applied at the right moment.
--  **Single inheritance, no new models** — the module adds no fields,
-   views, menus or wizards; only two methods are overridden on
-   ``stock.move``.
--  **Romanian-stock-account integration** — the manifest depends on
-   ``l10n_ro_stock_account``, so the value flow uses the Romanian
-   inventory-valuation logic (separate goods received / not invoiced
-   account, FIFO/AVG per location, etc.).
--  **Subcontracting-purchase integration** — depends on
-   ``mrp_subcontracting_purchase``, the Odoo bridge that links a
-   subcontracting BOM to the purchase order line, providing the
-   ``is_subcontract`` flag and the move chain the override walks.
--  **Origin-move tracing** — uses Odoo's
-   ``_get_value_from_origin_move(quantity)`` helper to fetch the value
-   proportional to the received quantity, so partial subcontract
-   receipts are valued correctly.
--  **No effect when components are valued at receipt** — the override
-   only triggers for subcontract moves with an origin chain; regular
-   moves keep the standard Odoo costing.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "Purchase Subcontracting Price" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Install ``l10n_ro_stock_account`` and the Odoo **Subcontracting**
+   purchase bridge (``mrp_subcontracting_purchase``); this module needs
+   both.
+2. For each subcontracted product, go to **Inventory > Products >
+   Products** and make sure its product category uses automated
+   (perpetual) inventory valuation.
+3. Go to **Manufacturing > Products > Bills of Materials** and create a
+   bill of materials of type **Subcontracting**, with the subcontractors
+   and the components they receive.
 
-The module activates as soon as it is installed and a subcontracting
-purchase flow exists. There is no settings page; configuration is
-limited to making sure the upstream modules and master data are in
-place.
-
-1. Install dependencies
------------------------
-
-The manifest pulls two prerequisites that must be installable first:
-
--  ``l10n_ro_stock_account`` — Romanian stock-account valuation (OCA).
--  ``mrp_subcontracting_purchase`` — Odoo bridge between subcontracting
-   BOMs and purchase orders.
-
-Install both before this module.
-
-2. Configure subcontracted products
------------------------------------
-
-Go to **Inventory → Products → Products** and open each finished good
-that will be subcontracted:
-
-1. Set the **Product Type** to a storable / consumable as usual.
-2. On the **Inventory** tab, set **Costing Method** to **Standard
-   Price**, **Average Cost (AVCO)** or **FIFO** as required.
-3. Make sure **Valuation** is set to **Automated** (perpetual inventory)
-   — the override only updates stock value on done moves; manual
-   valuation would leave it untouched.
-
-3. Configure the subcontracting BOM
------------------------------------
-
-Go to **Manufacturing → Products → Bills of Materials** and create a BOM
-with:
-
-1. **BOM Type** = **Subcontracting**.
-2. **Subcontractors** = the supplier partners that will perform the
-   service.
-3. **Components** = the materials sent to the subcontractor.
-
-4. Configure the purchase product (the service)
------------------------------------------------
-
-The amount the subcontractor charges should be the unit price of the
-purchase order line for the finished good. Standard Odoo subcontracting
-expects you to buy the finished product itself; that line's price
-becomes the receipt value.
-
-If the service is invoiced as a separate purchase product, it must sit
-on the same PO so that ``move_orig_ids`` chains the receipt to the
-purchase price.
-
-5. User access
---------------
-
-No new security groups are added. Users handling subcontracting need
-their existing **Manufacturing**, **Inventory** and **Purchase** groups.
-Valuation updates run with the user posting the receipt.
-
-6. Verification
----------------
-
-After installation, post a subcontracted receipt and open the
-**Valuation Layer** of the finished good. The amount should match the
-purchase line value at the received quantity, not a recomputation from
-the component standard prices.
+There are no settings of its own and no new access groups.
 
 Usage
 =====
 
-How it works
-============
-
-Day-to-day operations are unchanged: users post purchase orders and
-receipts the same way they did before installing the module. The
-override only changes how the receipt value is computed.
-
-Typical flow
-------------
-
-1. **Send components** — confirm a subcontracting picking that ships the
-   BOM components from your warehouse to the subcontractor location.
-   These moves create the regular outbound valuation entries.
-2. **Place a purchase order** — open **Purchase → Orders → Purchase
-   Orders**, create a PO on the subcontractor partner and add a line for
-   the subcontracted finished product. The unit price on that line is
-   the price the subcontractor charges per unit produced.
-3. **Confirm the PO** — Odoo's ``mrp_subcontracting_purchase`` creates
-   the incoming receipt linked to the PO line; the move is flagged
-   ``is_subcontract``.
-4. **Validate the receipt** — when the receipt's ``stock.move`` reaches
-   ``state == 'done'``, this module's override of ``_action_done`` runs:
-
-   -  it inspects all inbound moves with a subcontracting destination,
-   -  it re-runs ``_set_value()`` on those destinations so the inventory
-      layer is recomputed using the new rule.
-
-5. **Valuation is set from the PO** — ``_get_value_data`` detects the
-   subcontract move with a finished origin chain and returns
-   ``_get_value_from_origin_move(quantity)``, i.e. the purchase line
-   value scaled to the received quantity.
-
-Inspecting the result
----------------------
-
--  Open **Inventory → Reporting → Valuation** and filter by product or
-   date to see the layer created by the receipt. The unit value matches
-   the PO line price.
--  Open the journal entry generated by the move: the input account is
-   posted against the standard Goods Received / Not Invoiced account
-   provided by ``l10n_ro_stock_account``.
--  The corresponding vendor bill, once posted, clears that account at
-   the same price.
-
-When the override does nothing
-------------------------------
-
--  Partial chain not done — if any move in ``move_orig_ids`` is still in
-   progress, the standard valuation is used until the chain is complete.
--  Non-subcontracting move — regular receipts, internal transfers and
-   manufacturing orders keep the unchanged Odoo costing.
--  Manual valuation — products configured with **Valuation: Manual** are
-   not updated at all by stock-move automation.
+1. Send the components to the subcontractor as usual.
+2. Go to **Purchase > Orders > Purchase Orders**, create an order for
+   the subcontractor and add the finished product at the price the
+   subcontractor charges per unit.
+3. Confirm the order; the receipt of the finished product is created.
+4. Validate the receipt. The finished product enters stock at the
+   purchase line price, scaled to the quantity received.
+5. Check the result on the journal entry of the receipt: the stock value
+   matches the purchase line.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.1.0.1 (2026-11-28)
+-----------------------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.0 (2026-05-25)
 -----------------------

@@ -3,7 +3,7 @@
 {
     "name": "Romania - eTransport Batch Extension",
     "summary": "Brings the l10n_ro_edi_stock_extension facilities to batch transfers",
-    "version": "19.0.1.8.3",
+    "version": "19.0.1.8.4",
     "category": "Accounting/Localizations/EDI",
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",

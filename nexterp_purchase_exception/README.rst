@@ -11,7 +11,13 @@ NextERP - Purchase Exception
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
--  This module allows you to see exception also on purchase order line.
+See at a glance which purchase order lines break your exception rules.
+Lines that trigger an exception rule are shown in red on the purchase
+order, so you know what to correct before confirming.
+
+-  Works with the exception rules of the ``purchase_exception`` module.
+-  Offending lines highlighted directly in the order lines.
+-  The highlight clears once the line no longer breaks a rule.
 
 
 **Table of contents**
@@ -19,71 +25,30 @@ NextERP - Purchase Exception
 .. contents::
    :local:
 
-Use Cases / Context
-===================
+Configuration
+=============
 
-Key features
-============
-
--  **Line-level exception visibility** — ``exception_ids``,
-   ``exceptions_summary`` and ``is_exception_danger`` are exposed
-   directly on every ``purchase.order.line``, not just at order header
-   level.
--  **Extends ``purchase_exception``** — plugs into the existing OCA
-   exception-rule engine without replacing it; all rules you already
-   configured continue to work unchanged.
--  **HTML exception summary** — ``exceptions_summary`` renders a
-   colour-coded, human-readable digest of all triggered rules per line,
-   visible inline in the order form.
--  **Danger flag** — ``is_exception_danger`` lets you spot critical
-   violations at a glance directly in the order lines list, enabling
-   faster triage on large orders.
--  **Zero configuration required** — install and the line-level
-   indicators appear automatically on the standard Purchase Order form.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 18.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Purchase Exception" in your addons
--  install the module
+1. Install ``purchase_exception`` and define the exception rules you
+   need in **Purchase > Configuration > Purchase Exception Rules**.
+2. Nothing else to configure.
 
 Usage
 =====
 
-Usage
-=====
-
-Reviewing exceptions on a Purchase Order line
----------------------------------------------
-
-Exceptions defined in ``purchase_exception`` are normally visible at the
-Purchase Order header level. With this module installed, each individual
-order line also surfaces its own exception status.
-
-1. Open a Purchase Order via **Purchase → Orders → Purchase Orders**.
-2. Select or create a purchase order and navigate to the **Order Lines**
-   tab.
-3. Lines that violate one or more exception rules show a danger
-   indicator (``is_exception_danger``) and a colour-coded **Exceptions**
-   summary (``exceptions_summary``) directly on the line — no need to
-   open a separate dialog to identify which line is causing the issue.
-4. Hover over or click the exceptions indicator on the line to read the
-   full ``exception_ids`` list of triggered ``exception.rule`` records.
-5. Resolve the underlying data issue (e.g. adjust quantity, price or
-   product) and re-validate the order. The exception indicators clear
-   automatically once the rules no longer fire.
+1. Go to **Purchase > Orders > Purchase Orders** and open an order.
+2. On the **Products** tab, lines breaking an exception rule are shown
+   in red.
+3. Correct the line (quantity, price, product) and confirm the order
+   again; the highlight disappears when the rule no longer applies.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.0.0.1 (2026-11-28)
+-----------------------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.0.0.0 (2026-06-03)
 -----------------------

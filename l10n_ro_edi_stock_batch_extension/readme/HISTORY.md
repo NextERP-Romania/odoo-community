@@ -1,4 +1,6 @@
-# Changelog
+## 19.0.1.8.4
+
+- Apps listing: English description, configuration and usage, new icon and cover.
 
 ## 19.0.1.3.0 (2026-11-05)
 
@@ -21,9 +23,8 @@
 ## 19.0.1.2.0 (2026-09-15)
 
 - Keep a picking sendable to eTransport while its batch is still in progress
-  and has not been notified itself. `l10n_ro_edi_stock_batch` disables
-  eTransport on every picking belonging to a batch, which defeated sending the
-  notification before the goods move.
+  and has not been notified itself. The base localization disabled eTransport on every transfer of a
+  batch, which prevented sending the notification before the goods moved.
 
 ## 19.0.1.0.0 (2026-06-23)
 

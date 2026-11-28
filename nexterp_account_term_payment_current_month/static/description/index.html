@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP - Payment Term Current Month</h1>
         <p class="lead text-muted mb-3">NextERP -  Payment Term Current Month</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.1.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.1.1</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Special</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">AGPL-3</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,7 +46,16 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>This module is customize odoo for Utilben, add new termen_payment .</p>
+        <p>Adds a payment term rule that sets the due date on a fixed day of the month
+in which the invoice is issued, for example <em>on the 25th of the same month</em>.</p>
+<ul>
+<li>New delay type <strong>Day of the current Month</strong> on payment term lines.</li>
+<li>The due date is that day of the invoice's month, whatever the invoice date.</li>
+<li>Can be combined with other lines, for example part on the 15th and the
+balance on the last working days.</li>
+<li>Payment term lines using the rule fall back to the standard delay type if
+the module is uninstalled.</li>
+</ul>
 
       </div>
       <hr class="my-4" />
@@ -117,93 +123,40 @@
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li><strong>New &quot;Current Month&quot; delay type</strong> added to <code>account.payment.term.line</code>,
-complementing Odoo's built-in <em>Days</em>, <em>End of Month</em> and <em>End of Next Month</em> options.</li>
-<li><strong>Automatic due-date calculation</strong> anchored to the current calendar month,
-so due dates never spill into the following month unexpectedly.</li>
-<li><strong>Drop-in extension</strong> — inherits <code>account.payment.term</code> and
-<code>account.payment.term.line</code> with no breaking changes to existing terms.</li>
-<li><strong>Works across all accounting documents</strong> — customer invoices, vendor bills,
-credit notes and payment schedules all respect the new delay type.</li>
-<li><strong>No extra configuration required</strong> — install the module and the new
-delay type appears immediately in the Payment Terms configuration UI.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>After installing <code>nexterp_account_term_payment_current_month</code>, create or edit a payment term to use the new delay type.</p>
-<h2>1. Open Payment Terms</h2>
-<p>Go to <strong>Accounting → Configuration → Payment Terms</strong>.</p>
-<h2>2. Create or edit a Payment Term</h2>
-<p>Click <strong>New</strong> (or open an existing term).</p>
-<h2>3. Add a term line with the Current Month delay type</h2>
-<p>In the <strong>Terms</strong> tab, add a line and set:</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Due Type</strong></td>
-<td><em>Balance</em> (or a percentage)</td>
-</tr>
-<tr>
-<td><strong>Delay Type</strong></td>
-<td>Select the new <strong>Current Month</strong> option introduced by this module</td>
-</tr>
-<tr>
-<td><strong>Days</strong></td>
-<td>Number of days within the current month (e.g. <code>0</code> for end-of-month)</td>
-</tr>
-</tbody>
-</table>
-<h2>4. Save and assign</h2>
-<ul>
-<li>Click <strong>Save</strong>.</li>
-<li>Assign the new payment term to a customer, vendor, or directly on a document via the <strong>Payment Terms</strong> field.</li>
-</ul>
-
-<hr class="my-4" />      <p>To install this module, you need to:</p>
-<ul>
-<li>clone the branch 19.0 of the repository
-<a href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
-<li>add the path to this repository in your configuration (addons-path)</li>
-<li>update the module list</li>
-<li>search for &quot;NextERP - Account Edi UBL Move Date&quot; in your addons</li>
-<li>install the module</li>
-</ul>
+      <ol>
+<li>Go to <strong>Invoicing &gt; Configuration &gt; Payment Terms</strong>.</li>
+<li>Create a payment term or open an existing one.</li>
+<li>On a term line, fill in <strong>After</strong> with the day of the month (for example
+<em>25</em>) and choose <strong>Day of the current Month</strong> as delay type.</li>
+<li>Save, and set the payment term on customers, vendors or documents.</li>
+</ol>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <h2>Using a &quot;Current Month&quot; Payment Term on an Invoice</h2>
-<ol>
-<li>Open <strong>Accounting → Customers → Invoices</strong> (or <strong>Vendors → Bills</strong>).</li>
-<li>Select or create a document and locate the <strong>Payment Terms</strong> field.</li>
-<li>Choose a payment term that was configured with the <em>Current Month</em> delay type (see CONFIGURE).</li>
-<li>Confirm the invoice. The <strong>Due Date</strong> field is automatically calculated so that it falls at the end of the current calendar month (or the configured number of days within the current month), rather than counting days from the invoice date.</li>
+      <ol>
+<li>Create an invoice or a bill.</li>
+<li>Select the payment term that uses <strong>Day of the current Month</strong>.</li>
+<li>Fill in the invoice date: the <strong>Due Date</strong> is set to the configured day of
+that same month (an invoice of 10 March with <em>25</em> is due on 25 March).</li>
+<li>Confirm the invoice; the due date is also used by the follow-up of
+receivables and payables.</li>
 </ol>
-<h2>Verifying the computed due date</h2>
-<ul>
-<li>After selecting the payment term, Odoo recalculates and displays the <strong>Due Date</strong> immediately in the invoice header.</li>
-<li>For payment terms that split the balance into multiple lines, each line's due date is shown in the <strong>Payment term</strong> breakdown pop-up (click the ℹ icon next to the due date).</li>
-</ul>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.1.0 (2026-11-05)</h2>
+      <h2>19.0.1.1.1</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.1.1.0 (2026-11-05)</h2>
 <ul>
 <li>Uninstalling the module no longer deletes the payment term lines using
 &quot;Day of the current Month&quot;: they fall back to &quot;Days after invoice date&quot;.</li>

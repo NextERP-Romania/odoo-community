@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP - Product Kit Sale Timesheet</h1>
         <p class="lead text-muted mb-3">NextERP - Product Kit Sale Timesheet</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.1.1</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.1.2</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Sales</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">OPL-1</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,23 +46,16 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>Bridge between <code>nexterp_product_kit_sale</code> and <code>sale_project</code>: when a
-sale order is confirmed, one project task is created per kit
-component flagged as a service with <strong>Service Tracking = Task in
-Project</strong>, in addition to the standard task created for the parent
-sale order line.</p>
-<p>The hook lives in <code>sale.order.line._timesheet_create_task</code>: after
-the core task for the parent line is created, the module iterates
-over <code>kit_line_ids</code> and calls a kit-aware
-<code>_timesheet_create_task</code> on each component whose product is a
-<code>task_in_project</code> service. Each kit task is linked back to the
-originating <code>sale.order.line</code> and nested under the parent task
-through the <code>parent_id</code> field, so kit hierarchies are visible in the
-project's Gantt / hierarchy view.</p>
-<p>Targets service-bundle sales where one quotation line resolves to
-several billable jobs — installation kits, consulting packages,
-multi-stage interventions — and you want each component tracked as
-its own task with timesheets attached.</p>
+        <p>Turn every service inside a kit into its own project task. When an order
+with a service kit is confirmed, a task is created for the kit and a sub-task
+for each service component, so work and timesheets can be tracked per job.</p>
+<ul>
+<li>One sub-task per service component, under the task of the kit.</li>
+<li>Task names show the order, the kit and the component.</li>
+<li>Time spent on the sub-tasks is billed through the kit's order line.</li>
+<li>Mixed kits supported: goods in the kit create no task.</li>
+<li>Each task links back to the sales order.</li>
+</ul>
 
       </div>
       <hr class="my-4" />
@@ -133,155 +123,41 @@ its own task with timesheets attached.</p>
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li>Override of <code>sale.order.line._timesheet_create_task</code>: after the
-standard task is created for a <code>task_in_project</code> parent line, the
-module loops over its <code>kit_line_ids</code> and creates one extra task per
-service component.</li>
-<li>Component-level task creation only fires when the kit component
-product also has <code>service_tracking == &quot;task_in_project&quot;</code>, so mixed
-kits (services + storable) generate tasks only where it makes
-sense.</li>
-<li>New <code>sale.order.line.kit._timesheet_create_task</code> builds the task
-itself: it prepares values via
-<code>_timesheet_create_task_prepare_values</code>, creates the task with
-<code>sudo()</code> and writes its id back onto the kit line through
-<code>task_id</code>.</li>
-<li>Task naming convention:
-<code>&quot;&lt;Order name&gt;: &lt;parent product&gt; - &lt;component product&gt;&quot;</code> — gives
-immediate context in project lists, Kanban and search.</li>
-<li>Tasks are linked back to the originating <code>sale.order.line</code> via
-<code>sale_line_id</code> (so timesheet billing stays attached to the parent
-SO line) and nested under the parent task via <code>parent_id</code>, using
-the <code>parent_task</code> context key passed by the override.</li>
-<li>Override of <code>sale.order._compute_tasks_ids</code>: when computing the
-set of tasks belonging to an order, kit-line tasks that are not
-yet linked to a <code>sale_line_id</code> are re-attached to their parent SO
-line, keeping the order's task list consistent.</li>
-<li>A creation message is posted on each kit task with a clickable
-link back to the source sale order.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>The module has no settings of its own. Configuration consists of
-preparing the products that should generate tasks and the project
-they will be created in.</p>
-<h2>1. Service products</h2>
-<ol>
-<li>Go to <strong>Sales → Products → Products</strong> (or <strong>Inventory → Products
-→ Products</strong>).</li>
-<li>For every kit component that must become a task, open the product
-and set:
-<ul>
-<li><strong>Product Type</strong> — <code>Service</code>.</li>
-<li><strong>Invoicing Policy</strong> — usually <code>Based on Timesheets</code>.</li>
-<li><strong>Service Tracking</strong> — <code>Task in Project</code> (this is the trigger
-checked by <code>_timesheet_create_task</code>).</li>
-<li><strong>Project</strong> — the default project where tasks will land (if not
-filled, the parent line's project is reused).</li>
-</ul>
-</li>
-<li>Make sure the parent kit product itself is also a
-<code>task_in_project</code> service: the override only fires when the
-parent SO line creates a task in the first place.</li>
+      <ol>
+<li>Go to <strong>Sales &gt; Products &gt; Products</strong> and, for the kit and for each
+service component that should become a task, set the product type to
+<strong>Service</strong> and the creation option to a task in a project, with the
+target project.</li>
+<li>Add the service components to the kit on the <strong>Kit Products</strong> tab.</li>
+<li>Optionally enable <strong>Sub-tasks</strong> and <strong>Timesheets</strong> in
+<strong>Project &gt; Configuration &gt; Settings</strong>.</li>
 </ol>
-<h2>2. Kit definition</h2>
-<ol>
-<li>On the kit product, open the <strong>Kit Products</strong> tab (added by
-<code>nexterp_product_kit</code>) and add the service components configured
-at step 1.</li>
-<li>The non-service components stay in the kit definition without
-producing tasks, so mixed bundles (service + goods) are
-supported.</li>
-</ol>
-<h2>3. Project and timesheets</h2>
-<ol>
-<li>Enable <strong>Project → Configuration → Settings → Timesheets</strong> if not
-already on.</li>
-<li>Optionally enable <strong>Sub-tasks</strong> so the parent / child hierarchy
-from kit explosion is visible.</li>
-<li>Grant the relevant users access to the target project.</li>
-</ol>
-<h2>4. Sale workflow</h2>
-<p>No further configuration is needed in <strong>Sales</strong>. As soon as a kit
-service product is added to a quotation and the order is confirmed,
-the dependent <code>nexterp_product_kit_sale</code> explodes the kit lines and
-this module creates one task per service component.</p>
-
-<hr class="my-4" />      <p>To install this module, you need to:</p>
-<ul>
-<li>clone the branch 16.0 of the repository
-<a href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
-<li>add the path to this repository in your configuration (addons-path)</li>
-<li>update the module list</li>
-<li>search for &quot;NextERP - Product Kit Sale Timesheet&quot; in your addons</li>
-<li>install the module</li>
-</ul>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <h2>What happens on order confirmation</h2>
-<ol>
-<li>The user confirms a sale order that contains a kit service
-product (parent SO line with <code>service_tracking == &quot;task_in_project&quot;</code>).</li>
-<li>Standard <code>sale_project</code> creates the task for the parent SO line.</li>
-<li>This module then loops over <code>kit_line_ids</code> on that SO line and,
-for every component whose own product is also <code>task_in_project</code>:
-<ul>
-<li>creates a new <code>project.task</code> via <code>sale.order.line.kit._timesheet_create_task</code>;</li>
-<li>writes the task id onto the kit line (<code>task_id</code>);</li>
-<li>attaches it to the parent SO line through <code>sale_line_id</code>;</li>
-<li>sets <code>parent_id</code> to the task created at step 2, so the kit
-task appears as a sub-task in the project.</li>
-</ul>
-</li>
-<li>The new task gets the name
-<code>&quot;&lt;Order&gt;: &lt;parent product&gt; - &lt;component product&gt;&quot;</code> and receives a
-chatter message pointing back to the source order.</li>
+      <ol>
+<li>Create a quotation with the service kit and confirm it.</li>
+<li>A task is created for the kit and a sub-task for each service component.</li>
+<li>Open the <strong>Tasks</strong> button on the order, or <strong>Project &gt; Tasks &gt; All Tasks</strong>,
+to follow them.</li>
+<li>Log time on the sub-tasks; it is invoiced on the kit line of the order.</li>
 </ol>
-<h2>Tracking the tasks</h2>
-<ul>
-<li>Open <strong>Project → All Tasks</strong> and filter / group by the sale order
-to see the parent task and its kit sub-tasks together.</li>
-<li>The <strong>Tasks</strong> smart button on the sale order shows the same set;
-<code>_compute_tasks_ids</code> is overridden so kit tasks created before the
-order's full reload are still reattached to the parent SO line.</li>
-<li>Open any kit task to view the chatter link back to the originating
-sale order.</li>
-</ul>
-<h2>Time tracking and invoicing</h2>
-<ul>
-<li>Time logged on a kit task is recorded against its
-<code>sale_line_id</code> — the parent SO line of the kit. Invoicing the
-parent line therefore aggregates the timesheets of every kit
-sub-task plus its own.</li>
-<li>This matches the kit pricing model used by
-<code>nexterp_product_kit_sale</code>: the customer sees and pays one SO line
-while internally the work is split across multiple tasks.</li>
-</ul>
-<h2>Caveats</h2>
-<ul>
-<li>Kit components that are not services (or services not flagged as
-<code>task_in_project</code>) are silently skipped — no task is created for
-them.</li>
-<li>The override does not delete tasks when a kit line is removed
-later. If you re-explode a kit, expect orphan tasks unless they
-are archived manually.</li>
-</ul>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.0 (2026-05-25)</h2>
+      <h2>19.0.1.1.2 (2026-11-28)</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.1.0.0 (2026-05-25)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

@@ -1,27 +1,24 @@
-# Configuration
+## Vehicles
 
-## 1. Mark products that generate vehicle contracts
+1. Go to **Fleet > Fleet > Fleet** and open a vehicle.
+2. Set the **Owner** of the vehicle.
+3. If VAT on what the vehicle consumes is not fully deductible, tick
+   **Not Deductible**, choose the **Non Deductible Percent** and the
+   non-deductible tax to apply.
+4. Save.
 
-1. Go to **Inventory → Products → Products** (or **Purchase → Products → Products**).
-2. Open the product used on supplier invoices for recurring vehicle costs (e.g. insurance, leasing).
-3. On the **General Information** tab, enable **Generate Vehicle Contract** (`vehicle_contract`).
-4. From now on, posting a supplier invoice line with this product automatically creates a `fleet.vehicle.log.contract` entry.
+## Service types
 
-## 2. Configure vehicle non-deductible VAT (Romania)
+1. Activate the developer mode, then go to **Fleet > Configuration >
+   Services > Types** (**Service Types** on newer versions).
+2. Check the **Category** of each type: *Combustibil* (fuel), *Parts*, *Service* or
+   *Contract*. Bill lines and stock moves only offer the non-contract
+   types.
+3. A refuelling service type with the *Combustibil* (fuel) category is installed with
+   the module.
 
-This module depends on `l10n_ro_nondeductible_vat`. For each vehicle where VAT is partially or fully non-deductible:
+## Consumption location
 
-1. Open the vehicle record (*Fleet → Fleet → Vehicles*).
-2. Set **Non Deductible** (`not_deductible`) and choose the **Romania – Non Deductible Percent** (`l10n_ro_nondeductible_percent`).
-3. Assign the appropriate **Non-Deductible Tax** (`tax_non_deductible`) — the tax that will be applied to invoice lines associated with this vehicle.
-
-## 3. Set vehicle ownership
-
-1. On the vehicle form (*Fleet → Fleet → Vehicles*), set the **Owner** field (`owner_id`) to the partner who owns the vehicle.
-2. This value is automatically propagated (`related`) to service logs (`fleet.vehicle.log.services`) and contract logs (`fleet.vehicle.log.contract`) for filtering in reports.
-
-## 4. Review fleet service type categories
-
-1. Go to **Fleet → Configuration → Service Types**.
-2. Ensure each service type has the correct **Category** value (e.g. `fuel`, `contract`, `service`) set in the `category` selection field — this drives the separation between *services* and *contracts* on invoices.
-3. The module ships a pre-loaded service type **Realimentare** (`data_fleet_service_type_refuel`) for fuel top-ups.
+Stock is booked as a vehicle cost when it is moved to a location of type
+consumption. Make sure the location the vehicles take their goods to has
+that type, in **Inventory > Configuration > Locations**.

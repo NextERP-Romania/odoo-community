@@ -1,18 +1,15 @@
-`nexterp_sale_update_price_auto` removes one manual step from the
-quotation flow: when the pricelist on a sale order changes, prices on
-the existing order lines are recomputed automatically instead of
-waiting for the salesperson to click the **Update Prices** banner.
+When the pricelist of a quotation changes, the prices on its lines stay
+as they were until the salesperson clicks **Update Prices**. Forgetting
+that click means sending an offer with the old prices.
 
-The module hooks into the standard
-`_onchange_pricelist_id_show_update_prices` on `sale.order`. When the
-sale order already has lines, the new pricelist differs from the
-previous one, and the company has *Auto Update Sales Prices* enabled,
-the override calls `_recompute_prices()` with the
-`force_price_recomputation=True` context. If the order is already
-saved (`_origin.id` is set), an audit message is posted in the
-chatter recording which pricelist was applied.
+With this module the prices follow the pricelist: as soon as it changes,
+the lines are priced again, and the order keeps a note of it.
 
-The feature is gated by a company-level setting on `res.company`, so
-it can be activated only on the companies that actually want this
-behaviour, while other companies in the database keep the manual
-"Update Prices" workflow.
+- Line prices and pricelist discounts recomputed as soon as the pricelist
+  changes.
+- Only when there is something to do: the order has lines and the
+  pricelist really changed.
+- A message in the order's chatter names the pricelist the prices came
+  from.
+- Switched on per company with **Auto Update Sales Prices**; companies
+  that leave it off keep the **Update Prices** button.

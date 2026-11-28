@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Sale Down Payment Product",
     "summary": "Use a configurable product on sale order down payment lines",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Sales",
     "depends": ["sale"],
     "author": "NextERP Romania",

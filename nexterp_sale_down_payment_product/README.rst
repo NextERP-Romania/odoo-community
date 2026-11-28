@@ -11,14 +11,22 @@ NextERP - Sale Down Payment Product
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-In Odoo 19 the down payment lines created on a sale order (and the
-related down payment invoice lines) have no product. This module adds a
-company-level **Down Payment Product** setting; when it is set, the
-product is added on every new down payment sale order line and on the
-down payment invoice line.
+Down payment lines on a sales order, and the down payment lines on the
+invoice that follows, normally carry no product. That makes them harder
+to report on and to tell apart from the other lines.
 
-The income account of the down payment invoice line is also taken from
-this product when no company *Down Payment Account* is configured.
+This module adds a **Down Payment Product** setting per company. Once it
+is set, every new down payment carries that product, on the sales order
+and on the invoice.
+
+-  One product for all down payments of a company, chosen in the
+   settings.
+-  Added automatically when a down payment invoice is created; the usual
+   **Create Invoice** flow does not change.
+-  The line description stays the usual *Down Payment* text.
+-  When the company has no **Down Payment Account** set, the income
+   account of the down payment line is taken from the product.
+-  Set separately for each company in a multi-company database.
 
 
 **Table of contents**
@@ -26,49 +34,40 @@ this product when no company *Down Payment Account* is configured.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Configurable Down Payment Product** — set a company-level
-   ``l10n_ro_sale_down_payment_product_id`` so every sale order down
-   payment line and its invoice counterpart carry a real product.
--  **Fills the Odoo 19 gap** — standard Odoo 19 down payment lines have
-   no product; this module restores product-level tracking without
-   patching core code.
--  **Income account fallback** — when no company *Down Payment Account*
-   is configured, the income account is derived from the selected down
-   payment product.
--  **Multi-company ready** — the setting is stored per company
-   (``res.company``) and exposed in *Settings → Default Accounts* for
-   each entity.
--  **Zero workflow change** — the standard *Create Invoice → Down
-   Payment* flow is unchanged; the product is injected automatically
-   behind the scenes.
-
 Configuration
 =============
 
-1. Go to **Invoicing / Accounting -> Configuration -> Settings**.
-2. In the **Default Accounts** block, next to *Down Payment Account*,
-   select the **Down Payment Product** (service product).
-3. Save. Repeat for each company in a multi-company database.
+1. Create a service product to use for down payments, for example *Down
+   Payment*, with the income account it should be booked on.
+2. Go to **Invoicing > Configuration > Settings** (or **Accounting >
+   Configuration > Settings**).
+3. In the **Default Accounts** section, under **Down Payment Account**,
+   select the product in **Sale Down Payment Product**.
+4. Click **Save**.
+
+In a multi-company database, switch to each company and repeat the
+steps.
 
 Usage
 =====
 
-Create a down payment from a sale order (**Create Invoice -> Down
-payment (percentage / fixed amount)**). The new down payment line on the
-sale order and the down payment invoice line will have the product from
-settings. The line description stays the standard *Down Payment* text.
+1. Open a confirmed sales order in **Sales > Orders > Orders**.
+2. Click **Create Invoice**.
+3. Choose **Down payment (percentage)** or **Down payment (fixed
+   amount)**, enter the amount and click **Create Draft**.
+4. The new down payment line on the sales order and the line on the
+   draft invoice both carry the product from the settings.
+5. Post the invoice as usual. When the final invoice is created, the
+   down payment is deducted with the same product.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.1.0.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.0 (2026-11-05)
 -----------------------

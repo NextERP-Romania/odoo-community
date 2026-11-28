@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP -  Account Button Credit Note</h1>
         <p class="lead text-muted mb-3">NextERP -  Hide button Reverse and Create Invoice, form credit note</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.1</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Special</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">AGPL-3</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,7 +46,18 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>This module is customize odoo for Utilben.</p>
+        <p>The <strong>Credit Note</strong> dialog of an invoice offers a button that reverses the
+invoice and opens a new draft invoice copied from it in a single step. Many
+teams prefer each document to be issued on purpose. This module removes that
+shortcut, so a reversal only creates the credit note.</p>
+<ul>
+<li>Hides <strong>Reverse and Create Invoice</strong> in the credit note dialog of customer
+invoices and vendor bills.</li>
+<li><strong>Reverse</strong> stays available: the credit note is created as before.</li>
+<li>A replacement invoice, when needed, is created on its own, like any new
+invoice.</li>
+<li>Nothing to configure.</li>
+</ul>
 
       </div>
       <hr class="my-4" />
@@ -117,50 +125,37 @@
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li><strong>Hides the Reverse button</strong> on credit note forms (<code>out_refund</code> / <code>in_refund</code>) to prevent accidental double-reversal.</li>
-<li><strong>Hides the Create Invoice button</strong> on credit note forms, keeping the UI clean and reducing operator errors.</li>
-<li><strong>Zero configuration</strong> — rules are applied automatically through view inheritance on <code>account.move</code> after installation.</li>
-<li><strong>Standard invoice workflow unchanged</strong> — buttons remain available on regular customer invoices and vendor bills.</li>
-<li><strong>Lightweight dependency</strong> — extends only the core <code>account</code> module; no additional localization or third-party modules required.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>To install this module, you need to:</p>
-<ul>
-<li>clone the branch 19.0 of the repository
-<a href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
-<li>add the path to this repository in your configuration (addons-path)</li>
-<li>update the module list</li>
-<li>search for &quot;NextERP - Account Edi UBL Move Date&quot; in your addons</li>
-<li>install the module</li>
-</ul>
+      <p>Nothing to configure: the button is hidden as soon as the module is
+installed, for every company and every user.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <h2>Hiding the Reverse and Create Invoice buttons on credit notes</h2>
-<p>Once the module is installed, the <strong>Reverse</strong> and <strong>Create Invoice</strong> action buttons are automatically hidden on <code>account.move</code> records that are credit notes (reversal entries). No manual steps are needed — the visibility rules are applied via view inheritance.</p>
-<h3>Typical workflow</h3>
-<ol>
-<li>Open <strong>Accounting → Customers → Credit Notes</strong> or <strong>Accounting → Vendors → Refunds</strong>.</li>
-<li>Open any existing credit note (a move of type <code>out_refund</code> or <code>in_refund</code>).</li>
-<li>Notice that the <strong>Reverse</strong> and <strong>Create Invoice</strong> buttons that normally appear in the form header are no longer visible, preventing accidental double-reversal or re-invoicing of a credit note.</li>
+      <ol>
+<li>Open a posted invoice from <strong>Invoicing &gt; Customers &gt; Invoices</strong> (or a
+bill from <strong>Invoicing &gt; Vendors &gt; Bills</strong>).</li>
+<li>Click <strong>Credit Note</strong>.</li>
+<li>Fill in the reason, the date and the journal, then click <strong>Reverse</strong>: the
+credit note is created. The <strong>Reverse and Create Invoice</strong> button is no
+longer offered.</li>
+<li>If the customer must be invoiced again, create a new invoice from
+<strong>Invoicing &gt; Customers &gt; Invoices &gt; New</strong>.</li>
 </ol>
-<p>The buttons remain fully visible on standard customer invoices and vendor bills, so the normal invoice workflow is unaffected.</p>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.0 (2026-09-28)</h2>
+      <h2>19.0.1.0.1</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.1.0.0 (2026-09-28)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

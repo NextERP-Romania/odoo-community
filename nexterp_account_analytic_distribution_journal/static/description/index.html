@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP - Analytic Distribution Models by Journal</h1>
         <p class="lead text-muted mb-3">Match analytic distribution models by journal.</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.1</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.2</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Accounting/Analytic</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">OPL-1</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,10 +46,19 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>This module adds a <strong>Journal</strong> field on analytic distribution models.</p>
-<p>A model pinned to a journal is only applied to journal items posted in that
-journal; items from any other journal ignore it. Models left without a journal
-keep applying everywhere, as before.</p>
+        <p>Analytic distribution models fill in the analytic distribution of journal
+items automatically, based on the account, partner, product and so on. This
+module adds the <strong>Journal</strong> as one more criterion, so a model can apply only
+to what is posted in one journal.</p>
+<ul>
+<li>A <strong>Journal</strong> field on every analytic distribution model, in the form and as
+a column in the list.</li>
+<li>A model with a journal applies only to items posted in that journal; items
+from other journals ignore it.</li>
+<li>Models without a journal keep applying everywhere, as before.</li>
+<li>Useful to split costs differently per sales channel, purchase journal, bank
+or miscellaneous journal without extra rules.</li>
+</ul>
 
       </div>
       <hr class="my-4" />
@@ -120,72 +126,46 @@ keep applying everywhere, as before.</p>
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li><strong>Journal-scoped analytic distribution</strong> — pin any analytic distribution model to a specific journal so it fires only for lines posted in that journal.</li>
-<li><strong>Fully backward-compatible</strong> — models with no journal set continue to apply to all journals, preserving existing behaviour.</li>
-<li><strong>No extra configuration</strong> — the <code>journal_id</code> field is added directly to the existing <code>account.analytic.distribution.model</code> form and list views.</li>
-<li><strong>Granular cost allocation</strong> — separate analytic plans per journal type (e.g. sales vs. purchases vs. bank) without writing custom code.</li>
-<li><strong>Lightweight extension</strong> — depends only on the standard <code>account</code> module; no additional apps required.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>No dedicated configuration steps are required beyond installing the module. The <strong>Journal</strong> field is immediately available on every analytic distribution model record.</p>
-<p>If you manage many models and want to review which ones are journal-restricted:</p>
-<ol>
-<li>Go to <strong>Accounting → Configuration → Analytic Distribution Models</strong>.</li>
-<li>The list view now includes a <strong>Journal</strong> column. Use the built-in <strong>Group By</strong> or <strong>Filter</strong> controls to sort or filter models by journal.</li>
-<li>Adjust the <strong>Journal</strong> field on each model as needed and save.</li>
+      <ol>
+<li>Make sure analytic accounting is enabled: <strong>Invoicing &gt; Configuration &gt;
+Settings</strong>, section <strong>Analytics</strong>, option <strong>Analytic Accounting</strong>.</li>
+<li>Go to <strong>Invoicing &gt; Configuration &gt; Analytic Distribution Models</strong>.</li>
+<li>Open a model (or create one) and choose the <strong>Journal</strong> it is meant for.</li>
+<li>Save.</li>
 </ol>
-
-<hr class="my-4" />      <p>To install this module, you need to:</p>
-<ul>
-<li>clone the branch 19.0 of the repository
-<a href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
-<li>add the path to this repository in your configuration (addons-path)</li>
-<li>update the module list</li>
-<li>search for &quot;NextERP - Analytic Distribution Models by Journal&quot; in your addons</li>
-<li>install the module</li>
-</ul>
+<p>Leave <strong>Journal</strong> empty on the models that should keep applying to every
+journal. The <strong>Journal</strong> column of the list can be used to group or filter the
+models.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <h2>Pinning an Analytic Distribution Model to a Journal</h2>
-<ol>
-<li>Go to <strong>Accounting → Configuration → Analytic Distribution Models</strong>.</li>
-<li>Open an existing model or click <strong>New</strong> to create one.</li>
-<li>In the <strong>Journal</strong> field, select the journal (e.g. <em>Customer Invoices</em>, <em>Vendor Bills</em>, <em>Bank</em>) to which this model should be restricted.</li>
-<li>Save the record.</li>
+      <ol>
+<li>Create or open a document whose lines are posted in a journal pinned on a
+model, for example a vendor bill in the journal chosen on the model.</li>
+<li>Fill in the lines as usual: the analytic distribution of the model is set
+on the matching lines.</li>
+<li>Post the same kind of line in another journal: the pinned model is ignored
+and only the models without a journal (or pinned to that journal) apply.</li>
 </ol>
-<p>From this point on, when Odoo auto-applies analytic distributions to journal items (<code>account.move.line</code>), the model will only match lines that belong to the selected journal. Lines posted in any other journal will skip this model entirely.</p>
-<h2>Leaving a Model Journal-agnostic</h2>
-<p>If the <strong>Journal</strong> field is left empty, the model behaves exactly as in standard Odoo — it is applied to journal items from <strong>all</strong> journals, just as before installation of this module.</p>
-<h2>Typical scenario</h2>
-<p>You have two cost centres and want:</p>
-<ul>
-<li><em>Project costs</em> analytic plan → applied only to lines in the <strong>Vendor Bills</strong> journal.</li>
-<li><em>Operating expenses</em> analytic plan → applied to every other journal.</li>
-</ul>
-<p>Steps:</p>
-<ol>
-<li>Open the <em>Project costs</em> distribution model and set <strong>Journal</strong> = <code>Vendor Bills</code>.</li>
-<li>Leave the <em>Operating expenses</em> model's <strong>Journal</strong> field blank.</li>
-<li>Post a vendor bill — only the <em>Project costs</em> model fires.</li>
-<li>Post a bank payment — only the <em>Operating expenses</em> model fires.</li>
-</ol>
+<p>Example: a <em>Project costs</em> model pinned to the vendor bills journal and an
+<em>Operating expenses</em> model with no journal. A vendor bill picks up <em>Project
+costs</em>; a bank or miscellaneous entry picks up only <em>Operating expenses</em>.</p>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.1 (2026-09-28)</h2>
+      <h2>19.0.1.0.2</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.1.0.1 (2026-09-28)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

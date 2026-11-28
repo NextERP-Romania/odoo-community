@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP - Sale Down Payment Product</h1>
         <p class="lead text-muted mb-3">Use a configurable product on sale order down payment lines</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.1</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Sales</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">OPL-1</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,13 +46,21 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>In Odoo 19 the down payment lines created on a sale order (and the
-related down payment invoice lines) have no product. This module adds
-a company-level <strong>Down Payment Product</strong> setting; when it is set, the
-product is added on every new down payment sale order line and on the
-down payment invoice line.</p>
-<p>The income account of the down payment invoice line is also taken from
-this product when no company <em>Down Payment Account</em> is configured.</p>
+        <p>Down payment lines on a sales order, and the down payment lines on the
+invoice that follows, normally carry no product. That makes them harder to
+report on and to tell apart from the other lines.</p>
+<p>This module adds a <strong>Down Payment Product</strong> setting per company. Once it is
+set, every new down payment carries that product, on the sales order and on
+the invoice.</p>
+<ul>
+<li>One product for all down payments of a company, chosen in the settings.</li>
+<li>Added automatically when a down payment invoice is created; the usual
+<strong>Create Invoice</strong> flow does not change.</li>
+<li>The line description stays the usual <em>Down Payment</em> text.</li>
+<li>When the company has no <strong>Down Payment Account</strong> set, the income account
+of the down payment line is taken from the product.</li>
+<li>Set separately for each company in a multi-company database.</li>
+</ul>
 
       </div>
       <hr class="my-4" />
@@ -123,43 +128,45 @@ this product when no company <em>Down Payment Account</em> is configured.</p>
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li><strong>Configurable Down Payment Product</strong> — set a company-level <code>l10n_ro_sale_down_payment_product_id</code> so every sale order down payment line and its invoice counterpart carry a real product.</li>
-<li><strong>Fills the Odoo 19 gap</strong> — standard Odoo 19 down payment lines have no product; this module restores product-level tracking without patching core code.</li>
-<li><strong>Income account fallback</strong> — when no company <em>Down Payment Account</em> is configured, the income account is derived from the selected down payment product.</li>
-<li><strong>Multi-company ready</strong> — the setting is stored per company (<code>res.company</code>) and exposed in <em>Settings → Default Accounts</em> for each entity.</li>
-<li><strong>Zero workflow change</strong> — the standard <em>Create Invoice → Down Payment</em> flow is unchanged; the product is injected automatically behind the scenes.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
       <ol>
-<li>Go to <strong>Invoicing / Accounting -&gt; Configuration -&gt; Settings</strong>.</li>
-<li>In the <strong>Default Accounts</strong> block, next to <em>Down Payment Account</em>,
-select the <strong>Down Payment Product</strong> (service product).</li>
-<li>Save. Repeat for each company in a multi-company database.</li>
+<li>Create a service product to use for down payments, for example
+<em>Down Payment</em>, with the income account it should be booked on.</li>
+<li>Go to <strong>Invoicing &gt; Configuration &gt; Settings</strong> (or <strong>Accounting &gt;
+Configuration &gt; Settings</strong>).</li>
+<li>In the <strong>Default Accounts</strong> section, under <strong>Down Payment Account</strong>,
+select the product in <strong>Sale Down Payment Product</strong>.</li>
+<li>Click <strong>Save</strong>.</li>
 </ol>
+<p>In a multi-company database, switch to each company and repeat the steps.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <p>Create a down payment from a sale order (<strong>Create Invoice -&gt; Down
-payment (percentage / fixed amount)</strong>). The new down payment line on
-the sale order and the down payment invoice line will have the product
-from settings. The line description stays the standard <em>Down Payment</em>
-text.</p>
+      <ol>
+<li>Open a confirmed sales order in <strong>Sales &gt; Orders &gt; Orders</strong>.</li>
+<li>Click <strong>Create Invoice</strong>.</li>
+<li>Choose <strong>Down payment (percentage)</strong> or <strong>Down payment (fixed amount)</strong>,
+enter the amount and click <strong>Create Draft</strong>.</li>
+<li>The new down payment line on the sales order and the line on the draft
+invoice both carry the product from the settings.</li>
+<li>Post the invoice as usual. When the final invoice is created, the down
+payment is deducted with the same product.</li>
+</ol>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.0 (2026-11-05)</h2>
+      <h2>19.0.1.0.1</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.1.0.0 (2026-11-05)</h2>
 <ul>
 <li>Initial version.</li>
 </ul>

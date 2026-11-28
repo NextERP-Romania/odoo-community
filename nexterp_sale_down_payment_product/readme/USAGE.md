@@ -1,5 +1,8 @@
-Create a down payment from a sale order (**Create Invoice -> Down
-payment (percentage / fixed amount)**). The new down payment line on
-the sale order and the down payment invoice line will have the product
-from settings. The line description stays the standard *Down Payment*
-text.
+1. Open a confirmed sales order in **Sales > Orders > Orders**.
+2. Click **Create Invoice**.
+3. Choose **Down payment (percentage)** or **Down payment (fixed amount)**,
+   enter the amount and click **Create Draft**.
+4. The new down payment line on the sales order and the line on the draft
+   invoice both carry the product from the settings.
+5. Post the invoice as usual. When the final invoice is created, the down
+   payment is deducted with the same product.

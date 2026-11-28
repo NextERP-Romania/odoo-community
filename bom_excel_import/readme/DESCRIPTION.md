@@ -1,17 +1,14 @@
-Import Bills of Materials, operations and workcenters from a single Excel
-spreadsheet, without touching Odoo's standard data-import tooling. The
-module ships a guided wizard that walks through file upload, operations
-creation and BOM-line creation, and reports a detailed log for every row.
+Load bills of materials, their operations and work centers from one Excel
+spreadsheet instead of typing them in one by one. A guided wizard reads the
+file, creates what is missing and shows a log of every row it handled.
 
-The expected sheet layout is fixed and column-positional: product
-produced, operation name, consumed quantity, component UoM, component,
-workcenter, subcontracting flag and a comma-separated list of
-subcontractors. Missing workcenters and missing products are created on
-the fly (storable goods with the product name as default code) so a
-typical first import bootstraps the whole manufacturing master data.
-
-Best suited for teams migrating MRP data from a legacy ERP, prototyping
-manufacturing setups from a planning spreadsheet, or maintaining BOMs
-externally in Excel and pushing them into Odoo at intervals. Existing
-BOMs and components are detected and skipped instead of being
-duplicated.
+- **One file, all master data**: produced product, operation, component,
+  quantity, unit of measure, work center and subcontractors on one row.
+- **Missing records created on the fly**: unknown work centers and products
+  are created, so a first import can set up manufacturing from scratch.
+- **Subcontracting aware**: a row can mark the bill of materials as
+  subcontracted and name the subcontractors.
+- **No duplicates**: bills of materials and components that already exist
+  are detected and skipped.
+- **Readable log**: counters and a row-by-row log of everything created,
+  skipped or rejected.

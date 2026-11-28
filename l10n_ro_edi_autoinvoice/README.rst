@@ -11,37 +11,31 @@ Romania - E-invoicing Self-Invoices
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Takes in from the SPV the self-invoices (*autofacturi*) your customers
-issue in your name.
+Self-invoices that your customers issue in your company's name and
+upload to the SPV are taken in as customer invoices, not as vendor
+bills. The customer uploads them, but they show your company as
+supplier: they are your sales.
 
-Such an invoice is uploaded by the customer, but it carries your company
-as supplier and the customer as buyer: it is a sale of yours, not a
-vendor bill. Without this module, the SPV synchronization would import
-it as a bill.
+The module also handles the other direction. When you issue
+self-invoices in a supplier's name, they are sent to ANAF in the form
+ANAF accepts.
 
--  It is recognised from the XML: the supplier is your company and the
-   buyer is somebody else. A document listed as sent counts only when it
-   carries the self-billing type code 389, so your own invoices are
-   never mistaken for one.
--  It becomes a customer invoice. In the customer's self-invoicing
-   journal it keeps the number the customer gave it and is posted;
-   without such a journal it is a draft in the first sale journal.
--  It is marked as validated in the SPV, so it is never sent to ANAF
-   again, and a later synchronization does not duplicate it.
--  Both synchronizations take it in: the ``l10n_ro_edi`` one and the SPV
-   messages of ``l10n_ro_message_spv``.
-
-It also covers the other direction, the self-invoices you issue in your
-suppliers' name (a vendor bill or refund on a **Supplier Auto
-Invoicing** journal):
-
--  they are uploaded to the SPV with ``autofactura=DA``, without which
-   ANAF refuses a document whose supplier is not the uploader, with
-   ``standard=UBL`` for invoices and ``CN`` only for credit notes, and
-   with ANAF's own refusal reason kept in the chatter;
--  their credit notes carry ``CreditNoteTypeCode`` 381, the only one
-   CIUS-RO accepts, instead of the 261 Odoo sets on self-billing credit
-   notes. The invoices already carry 389.
+-  **Reliable recognition**: a document counts as a self-invoice only
+   when your company is the supplier and the document is marked as
+   self-billed, so your own invoices are never mistaken for one.
+-  **The customer's number is kept**: in a self-invoicing journal set up
+   for that customer, the invoice keeps the number the customer gave it
+   and is posted automatically.
+-  **No duplicates**: the invoice is marked as validated in the SPV, so
+   a later synchronization does not create it again and it is never sent
+   back to ANAF.
+-  **Both synchronizations covered**: the scheduled e-Factura download
+   and the **Messages SPV** list.
+-  **Outgoing self-invoices**: vendor bills and refunds on a supplier
+   self-invoicing journal are uploaded as self-invoices, and their
+   credit notes carry the type code CIUS-RO accepts.
+-  **Protected drafts**: a self-invoice left in draft cannot be deleted
+   and can only be posted in a customer self-invoicing journal.
 
 
 **Table of contents**
@@ -49,84 +43,66 @@ Invoicing** journal):
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Automatic ingestion of autofacturi** — self-invoices customers
-   upload to the SPV in your company's name are taken in as customer
-   invoices, not vendor bills.
--  **Reliable XML recognition** — a document is treated as a
-   self-invoice only when the supplier VAT matches your company and the
-   UBL type code is 389, so your own outgoing invoices are never
-   confused with one.
--  **Dedicated self-invoicing journals** — set ``l10n_ro_sequence_type``
-   to *Customer Auto Invoicing* and ``l10n_ro_partner_id`` to the
-   customer; the imported invoice keeps the customer's own number and is
-   posted automatically.
--  **SPV deduplication** — an imported self-invoice is immediately
-   flagged as validated in the SPV so a later synchronization never
-   creates a duplicate.
--  **Both SPV sync paths covered** — works with the ``l10n_ro_edi``
-   scheduled sync and with the **SPV Messages** list from
-   ``l10n_ro_message_spv`` (ticked *Self-Invoice* → *Create Invoice*).
--  **Outbound autofacturi handled too** — vendor bills/refunds on a
-   *Supplier Auto Invoicing* purchase journal are uploaded to ANAF with
-   ``autofactura=DA``, ``standard=UBL`` (or ``CN`` for credit notes),
-   and ``CreditNoteTypeCode`` 381 instead of Odoo's default 261.
--  **Company-level toggle** — ``l10n_ro_create_customer_autoinvoice`` in
-   **Settings → Accounting** controls whether self-invoices are taken in
-   as customer invoices at all.
--  **No enterprise dependency** — the *Ro Auto Invoicing* journal fields
-   are added by this module itself; ``l10n_ro_account_enterprise`` is
-   optional.
-
 Configuration
 =============
 
-For every customer who issues self-invoices in your name, create a sale
-journal in **Accounting → Configuration → Journals** with:
+1. Go to **Invoicing > Configuration > Settings**, section **Customer
+   Invoices**, and check that **Create Customer Self-Invoices** is
+   enabled for the company.
+2. For every customer who issues self-invoices in your name, open
+   **Invoicing > Configuration > Accounting > Journals** and create a
+   journal with:
 
-================================================ =======================
-Field                                            Value
-================================================ =======================
-**Type**                                         Sales
-**Ro Sequence Type** (``l10n_ro_sequence_type``) Customer Auto Invoicing
-**Ro Partner** (``l10n_ro_partner_id``)          the customer
-================================================ =======================
+   -  **Type**: *Sales*;
+   -  in the **Ro Auto Invoicing** group, **Ro Sequence Type**:
+      *Customer Auto Invoicing*;
+   -  **Ro Partner**: the customer.
 
-For the self-invoices you issue in a supplier's name, the purchase
-journal works the same way, with **Supplier Auto Invoicing** and the
-supplier as **Ro Partner**.
+3. For the self-invoices you issue in a supplier's name, create a
+   *Purchase* journal the same way, with **Ro Sequence Type** *Supplier
+   Auto Invoicing* and the supplier as **Ro Partner**.
 
-The fields are in the **Ro Auto Invoicing** group of the journal form,
-on sale and purchase journals. The module adds them itself, so
-``l10n_ro_account_enterprise`` is not needed; when it is installed, its
-own group shows them instead. Without a journal for the customer, its
-self-invoices are created as drafts in the first sale journal.
+Without a journal for a customer, its self-invoices are created as
+drafts in the first sales journal. The self-invoicing type and partner
+of a journal can no longer be changed once the journal has posted
+entries.
+
+The SPV connection itself (ANAF credentials) is the one set up for
+e-Factura.
 
 Usage
 =====
 
-Nothing to do by hand: the SPV synchronizations take the self-invoices
-in as they arrive.
+Self-invoices received from customers
+-------------------------------------
 
-1. The scheduled synchronization of ``l10n_ro_edi`` creates them
-   directly as customer invoices.
-2. In **SPV Messages** they are ticked **Self-Invoice**; **Create
-   Invoice** creates them the same way.
-3. A self-invoice posted in the customer's journal carries the
-   customer's number. One left in draft says why in its chatter: no
-   journal for the customer, or the error that stopped the posting.
-4. A self-invoice you issue in a supplier's name is posted on the
-   supplier's **Supplier Auto Invoicing** purchase journal and sent to
-   ANAF like any invoice (**Send & Print** or the send cron); it goes up
-   as *autofactura*.
+1. Nothing to do by hand: the scheduled e-Factura synchronization
+   creates the self-invoices directly as customer invoices.
+2. In **Invoicing > Accounting > SPV > Messages SPV** they are ticked
+   **Self-Invoice**; **Create Invoice** creates them the same way.
+3. Open **Invoicing > Customers > Invoices**. A self-invoice posted in
+   the customer's journal carries the customer's number.
+4. A self-invoice left in draft explains why in its chatter: no journal
+   for that customer, or the error that stopped the posting. Create the
+   journal, set it on the invoice and confirm.
+
+Self-invoices issued in a supplier's name
+-----------------------------------------
+
+1. Create the vendor bill or refund on the supplier's *Supplier Auto
+   Invoicing* journal and confirm it.
+2. Send it to ANAF like any invoice, with **Send & Print** or by the
+   scheduled sending. It is uploaded as a self-invoice, and ANAF's
+   answer is kept in the chatter.
 
 Changelog
 =========
+
+19.0.1.1.2
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.1.0 (2026-11-05)
 -----------------------
@@ -143,12 +119,10 @@ Changelog
 -----------------------
 
 -  First version: self-invoices issued by customers in the company's
-   name, taken in from the SPV as customer invoices, with the
-   self-invoicing fields on sale and purchase journals; the
-   self-invoices issued in a supplier's name are uploaded with
-   ``autofactura=DA`` (moved from ``account_invoice_delivery_sheet``)
-   and their credit notes carry ``CreditNoteTypeCode`` 381 (moved from
-   ``l10n_ro_edi_extension``).
+   name are taken in from the SPV as customer invoices, with the
+   self-invoicing settings on sales and purchase journals; self-invoices
+   issued in a supplier's name are uploaded as self-invoices, with the
+   credit note type code CIUS-RO accepts.
 
 Bug Tracker
 ===========

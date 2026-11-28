@@ -1,13 +1,24 @@
-Takes in from the SPV the self-invoices (*autofacturi*) your customers issue in your name.
+Self-invoices that your customers issue in your company's name and upload
+to the SPV are taken in as customer invoices, not as vendor bills. The
+customer uploads them, but they show your company as supplier: they are
+your sales.
 
-Such an invoice is uploaded by the customer, but it carries your company as supplier and the customer as buyer: it is a sale of yours, not a vendor bill. Without this module, the SPV synchronization would import it as a bill.
+The module also handles the other direction. When you issue self-invoices
+in a supplier's name, they are sent to ANAF in the form ANAF accepts.
 
-- It is recognised from the XML: the supplier is your company and the buyer is somebody else. A document listed as sent counts only when it carries the self-billing type code 389, so your own invoices are never mistaken for one.
-- It becomes a customer invoice. In the customer's self-invoicing journal it keeps the number the customer gave it and is posted; without such a journal it is a draft in the first sale journal.
-- It is marked as validated in the SPV, so it is never sent to ANAF again, and a later synchronization does not duplicate it.
-- Both synchronizations take it in: the `l10n_ro_edi` one and the SPV messages of `l10n_ro_message_spv`.
-
-It also covers the other direction, the self-invoices you issue in your suppliers' name (a vendor bill or refund on a **Supplier Auto Invoicing** journal):
-
-- they are uploaded to the SPV with `autofactura=DA`, without which ANAF refuses a document whose supplier is not the uploader, with `standard=UBL` for invoices and `CN` only for credit notes, and with ANAF's own refusal reason kept in the chatter;
-- their credit notes carry `CreditNoteTypeCode` 381, the only one CIUS-RO accepts, instead of the 261 Odoo sets on self-billing credit notes. The invoices already carry 389.
+- **Reliable recognition**: a document counts as a self-invoice only when
+  your company is the supplier and the document is marked as self-billed,
+  so your own invoices are never mistaken for one.
+- **The customer's number is kept**: in a self-invoicing journal set up for
+  that customer, the invoice keeps the number the customer gave it and is
+  posted automatically.
+- **No duplicates**: the invoice is marked as validated in the SPV, so a
+  later synchronization does not create it again and it is never sent back
+  to ANAF.
+- **Both synchronizations covered**: the scheduled e-Factura download and
+  the **Messages SPV** list.
+- **Outgoing self-invoices**: vendor bills and refunds on a supplier
+  self-invoicing journal are uploaded as self-invoices, and their credit
+  notes carry the type code CIUS-RO accepts.
+- **Protected drafts**: a self-invoice left in draft cannot be deleted and
+  can only be posted in a customer self-invoicing journal.

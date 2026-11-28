@@ -11,7 +11,18 @@ NextERP -  Account Button Credit Note
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-This module is customize odoo for Utilben.
+The **Credit Note** dialog of an invoice offers a button that reverses
+the invoice and opens a new draft invoice copied from it in a single
+step. Many teams prefer each document to be issued on purpose. This
+module removes that shortcut, so a reversal only creates the credit
+note.
+
+-  Hides **Reverse and Create Invoice** in the credit note dialog of
+   customer invoices and vendor bills.
+-  **Reverse** stays available: the credit note is created as before.
+-  A replacement invoice, when needed, is created on its own, like any
+   new invoice.
+-  Nothing to configure.
 
 
 **Table of contents**
@@ -19,68 +30,32 @@ This module is customize odoo for Utilben.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
+Configuration
+=============
 
-Key features
-============
-
--  **Hides the Reverse button** on credit note forms (``out_refund`` /
-   ``in_refund``) to prevent accidental double-reversal.
--  **Hides the Create Invoice button** on credit note forms, keeping the
-   UI clean and reducing operator errors.
--  **Zero configuration** — rules are applied automatically through view
-   inheritance on ``account.move`` after installation.
--  **Standard invoice workflow unchanged** — buttons remain available on
-   regular customer invoices and vendor bills.
--  **Lightweight dependency** — extends only the core ``account``
-   module; no additional localization or third-party modules required.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 19.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Account Edi UBL Move Date" in your addons
--  install the module
+Nothing to configure: the button is hidden as soon as the module is
+installed, for every company and every user.
 
 Usage
 =====
 
-Usage
-=====
-
-Hiding the Reverse and Create Invoice buttons on credit notes
--------------------------------------------------------------
-
-Once the module is installed, the **Reverse** and **Create Invoice**
-action buttons are automatically hidden on ``account.move`` records that
-are credit notes (reversal entries). No manual steps are needed — the
-visibility rules are applied via view inheritance.
-
-Typical workflow
-~~~~~~~~~~~~~~~~
-
-1. Open **Accounting → Customers → Credit Notes** or **Accounting →
-   Vendors → Refunds**.
-2. Open any existing credit note (a move of type ``out_refund`` or
-   ``in_refund``).
-3. Notice that the **Reverse** and **Create Invoice** buttons that
-   normally appear in the form header are no longer visible, preventing
-   accidental double-reversal or re-invoicing of a credit note.
-
-The buttons remain fully visible on standard customer invoices and
-vendor bills, so the normal invoice workflow is unaffected.
+1. Open a posted invoice from **Invoicing > Customers > Invoices** (or a
+   bill from **Invoicing > Vendors > Bills**).
+2. Click **Credit Note**.
+3. Fill in the reason, the date and the journal, then click **Reverse**:
+   the credit note is created. The **Reverse and Create Invoice** button
+   is no longer offered.
+4. If the customer must be invoiced again, create a new invoice from
+   **Invoicing > Customers > Invoices > New**.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.1.0.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.0 (2026-09-28)
 -----------------------

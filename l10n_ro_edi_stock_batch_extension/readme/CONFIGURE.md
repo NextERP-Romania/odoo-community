@@ -1,5 +1,8 @@
-# Configuration
+No configuration of its own. It is installed automatically when both
+`l10n_ro_edi_stock_batch` and `l10n_ro_edi_stock_extension` are installed,
+and uses their settings (ANAF connection, **Default eTransport Price
+Source**, notifications list synchronization).
 
-This module requires no dedicated configuration steps beyond installing its two dependencies (`l10n_ro_edi_stock_batch` and `l10n_ro_edi_stock_extension`). All configuration required for those modules (ANAF credentials, eTransport product settings, warehouse addresses) applies equally to batch transfers.
-
-The only batch-specific setting is the **eTransport Price Source** field on each batch transfer form, which defaults to *Automatic (by operation)* via `_l10n_ro_edi_stock_default_price_source`. Change it per batch as needed before sending the notification.
+Optionally, in developer mode, activate the scheduled action **eTransport:
+fetch ANAF status of batch transfers** in **Settings > Technical >
+Automation > Scheduled Actions**.
