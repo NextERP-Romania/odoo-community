@@ -1,10 +1,9 @@
-# Configuration
+1. Go to **Invoicing > Configuration > Settings**.
+2. In the **Customer Invoices** section, tick **Allow Delete Last Invoice**.
+3. Click **Save**.
 
-After installing the module, enable the feature per company:
+The option belongs to the current company. In a multi-company database,
+switch to each company that needs it and repeat the steps.
 
-1. Go to **Settings → Invoicing** (or **Settings → Accounting**).
-2. Scroll to the **Invoicing** section and locate the **Allow Delete Last Invoice** checkbox (`account_allow_delete_last_invoice`).
-3. Tick the checkbox to allow deletion of the last invoice in a journal for the current company.
-4. Click **Save**.
-
-Repeat for each company in a multi-company setup that should have this behaviour enabled. Companies where the checkbox is left unticked retain the standard Odoo protection against deleting posted journal entries.
+Keep in mind that an invoice which was already sent to the customer or to a
+tax authority should be cancelled with a credit note, not deleted.

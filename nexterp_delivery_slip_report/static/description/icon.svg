@@ -2,41 +2,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#1d4ed8"/>
+      <stop offset="0%" stop-color="#E31E24"/>
+      <stop offset="55%" stop-color="#CC0C54"/>
+      <stop offset="100%" stop-color="#A81884"/>
     </linearGradient>
   </defs>
   <rect width="256" height="256" rx="48" fill="url(#bg)"/>
 
-  <!-- subtle decorative blobs that survive at small sizes -->
-  <circle cx="220" cy="60" r="60" fill="#ffffff" opacity="0.10"/>
-  <circle cx="40" cy="220" r="40" fill="#ffffff" opacity="0.07"/>
+  <!-- decorative blobs, still readable at small sizes -->
+  <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
+  <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
 
-  <!-- module initials, white, dead center -->
-  <text x="128" y="138"
-        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-        font-size="128"
-        font-weight="800"
-        fill="#ffffff"
-        text-anchor="middle"
-        dominant-baseline="middle"
-        letter-spacing="-2">DSR</text>
-
-  <!-- emoji badge top-right: white pill, category emoji on top -->
-  <circle cx="200" cy="56" r="28" fill="#ffffff" opacity="0.95"/>
-  <text x="200" y="58"
-        font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif"
-        font-size="32"
-        text-anchor="middle"
-        dominant-baseline="middle">📦</text>
-
-  <!-- NextERP mark at the bottom -->
-  <text x="128" y="232"
-        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-        font-size="16"
-        font-weight="600"
-        fill="#ffffff"
-        opacity="0.75"
-        text-anchor="middle"
-        letter-spacing="1">NextERP</text>
+  <!-- the slip that travels with the delivery -->
+  <rect x="44" y="44" width="104" height="132" rx="12" fill="none" stroke="#ffffff" stroke-width="10"/>
+  <rect x="64" y="72" width="64" height="10" rx="5" fill="#ffffff"/>
+  <rect x="64" y="96" width="48" height="10" rx="5" fill="#ffffff" opacity="0.75"/>
+  <rect x="64" y="120" width="56" height="10" rx="5" fill="#ffffff" opacity="0.55"/>
+  <path d="M120 150 H182 L208 176 V196 H120 Z" fill="#ffffff"/>
+  <circle cx="142" cy="208" r="10" fill="#ffffff"/>
+  <circle cx="190" cy="208" r="10" fill="#ffffff"/>
 </svg>

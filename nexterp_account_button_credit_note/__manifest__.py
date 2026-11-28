@@ -4,7 +4,7 @@
 {
     "name": "NextERP -  Account Button Credit Note",
     "summary": "NextERP -  Hide button Reverse and Create Invoice, form credit note",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "author": "NextERP Romania",
     "website": "https://www.nexterp.ro",
     "category": "Special",

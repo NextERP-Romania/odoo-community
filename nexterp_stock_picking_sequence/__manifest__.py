@@ -6,7 +6,7 @@
     "name": "NextERP - Stock Picking Sequence",
     "summary": "Transfers get their number when they are validated, not when "
     "they are created, so the numbering has no gaps",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Stock",
     "depends": ["stock"],
     "author": "NextERP Romania",

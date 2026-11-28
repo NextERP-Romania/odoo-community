@@ -1,35 +1,27 @@
-# Usage
+## Costs from vendor bills
 
-## Linking invoice lines to vehicle costs
+1. Go to **Accounting > Vendors > Bills** and create a bill for fuel,
+   parts or a service.
+2. On each line that concerns a vehicle, choose the **Vehicle** and the
+   **Vehicle Service Type**.
+3. Post the bill. The cost appears on the vehicle, under its services.
+4. If the bill is cancelled, the costs it created are removed; posting it
+   again creates them anew.
 
-### Recording a vehicle expense from a supplier invoice
+## Costs from stock
 
-1. Open or create a supplier invoice (*Accounting → Vendors → Bills*).
-2. On each invoice line that relates to a vehicle, fill in the **Vehicle Service Type** field (`fleet_service_type_id`) to categorise the expense (e.g. fuel, maintenance, insurance).
-3. If the product on the line has **Generate Vehicle Contract** enabled (`vehicle_contract = True`), a `fleet.vehicle.log.contract` record is created automatically on validation.
-4. Validate the invoice. Vehicle cost logs appear linked to the relevant vehicle.
-5. Use the smart buttons **Vehicle Services** and **Vehicle Contracts** that appear on the invoice form (`has_vehicle_services` / `has_vehicle_contracts`) to jump directly to the generated cost records.
+1. Create an internal transfer or a consumption from the warehouse to the
+   vehicles' consumption location.
+2. On the move, choose the **Vehicle** and, if needed, the **Vehicle
+   Service Type**.
+3. Validate the transfer. The value of the goods is booked as a cost of the
+   vehicle; for a non-deductible vehicle, its percentage and tax are
+   applied.
+4. To correct it, return the goods: the return books a negative cost on the
+   same vehicle.
 
-### Cancelling an invoice with vehicle costs
+## Reporting
 
-1. Click **Reset to Draft** / **Cancel** on the invoice. The module's `button_cancel` override automatically reverses (`cancel_vehicle_cost`) the associated `fleet.vehicle.log.services` or `fleet.vehicle.log.contract` entries so the vehicle history stays accurate.
-
-## Linking stock moves to vehicle costs
-
-### Recording a refuelling from a warehouse receipt
-
-1. Open a receipt or internal transfer (*Inventory → Operations → Transfers*).
-2. On the detailed move form, set the **Vehicle** field (`vehicle_id`) on the stock move line.
-3. Tick **Refuel** (`refuel = True`) if the move represents a fuel top-up.
-4. The **Vehicle Service Type** (`fleet_service_type_id`) is computed automatically from the product; you can override it on the move form.
-5. Validate the transfer. The module's `_action_done` hook calls `create_vehicle_cost`, writing a `fleet.vehicle.log.services` record linked via `move_line_id` and `stock_move_id`.
-
-## Fleet reporting
-
-### Costs Analysis Log
-
-1. Go to **Fleet → Reporting → Costs Log**.
-2. Use the search bar to filter by vehicle, service type, date range, or owner.
-3. Switch between the **list** and **pivot** views to analyse total expenditure per vehicle or category.
-
-![Costs Analysis Log pivot view](./fleet_costs_log_pivot.png)
+1. Go to **Fleet > Reporting > Costs Log**.
+2. Filter by vehicle, service type or period and switch between the pivot
+   and list views to compare costs per vehicle and per category.

@@ -12,12 +12,19 @@ NextERP - Stock Picking Sequence
 
 
 A transfer takes the next number of its operation type as soon as it is
-created. Transfers prepared and then cancelled, or deleted, leave holes
-in the numbering of the receipts and delivery notes.
+created. Transfers prepared and then cancelled or deleted leave holes in
+the numbering of receipts and delivery notes.
 
 With this module a transfer gets a draft name when it is created and its
 real number only when it is validated, in the order the transfers are
 done.
+
+-  Draft name on creation, taken from a separate draft sequence.
+-  Final number from the operation type's own sequence, given on
+   validation.
+-  No gaps left by cancelled or deleted transfers.
+-  Switched on per company; companies that leave it off keep numbering
+   on creation.
 
 
 **Table of contents**
@@ -28,12 +35,36 @@ done.
 Configuration
 =============
 
-In *Inventory > Configuration > Settings*, tick **Assign Picking Number
-in Action Done** and pick the **Draft Picking Sequence** (the module
-brings one, with the prefix ``Draft-``). The setting is per company.
+1. Go to **Inventory > Configuration > Settings**.
+2. In the **Operations** section, tick **Assign Picking Number in Action
+   Done**.
+3. In **Draft Picking Sequence**, keep the sequence the module brings
+   (prefix *Draft-*) or choose another one.
+4. Click **Save**.
+
+The setting is per company: switch to each company that should use it
+and repeat the steps.
+
+Usage
+=====
+
+1. Create a receipt, a delivery or any other transfer, by hand or from a
+   sales or purchase order.
+2. The transfer is saved under a draft name, for example *Draft-00012*.
+3. Work on it as usual: check availability, set the quantities.
+4. Click **Validate**. The transfer now takes the next number of its
+   operation type, for example *WH/OUT/00045*.
+5. A transfer cancelled or deleted before validation never takes a
+   number, so the numbering of done transfers has no gaps.
 
 Changelog
 =========
+
+19.0.1.0.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.0 (2026-11-23)
 -----------------------

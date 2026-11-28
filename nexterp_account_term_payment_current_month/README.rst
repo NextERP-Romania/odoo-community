@@ -11,7 +11,17 @@ NextERP - Payment Term Current Month
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-This module is customize odoo for Utilben, add new termen_payment .
+Adds a payment term rule that sets the due date on a fixed day of the
+month in which the invoice is issued, for example *on the 25th of the
+same month*.
+
+-  New delay type **Day of the current Month** on payment term lines.
+-  The due date is that day of the invoice's month, whatever the invoice
+   date.
+-  Can be combined with other lines, for example part on the 15th and
+   the balance on the last working days.
+-  Payment term lines using the rule fall back to the standard delay
+   type if the module is uninstalled.
 
 
 **Table of contents**
@@ -19,114 +29,34 @@ This module is customize odoo for Utilben, add new termen_payment .
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **New "Current Month" delay type** added to
-   ``account.payment.term.line``, complementing Odoo's built-in *Days*,
-   *End of Month* and *End of Next Month* options.
--  **Automatic due-date calculation** anchored to the current calendar
-   month, so due dates never spill into the following month
-   unexpectedly.
--  **Drop-in extension** — inherits ``account.payment.term`` and
-   ``account.payment.term.line`` with no breaking changes to existing
-   terms.
--  **Works across all accounting documents** — customer invoices, vendor
-   bills, credit notes and payment schedules all respect the new delay
-   type.
--  **No extra configuration required** — install the module and the new
-   delay type appears immediately in the Payment Terms configuration UI.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 19.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Account Edi UBL Move Date" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
-
-After installing ``nexterp_account_term_payment_current_month``, create
-or edit a payment term to use the new delay type.
-
-1. Open Payment Terms
----------------------
-
-Go to **Accounting → Configuration → Payment Terms**.
-
-2. Create or edit a Payment Term
---------------------------------
-
-Click **New** (or open an existing term).
-
-3. Add a term line with the Current Month delay type
-----------------------------------------------------
-
-In the **Terms** tab, add a line and set:
-
-+----------------+----------------------------------------------------+
-| Field          | Value                                              |
-+================+====================================================+
-| **Due Type**   | *Balance* (or a percentage)                        |
-+----------------+----------------------------------------------------+
-| **Delay Type** | Select the new **Current Month** option introduced |
-|                | by this module                                     |
-+----------------+----------------------------------------------------+
-| **Days**       | Number of days within the current month (e.g.      |
-|                | ``0`` for end-of-month)                            |
-+----------------+----------------------------------------------------+
-
-4. Save and assign
-------------------
-
--  Click **Save**.
--  Assign the new payment term to a customer, vendor, or directly on a
-   document via the **Payment Terms** field.
+1. Go to **Invoicing > Configuration > Payment Terms**.
+2. Create a payment term or open an existing one.
+3. On a term line, fill in **After** with the day of the month (for
+   example *25*) and choose **Day of the current Month** as delay type.
+4. Save, and set the payment term on customers, vendors or documents.
 
 Usage
 =====
 
-Usage
-=====
-
-Using a "Current Month" Payment Term on an Invoice
---------------------------------------------------
-
-1. Open **Accounting → Customers → Invoices** (or **Vendors → Bills**).
-2. Select or create a document and locate the **Payment Terms** field.
-3. Choose a payment term that was configured with the *Current Month*
-   delay type (see CONFIGURE).
-4. Confirm the invoice. The **Due Date** field is automatically
-   calculated so that it falls at the end of the current calendar month
-   (or the configured number of days within the current month), rather
-   than counting days from the invoice date.
-
-Verifying the computed due date
--------------------------------
-
--  After selecting the payment term, Odoo recalculates and displays the
-   **Due Date** immediately in the invoice header.
--  For payment terms that split the balance into multiple lines, each
-   line's due date is shown in the **Payment term** breakdown pop-up
-   (click the ℹ icon next to the due date).
+1. Create an invoice or a bill.
+2. Select the payment term that uses **Day of the current Month**.
+3. Fill in the invoice date: the **Due Date** is set to the configured
+   day of that same month (an invoice of 10 March with *25* is due on 25
+   March).
+4. Confirm the invoice; the due date is also used by the follow-up of
+   receivables and payables.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.1.1.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.1.0 (2026-11-05)
 -----------------------

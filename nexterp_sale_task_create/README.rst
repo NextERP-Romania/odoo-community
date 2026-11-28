@@ -11,24 +11,24 @@ NextERP - Auto Create Sale Tasks
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-Switch project-task creation on ``sale_project`` from always-on to
-opt-in. Standard Odoo creates a task as soon as a sale order with a
-service product is confirmed; this module gates that behaviour behind a
-per-order **Auto Create Sale Tasks** flag (defaulted from the company
-setting) and adds a **Generate Tasks** button so users can trigger the
-creation manually when the flag is off.
+Confirming a sales order with service products set to create tasks
+normally creates those tasks straight away. That is not always wanted:
+an order may be confirmed long before the project is staffed, or tasks
+may be planned in a later step.
 
-The override lives in ``sale.order.line._timesheet_service_generation``:
-when the ``create_tasks`` context key is missing, the standard generator
-only runs for SO lines whose order has ``sale_create_taks_auto = True``.
-The button on the sale order form calls ``action_generate_tasks``, which
-loops through the order's lines and runs the generator with
-``create_tasks=True`` for any line that does not yet have a ``task_id``.
+This module makes task creation a choice, per company and per order, and
+adds a button to create the tasks when the time comes.
 
-Targets project / services businesses where confirming a quotation
-should not always spawn tasks — for instance when sales teams prepare
-orders ahead of project staffing, or when tasks are created later from
-an external planning step.
+-  **Auto Create Sale Tasks** setting per company, used as the default
+   for new orders.
+-  The same option on every sales order, so one order can differ from
+   the company default.
+-  A **Generate Tasks** button on orders where automatic creation is
+   off.
+-  The button only creates the tasks that are still missing, so it can
+   be clicked again after lines are added.
+-  Salespeople can create the tasks of their own orders even without
+   full access to Project.
 
 
 **Table of contents**
@@ -36,163 +36,61 @@ an external planning step.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  New boolean **Auto Create Sale Tasks** on ``res.company``, exposed in
-   **Settings → Sales → Quotations & Orders**, controlling the default
-   behaviour for all sale orders of that company.
--  Matching boolean on ``sale.order``, initialised from the company
-   setting via an ``onchange`` on ``company_id`` and shown next to the
-   payment terms on the order form.
--  Override of ``sale.order.line._timesheet_service_generation``:
-
-   -  if the context flag ``create_tasks=True`` is passed, all lines in
-      ``self`` go through the standard generator;
-   -  otherwise the override filters lines so only those whose order has
-      ``sale_create_taks_auto=True`` trigger task creation.
-
--  New action ``sale.order.action_generate_tasks`` iterating over
-   ``order.order_line``, calling ``_timesheet_service_generation`` with
-   ``create_tasks=True`` only on lines that do not yet have a
-   ``task_id``; ``with_company`` is used so multi-company orders keep
-   the right project context.
--  New **Generate Tasks** button on the sale order form, placed next to
-   *Set to Draft*, visible only when **Auto Create Sale Tasks** is off —
-   turning the action into a one-click manual fallback.
--  All ``sudo()`` and company switching is handled inside the action so
-   salespeople without full project access can still trigger task
-   creation on their own orders.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 14.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Auto Create Sale Tasks" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+Company default
+---------------
 
-1. Company default
-------------------
+1. Go to **Sales > Configuration > Settings**.
+2. In the **Quotations & Orders** section, find **Auto Create Sale
+   Tasks**.
+3. Tick it to keep creating tasks automatically when an order is
+   confirmed; leave it unticked to create them only on request.
+4. Click **Save**.
 
-1. Go to **Settings → Sales → Quotations & Orders**.
-2. Locate the **Auto Create Sale Tasks** setting.
-3. Tick it to keep the standard Odoo behaviour (tasks created
-   automatically when a sale order with service lines is confirmed).
-4. Leave it unticked to switch the company to manual mode — sale orders
-   will not generate tasks until the user clicks **Generate Tasks** on
-   each order.
-5. Click **Save**.
-
-2. Per-order override
+What must be in place
 ---------------------
 
-1. Open any quotation or sale order in **Sales → Orders → Quotations /
-   Orders**.
-2. Next to the **Payment Terms** field, the **Auto Create Sale Tasks**
-   checkbox is shown. It is filled from the company default via the
-   ``onchange`` on **Company**, but you can override it per order:
-
-   -  **On** — tasks are created automatically on confirmation.
-   -  **Off** — no tasks are created until **Generate Tasks** is
-      clicked.
-
-3. Prerequisites
-----------------
-
--  The module depends on ``sale_project``. Make sure the service
-   products used on your orders have **Product Type = Service** and
-   **Service Tracking = Task in Project** (or *Project & Task*) — the
-   standard ``_timesheet_service_generation`` only acts on these lines.
--  The default project on each service product (or on the order) must be
-   set so tasks can be created in the right place.
-
-4. Access rights
-----------------
-
-No new access rights are introduced. Standard Sales / Project groups
-remain in charge. The **Generate Tasks** button runs through ``sudo()``
-and ``with_company()`` so users with Sales access but limited Project
-rights can still trigger creation.
+-  The service products sold must create tasks: on the product, in the
+   **Sales** tab, **Create on Order** is set to a task option, with a
+   project where the tasks go.
+-  The company default is copied to each new order. Changing it later
+   does not change the orders already created.
 
 Usage
 =====
 
-Daily use
-=========
-
 Automatic mode
 --------------
 
-When **Auto Create Sale Tasks** is ticked (either at company level or on
-the specific order), the behaviour matches stock Odoo:
-
-1. The user confirms a sale order containing service lines flagged as
-   **Task in Project**.
-2. ``_timesheet_service_generation`` runs as usual and creates one task
-   per qualifying SO line.
-3. The **Generate Tasks** button is hidden — there is nothing to trigger
-   manually.
+1. On a quotation, check that **Auto Create Sale Tasks** (next to
+   **Payment Terms**) is ticked.
+2. Click **Confirm**. The tasks are created as usual, one per service
+   line.
 
 Manual mode
 -----------
 
-When the flag is off (company default or per-order override):
+1. On a quotation, untick **Auto Create Sale Tasks**.
+2. Click **Confirm**. No task is created.
+3. When the tasks should exist, open the order and click **Generate
+   Tasks**.
+4. One task is created for every service line that does not have one
+   yet. Lines that already have a task are skipped, so the button can be
+   used again after the order is extended.
 
-1. The user confirms the sale order. No tasks are created — the override
-   on ``_timesheet_service_generation`` filters the order out because
-   ``sale_create_taks_auto`` is False on the order.
-2. The **Generate Tasks** button (red primary button next to *Set to
-   Draft*) becomes visible. The user clicks it whenever the tasks should
-   actually exist (after staffing decisions, billing confirmation,
-   kick-off meeting, etc.).
-3. ``action_generate_tasks`` iterates over ``order.order_line`` and, for
-   every line that does not already have a ``task_id``, calls
-   ``_timesheet_service_generation`` with the ``create_tasks=True``
-   context. This forces the override to bypass the filter and create the
-   task.
-4. The button is safe to click multiple times: lines that already have a
-   ``task_id`` are skipped, so it can also be used to catch up on later
-   additions to the order.
-
-Mixed orders
-------------
-
-The flag applies to the whole sale order, but the standard generator
-already filters out non-service lines and lines that do not require a
-task. Mixed orders (services + goods) only generate tasks for the
-service lines, just like the original behaviour.
-
-Switching mode mid-flight
--------------------------
-
--  Changing the company default does not retroactively update existing
-   orders; the value is copied to each order at creation through the
-   ``onchange``. To enable / disable for an existing order, edit the
-   **Auto Create Sale Tasks** field directly on the order form.
--  Switching from manual to automatic on an existing order does not
-   re-fire ``_timesheet_service_generation``. Click **Generate Tasks**
-   (or temporarily switch the order to manual and click) to create the
-   missing tasks.
+Orders that mix services and goods only create tasks for the service
+lines, in both modes.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.1.0.2
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.1 (2026-05-25)
 -----------------------

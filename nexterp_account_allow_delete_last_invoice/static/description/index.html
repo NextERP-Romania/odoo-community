@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP - Allow Delete Last Invoice</h1>
         <p class="lead text-muted mb-3">NextERP - Allow Delete Last Invoice</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.0.0.1</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.0.0.2</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Invoicing</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">OPL-1</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,8 +46,20 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>This module allows you to delete the last invoice from journal. A setting is available
-for each company in the Invocing Settings to allow/dissalow the behaviour.</p>
+        <p>When an invoice is created by mistake, Odoo keeps its number taken even
+after the invoice is deleted, leaving a gap in the sequence. This module lets
+a company give the number back: if the deleted invoice is the last one issued
+in its journal, the next invoice reuses its number and the sequence stays
+continuous.</p>
+<ul>
+<li><strong>Allow Delete Last Invoice</strong> option, set per company in the invoicing
+settings.</li>
+<li>Only the most recent invoice of a journal can release its number; earlier
+invoices keep the standard protection.</li>
+<li>Off by default: nothing changes for a company until the option is ticked.</li>
+<li>Works for customer invoices, vendor bills, credit notes and other journal
+entries numbered by a journal sequence.</li>
+</ul>
 
       </div>
       <hr class="my-4" />
@@ -118,61 +127,45 @@ for each company in the Invocing Settings to allow/dissalow the behaviour.</p>
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li><strong>Delete the last posted invoice</strong> in a journal without breaking the accounting sequence lock.</li>
-<li><strong>Per-company toggle</strong> — enable or disable the behaviour independently for each company via <code>account_allow_delete_last_invoice</code> on <code>res.company</code>.</li>
-<li><strong>Standard Settings UI</strong> — the option appears directly in <em>Settings → Invoicing</em>, requiring no developer mode or manual configuration.</li>
-<li><strong>Minimal footprint</strong> — extends only <code>account.move.unlink</code> and <code>res.config.settings</code>; no new models or data files introduced.</li>
-<li><strong>Safe by default</strong> — the flag is <code>False</code> on installation, so existing companies are unaffected until an administrator explicitly opts in.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>After installing the module, enable the feature per company:</p>
-<ol>
-<li>Go to <strong>Settings → Invoicing</strong> (or <strong>Settings → Accounting</strong>).</li>
-<li>Scroll to the <strong>Invoicing</strong> section and locate the <strong>Allow Delete Last Invoice</strong> checkbox (<code>account_allow_delete_last_invoice</code>).</li>
-<li>Tick the checkbox to allow deletion of the last invoice in a journal for the current company.</li>
+      <ol>
+<li>Go to <strong>Invoicing &gt; Configuration &gt; Settings</strong>.</li>
+<li>In the <strong>Customer Invoices</strong> section, tick <strong>Allow Delete Last Invoice</strong>.</li>
 <li>Click <strong>Save</strong>.</li>
 </ol>
-<p>Repeat for each company in a multi-company setup that should have this behaviour enabled. Companies where the checkbox is left unticked retain the standard Odoo protection against deleting posted journal entries.</p>
-
-<hr class="my-4" />      <p>To install this module, you need to:</p>
-<ul>
-<li>clone the branch 18.0 of the repository
-<a href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
-<li>add the path to this repository in your configuration (addons-path)</li>
-<li>update the module list</li>
-<li>search for &quot;NextERP - Allow Delete Last Invoice&quot; in your addons</li>
-<li>install the module</li>
-</ul>
+<p>The option belongs to the current company. In a multi-company database,
+switch to each company that needs it and repeat the steps.</p>
+<p>Keep in mind that an invoice which was already sent to the customer or to a
+tax authority should be cancelled with a credit note, not deleted.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <h2>Deleting the last invoice in a journal</h2>
-<p>Once the <code>account_allow_delete_last_invoice</code> setting is enabled for your company (see <strong>Configure</strong>), users with the appropriate access rights can delete the most recent posted invoice in a journal directly from the standard invoice list or form.</p>
-<ol>
-<li>Go to <strong>Invoicing → Customers → Invoices</strong> (or <strong>Vendor Bills</strong> for supplier invoices).</li>
-<li>Open the invoice you want to delete — it must be the last posted entry in its journal sequence.</li>
-<li>Reset the invoice to draft if required, then use the <strong>Action → Delete</strong> option (or the delete button in the list view).</li>
-<li>Odoo will allow the deletion instead of raising the usual sequence-lock error, because the <code>unlink</code> method on <code>account.move</code> has been extended to respect the company-level <code>account_allow_delete_last_invoice</code> flag.</li>
+      <ol>
+<li>Open the invoice to remove, for example from
+<strong>Invoicing &gt; Customers &gt; Invoices</strong>. It must be the last invoice numbered
+in its journal.</li>
+<li>Click <strong>Reset to Draft</strong>.</li>
+<li>Delete it with <strong>Actions &gt; Delete</strong> (form) or from the list view.</li>
+<li>Create the next invoice in the same journal: it receives the number the
+deleted invoice had, so no gap is left.</li>
 </ol>
-<blockquote>
-<p><strong>Note:</strong> Only the <em>last</em> invoice in the journal sequence can be deleted this way. Earlier entries remain protected to preserve accounting sequence integrity.</p>
-</blockquote>
+<p>If the invoice is not the last one of its journal, it is deleted the standard
+way and its number is not reused.</p>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.0.0.0 (2026-06-03)</h2>
+      <h2>19.0.0.0.2</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.0.0.0 (2026-06-03)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

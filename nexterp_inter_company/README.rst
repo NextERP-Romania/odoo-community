@@ -11,9 +11,18 @@ NextERP - Inter Company
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-This module adds a mixin model to calculate if a record is a
-inter-company transaction or not. It is useful to filter out
-inter-company transactions from reports.
+Marks the partners that stand for the companies of your own database, so
+transactions between companies of the group can be recognised and
+filtered out of reports.
+
+-  **Is Inter Company** checkbox on company contacts, ticked
+   automatically on the partner of every company of the database.
+-  Kept up to date when a company is created, removed or linked to
+   another partner.
+-  Can be ticked by hand for group companies managed in another
+   database.
+-  Base for other modules that flag documents as inter-company, such as
+   ``nexterp_inter_company_account`` for invoices and journal entries.
 
 
 **Table of contents**
@@ -21,46 +30,34 @@ inter-company transactions from reports.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
+Configuration
+=============
 
-Key features
-============
+Nothing to configure: when the module is installed, the partners of all
+existing companies are marked, and companies created later are marked
+automatically.
 
--  **``is_inter_company`` computed field** — automatically flags any
-   record as an inter-company transaction by inspecting ``company_id``
-   and ``partner_id`` fields against the companies registered in your
-   Odoo database.
--  **Reusable mixin** — ``base.inter.company`` can be inherited by any
-   model that needs inter-company detection, without additional coding.
--  **Partner-level detection** — ``res.partner`` is extended with a
-   stored computed ``is_inter_company`` field, making it easy to filter
-   or group partners that represent sister companies.
--  **No configuration required** — works out of the box based on the
-   companies already defined in your system.
--  **Lightweight dependency** — depends only on ``base``, so it can be
-   safely added to any Odoo instance regardless of installed apps.
--  **Foundation for reporting** — designed to let companion modules and
-   custom reports exclude or isolate inter-company lines from external
-   business figures.
+To mark a group company that is not a company of this database, open its
+contact (for example from **Contacts**) and tick **Is Inter Company**.
 
-Installation
-============
+Usage
+=====
 
-To install this module, you need to:
-
--  clone the branch 18.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Inter Company" in your addons
--  install the module
+1. Open a company contact, for example from the **Contacts** app.
+2. The **Is Inter Company** checkbox, under the company type, shows
+   whether the partner belongs to the group.
+3. Documents of modules built on top of this one (invoices, journal
+   entries) are flagged as inter-company when their partner is marked
+   and is not the company itself.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.0.0.3
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.0.0.2
 ----------

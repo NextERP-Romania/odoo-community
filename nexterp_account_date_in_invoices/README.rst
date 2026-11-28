@@ -11,8 +11,18 @@ NextERP - Purchase Invoice Accounting Date
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-This module updates purchase invoices accounting date to invoice date if
-possible, depending on tax_lock_date.
+For companies with Romania as fiscal country, the accounting date of a
+vendor bill follows the bill date, so the expense and the deductible VAT
+land in the month written on the supplier's invoice.
+
+-  The **Accounting Date** of vendor bills and purchase receipts is set
+   to the **Bill Date**.
+-  If the bill date falls in a period already closed by the tax lock
+   date, the accounting date moves to the first day after the lock date,
+   so a closed VAT return is never changed.
+-  Customer invoices and companies of other countries keep the standard
+   behaviour.
+-  Nothing to configure.
 
 
 **Table of contents**
@@ -20,71 +30,35 @@ possible, depending on tax_lock_date.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
+Configuration
+=============
 
-Key features
-============
+Nothing to configure. The behaviour applies to every company whose
+fiscal country is Romania, set in **Invoicing > Configuration >
+Settings**, section **Taxes**, field **Fiscal Country**.
 
--  **Automatic accounting date alignment** — vendor bill accounting date
-   is set to the invoice date whenever the fiscal period is open.
--  **Tax lock date awareness** — if the invoice date falls inside a
-   locked period, the accounting date is automatically shifted to
-   ``tax_lock_date + 1``, preventing illegal back-dating.
--  **Zero configuration** — logic activates on install with no settings
-   to adjust.
--  **Transparent to users** — accountants work with invoice dates as
-   usual; the module handles period compliance silently.
--  **Lightweight ``account`` dependency** — no additional modules
-   required beyond the standard Odoo Invoicing / Accounting app.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 18.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Purchase Invoice Accounting Date" in your
-   addons
--  install the module
+The tax lock date used to protect closed periods is the one already set
+for the company.
 
 Usage
 =====
 
-Usage
-=====
-
-This module works automatically in the background — no additional steps
-are required from the user during day-to-day invoicing.
-
-How the accounting date is determined on vendor bills
------------------------------------------------------
-
-Whenever Odoo computes the accounting date for a purchase invoice
-(``account.move``), the overridden ``_get_accounting_date`` method
-applies the following logic:
-
-1. Open or create a vendor bill via **Accounting → Vendors → Bills**.
-2. Set the **Invoice Date** field on the bill.
-3. On confirmation, Odoo automatically sets the **Accounting Date**:
-
-   -  If the invoice date falls **after** the current ``tax_lock_date``,
-      the accounting date is set to the **invoice date**.
-   -  If the invoice date falls **on or before** the ``tax_lock_date``,
-      the accounting date is pushed forward to **tax lock date + 1
-      day**, keeping the entry out of the locked fiscal period.
-
-4. No manual intervention is needed — the correct accounting date
-   appears on the posted journal entry.
+1. Create a vendor bill from **Invoicing > Vendors > Bills > New**.
+2. Fill in the **Bill Date** as written on the supplier's invoice.
+3. The **Accounting Date** takes the same date.
+4. If that date belongs to a period closed for taxes, the accounting
+   date is set to the day after the tax lock date instead.
+5. Confirm the bill: the journal entry is posted on that accounting
+   date.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.0.0.2
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.0.0.0 (2026-06-03)
 -----------------------

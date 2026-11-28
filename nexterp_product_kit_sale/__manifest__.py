@@ -5,7 +5,7 @@
 {
     "name": "NextERP - Product Kit Sale",
     "summary": "NextERP - Product Kit Sale",
-    "version": "19.0.1.3.0",
+    "version": "19.0.1.3.1",
     "category": "Sales",
     # `sale.order.line.kit` e o copie prototip a lui `sale.order.line`
     # (vezi models/sale_order_kit.py): are tabela lui, cu o coloana pentru

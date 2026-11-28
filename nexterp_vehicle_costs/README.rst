@@ -11,8 +11,26 @@ NextERP - Vehicle Cost Management
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-This module allows to create vehicle costs directly from account moves
-or stock moves.
+Fuel, parts and services for company vehicles are bought on vendor bills
+and taken out of the warehouse, but the fleet only knows about the costs
+typed in by hand. This module books the vehicle costs straight from the
+bills and from the stock issued to the vehicles.
+
+-  **Vehicle Service Type** on vendor bill lines: posting the bill
+   records the cost on the vehicle, with product, quantity and unit
+   price.
+-  **Vehicle** on stock moves: goods issued to a consumption location
+   for a vehicle become a vehicle cost when the transfer is validated.
+-  Goods returned from the vehicle book a negative cost that reverses
+   the original one; cancelling a bill removes the costs it created.
+-  Costs booked from stock follow their move and cannot be edited or
+   deleted by hand.
+-  **Owner** on the vehicle, carried to every service and contract cost.
+-  Romanian non-deductible VAT per vehicle: a percentage and a tax
+   applied to the goods it consumes.
+-  **Costs Log** report, in pivot and list, per vehicle, type and date.
+-  Fuel and parts service type categories, with a ready-made refuelling
+   service type.
 
 
 **Table of contents**
@@ -20,173 +38,79 @@ or stock moves.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  **Vehicle costs from supplier invoices** — each invoice line can be
-   tagged with a ``fleet_service_type_id``; validating the bill creates
-   ``fleet.vehicle.log.services`` or ``fleet.vehicle.log.contract``
-   records automatically.
--  **Vehicle costs from stock moves** — warehouse receipts and transfers
-   can be linked to a vehicle and optionally flagged as a refuel,
-   generating service log entries on transfer validation.
--  **Automatic cost reversal** — cancelling an invoice or stock transfer
-   cancels the associated vehicle cost logs, keeping the fleet history
-   consistent.
--  **Contract generation from products** — enabling ``vehicle_contract``
-   on a product template triggers automatic contract log creation
-   whenever that product appears on a supplier bill.
--  **Romanian non-deductible VAT support** — per-vehicle
-   ``not_deductible`` flag and ``l10n_ro_nondeductible_percent``
-   integrate with the ``l10n_ro_nondeductible_vat`` localization module.
--  **Vehicle ownership tracking** — ``owner_id`` on the vehicle
-   propagates to all service and contract logs for partner-level cost
-   analysis.
--  **Costs Analysis Log report** — dedicated pivot and list report under
-   *Fleet → Reporting → Costs Log* with filtering by vehicle, service
-   type, and date.
--  **Pre-loaded fuel service type** — ships with a *Realimentare*
-   service type ready for Romanian fuel cost tracking.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 14.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Vehicle Cost Management" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+Vehicles
+--------
 
-1. Mark products that generate vehicle contracts
-------------------------------------------------
+1. Go to **Fleet > Fleet > Fleet** and open a vehicle.
+2. Set the **Owner** of the vehicle.
+3. If VAT on what the vehicle consumes is not fully deductible, tick
+   **Not Deductible**, choose the **Non Deductible Percent** and the
+   non-deductible tax to apply.
+4. Save.
 
-1. Go to **Inventory → Products → Products** (or **Purchase → Products →
-   Products**).
-2. Open the product used on supplier invoices for recurring vehicle
-   costs (e.g. insurance, leasing).
-3. On the **General Information** tab, enable **Generate Vehicle
-   Contract** (``vehicle_contract``).
-4. From now on, posting a supplier invoice line with this product
-   automatically creates a ``fleet.vehicle.log.contract`` entry.
+Service types
+-------------
 
-2. Configure vehicle non-deductible VAT (Romania)
--------------------------------------------------
+1. Activate the developer mode, then go to **Fleet > Configuration >
+   Services > Types** (**Service Types** on newer versions).
+2. Check the **Category** of each type: *Combustibil* (fuel), *Parts*,
+   *Service* or *Contract*. Bill lines and stock moves only offer the
+   non-contract types.
+3. A refuelling service type with the *Combustibil* (fuel) category is
+   installed with the module.
 
-This module depends on ``l10n_ro_nondeductible_vat``. For each vehicle
-where VAT is partially or fully non-deductible:
+Consumption location
+--------------------
 
-1. Open the vehicle record (*Fleet → Fleet → Vehicles*).
-2. Set **Non Deductible** (``not_deductible``) and choose the **Romania
-   – Non Deductible Percent** (``l10n_ro_nondeductible_percent``).
-3. Assign the appropriate **Non-Deductible Tax**
-   (``tax_non_deductible``) — the tax that will be applied to invoice
-   lines associated with this vehicle.
-
-3. Set vehicle ownership
-------------------------
-
-1. On the vehicle form (*Fleet → Fleet → Vehicles*), set the **Owner**
-   field (``owner_id``) to the partner who owns the vehicle.
-2. This value is automatically propagated (``related``) to service logs
-   (``fleet.vehicle.log.services``) and contract logs
-   (``fleet.vehicle.log.contract``) for filtering in reports.
-
-4. Review fleet service type categories
----------------------------------------
-
-1. Go to **Fleet → Configuration → Service Types**.
-2. Ensure each service type has the correct **Category** value (e.g.
-   ``fuel``, ``contract``, ``service``) set in the ``category``
-   selection field — this drives the separation between *services* and
-   *contracts* on invoices.
-3. The module ships a pre-loaded service type **Realimentare**
-   (``data_fleet_service_type_refuel``) for fuel top-ups.
+Stock is booked as a vehicle cost when it is moved to a location of type
+consumption. Make sure the location the vehicles take their goods to has
+that type, in **Inventory > Configuration > Locations**.
 
 Usage
 =====
 
-Usage
-=====
+Costs from vendor bills
+-----------------------
 
-Linking invoice lines to vehicle costs
---------------------------------------
+1. Go to **Accounting > Vendors > Bills** and create a bill for fuel,
+   parts or a service.
+2. On each line that concerns a vehicle, choose the **Vehicle** and the
+   **Vehicle Service Type**.
+3. Post the bill. The cost appears on the vehicle, under its services.
+4. If the bill is cancelled, the costs it created are removed; posting
+   it again creates them anew.
 
-Recording a vehicle expense from a supplier invoice
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Costs from stock
+----------------
 
-1. Open or create a supplier invoice (*Accounting → Vendors → Bills*).
-2. On each invoice line that relates to a vehicle, fill in the **Vehicle
-   Service Type** field (``fleet_service_type_id``) to categorise the
-   expense (e.g. fuel, maintenance, insurance).
-3. If the product on the line has **Generate Vehicle Contract** enabled
-   (``vehicle_contract = True``), a ``fleet.vehicle.log.contract``
-   record is created automatically on validation.
-4. Validate the invoice. Vehicle cost logs appear linked to the relevant
-   vehicle.
-5. Use the smart buttons **Vehicle Services** and **Vehicle Contracts**
-   that appear on the invoice form (``has_vehicle_services`` /
-   ``has_vehicle_contracts``) to jump directly to the generated cost
-   records.
+1. Create an internal transfer or a consumption from the warehouse to
+   the vehicles' consumption location.
+2. On the move, choose the **Vehicle** and, if needed, the **Vehicle
+   Service Type**.
+3. Validate the transfer. The value of the goods is booked as a cost of
+   the vehicle; for a non-deductible vehicle, its percentage and tax are
+   applied.
+4. To correct it, return the goods: the return books a negative cost on
+   the same vehicle.
 
-Cancelling an invoice with vehicle costs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Reporting
+---------
 
-1. Click **Reset to Draft** / **Cancel** on the invoice. The module's
-   ``button_cancel`` override automatically reverses
-   (``cancel_vehicle_cost``) the associated
-   ``fleet.vehicle.log.services`` or ``fleet.vehicle.log.contract``
-   entries so the vehicle history stays accurate.
-
-Linking stock moves to vehicle costs
-------------------------------------
-
-Recording a refuelling from a warehouse receipt
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1. Open a receipt or internal transfer (*Inventory → Operations →
-   Transfers*).
-2. On the detailed move form, set the **Vehicle** field (``vehicle_id``)
-   on the stock move line.
-3. Tick **Refuel** (``refuel = True``) if the move represents a fuel
-   top-up.
-4. The **Vehicle Service Type** (``fleet_service_type_id``) is computed
-   automatically from the product; you can override it on the move form.
-5. Validate the transfer. The module's ``_action_done`` hook calls
-   ``create_vehicle_cost``, writing a ``fleet.vehicle.log.services``
-   record linked via ``move_line_id`` and ``stock_move_id``.
-
-Fleet reporting
----------------
-
-Costs Analysis Log
-~~~~~~~~~~~~~~~~~~
-
-1. Go to **Fleet → Reporting → Costs Log**.
-2. Use the search bar to filter by vehicle, service type, date range, or
-   owner.
-3. Switch between the **list** and **pivot** views to analyse total
-   expenditure per vehicle or category.
-
-.. image:: ./fleet_costs_log_pivot.png
-   :alt: Costs Analysis Log pivot view
+1. Go to **Fleet > Reporting > Costs Log**.
+2. Filter by vehicle, service type or period and switch between the
+   pivot and list views to compare costs per vehicle and per category.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.1.1.1
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.1.0 (2026-11-05)
 -----------------------
@@ -205,10 +129,10 @@ Changelog
    plain services instead of deleting them together with their costs.
 -  Cancelling a vendor bill removes the vehicle service costs made from
    its lines when it was posted (posting it again makes them anew).
--  Removed code that could never run: a ``stock.move.action_cancel``
-   override (there is no such method), a bill-line cost cancellation on
-   fields that do not exist, and the unused vehicle cost counters on
-   journal entries.
+-  Removed code that could never run: a stock move cancellation override
+   (there is no such method), a bill-line cost cancellation on fields
+   that do not exist, and the unused vehicle cost counters on journal
+   entries.
 -  Romanian translation added.
 
 19.0.1.0.1 (2026-08-21)

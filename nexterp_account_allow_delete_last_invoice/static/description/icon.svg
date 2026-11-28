@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E31E24"/>
+      <stop offset="55%" stop-color="#CC0C54"/>
+      <stop offset="100%" stop-color="#A81884"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+
+  <!-- decorative blobs, still readable at small sizes -->
+  <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
+  <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
+
+  <!-- the last invoice of the stack removed, its slot left free -->
+  <rect x="44" y="92" width="72" height="100" rx="10" fill="#ffffff" opacity="0.45"/>
+  <rect x="64" y="76" width="72" height="100" rx="10" fill="#ffffff" opacity="0.75"/>
+  <rect x="148" y="56" width="64" height="88" rx="10" fill="none" stroke="#ffffff" stroke-width="8" stroke-dasharray="14 9"/>
+  <path d="M166 86 L194 114 M194 86 L166 114" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
+  <path d="M180 164 Q180 200 140 200" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
+  <path d="M152 186 L138 200 L152 214" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

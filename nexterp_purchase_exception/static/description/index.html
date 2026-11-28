@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP - Purchase Exception</h1>
         <p class="lead text-muted mb-3">Custom exceptions on purchase order line</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.0.0.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.0.0.1</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Generic Modules/Purchase</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">AGPL-3</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,8 +46,13 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <ul>
-<li>This module allows you to see exception also on purchase order line.</li>
+        <p>See at a glance which purchase order lines break your exception rules.
+Lines that trigger an exception rule are shown in red on the purchase order,
+so you know what to correct before confirming.</p>
+<ul>
+<li>Works with the exception rules of the <code>purchase_exception</code> module.</li>
+<li>Offending lines highlighted directly in the order lines.</li>
+<li>The highlight clears once the line no longer breaks a rule.</li>
 </ul>
 
       </div>
@@ -119,42 +121,24 @@
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li><strong>Line-level exception visibility</strong> — <code>exception_ids</code>, <code>exceptions_summary</code> and <code>is_exception_danger</code> are exposed directly on every <code>purchase.order.line</code>, not just at order header level.</li>
-<li><strong>Extends <code>purchase_exception</code></strong> — plugs into the existing OCA exception-rule engine without replacing it; all rules you already configured continue to work unchanged.</li>
-<li><strong>HTML exception summary</strong> — <code>exceptions_summary</code> renders a colour-coded, human-readable digest of all triggered rules per line, visible inline in the order form.</li>
-<li><strong>Danger flag</strong> — <code>is_exception_danger</code> lets you spot critical violations at a glance directly in the order lines list, enabling faster triage on large orders.</li>
-<li><strong>Zero configuration required</strong> — install and the line-level indicators appear automatically on the standard Purchase Order form.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>To install this module, you need to:</p>
-<ul>
-<li>clone the branch 18.0 of the repository
-<a href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
-<li>add the path to this repository in your configuration (addons-path)</li>
-<li>update the module list</li>
-<li>search for &quot;NextERP - Purchase Exception&quot; in your addons</li>
-<li>install the module</li>
-</ul>
+      <ol>
+<li>Install <code>purchase_exception</code> and define the exception rules you need in
+<strong>Purchase &gt; Configuration &gt; Purchase Exception Rules</strong>.</li>
+<li>Nothing else to configure.</li>
+</ol>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <h2>Reviewing exceptions on a Purchase Order line</h2>
-<p>Exceptions defined in <code>purchase_exception</code> are normally visible at the Purchase Order header level. With this module installed, each individual order line also surfaces its own exception status.</p>
-<ol>
-<li>Open a Purchase Order via <strong>Purchase → Orders → Purchase Orders</strong>.</li>
-<li>Select or create a purchase order and navigate to the <strong>Order Lines</strong> tab.</li>
-<li>Lines that violate one or more exception rules show a danger indicator (<code>is_exception_danger</code>) and a colour-coded <strong>Exceptions</strong> summary (<code>exceptions_summary</code>) directly on the line — no need to open a separate dialog to identify which line is causing the issue.</li>
-<li>Hover over or click the exceptions indicator on the line to read the full <code>exception_ids</code> list of triggered <code>exception.rule</code> records.</li>
-<li>Resolve the underlying data issue (e.g. adjust quantity, price or product) and re-validate the order. The exception indicators clear automatically once the rules no longer fire.</li>
+      <ol>
+<li>Go to <strong>Purchase &gt; Orders &gt; Purchase Orders</strong> and open an order.</li>
+<li>On the <strong>Products</strong> tab, lines breaking an exception rule are shown in red.</li>
+<li>Correct the line (quantity, price, product) and confirm the order again;
+the highlight disappears when the rule no longer applies.</li>
 </ol>
 
     </div>
@@ -162,7 +146,11 @@
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.0.0.0 (2026-06-03)</h2>
+      <h2>19.0.0.0.1 (2026-11-28)</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.0.0.0 (2026-06-03)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

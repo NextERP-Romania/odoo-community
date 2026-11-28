@@ -1,20 +1,11 @@
-Override stock valuation for subcontracted finished goods so the price
-of the incoming receipt is taken from the purchase line — the price
-actually paid to the subcontractor — instead of being recomputed from
-the components shipped out. The standard Odoo behaviour assumes the
-company knows the component cost at receipt time, which is rarely the
-case when materials are owned by the subcontractor or are valued
-upstream.
+Value subcontracted finished goods at the price you actually pay the
+subcontractor. When the receipt of a subcontracted product is validated, its
+stock value is taken from the purchase order line instead of being rebuilt
+from the components that were sent out.
 
-The module re-uses the origin move's value when the incoming
-subcontracted move and all its origins are `done`, so the receipt
-inherits the subcontracting service price from the related vendor
-bill / purchase order line. The trigger is wired into
-`stock.move._action_done` so the post-receipt valuation runs
-automatically, without manual relayering or extra accounting steps.
-
-Intended for Romanian manufacturers and traders running subcontracted
-production where the conversion service is invoiced as a single line
-on the PO, and the resulting finished good must enter stock at that
-service price plus any sent-out component cost already booked on the
-outgoing leg.
+- **Receipt valued at the purchase price** of the subcontracting service.
+- **Automatic**: the value is set when the receipt is validated, with no
+  manual revaluation.
+- **Consistent with the vendor bill**: the bill clears the received-not-invoiced
+  account at the same price.
+- Built for the Romanian stock accounting provided by `l10n_ro_stock_account`.

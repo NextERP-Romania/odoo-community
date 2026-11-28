@@ -1,26 +1,10 @@
-# Usage
+1. Create or open a document whose lines are posted in a journal pinned on a
+   model, for example a vendor bill in the journal chosen on the model.
+2. Fill in the lines as usual: the analytic distribution of the model is set
+   on the matching lines.
+3. Post the same kind of line in another journal: the pinned model is ignored
+   and only the models without a journal (or pinned to that journal) apply.
 
-## Pinning an Analytic Distribution Model to a Journal
-
-1. Go to **Accounting → Configuration → Analytic Distribution Models**.
-2. Open an existing model or click **New** to create one.
-3. In the **Journal** field, select the journal (e.g. *Customer Invoices*, *Vendor Bills*, *Bank*) to which this model should be restricted.
-4. Save the record.
-
-From this point on, when Odoo auto-applies analytic distributions to journal items (`account.move.line`), the model will only match lines that belong to the selected journal. Lines posted in any other journal will skip this model entirely.
-
-## Leaving a Model Journal-agnostic
-
-If the **Journal** field is left empty, the model behaves exactly as in standard Odoo — it is applied to journal items from **all** journals, just as before installation of this module.
-
-## Typical scenario
-
-You have two cost centres and want:
-- *Project costs* analytic plan → applied only to lines in the **Vendor Bills** journal.
-- *Operating expenses* analytic plan → applied to every other journal.
-
-Steps:
-1. Open the *Project costs* distribution model and set **Journal** = `Vendor Bills`.
-2. Leave the *Operating expenses* model's **Journal** field blank.
-3. Post a vendor bill — only the *Project costs* model fires.
-4. Post a bank payment — only the *Operating expenses* model fires.
+Example: a *Project costs* model pinned to the vendor bills journal and an
+*Operating expenses* model with no journal. A vendor bill picks up *Project
+costs*; a bank or miscellaneous entry picks up only *Operating expenses*.

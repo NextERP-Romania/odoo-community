@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">Romania - E-invoicing Self-Invoices</h1>
         <p class="lead text-muted mb-3">Take in the self-invoices customers issue in your name from the SPV</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.1.1</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.1.2</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Accounting/Localizations/EDI</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">AGPL-3</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,18 +46,29 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>Takes in from the SPV the self-invoices (<em>autofacturi</em>) your customers issue in your name.</p>
-<p>Such an invoice is uploaded by the customer, but it carries your company as supplier and the customer as buyer: it is a sale of yours, not a vendor bill. Without this module, the SPV synchronization would import it as a bill.</p>
+        <p>Self-invoices that your customers issue in your company's name and upload
+to the SPV are taken in as customer invoices, not as vendor bills. The
+customer uploads them, but they show your company as supplier: they are
+your sales.</p>
+<p>The module also handles the other direction. When you issue self-invoices
+in a supplier's name, they are sent to ANAF in the form ANAF accepts.</p>
 <ul>
-<li>It is recognised from the XML: the supplier is your company and the buyer is somebody else. A document listed as sent counts only when it carries the self-billing type code 389, so your own invoices are never mistaken for one.</li>
-<li>It becomes a customer invoice. In the customer's self-invoicing journal it keeps the number the customer gave it and is posted; without such a journal it is a draft in the first sale journal.</li>
-<li>It is marked as validated in the SPV, so it is never sent to ANAF again, and a later synchronization does not duplicate it.</li>
-<li>Both synchronizations take it in: the <code>l10n_ro_edi</code> one and the SPV messages of <code>l10n_ro_message_spv</code>.</li>
-</ul>
-<p>It also covers the other direction, the self-invoices you issue in your suppliers' name (a vendor bill or refund on a <strong>Supplier Auto Invoicing</strong> journal):</p>
-<ul>
-<li>they are uploaded to the SPV with <code>autofactura=DA</code>, without which ANAF refuses a document whose supplier is not the uploader, with <code>standard=UBL</code> for invoices and <code>CN</code> only for credit notes, and with ANAF's own refusal reason kept in the chatter;</li>
-<li>their credit notes carry <code>CreditNoteTypeCode</code> 381, the only one CIUS-RO accepts, instead of the 261 Odoo sets on self-billing credit notes. The invoices already carry 389.</li>
+<li><strong>Reliable recognition</strong>: a document counts as a self-invoice only when
+your company is the supplier and the document is marked as self-billed,
+so your own invoices are never mistaken for one.</li>
+<li><strong>The customer's number is kept</strong>: in a self-invoicing journal set up for
+that customer, the invoice keeps the number the customer gave it and is
+posted automatically.</li>
+<li><strong>No duplicates</strong>: the invoice is marked as validated in the SPV, so a
+later synchronization does not create it again and it is never sent back
+to ANAF.</li>
+<li><strong>Both synchronizations covered</strong>: the scheduled e-Factura download and
+the <strong>Messages SPV</strong> list.</li>
+<li><strong>Outgoing self-invoices</strong>: vendor bills and refunds on a supplier
+self-invoicing journal are uploaded as self-invoices, and their credit
+notes carry the type code CIUS-RO accepts.</li>
+<li><strong>Protected drafts</strong>: a self-invoice left in draft cannot be deleted and
+can only be posted in a customer self-invoicing journal.</li>
 </ul>
 
       </div>
@@ -129,59 +137,56 @@
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li><strong>Automatic ingestion of <em>autofacturi</em></strong> — self-invoices customers upload to the SPV in your company's name are taken in as customer invoices, not vendor bills.</li>
-<li><strong>Reliable XML recognition</strong> — a document is treated as a self-invoice only when the supplier VAT matches your company and the UBL type code is 389, so your own outgoing invoices are never confused with one.</li>
-<li><strong>Dedicated self-invoicing journals</strong> — set <code>l10n_ro_sequence_type</code> to <em>Customer Auto Invoicing</em> and <code>l10n_ro_partner_id</code> to the customer; the imported invoice keeps the customer's own number and is posted automatically.</li>
-<li><strong>SPV deduplication</strong> — an imported self-invoice is immediately flagged as validated in the SPV so a later synchronization never creates a duplicate.</li>
-<li><strong>Both SPV sync paths covered</strong> — works with the <code>l10n_ro_edi</code> scheduled sync and with the <strong>SPV Messages</strong> list from <code>l10n_ro_message_spv</code> (ticked <em>Self-Invoice</em> → <em>Create Invoice</em>).</li>
-<li><strong>Outbound <em>autofacturi</em> handled too</strong> — vendor bills/refunds on a <em>Supplier Auto Invoicing</em> purchase journal are uploaded to ANAF with <code>autofactura=DA</code>, <code>standard=UBL</code> (or <code>CN</code> for credit notes), and <code>CreditNoteTypeCode</code> 381 instead of Odoo's default 261.</li>
-<li><strong>Company-level toggle</strong> — <code>l10n_ro_create_customer_autoinvoice</code> in <strong>Settings → Accounting</strong> controls whether self-invoices are taken in as customer invoices at all.</li>
-<li><strong>No enterprise dependency</strong> — the <em>Ro Auto Invoicing</em> journal fields are added by this module itself; <code>l10n_ro_account_enterprise</code> is optional.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>For every customer who issues self-invoices in your name, create a sale journal in <strong>Accounting → Configuration → Journals</strong> with:</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Type</strong></td>
-<td>Sales</td>
-</tr>
-<tr>
-<td><strong>Ro Sequence Type</strong> (<code>l10n_ro_sequence_type</code>)</td>
-<td>Customer Auto Invoicing</td>
-</tr>
-<tr>
-<td><strong>Ro Partner</strong> (<code>l10n_ro_partner_id</code>)</td>
-<td>the customer</td>
-</tr>
-</tbody>
-</table>
-<p>For the self-invoices you issue in a supplier's name, the purchase journal works the same way, with <strong>Supplier Auto Invoicing</strong> and the supplier as <strong>Ro Partner</strong>.</p>
-<p>The fields are in the <strong>Ro Auto Invoicing</strong> group of the journal form, on sale and purchase journals. The module adds them itself, so <code>l10n_ro_account_enterprise</code> is not needed; when it is installed, its own group shows them instead. Without a journal for the customer, its self-invoices are created as drafts in the first sale journal.</p>
+      <ol>
+<li>Go to <strong>Invoicing &gt; Configuration &gt; Settings</strong>, section <strong>Customer
+Invoices</strong>, and check that <strong>Create Customer Self-Invoices</strong> is
+enabled for the company.</li>
+<li>For every customer who issues self-invoices in your name, open
+<strong>Invoicing &gt; Configuration &gt; Accounting &gt; Journals</strong> and create a
+journal with:
+<ul>
+<li><strong>Type</strong>: <em>Sales</em>;</li>
+<li>in the <strong>Ro Auto Invoicing</strong> group, <strong>Ro Sequence Type</strong>:
+<em>Customer Auto Invoicing</em>;</li>
+<li><strong>Ro Partner</strong>: the customer.</li>
+</ul>
+</li>
+<li>For the self-invoices you issue in a supplier's name, create a
+<em>Purchase</em> journal the same way, with <strong>Ro Sequence Type</strong>
+<em>Supplier Auto Invoicing</em> and the supplier as <strong>Ro Partner</strong>.</li>
+</ol>
+<p>Without a journal for a customer, its self-invoices are created as drafts
+in the first sales journal. The self-invoicing type and partner of a
+journal can no longer be changed once the journal has posted entries.</p>
+<p>The SPV connection itself (ANAF credentials) is the one set up for
+e-Factura.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <p>Nothing to do by hand: the SPV synchronizations take the self-invoices in as they arrive.</p>
+      <h2>Self-invoices received from customers</h2>
 <ol>
-<li>The scheduled synchronization of <code>l10n_ro_edi</code> creates them directly as customer invoices.</li>
-<li>In <strong>SPV Messages</strong> they are ticked <strong>Self-Invoice</strong>; <strong>Create Invoice</strong> creates them the same way.</li>
-<li>A self-invoice posted in the customer's journal carries the customer's number. One left in draft says why in its chatter: no journal for the customer, or the error that stopped the posting.</li>
-<li>A self-invoice you issue in a supplier's name is posted on the supplier's <strong>Supplier Auto Invoicing</strong> purchase journal and sent to ANAF like any invoice (<strong>Send &amp; Print</strong> or the send cron); it goes up as <em>autofactura</em>.</li>
+<li>Nothing to do by hand: the scheduled e-Factura synchronization creates
+the self-invoices directly as customer invoices.</li>
+<li>In <strong>Invoicing &gt; Accounting &gt; SPV &gt; Messages SPV</strong> they are ticked
+<strong>Self-Invoice</strong>; <strong>Create Invoice</strong> creates them the same way.</li>
+<li>Open <strong>Invoicing &gt; Customers &gt; Invoices</strong>. A self-invoice posted in the
+customer's journal carries the customer's number.</li>
+<li>A self-invoice left in draft explains why in its chatter: no journal for
+that customer, or the error that stopped the posting. Create the
+journal, set it on the invoice and confirm.</li>
+</ol>
+<h2>Self-invoices issued in a supplier's name</h2>
+<ol>
+<li>Create the vendor bill or refund on the supplier's <em>Supplier Auto
+Invoicing</em> journal and confirm it.</li>
+<li>Send it to ANAF like any invoice, with <strong>Send &amp; Print</strong> or by the
+scheduled sending. It is uploaded as a self-invoice, and ANAF's answer
+is kept in the chatter.</li>
 </ol>
 
     </div>
@@ -189,7 +194,11 @@
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.1.0 (2026-11-05)</h2>
+      <h2>19.0.1.1.2</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.1.1.0 (2026-11-05)</h2>
 <ul>
 <li>A self-invoice taken in from the SPV and left in draft (no self-invoicing
 journal for the customer) can no longer be deleted, and it can only be
@@ -200,7 +209,7 @@ has posted entries.</li>
 </ul>
 <h2>19.0.1.0.0 (2026-10-26)</h2>
 <ul>
-<li>First version: self-invoices issued by customers in the company's name, taken in from the SPV as customer invoices, with the self-invoicing fields on sale and purchase journals; the self-invoices issued in a supplier's name are uploaded with <code>autofactura=DA</code> (moved from <code>account_invoice_delivery_sheet</code>) and their credit notes carry <code>CreditNoteTypeCode</code> 381 (moved from <code>l10n_ro_edi_extension</code>).</li>
+<li>First version: self-invoices issued by customers in the company's name are taken in from the SPV as customer invoices, with the self-invoicing settings on sales and purchase journals; self-invoices issued in a supplier's name are uploaded as self-invoices, with the credit note type code CIUS-RO accepts.</li>
 </ul>
 
     </div>

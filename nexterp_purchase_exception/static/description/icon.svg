@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E31E24"/>
+      <stop offset="55%" stop-color="#CC0C54"/>
+      <stop offset="100%" stop-color="#A81884"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+
+  <!-- decorative blobs, still readable at small sizes -->
+  <circle cx="222" cy="52" r="58" fill="#ffffff" opacity="0.10"/>
+  <circle cx="36" cy="226" r="40" fill="#ffffff" opacity="0.07"/>
+
+  <!-- order lines, one of them flagged -->
+  <rect x="44" y="56" width="120" height="16" rx="8" fill="#ffffff"/>
+  <rect x="44" y="96" width="84" height="16" rx="8" fill="#ffffff" opacity="0.6"/>
+  <rect x="44" y="136" width="76" height="16" rx="8" fill="#ffffff"/>
+  <rect x="44" y="186" width="120" height="16" rx="8" fill="#ffffff" opacity="0.6"/>
+  <path d="M178 100 L214 166 H142 Z" fill="none" stroke="#ffffff" stroke-width="10" stroke-linejoin="round"/>
+  <rect x="173" y="120" width="10" height="24" rx="4" fill="#ffffff"/>
+  <circle cx="178" cy="154" r="6" fill="#ffffff"/>
+</svg>

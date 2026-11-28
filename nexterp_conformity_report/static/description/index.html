@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">NextERP - Conformity Certificate</h1>
         <p class="lead text-muted mb-3">NextERP - Conformity Certificate</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.0.1</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Special</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">AGPL-3</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,22 +46,18 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p><code>nexterp_conformity_report</code> adds a <em>Certificate of Conformity</em>
-(declarație de conformitate) PDF report on <code>stock.picking</code>. The report
-is attached as a print binding on the picking form, so it is available
-from the standard <strong>Print</strong> menu for any delivery in the <em>Done</em> state.</p>
-<p>The certificate is structured around the data already present on the
-delivery: customer information, picking number, dispatch date, the
-related sale order reference (and the customer order reference, when
-filled). It then lists every move line of the picking — product name,
-custom customer product code, lot number, unit of measure, quantity
-shipped and minimum shelf life (lot expiration date) — followed by a
-boilerplate declaration in which the issuing company guarantees that
-the delivered products meet food-safety regulations.</p>
-<p>A signature block for the agent, delegate (with means of transport),
-and a &quot;shipment made in our presence&quot; line are rendered at the bottom
-so the document is ready to be signed at hand-over. The module depends
-on <code>sale_stock</code> and on <code>l10n_ro_stock_picking_comment_template</code>.</p>
+        <p>Print a <em>Certificate of Conformity</em> for every delivery, ready to be signed
+when the goods are handed over.</p>
+<ul>
+<li>Available from the <strong>Print</strong> menu of any done delivery.</li>
+<li>Customer details, delivery number and date, sales order and customer
+reference in the header.</li>
+<li>One row per delivered line: product, customer product code, lot, unit of
+measure, quantity and minimum shelf life (lot expiration date).</li>
+<li>A conformity declaration issued by your company, followed by signature
+blocks for the agent and the delegate, with the means of transport.</li>
+<li>Printed in the language of your company.</li>
+</ul>
 
       </div>
       <hr class="my-4" />
@@ -132,157 +125,43 @@ on <code>sale_stock</code> and on <code>l10n_ro_stock_picking_comment_template</
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li>Adds a new QWeb-PDF action <strong>Conformity Report</strong> on <code>stock.picking</code>,
-available as a print binding (<code>binding_type=report</code>) from the
-picking form <em>Print</em> menu.</li>
-<li>Header block prints the customer address, VAT number (using the
-fiscal country's VAT label) and the trade-register number (<code>nrc</code>).</li>
-<li>Title block shows the picking number, the dispatch date (uses
-<code>l10n_ro_accounting_date</code> when present, otherwise <code>date_done</code> /
-<code>scheduled_date</code>) and the related sale order or customer order
-reference (<code>client_order_ref</code>).</li>
-<li>Move-line table renders one row per <code>move.line</code> with: row number,
-product name, customer-specific product code (read from
-<code>product.customer_ids</code> when the field exists), lot number, UoM,
-quantity done and lot <strong>expiration date</strong> as minimum shelf life.</li>
-<li>Conformity declaration paragraph cites the company name, city and
-street and the picking name + date.</li>
-<li>Footer signature block with agent details, sale order reference and
-a delegate panel (name, ID, means of transport <code>l10n_ro_mean_transp</code>,
-date / hour and dual signature lines).</li>
-<li>Report is rendered in the company partner language; the file name
-follows the pattern <code>Conformity_Report - &lt;picking name&gt;.pdf</code>.</li>
-<li>The certificate body is only rendered for pickings in state <code>done</code>.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <p>The report is registered as <code>ir.actions.report</code> with
-<code>binding_model_id = stock.picking</code>, so no specific configuration menu
-is exposed. After installing the module, the <strong>Conformity Report</strong>
-entry appears automatically under the <strong>Print</strong> menu of every transfer
-form.</p>
-<h2>1. Company information</h2>
-<p>The declaration paragraph at the bottom of the PDF reads the issuing
-company partner. Make sure the following fields are filled, otherwise
-the corresponding parts of the sentence will print blank:</p>
-<ol>
-<li>Go to <strong>Settings -&gt; Companies -&gt; Companies</strong> (or
-<strong>Settings -&gt; Users &amp; Companies -&gt; Companies</strong>).</li>
-<li>Open the company and verify:
-<ul>
-<li><strong>Name</strong> — printed at the start of the declaration.</li>
-<li><strong>City</strong> and <strong>Street</strong> — printed in the company address part of
+      <ol>
+<li>Go to <strong>Settings &gt; Users &amp; Companies &gt; Companies</strong>, open your company and
+check that its name, street and city are filled in: they are printed in
 the declaration.</li>
-</ul>
-</li>
+<li>Fill in the VAT and trade register number on your customers so they
+appear under the customer address.</li>
+<li>For the <strong>Lot</strong> and <strong>Minimum shelf life</strong> columns, track the products by
+lots and set an expiration date on the lots.</li>
 </ol>
-<h2>2. Romanian localization fields (optional but recommended)</h2>
-<p>The template reads several optional Romanian-localization fields if
-they exist on the picking and partner. Filling them improves the
-output:</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Source</th>
-<th>Used for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>l10n_ro_accounting_date</code></td>
-<td><code>stock.picking</code></td>
-<td>Dispatch date in the header and declaration</td>
-</tr>
-<tr>
-<td><code>l10n_ro_delegate_id</code></td>
-<td><code>stock.picking</code></td>
-<td>Name of the delegate in the signature block</td>
-</tr>
-<tr>
-<td><code>l10n_ro_mean_transp</code></td>
-<td><code>stock.picking</code></td>
-<td>Means of transport in the signature block</td>
-</tr>
-<tr>
-<td><code>nrc</code></td>
-<td><code>res.partner</code></td>
-<td>Trade register number under the customer address</td>
-</tr>
-<tr>
-<td><code>vat</code></td>
-<td><code>res.partner</code></td>
-<td>VAT / Tax ID under the customer address</td>
-</tr>
-</tbody>
-</table>
-<h2>3. Lot tracking</h2>
-<p>Quantities are listed from <code>move_line_ids</code>. For the <strong>Lot No.</strong> and
-<strong>Minimum shelf life</strong> columns to be populated, the products must be
-tracked by lot and the corresponding <code>stock.lot</code> records must carry an
-<code>expiration_date</code>.</p>
-
-<hr class="my-4" />      <p>To install this module, you need to:</p>
-<ul>
-<li>clone the branch 17.0 of the repository
-<a href="https://github.com/NextERP-Romania/odoo-community">https://github.com/NextERP-Romania/odoo-community</a></li>
-<li>add the path to this repository in your configuration (addons-path)</li>
-<li>update the module list</li>
-<li>search for &quot;NextERP - Conformity Certificate&quot; in your addons</li>
-<li>install the module</li>
-</ul>
+<p>The delegate and the means of transport come from the Romanian delivery
+fields provided by <code>l10n_ro_stock_picking_comment_template</code>.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <p>The Certificate of Conformity is intended to be printed together with
-the delivery slip whenever goods leave the warehouse and the customer
-requires a sanitary / food-safety declaration.</p>
-<h2>Printing the certificate</h2>
-<ol>
-<li>Open a delivery from <strong>Inventory -&gt; Operations -&gt; Transfers</strong> (or
-from the sale order's <em>Delivery</em> smart button).</li>
-<li>Validate the picking so it reaches the <strong>Done</strong> state — the report
-body only renders for <code>state == 'done'</code>.</li>
-<li>From the picking form, click <strong>Print -&gt; Conformity Report</strong>.</li>
-<li>Odoo generates a PDF named <code>Conformity_Report - &lt;picking name&gt;.pdf</code>
-and downloads it. The file can be attached to the delivery or sent
-to the customer.</li>
+      <ol>
+<li>Open a delivery from <strong>Inventory &gt; Operations &gt; Transfers</strong> or from the
+<strong>Delivery</strong> button of a sales order.</li>
+<li>Validate it so it reaches the <em>Done</em> state.</li>
+<li>Click <strong>Print &gt; Conformity Report</strong>.</li>
+<li>Hand the PDF over with the goods or send it to the customer.</li>
 </ol>
-<h2>What appears on the PDF</h2>
-<ul>
-<li><strong>Header</strong>: customer address, VAT, trade register.</li>
-<li><strong>Title block</strong>: <em>Certificate of Conformity</em>, picking series /
-number, dispatch date, order number (sale order or customer
-reference).</li>
-<li><strong>Move-line table</strong>: one row per move line, with row number,
-product, customer product code, lot number, UoM, quantity done and
-lot expiration date.</li>
-<li><strong>Declaration</strong>: the issuing company guarantees that the listed
-products do not endanger life or health and comply with the sanitary
-/ veterinary food-safety legislation in force.</li>
-<li><strong>Signature block</strong>: agent, supplier code and sale order on the
-left; shipping information, delegate name, ID, means of transport,
-date / hour and signature lines on the right.</li>
-</ul>
-<h2>Language</h2>
-<p>The report is rendered with <code>lang = company.partner_id.lang</code>, so the
-certificate language follows the company's own configured language
-(useful when the customer language differs from the company language).</p>
 
     </div>
 
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.0.0 (2026-05-25)</h2>
+      <h2>19.0.1.0.1 (2026-11-28)</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.1.0.0 (2026-05-25)</h2>
 <ul>
 <li><em>Changelog tracking starts at this release.</em></li>
 </ul>

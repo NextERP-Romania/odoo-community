@@ -20,7 +20,7 @@
         <h1 class="mb-2" style="font-weight: 700;">Romania - eTransport Extension</h1>
         <p class="lead text-muted mb-3">Fixes and extensions for l10n_ro_edi_stock per ANAF eTransport v2.0.2</p>
         <div>
-          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.4.0</span>
+          <span class="badge badge-pill text-white mr-2" style="background-color: #e11d48; padding: 6px 14px; font-size: 13px;">v 19.0.1.8.4</span>
 <span class="badge badge-pill badge-light mr-2 border" style="padding: 6px 14px; font-size: 13px;">Accounting/Localizations/EDI</span><span class="badge badge-pill badge-light border" style="padding: 6px 14px; font-size: 13px;">LGPL-3</span>        </div>
       </div>
     </div>
@@ -29,9 +29,6 @@
   <ul class="nav nav-pills justify-content-center mb-4 pb-3 border-bottom" role="tablist">
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link active" id="nx-tab-overview" data-bs-toggle="pill" data-bs-target="#nx-panel-overview" href="#nx-panel-overview" role="tab" aria-controls="nx-panel-overview" aria-selected="true" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Overview</a>
-    </li>
-    <li class="nav-item mx-1 mb-2" role="presentation">
-      <a class="nav-link" id="nx-tab-features" data-bs-toggle="pill" data-bs-target="#nx-panel-features" href="#nx-panel-features" role="tab" aria-controls="nx-panel-features" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Features</a>
     </li>
     <li class="nav-item mx-1 mb-2" role="presentation">
       <a class="nav-link" id="nx-tab-configure" data-bs-toggle="pill" data-bs-target="#nx-panel-configure" href="#nx-panel-configure" role="tab" aria-controls="nx-panel-configure" aria-selected="false" style="font-weight: 600; padding: 10px 22px; border: 1px solid #e2e8f0; border-radius: 999px;">Configuration</a>
@@ -49,31 +46,38 @@
     <div class="tab-pane fade show active" id="nx-panel-overview" role="tabpanel" aria-labelledby="nx-tab-overview">
       <h2 class="mb-3 pl-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Overview</h2>
       <div>
-        <p>Fixes and extensions for the official Odoo <code>l10n_ro_edi_stock</code> module to align it with the ANAF eTransport v2 specification (XSD 2023-01-26, Schematron v2.0.2 from 2024-08-12).</p>
-<p>The official module ships with several calculation bugs and missing features required by the current ANAF eTransport schema. This module corrects those issues and adds the full set of operations mandated by eTransport v2.0.2.</p>
-<h2>Corrections to the official module</h2>
+        <p>Completes eTransport, the ANAF notification for the transport of goods
+with high fiscal risk, so that notifications are filled in correctly and
+can be followed through their whole life from the transfer.</p>
+<p><strong>Correct data in the notification</strong></p>
 <ul>
-<li><strong><code>valoareLeiFaraTva</code> (VAT-excluded value)</strong> is computed correctly per operation direction:
-<ul>
-<li><em>Incoming</em> (operations 10, 12, 14, 30-transfer, 40, 60): cost price from the stock move or, when a Purchase Order exists, <code>purchase.order.line.price_unit</code> converted to RON.</li>
-<li><em>Outgoing</em> (operations 20, 22, 24, 30-sale, 50, 70): sale price from <code>sale.order.line.price_unit</code> converted to RON, or <code>list_price</code> as fallback.</li>
+<li><strong>Values without VAT</strong> taken from the right source: cost on receipts,
+sale price on deliveries, or a source you choose per company or per
+transfer (cost, purchase order, sale order or sales price).</li>
+<li><strong>Quantities, units, weights and customs tariff codes</strong> computed
+consistently; the gross weight is never below the net weight.</li>
+<li><strong>Addresses</strong> split into street and number the way ANAF expects.</li>
 </ul>
-</li>
-<li><strong>Quantity / UoM conversion</strong> between <code>move.product_uom</code> and the declared <code>codUnitateMasura</code> is now consistent.</li>
-<li><strong>Gross weight</strong> no longer doubles <code>shipping_weight</code> when a package has multiple <code>move_lines</code>; <code>greutateBruta &gt;= greutateNeta</code> is always guaranteed.</li>
-<li><strong><code>codTarifar</code></strong> (NC8/HS code) is required — the erroneous <code>00000000</code> fallback is removed.</li>
-<li><strong><code>denumireStrada</code></strong> is correctly split from <code>numar / bloc / scara / etaj / apartament</code> per the <code>LocatieType</code> XSD definition.</li>
-</ul>
-<h2>What this module provides</h2>
+<p><strong>More of what ANAF allows</strong></p>
 <ul>
-<li><strong>Flexible price source</strong> (<code>l10n_ro_edi_stock_price_source</code> on <code>stock.picking</code>): <em>Automatic</em>, <em>Cost price</em>, <em>Purchase order price</em>, <em>Sale order price</em>, or <em>Product list price</em> — configurable per transfer or as a company-wide default.</li>
-<li><strong>Multiple transport documents per notification</strong> (<code>l10n.ro.edi.stock.document.line</code>): <code>tipDocument</code> types 10 CMR / 20 Invoice / 30 Delivery note / 9999 Other, with free-text <code>remarks</code> for type 9999.</li>
-<li><strong>Previous notifications</strong> (<code>l10n.ro.edi.stock.previous.notification</code>): <code>notificareAnterioara</code> entries required for operations 60/70 (DIN/DIE).</li>
-<li><strong>Post-outage declaration</strong> (<code>l10n_ro_edi_stock_post_outage</code>): <code>declPostAvarie</code> flag per OUG 41/2022 art. 8 par. 1³.</li>
-<li><strong>Full UIT lifecycle wizard</strong> (<code>l10n.ro.edi.stock.action.wizard</code>): Delete (DEL), Confirm (CON — confirmed / partially confirmed / refused), and Vehicle Modification (MVH) actions sent directly to ANAF.</li>
-<li><strong>LIST service sync</strong> (<code>l10n.ro.edi.stock.list.wizard</code>): fetch and reconcile the ANAF notifications list for any date range (1–60 days); automatic reconciliation logs matched UITs in the transfer chatter. A scheduled cron job (<code>ir_cron_l10n_ro_edi_stock_list_sync</code>) runs every 6 hours.</li>
-<li><strong>Transporter Info service</strong> (<code>l10n.ro.edi.stock.transporter.info.wizard</code>): query ANAF for all notifications in which the company acts as transport operator, with full vehicle and location details.</li>
-<li><strong>Extended document state tracking</strong>: <code>l10n_ro_edi_stock_event_type</code> (NOT / COR / DEL / CON / MVH) and <code>l10n_ro_edi_stock_confirm_type</code> (10 / 20 / 30) stored on <code>l10n_ro_edi.document</code>.</li>
+<li><strong>Several transport documents</strong> per notification: CMR, invoice,
+delivery note or other.</li>
+<li><strong>Previous notifications</strong> for the operations that need them.</li>
+<li><strong>Post-outage declaration</strong> for notifications sent after an ANAF
+outage.</li>
+</ul>
+<p><strong>The whole life of a notification</strong></p>
+<ul>
+<li><strong>Delete</strong>, <strong>Confirm transport</strong> (confirmed, partially confirmed or
+refused) and <strong>Modify vehicle</strong>, sent to ANAF from the transfer; each
+waits for ANAF's answer before it counts.</li>
+<li><strong>Notifications list</strong>: the notifications ANAF holds for the company,
+matched with the transfers, by hand or every six hours.</li>
+<li><strong>Transporters</strong>: the notifications in which the company is the
+carrier, with vehicles and routes.</li>
+<li><strong>Protected transfers</strong>: a transfer whose notification is alive at ANAF
+cannot be deleted or cancelled, and its declared data are frozen while
+ANAF processes it.</li>
 </ul>
 
       </div>
@@ -142,103 +146,70 @@
 
     </div>
 
-    <div class="tab-pane fade" id="nx-panel-features" role="tabpanel" aria-labelledby="nx-tab-features">
-      <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Features</h2>
-      <ul>
-<li><strong>Compliant with ANAF eTransport v2.0.2</strong> — corrects value, weight, UoM, address and HS-code bugs in the official <code>l10n_ro_edi_stock</code> module.</li>
-<li><strong>Flexible VAT-excluded value calculation</strong> — choose between Automatic, Cost, Purchase Order, Sale Order, or List price per transfer or as a company default.</li>
-<li><strong>Multiple transport documents per notification</strong> — attach CMR, invoices, delivery notes or other documents to a single eTransport XML.</li>
-<li><strong>Full UIT lifecycle</strong> — Delete, Confirm (confirmed / partially / refused), and Vehicle Modification actions sent directly to ANAF from the transfer.</li>
-<li><strong>Previous notification support</strong> — <code>notificareAnterioara</code> entries for operations 60/70 (DIN/DIE).</li>
-<li><strong>Post-outage declaration flag</strong> — <code>declPostAvarie</code> per OUG 41/2022 for submissions during ANAF system outages.</li>
-<li><strong>Automatic LIST sync cron</strong> — reconciles ANAF notification list with local transfers every 6 hours; manual wizard also available.</li>
-<li><strong>Transporter Info service</strong> — query ANAF for all notifications where the company acts as transport operator, with full vehicle and route details.</li>
-</ul>
-
-    </div>
 
     <div class="tab-pane fade" id="nx-panel-configure" role="tabpanel" aria-labelledby="nx-tab-configure">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Configuration</h2>
-      <h2>1. Company-wide default price source</h2>
-<ol>
-<li>Go to <strong>Settings → Inventory</strong> (or <strong>Settings → Accounting</strong>) and search for the <strong>eTransport</strong> section.</li>
-<li>Set <strong>Default eTransport Price Source</strong> (<code>l10n_ro_edi_stock_default_price_source</code>) to the strategy that matches your typical operations:
+      <ol>
+<li>Set up eTransport and the ANAF connection as required by the Romanian
+eTransport localization.</li>
+<li>Go to <strong>Invoicing &gt; Configuration &gt; Settings</strong>, section <strong>Romanian
+E-Factura</strong>, block <strong>eTransport additional settings</strong>:
 <ul>
-<li><em>Automatic (by operation)</em> is recommended for mixed-use companies.</li>
-<li>Override per transfer when needed using the field on <code>stock.picking</code>.</li>
+<li><strong>Default eTransport Price Source</strong>: where the values without VAT
+come from; <em>Automatic (by operation)</em> suits most companies;</li>
+<li><strong>Automatic List Sync</strong>: tick it to match the ANAF notifications list
+with the transfers every six hours;</li>
+<li><strong>List Sync Days</strong>: how many days back each synchronization looks
+(1 to 60).</li>
 </ul>
 </li>
+<li>Make sure every product moved under eTransport has its customs tariff
+code (4, 6 or 8 digits) on the product form.</li>
+<li>Write partner addresses as <em>street name and number</em> (for instance
+<em>Calea Victoriei 12-14</em>), so the street and the number are split
+correctly.</li>
+<li>Optionally, in developer mode, activate the scheduled action
+<strong>eTransport: fetch ANAF status of transfers</strong> in <strong>Settings &gt;
+Technical &gt; Automation &gt; Scheduled Actions</strong>, to fetch the answers to
+deletions, confirmations and vehicle changes automatically.</li>
 </ol>
-<h2>2. Automatic LIST sync (cron)</h2>
-<ol>
-<li>In the same settings page, tick <strong>Automatic List Sync</strong> (<code>l10n_ro_edi_stock_list_enabled</code>).</li>
-<li>Set <strong>List Sync Days</strong> (<code>l10n_ro_edi_stock_list_days</code>, 1–60) — the number of days the cron looks back each run.</li>
-<li>The scheduled action <em>eTransport: ANAF notifications list sync</em> (<code>ir_cron_l10n_ro_edi_stock_list_sync</code>) runs every 6 hours automatically once enabled. To adjust the interval, go to <strong>Settings → Technical → Automation → Scheduled Actions</strong> and edit the cron record.</li>
-</ol>
-<h2>3. Verify NC8/HS codes on products</h2>
-<p>Because <code>codTarifar</code> is now mandatory (the <code>00000000</code> fallback has been removed), ensure every product that appears on eTransport-eligible transfers has a valid 4-, 6-, or 8-digit HS/NC8 code set on the product form before sending notifications.</p>
-<h2>4. Verify address structure</h2>
-<p>The module splits Romanian street addresses into <code>denumireStrada</code> + number/building details automatically via <code>_l10n_ro_edi_stock_split_street</code>. Confirm that partner addresses follow the format <em>&quot;Street name number&quot;</em> (e.g. <em>&quot;Calea Victoriei 12-14&quot;</em>) to ensure correct splitting.</p>
 
     </div>
 
     <div class="tab-pane fade" id="nx-panel-usage" role="tabpanel" aria-labelledby="nx-tab-usage">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">How it works</h2>
-      <h2>Configuring the price source for a transfer</h2>
+      <h2>Sending a notification</h2>
 <ol>
-<li>Open a validated or in-progress transfer in <strong>Inventory → Transfers</strong>.</li>
-<li>In the <strong>eTransport</strong> tab, locate the <strong>eTransport Price Source</strong> field (<code>l10n_ro_edi_stock_price_source</code>).</li>
-<li>Choose one of:
-<ul>
-<li><em>Automatic (by operation)</em> — cost on incoming/internal, sale price on outgoing.</li>
-<li><em>Cost price</em> — always uses <code>standard_price</code>.</li>
-<li><em>Purchase order price</em> — pulls from the linked PO line in RON.</li>
-<li><em>Sale order price</em> — pulls from the linked SO line in RON.</li>
-<li><em>Product list price</em> — uses <code>list_price</code>.</li>
-</ul>
-</li>
-<li>Continue with the normal eTransport notification flow.</li>
+<li>Open the transfer in <strong>Inventory &gt; Operations &gt; Transfers</strong> and go to
+the <strong>eTransport</strong> tab.</li>
+<li>Check <strong>eTransport Price Source</strong>, and tick <strong>Post-Outage Declaration</strong>
+if the notification is sent after an ANAF outage.</li>
+<li>Under <strong>Transport documents</strong>, add the CMR, invoice, delivery note or
+other documents (for <em>Other</em>, the remarks are required).</li>
+<li>For the operations that need them, fill in the previous notifications.</li>
+<li>Click <strong>Check eTransport</strong> to see any error before sending, then click
+<strong>Send eTransport</strong>. The UIT received from ANAF is stored on the
+transfer.</li>
 </ol>
-<h2>Adding transport documents (CMR, Invoice, etc.)</h2>
+<h2>After the UIT is received</h2>
 <ol>
-<li>Open the transfer and go to the <strong>eTransport</strong> tab.</li>
-<li>Under <strong>Transport Documents</strong>, click <strong>Add a line</strong>.</li>
-<li>Set <strong>Document Type</strong> (10 CMR / 20 Invoice / 30 Delivery Note / 9999 Other), <strong>Document Number</strong>, and <strong>Document Date</strong>.</li>
-<li>If type is <em>Other (9999)</em>, fill in the <strong>Remarks</strong> field (required by ANAF).</li>
-<li>Add as many documents as needed; all will be included in the XML notification.</li>
+<li>Use the buttons of the transfer: <strong>Delete notification</strong>, <strong>Confirm
+transport</strong> (choose confirmed, partially confirmed or refused) or
+<strong>Modify vehicle</strong> (new vehicle and trailers, date and time).</li>
+<li>The action waits as <em>Action Sent</em> until ANAF's answer is fetched
+(<strong>Fetch Status</strong>, or the scheduled action). Accepted, it is recorded;
+refused, the error is shown and the action can be sent again.</li>
+<li>All the documents exchanged with ANAF are listed in <strong>Inventory &gt;
+eTransport &gt; Documents</strong>.</li>
 </ol>
-<h2>Declaring previous notifications (operations 60/70)</h2>
+<h2>Checking what ANAF holds</h2>
 <ol>
-<li>On the transfer, go to the <strong>eTransport</strong> tab → <strong>Previous Notifications</strong> section.</li>
-<li>Click <strong>Add a line</strong> and enter the <strong>Previous UIT</strong>, optional <strong>Remarks</strong>, and <strong>Declarant Reference</strong>.</li>
-<li>These entries are serialised as <code>notificareAnterioara</code> elements in the XML sent to ANAF.</li>
-</ol>
-<h2>Marking a post-outage declaration</h2>
-<ol>
-<li>On the transfer <strong>eTransport</strong> tab, tick <strong>Post-Outage Declaration</strong> (<code>l10n_ro_edi_stock_post_outage</code>).</li>
-<li>This sets <code>declPostAvarie=1</code> in the submitted XML, allowed until the end of the next working day after an ANAF system outage (OUG 41/2022 art. 8 par. 1³).</li>
-</ol>
-<h2>Performing UIT lifecycle actions (Delete / Confirm / Modify vehicle)</h2>
-<p>After a notification UIT has been obtained:</p>
-<ol>
-<li>Open the transfer and use the action buttons in the <strong>eTransport</strong> tab (or the action menu).</li>
-<li><strong>Delete notification</strong> — opens <code>l10n.ro.edi.stock.action.wizard</code> pre-set to <em>DEL</em>; confirm to send the deletion to ANAF.</li>
-<li><strong>Confirm transport</strong> — opens the wizard pre-set to <em>CON</em>; choose confirmation type (10 Confirmed / 20 Partially confirmed / 30 Refused) and submit.</li>
-<li><strong>Modify vehicle</strong> — opens the wizard pre-set to <em>MVH</em>; enter the new vehicle number, optional trailer numbers, and modification date/time.</li>
-<li>The wizard calls <code>_upload_and_log</code>, posts the ANAF response in the chatter, and updates <code>l10n_ro_edi_stock_event_type</code> on the related <code>l10n_ro_edi.document</code> record.</li>
-</ol>
-<h2>Syncing the ANAF notifications list manually</h2>
-<ol>
-<li>Go to <strong>Inventory → eTransport → Notifications list</strong> (<code>menu_l10n_ro_edi_stock_list_wizard</code>).</li>
-<li>Enter the <strong>Number of days</strong> (1–60) to look back.</li>
-<li>Click <strong>Fetch</strong> (<code>action_fetch</code>). The wizard retrieves the ANAF LIST and displays all returned notifications as <code>l10n.ro.edi.stock.list.line</code> records.</li>
-<li>Click <strong>Reconcile</strong> to automatically match UITs to local transfers and log the result in each transfer's chatter.</li>
-</ol>
-<h2>Querying transporter info (as transport operator)</h2>
-<ol>
-<li>Go to <strong>Inventory → eTransport → Transporters</strong> (<code>menu_l10n_ro_edi_stock_transporter_info_wizard</code>).</li>
-<li>Fill in <strong>Transport operator VAT</strong>, and optionally <strong>Initial declarant VAT</strong>, <strong>Specific UIT</strong>, or <strong>Declarant reference</strong>.</li>
-<li>Click <strong>Fetch</strong> (<code>action_fetch</code>). Each matching ANAF notification appears as an <code>l10n.ro.edi.stock.transporter.info.line</code> row with UIT, vehicle numbers, start/end locations, and expiry date.</li>
+<li><strong>Inventory &gt; eTransport &gt; Notifications list</strong>: enter the number of
+days and click <strong>Query ANAF</strong>; the notifications found are matched with
+the transfers and noted in their chatter.</li>
+<li><strong>Inventory &gt; eTransport &gt; Transporters</strong>: enter the carrier's VAT
+number (and optionally a UIT or reference) and click <strong>Query ANAF</strong> to
+see the notifications in which the company is the carrier.</li>
 </ol>
 
     </div>
@@ -246,7 +217,11 @@
 
     <div class="tab-pane fade" id="nx-panel-versions" role="tabpanel" aria-labelledby="nx-tab-versions">
       <h2 class="mb-3" style="border-left: 4px solid #e11d48; font-weight: 700; padding-left: 16px;">Versions</h2>
-      <h2>19.0.1.3.1</h2>
+      <h2>19.0.1.8.4</h2>
+<ul>
+<li>Apps listing: English description, configuration and usage, new icon and cover.</li>
+</ul>
+<h2>19.0.1.3.1</h2>
 <ul>
 <li>The parser that locates the element behind an ANAF error no longer
 resolves entities and cannot reach the network.</li>
@@ -282,15 +257,13 @@ state noted in the message. Before, they were deleted.</li>
 </ul>
 <h2>19.0.1.2.0 (2026-09-15)</h2>
 <ul>
-<li>Drop the base <code>Warehouse of ... should be in Romania</code> error on the
-counterparty side of intra-EU / import / export operations, which
-<code>l10n_ro_edi_stock</code> started raising unconditionally and which made those
-notifications impossible to send.</li>
-<li>Fix <code>AttributeError</code> when the ANAF response has an unexpected shape:
-<code>ETransportAPI</code> is a plain class, so the module-level <code>_</code> has to be used
-instead of <code>self.env._</code>.</li>
-<li><code>_compute_l10n_ro_edi_stock_enable_send</code> now only widens the states the base
-does not already cover ('assigned' has been allowed upstream since 19.0).</li>
+<li>Notifications for intra-EU, import and export operations can be sent
+again: the check that the counterparty's warehouse is in Romania no longer
+blocks them.</li>
+<li>An unexpected answer from ANAF is reported as a clear error instead of
+stopping the operation.</li>
+<li>A transfer can be sent to eTransport in every state where it makes
+sense, not only in the states the base localization allowed.</li>
 </ul>
 <h2>19.0.1.0.0 (2026-06-23)</h2>
 <ul>

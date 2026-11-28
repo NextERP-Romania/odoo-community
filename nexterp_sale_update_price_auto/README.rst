@@ -11,24 +11,21 @@ NextERP - Sale Update Prices Auto
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-``nexterp_sale_update_price_auto`` removes one manual step from the
-quotation flow: when the pricelist on a sale order changes, prices on
-the existing order lines are recomputed automatically instead of waiting
-for the salesperson to click the **Update Prices** banner.
+When the pricelist of a quotation changes, the prices on its lines stay
+as they were until the salesperson clicks **Update Prices**. Forgetting
+that click means sending an offer with the old prices.
 
-The module hooks into the standard
-``_onchange_pricelist_id_show_update_prices`` on ``sale.order``. When
-the sale order already has lines, the new pricelist differs from the
-previous one, and the company has *Auto Update Sales Prices* enabled,
-the override calls ``_recompute_prices()`` with the
-``force_price_recomputation=True`` context. If the order is already
-saved (``_origin.id`` is set), an audit message is posted in the chatter
-recording which pricelist was applied.
+With this module the prices follow the pricelist: as soon as it changes,
+the lines are priced again, and the order keeps a note of it.
 
-The feature is gated by a company-level setting on ``res.company``, so
-it can be activated only on the companies that actually want this
-behaviour, while other companies in the database keep the manual "Update
-Prices" workflow.
+-  Line prices and pricelist discounts recomputed as soon as the
+   pricelist changes.
+-  Only when there is something to do: the order has lines and the
+   pricelist really changed.
+-  A message in the order's chatter names the pricelist the prices came
+   from.
+-  Switched on per company with **Auto Update Sales Prices**; companies
+   that leave it off keep the **Update Prices** button.
 
 
 **Table of contents**
@@ -36,160 +33,42 @@ Prices" workflow.
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Key features
-============
-
--  Overrides ``sale.order._onchange_pricelist_id_show_update_prices`` so
-   the pricelist change behaves as an *apply* action rather than just
-   showing the *Update Prices* banner.
--  Triggers ``_recompute_prices()`` with the context flag
-   ``force_price_recomputation=True`` so prices are refreshed even for
-   lines that would normally be skipped by the standard guard.
--  Recomputation only runs when **all** of the following are true:
-
-   -  the sale order already has at least one line
-      (``self.order_line``),
-   -  a pricelist is set on the order (``self.pricelist_id``),
-   -  the pricelist has actually changed
-      (``self._origin.pricelist_id != self.pricelist_id``),
-   -  the company has *Auto Update Sales Prices* enabled.
-
--  When the order is already saved, a chatter message is posted on the
-   original record stating which pricelist drove the recomputation,
-   giving an audit trail of automatic price changes.
--  Driven by a single boolean field, ``sale_auto_update_price``, defined
-   on ``res.company`` and exposed via ``res.config.settings``.
--  The setting is added to the Sales configuration form right after the
-   standard ``pricelist_configuration`` block, so it stays grouped with
-   the other pricelist-related options.
--  Depends only on ``sale_management``; no UI on the sale order itself.
-
-Installation
-============
-
-To install this module, you need to:
-
--  clone the branch 16.0 of the repository
-   https://github.com/NextERP-Romania/odoo-community
--  add the path to this repository in your configuration (addons-path)
--  update the module list
--  search for "NextERP - Sale Update Prices Auto" in your addons
--  install the module
-
 Configuration
 =============
 
-Configuration
-=============
+1. Go to **Sales > Configuration > Settings**.
+2. In the **Pricing** section, tick **Pricelists** if it is not on yet,
+   then tick **Auto Update Sales Prices**.
+3. Click **Save**.
 
-The behaviour is opt-in per company through a single setting in the
-Sales configuration form.
-
-1. Enable the automatic recomputation
--------------------------------------
-
-1. Go to **Sales -> Configuration -> Settings**.
-2. Find the **Pricelists** block.
-3. Tick **Auto Update Sales Prices** (added by the module immediately
-   after the standard ``pricelist_configuration`` setting).
-4. Click **Save**.
-
-The option is stored on ``res.company.sale_auto_update_price`` and the
-field on ``res.config.settings`` is ``related`` (so the value is read
-from / written to the current company directly).
-
-2. Multi-company
-----------------
-
-In a multi-company database, repeat the procedure for every company that
-should benefit from the automatic recomputation. Companies where the
-setting is left off keep the standard Odoo behaviour — changing the
-pricelist still shows the **Update Prices** banner that has to be
-clicked by the salesperson.
-
-3. Prerequisites
-----------------
-
--  The module requires only ``sale_management`` and works with both the
-   product pricelist engine and the discount / formula rules already in
-   Odoo.
--  For the automatic recomputation to make sense, make sure the relevant
-   pricelists are properly configured under **Sales -> Products ->
-   Pricelists** (or **Sales -> Configuration -> Pricelists**) and that
-   they cover the customers' products and currencies.
-
-No menu, action or scheduled job is added by this module.
+In a multi-company database, switch to each company that should use it
+and repeat the steps. The pricelists themselves are managed as usual in
+**Sales > Products > Pricelists**.
 
 Usage
 =====
 
-Daily use
-=========
+1. Open a quotation in **Sales > Orders > Quotations** that already has
+   at least one line.
+2. Change the **Pricelist**.
+3. The unit prices and discounts of the lines are recomputed at once
+   from the new pricelist.
+4. If the quotation was already saved, a message in the chatter records
+   which pricelist the prices were taken from.
+5. Save the quotation.
 
-The module works in the background on every sale order / quotation form.
-There is no new menu, no extra button and no wizard.
-
-Changing the pricelist on a quotation
--------------------------------------
-
-1. Open a quotation from **Sales -> Orders -> Quotations** (or a
-   confirmed order from **Sales -> Orders -> Orders**).
-2. Make sure the order already has at least one line — the recomputation
-   is skipped when the order is still empty.
-3. Change the **Pricelist** field on the *Other Info* tab.
-4. As soon as the field loses focus, the ``onchange`` runs:
-
-   -  line **Unit Prices** are refreshed against the new pricelist,
-   -  discounts attached to pricelist rules are reapplied,
-   -  if the order is already saved, a message appears in the chatter:
-      *"Product prices have been recomputed according to pricelist
-      ``<pricelist name>``"*.
-
-5. Save the order to persist the new prices.
-
-How it works
-------------
-
-The override of ``_onchange_pricelist_id_show_update_prices`` checks the
-following conditions before calling ``_recompute_prices()``:
-
-+----------------------------------+----------------------------------+
-| Condition                        | Why                              |
-+==================================+==================================+
-| ``self.order_line`` truthy       | Nothing to recompute on an empty |
-|                                  | order                            |
-+----------------------------------+----------------------------------+
-| ``self.pricelist_id`` set        | No target pricelist, nothing to  |
-|                                  | apply                            |
-+----------------------------------+----------------------------------+
-| ``_origin.pri                    | The pricelist actually changed   |
-| celist_id != self.pricelist_id`` |                                  |
-+----------------------------------+----------------------------------+
-| ``                               | Feature is enabled on the        |
-| company.sale_auto_update_price`` | company                          |
-+----------------------------------+----------------------------------+
-
-The recomputation is called as
-``self.with_context(force_price_recomputation=True)._recompute_prices()``,
-which forces the standard pricing engine to update lines even when
-manual price overrides would normally block it.
-
-Reverting
----------
-
-To go back to the standard manual workflow, untick **Auto Update Sales
-Prices** under **Sales -> Configuration -> Settings**. The next
-pricelist change on a sale order will again show the **Update Prices**
-banner instead of recomputing automatically.
+To go back to updating prices by hand, untick **Auto Update Sales
+Prices** in the settings: the next pricelist change shows the **Update
+Prices** button again.
 
 Changelog
 =========
 
-Changelog
-=========
+19.0.1.0.2
+----------
+
+-  Apps listing: English description, configuration and usage, new icon
+   and cover.
 
 19.0.1.0.1 (2026-05-25)
 -----------------------

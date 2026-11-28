@@ -1,3 +1,7 @@
+## 19.0.1.1.2
+
+- Apps listing: English description, configuration and usage, new icon and cover.
+
 ## 19.0.1.1.0 (2026-11-05)
 
 - A self-invoice taken in from the SPV and left in draft (no self-invoicing
@@ -9,4 +13,4 @@
 
 ## 19.0.1.0.0 (2026-10-26)
 
-- First version: self-invoices issued by customers in the company's name, taken in from the SPV as customer invoices, with the self-invoicing fields on sale and purchase journals; the self-invoices issued in a supplier's name are uploaded with `autofactura=DA` (moved from `account_invoice_delivery_sheet`) and their credit notes carry `CreditNoteTypeCode` 381 (moved from `l10n_ro_edi_extension`).
+- First version: self-invoices issued by customers in the company's name are taken in from the SPV as customer invoices, with the self-invoicing settings on sales and purchase journals; self-invoices issued in a supplier's name are uploaded as self-invoices, with the credit note type code CIUS-RO accepts.

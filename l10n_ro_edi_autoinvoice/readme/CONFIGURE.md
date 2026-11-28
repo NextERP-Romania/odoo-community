@@ -1,11 +1,20 @@
-For every customer who issues self-invoices in your name, create a sale journal in **Accounting → Configuration → Journals** with:
+1. Go to **Invoicing > Configuration > Settings**, section **Customer
+   Invoices**, and check that **Create Customer Self-Invoices** is
+   enabled for the company.
+2. For every customer who issues self-invoices in your name, open
+   **Invoicing > Configuration > Accounting > Journals** and create a
+   journal with:
+   - **Type**: *Sales*;
+   - in the **Ro Auto Invoicing** group, **Ro Sequence Type**:
+     *Customer Auto Invoicing*;
+   - **Ro Partner**: the customer.
+3. For the self-invoices you issue in a supplier's name, create a
+   *Purchase* journal the same way, with **Ro Sequence Type**
+   *Supplier Auto Invoicing* and the supplier as **Ro Partner**.
 
-| Field | Value |
-|---|---|
-| **Type** | Sales |
-| **Ro Sequence Type** (`l10n_ro_sequence_type`) | Customer Auto Invoicing |
-| **Ro Partner** (`l10n_ro_partner_id`) | the customer |
+Without a journal for a customer, its self-invoices are created as drafts
+in the first sales journal. The self-invoicing type and partner of a
+journal can no longer be changed once the journal has posted entries.
 
-For the self-invoices you issue in a supplier's name, the purchase journal works the same way, with **Supplier Auto Invoicing** and the supplier as **Ro Partner**.
-
-The fields are in the **Ro Auto Invoicing** group of the journal form, on sale and purchase journals. The module adds them itself, so `l10n_ro_account_enterprise` is not needed; when it is installed, its own group shows them instead. Without a journal for the customer, its self-invoices are created as drafts in the first sale journal.
+The SPV connection itself (ANAF credentials) is the one set up for
+e-Factura.
